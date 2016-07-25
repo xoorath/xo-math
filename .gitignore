@@ -1,0 +1,5 @@
+xo-inspectable/.vs
+xo-inspectable/Debug
+xo-inspectable/Release
+xo-inspectable/*.user
+xo-inspectable/*.sdf
