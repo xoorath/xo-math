@@ -15,7 +15,7 @@ public:
     }
     Vector2(const Vector2& v) : x(v[0]), y(v[1]) {
     }
-    Vector2(const class Vector3& v);
+    //Vector2(const class Vector3& v);
 
     float& operator [](int i) { switch (i) { default: case 0: return x; case 1: return y; } }
     const float& operator [](int i) const { switch (i) { default: case 0: return x; case 1: return y; } }

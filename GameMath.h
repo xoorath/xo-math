@@ -21,6 +21,7 @@
 
 #include <math.h>
 #include <ostream>
+#include <xmmintrin.h>
 
 // Use XO_GAME_MATH_INTERNAL to sanity check inside other xo-math headers
 // it's kind of overkill, but xo-math is also easy to misuse, it's so
@@ -81,16 +82,16 @@ bool operator op (int v) const                  { return MagnitudeSquared() - (f
 #if defined(VEC3_COMPARE_OP) || defined(VEC3D_SIMPLE_OP) || defined(VEC3D_SIMPLE_OP_ADD)
 static_assert(false, "Vector3 found an internal macro where it shouldn't have.");
 #else
-#define VEC3D_SIMPLE_OP(op) \
-Vector3 operator op (const Vector3& v) const    { return Vector3(x op v.x, y op v.y, z op v.z); } \
-Vector3 operator op (float v) const             { return Vector3(x op v, y op v, z op v); } \
-Vector3 operator op (double v) const            { return Vector3(x op (float)v, y op (float)v, z op (float)v); }\
-Vector3 operator op (int v) const               { return Vector3(x op (float)v, y op (float)v, z op (float)v); }
-#define VEC3D_SIMPLE_OP_ADD(op) \
-const Vector3& operator op (const Vector3& v)   { x op v[0]; y op v[1]; z op v[2]; return *this; } \
-const Vector3& operator op (float v)            { x op v; y op v; z op v; return *this; } \
-const Vector3& operator op (double v)           { x op (float)v; y op (float)v; z op (float)v; return *this; } \
-const Vector3& operator op (int v)              { x op (float)v; y op (float)v; z op (float)v; return *this; }
+#define VEC3D_SIMPLE_OP(op, simd_command) \
+Vector3 operator op (const Vector3& v) const    { return Vector3(simd_command(m, v.m)); } \
+Vector3 operator op (float v) const             { return Vector3(simd_command(m, _mm_set1_ps(v))); } \
+Vector3 operator op (double v) const            { return Vector3(simd_command(m, _mm_set1_ps((float)v))); } \
+Vector3 operator op (int v) const               { return Vector3(simd_command(m, _mm_set1_ps((float)v))); }
+#define VEC3D_SIMPLE_OP_ADD(op, simd_command) \
+const Vector3& operator op (const Vector3& v)   { m = simd_command(m, v.m); return *this; } \
+const Vector3& operator op (float v)            { m = simd_command(m, _mm_set1_ps(v)); return *this; } \
+const Vector3& operator op (double v)           { m = simd_command(m, _mm_set1_ps((float)v)); return *this; } \
+const Vector3& operator op (int v)              { m = simd_command(m, _mm_set1_ps((float)v)); return *this; }
 #define VEC3_COMPARE_OP(op) \
 bool operator op (const Vector3& v) const       { return MagnitudeSquared() op v.MagnitudeSquared(); } \
 bool operator op (float v) const                { return MagnitudeSquared() op (v*v); } \
@@ -108,11 +109,11 @@ bool operator op (int v) const                  { return MagnitudeSquared() - (f
 
 ////////////////////////////////////////////////////////////////////////// Type dependent implementations
 XOMATH_BEGIN_XO_NS
-Vector3::Vector3(const Vector2& v) : x(v[0]), y(v[1]), z(0.0f) { }
-Vector2::Vector2(const Vector3& v) : x(v[0]), y(v[1]) { }
-
-Vector3 Vector3::operator + (const Vector2& v) const { return Vector3(x + v[0], y + v[1], z); }
-Vector2 Vector2::operator + (const Vector3& v) const { return Vector2(x + v[0], y + v[1]); }
+//Vector3::Vector3(const Vector2& v) : m(_mm_set_ps(0.0f, v.y, v.x)) { }
+//Vector2::Vector2(const Vector3& v) : x(v[0]), y(v[1]) { }
+//
+//Vector3 Vector3::operator + (const Vector2& v) const { return Vector3(x + v[0], y + v[1], z); }
+//Vector2 Vector2::operator + (const Vector3& v) const { return Vector2(x + v[0], y + v[1]); }
 XOMATH_END_XO_NS
 
 ////////////////////////////////////////////////////////////////////////// Remove internal macros

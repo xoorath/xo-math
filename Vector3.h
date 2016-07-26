@@ -7,57 +7,88 @@ class Vector3 {
 public:
   constexpr static const float Epsilon = FloatEpsilon * 3.0f;
 
-  Vector3() : x(0.0f), y(0.0f), z(0.0f) {
+  Vector3() : m(_mm_setzero_ps()) {
   }
-  Vector3(float v) : x(v), y(v), z(v) {
+  Vector3(float f) : m(_mm_set1_ps(f)){
   }
-  Vector3(float x, float y, float z) : x(x), y(y), z(z) {
+  Vector3(float x, float y, float z) : m(_mm_set_ps(x, y, z, 0.0f)) {
   }
-  Vector3(const Vector3& v) : x(v[0]), y(v[1]), z(v[2]) {
+  Vector3(const Vector3& vec) : m(vec.m) {
   }
-  Vector3(const class Vector2& v);
+  Vector3(const __m128& vec) : m(vec) {
+  }
+  //Vector3(const class Vector2& v);
 
-  float& operator [](int i) { switch (i) { default: case 0: return x; case 1: return y; case 2: return z; } }
-  const float& operator [](int i) const { switch (i) { default: case 0: return x; case 1: return y; case 2: return z; } }
+  float& operator [](int i) {
+      return m.m128_f32[3-i];
+  }
+
+  const float& operator [](int i) const { 
+      return m.m128_f32[3-i];
+  }
 
   void Set(float x, float y, float z) {
-    this->x = x;
-    this->y = y;
-    this->z = z;
+      m = _mm_set_ps(x, y, z, 0.0f);
   }
 
-  void Set(float v) {
-    this->x = v;
-    this->y = v;
-    this->z = v;
+  void Set(float f) {
+      m = _mm_set1_ps(f);
   }
 
-  void Set(const Vector3& v) {
-    this->x = v[0];
-    this->y = v[1];
-    this->z = v[2];
+  void Set(const Vector3& vec) {
+      m = vec.m;
   }
 
-  VEC3D_SIMPLE_OP(+)
-  VEC3D_SIMPLE_OP(-)
-  VEC3D_SIMPLE_OP(*)
-  VEC3D_SIMPLE_OP(/ )
-  VEC3D_SIMPLE_OP_ADD(+= )
-  VEC3D_SIMPLE_OP_ADD(-= )
-  VEC3D_SIMPLE_OP_ADD(*= )
-  VEC3D_SIMPLE_OP_ADD(/= )
+  void Set(const __m128& vec) {
+      m = vec;
+  }
 
-  Vector3 operator - () const { return Vector3(-x, -y, -z); }
-  Vector3 operator ~ () const { return Vector3(z, y, x); }
+  void Get(float& x, float& y, float &z) {
+      __declspec(align(16)) float f[4];
+      _mm_store_ps(f, m);
+      x = f[3];
+      y = f[2];
+      z = f[1];
+  }
+
+  VEC3D_SIMPLE_OP(+, _mm_add_ps)
+  VEC3D_SIMPLE_OP(-, _mm_sub_ps)
+  VEC3D_SIMPLE_OP(*, _mm_mul_ps)
+  VEC3D_SIMPLE_OP(/, _mm_div_ps)
+
+  VEC3D_SIMPLE_OP_ADD(+=, _mm_add_ps)
+  VEC3D_SIMPLE_OP_ADD(-=, _mm_sub_ps)
+  VEC3D_SIMPLE_OP_ADD(*=, _mm_mul_ps)
+  VEC3D_SIMPLE_OP_ADD(/=, _mm_div_ps)
+
+  Vector3 operator - () const { 
+      static const __m128 anti = _mm_set1_ps(-1.0f);
+      return Vector3(_mm_mul_ps(m, anti));
+  }
+  Vector3 operator ~ () const { 
+      return Vector3(_mm_set_ps(m.m128_f32[3], m.m128_f32[2], m.m128_f32[1], 0.0f));
+  }
 
   Vector3 operator + (const class Vector2& v) const;
 
   float Magnitude() const {
-    return Sqrt(x*x + y*y + z*z);
+    // get all the elements multiplied by themselves.
+    auto square = _mm_mul_ps(m, m);
+    // add horizontally. Now the first two floats are [z+y, x+w]
+    square = _mm_hadd_ps(square, square);
+    // add horizontally. now the first float is [z+y+x+w]
+    square = _mm_hadd_ps(square, square);
+    return Sqrt(m.m128_f32[0]);
   }
 
   float MagnitudeSquared() const {
-    return x*x + y*y + z*z;
+      // get all the elements multiplied by themselves.
+      auto square = _mm_mul_ps(m, m);
+      // add horizontally. Now the first two floats are [z+y, x+w]
+      square = _mm_hadd_ps(square, square);
+      // add horizontally. now the first float is [z+y+x+w]
+      square = _mm_hadd_ps(square, square);
+      return m.m128_f32[0];
   }
 
   void Normalize() {
@@ -68,9 +99,7 @@ public:
     if (magnitude < Epsilon)
       return; // zero vec
     magnitude = 1.0f / magnitude;
-    x *= magnitude;
-    y *= magnitude;
-    z *= magnitude;
+    (*this) *= magnitude;
   }
 
   Vector3 Normalized() const {
@@ -81,7 +110,7 @@ public:
     if (magnitude < Epsilon)
       return *this; // zero vec
     magnitude = 1.0f / magnitude;
-    return{ x * magnitude, y * magnitude, z * magnitude };
+    return (*this) * magnitude;
   }
 
   bool IsZero() const {
@@ -155,7 +184,9 @@ public:
   float Distance(const Vector3& v) { return Distance(*this, v); }
 
   friend std::ostream& operator <<(std::ostream& os, const Vector3& v) {
-      os << '(' << v[0] << ',' << v[1] << ',' << v[2] << ')';
+      __declspec(align(16)) float f[4];
+      _mm_store_ps(f, v.m);
+      os << '(' << f[3] << ',' << f[2] << ',' << f[1] << ')';
       return os;
   }
 
@@ -164,8 +195,7 @@ public:
     Up, Down, Left, Right, Forward, Backward,
     One, Zero;
 
-private:
-  float x, y, z;
+  __m128 m;
 };
 
 const Vector3 Vector3::UnitX(1.0f, 0.0f, 0.0f);
