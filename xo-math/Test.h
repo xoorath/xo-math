@@ -72,7 +72,7 @@ public:
   void ReportSuccess();
   void ReportFailure(const char* reason);
 
-  void operator ()(const char* testName, TTestFunc func);
+  double operator ()(const char* testName, TTestFunc func);
   int GetTotalFailures() const;
 
 private:
@@ -108,7 +108,7 @@ void Test::ReportFailure(const char* reason) {
   std::cout << "[FAIL] " << reason << std::endl;
 }
 
-void Test::operator ()(const char* testName, TTestFunc func) {
+double Test::operator ()(const char* testName, TTestFunc func) {
   TTime start, end;
   std::cout << "========== \"" << testName << "\" test started ==========\n";
   m_CurrentSuccess = m_CurrentFailure = 0;
@@ -120,6 +120,7 @@ void Test::operator ()(const char* testName, TTestFunc func) {
 
   std::cout << m_CurrentSuccess << " passed. " << m_CurrentFailure;
   std::cout << " failed. took (" << seconds.count() << ") seconds. \n\n";
+  return seconds.count();
 }
 
 int Test::GetTotalFailures() const {

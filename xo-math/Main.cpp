@@ -7,7 +7,6 @@
 
 #include "Test.h"
 
-
 int main() {
     Test t;
 
@@ -63,6 +62,41 @@ int main() {
             t.ReportSuccessIf(-Vector3(1.0f, 2.0f, 3.0f), Vector3(-1.0f, -2.0f, -3.0f), "Failed expectation for operator -v");
             t.ReportSuccessIf(~Vector3(1.0f, 2.0f, 3.0f), Vector3(3.0f, 2.0f, 1.0f), "Failed expectation for operator ~v");
         }
+    });
+
+    t("Vector3: Rotations", [&t, &itterations] {
+#define VerifyAngle(from, to, expected) t.ReportSuccessIf(Vector3:: from .AngleDegrees(Vector3:: to ), expected, #from " and " #to " are not at " #expected " degrees");
+        VerifyAngle(Up, Right, 90.0f)
+        VerifyAngle(Up, Left, 90.0f)
+        VerifyAngle(Up, Forward, 90.0f)
+        VerifyAngle(Up, Backward, 90.0f)
+        VerifyAngle(Down, Right, 90.0f)
+        VerifyAngle(Down, Left, 90.0f)
+        VerifyAngle(Down, Forward, 90.0f)
+        VerifyAngle(Down, Backward, 90.0f)
+        // should work at dot -1
+        VerifyAngle(Up, Down, 179.999969f)
+        // should not be effected by length
+        VerifyAngle(Up, Right*2.0f, 90.0f)
+#undef VerifyAngle
+    });
+
+    t("Vector3: Magnitude", [&t, &itterations] {
+#define VerifyMagnitude(v, expected) \
+        t.ReportSuccessIf(v .Magnitude(), expected, #v " does not have a magnitude of " #expected ".");\
+        t.ReportSuccessIf(v .MagnitudeSquared(), expected * expected, #v " does not have a magnitude squared of " #expected "^2.");
+
+        VerifyMagnitude(Vector3::Up, 1.0f);
+        VerifyMagnitude(Vector3::Down, 1.0f);
+        VerifyMagnitude(Vector3::Left, 1.0f);
+        VerifyMagnitude(Vector3::Right, 1.0f);
+        VerifyMagnitude(Vector3::Forward, 1.0f);
+        VerifyMagnitude(Vector3::Backward, 1.0f);
+        VerifyMagnitude((Vector3::Up*2.0f), 2.0f);
+        VerifyMagnitude((Vector3::Down*2.0f), 2.0f);
+
+#undef VerifyMagnitude
+
     });
 
     Vector3 vv(1.0f, 2.0f, 3.0f);

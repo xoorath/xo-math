@@ -26,11 +26,19 @@ public:
     //Vector3(const class Vector2& v);
 
     float& operator [](int i) {
+#ifdef XO_SAFE_VEC_RANGE // paranoid about crashes?
+        return m.m128_f32[i & 0b11];
+#else
         return m.m128_f32[i];
+#endif
     }
 
     const float& operator [](int i) const {
+#ifdef XO_SAFE_VEC_RANGE // paranoid about crashes?
+        return m.m128_f32[i & 0b11];
+#else
         return m.m128_f32[i];
+#endif
     }
 
     void Set(float x, float y, float z) {
@@ -50,24 +58,22 @@ public:
     }
 
     void Get(float& x, float& y, float &z) {
-        __declspec(align(16)) float f[4];
-        _mm_store_ps(f, m);
-        x = f[IDX_X];
-        y = f[IDX_Y];
-        z = f[IDX_Z];
+        x = m.m128_f32[IDX_X];
+        y = m.m128_f32[IDX_Y];
+        z = m.m128_f32[IDX_Z];
     }
 
     // note: we zero out the z component during anything but a multiply (which would maintain 0 by itself)
     // this keeps things like horizontal addition, and comparing __m128's simple.
-    VEC3D_SIMPLE_OP(+, _mm_add_ps, { ret.m.m128_f32[IDX_W] = 0.0f; })
-    VEC3D_SIMPLE_OP(-, _mm_sub_ps, { ret.m.m128_f32[IDX_W] = 0.0f; })
+    VEC3D_SIMPLE_OP(+, _mm_add_ps, { ret.w = 0.0f; })
+    VEC3D_SIMPLE_OP(-, _mm_sub_ps, { ret.w = 0.0f; })
     VEC3D_SIMPLE_OP(*, _mm_mul_ps, {})
-    VEC3D_SIMPLE_OP(/ , _mm_div_ps, { ret.m.m128_f32[IDX_W] = 0.0f; })
+    VEC3D_SIMPLE_OP(/ , _mm_div_ps, { ret.w = 0.0f; })
 
-    VEC3D_SIMPLE_OP_ADD(+=, _mm_add_ps, { m.m128_f32[IDX_W] = 0.0f; })
-    VEC3D_SIMPLE_OP_ADD(-=, _mm_sub_ps, { m.m128_f32[IDX_W] = 0.0f; })
+    VEC3D_SIMPLE_OP_ADD(+=, _mm_add_ps, { w = 0.0f; })
+    VEC3D_SIMPLE_OP_ADD(-=, _mm_sub_ps, { w = 0.0f; })
     VEC3D_SIMPLE_OP_ADD(*=, _mm_mul_ps, {})
-    VEC3D_SIMPLE_OP_ADD(/=, _mm_div_ps, { m.m128_f32[IDX_W] = 0.0f; })
+    VEC3D_SIMPLE_OP_ADD(/=, _mm_div_ps, { w = 0.0f; })
 
     Vector3 operator - () const {
         static const __m128 anti = _mm_set1_ps(-1.0f);
@@ -197,17 +203,15 @@ public:
         return a + ((b - a) * t);
     }
 
-    float Dot(const Vector3& v) { return Dot(*this, v); }
-    Vector3 Cross(const Vector3& v) { return Cross(*this, v); }
-    float AngleRadians(const Vector3& v) { return AngleRadians(*this, v); }
-    float AngleDegrees(const Vector3& v) { return AngleDegrees(*this, v); }
-    float DistanceSquared(const Vector3& v) { return DistanceSquared(*this, v); }
-    float Distance(const Vector3& v) { return Distance(*this, v); }
+    float Dot(const Vector3& v) const { return Dot(*this, v); }
+    Vector3 Cross(const Vector3& v) const { return Cross(*this, v); }
+    float AngleRadians(const Vector3& v) const { return AngleRadians(*this, v); }
+    float AngleDegrees(const Vector3& v) const { return AngleDegrees(*this, v); }
+    float DistanceSquared(const Vector3& v) const { return DistanceSquared(*this, v); }
+    float Distance(const Vector3& v) const { return Distance(*this, v); }
 
     friend std::ostream& operator <<(std::ostream& os, const Vector3& v) {
-        __declspec(align(16)) float f[4];
-        _mm_store_ps(f, v.m);
-        os << '(' << f[IDX_X] << ',' << f[IDX_Y] << ',' << f[IDX_Z] << ')';
+        os << '(' << v.m.m128_f32[IDX_X] << ',' << v.m.m128_f32[IDX_Y] << ',' << v.m.m128_f32[IDX_Z] << ')';
         return os;
     }
 
@@ -218,9 +222,7 @@ public:
 
     union {
         struct {
-            float x;
-            float y;
-            float z;
+            float x, y, z, w;
         };
         __m128 m;
     };
