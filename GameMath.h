@@ -82,16 +82,16 @@ bool operator op (int v) const                  { return MagnitudeSquared() - (f
 #if defined(VEC3_COMPARE_OP) || defined(VEC3D_SIMPLE_OP) || defined(VEC3D_SIMPLE_OP_ADD)
 static_assert(false, "Vector3 found an internal macro where it shouldn't have.");
 #else
-#define VEC3D_SIMPLE_OP(op, simd_command) \
-Vector3 operator op (const Vector3& v) const    { return Vector3(simd_command(m, v.m)); } \
-Vector3 operator op (float v) const             { return Vector3(simd_command(m, _mm_set1_ps(v))); } \
-Vector3 operator op (double v) const            { return Vector3(simd_command(m, _mm_set1_ps((float)v))); } \
-Vector3 operator op (int v) const               { return Vector3(simd_command(m, _mm_set1_ps((float)v))); }
-#define VEC3D_SIMPLE_OP_ADD(op, simd_command) \
-const Vector3& operator op (const Vector3& v)   { m = simd_command(m, v.m); return *this; } \
-const Vector3& operator op (float v)            { m = simd_command(m, _mm_set1_ps(v)); return *this; } \
-const Vector3& operator op (double v)           { m = simd_command(m, _mm_set1_ps((float)v)); return *this; } \
-const Vector3& operator op (int v)              { m = simd_command(m, _mm_set1_ps((float)v)); return *this; }
+#define VEC3D_SIMPLE_OP(op, simd_command, post_operation) \
+Vector3 operator op (const Vector3& v) const    { auto ret = Vector3(simd_command(m, v.m)); post_operation; return ret;} \
+Vector3 operator op (float v) const             { auto ret = Vector3(simd_command(m, _mm_set1_ps(v))); post_operation; return ret; } \
+Vector3 operator op (double v) const            { auto ret = Vector3(simd_command(m, _mm_set1_ps((float)v))); post_operation; return ret; } \
+Vector3 operator op (int v) const               { auto ret = Vector3(simd_command(m, _mm_set1_ps((float)v))); post_operation; return ret; }
+#define VEC3D_SIMPLE_OP_ADD(op, simd_command, post_operation) \
+const Vector3& operator op (const Vector3& v)   { m = simd_command(m, v.m); post_operation; return *this; } \
+const Vector3& operator op (float v)            { m = simd_command(m, _mm_set1_ps(v)); post_operation; return *this; } \
+const Vector3& operator op (double v)           { m = simd_command(m, _mm_set1_ps((float)v)); post_operation; return *this; } \
+const Vector3& operator op (int v)              { m = simd_command(m, _mm_set1_ps((float)v)); post_operation; return *this; }
 #define VEC3_COMPARE_OP(op) \
 bool operator op (const Vector3& v) const       { return MagnitudeSquared() op v.MagnitudeSquared(); } \
 bool operator op (float v) const                { return MagnitudeSquared() op (v*v); } \

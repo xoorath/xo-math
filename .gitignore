@@ -1,5 +1,5 @@
-xo-inspectable/.vs
-xo-inspectable/Debug
-xo-inspectable/Release
-xo-inspectable/*.user
-xo-inspectable/*.sdf
+xo-math/.vs
+xo-math/x64
+xo-math/x32
+*.sdf
+*opendb
