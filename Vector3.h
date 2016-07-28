@@ -9,7 +9,7 @@ class Vector3 {
     static const unsigned IDX_Z = 2;
     static const unsigned IDX_W = 3;
 public:
-    constexpr static const float Epsilon = FloatEpsilon * 3.0f;
+    constexpr static const float Epsilon = FloatEpsilon+FloatEpsilon+FloatEpsilon;
 
     XOMATH_INLINE Vector3() : m(_mm_setzero_ps()) {
     }
@@ -83,9 +83,9 @@ public:
     XOMATH_INLINE Vector3 operator + (const class Vector2& v) const;
 
     XOMATH_INLINE float Magnitude() const {
-        // get all the elements multiplied by themselves.
-        auto square = _mm_mul_ps(m, m);
-
+        static const auto mask = _mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff);
+        // get all the elements multiplied by themselves (excluding w).
+        auto square = _mm_and_ps(_mm_mul_ps(m, m), mask);
         // add horizontally. Now the first two floats are [z+y, x+w]
         square = _mm_hadd_ps(square, square);
         // add horizontally. now the first float is [z+y+x+w]
@@ -94,9 +94,9 @@ public:
     }
 
     XOMATH_INLINE float MagnitudeSquared() const {
-        // get all the elements multiplied by themselves.
-        auto square = _mm_mul_ps(m, m);
-
+        static const auto mask = _mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff);
+        // get all the elements multiplied by themselves (excluding w).
+        auto square = _mm_and_ps(_mm_mul_ps(m, m), mask);
         // add horizontally. Now the first two floats are [z+y, x+w]
         square = _mm_hadd_ps(square, square);
         // add horizontally. now the first float is [z+y+x+w]
@@ -159,7 +159,9 @@ public:
     }
 
     XOMATH_INLINE static float Dot(const Vector3& a, const Vector3& b) {
-        auto d = _mm_mul_ps(a.m, b.m);
+        static const auto mask = _mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff);
+        // get all the elements multiplied by each other (excluding w).
+        auto d = _mm_and_ps(_mm_mul_ps(a.m, b.m), mask);
         // add horizontally. Now the first two floats are [z+y, x+w]
         d = _mm_hadd_ps(d, d);
         // add horizontally. now the first float is [z+y+x+w]
@@ -178,11 +180,12 @@ public:
     }
 
     XOMATH_INLINE static float AngleRadians(const Vector3& a, const Vector3& b) {
+        static const auto mask = _mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff);
         auto l = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)));
         auto r = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)));
 
         auto s = _mm_sub_ps(l, r);
-        s = _mm_mul_ps(s, s);
+        s = _mm_and_ps(_mm_mul_ps(s, s), mask); // exclude the w before any hadd
         s = _mm_hadd_ps(s, s);
         s = _mm_hadd_ps(s, s);
         return Atan2(Sqrt(_mm_cvtss_f32(s)) + Epsilon, Dot(a, b));
@@ -212,8 +215,7 @@ public:
     XOMATH_INLINE float Distance(const Vector3& v) const { return Distance(*this, v); }
 
     friend std::ostream& operator <<(std::ostream& os, const Vector3& v) {
-        os << "( x:" << v.x << ", y:" << v.y << ", z:" << v.z << ")[w:" << v.w << "]";
-
+        os << "( x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", w:" << v.w << ", mag:" << v.Magnitude() << ")";
         return os;
     }
 
@@ -226,7 +228,7 @@ public:
         struct {
             float x, y, z, w;
         };
-      float f[4];
+        float f[4];
         __m128 m;
     };
 };

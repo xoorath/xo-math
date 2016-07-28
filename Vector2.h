@@ -5,7 +5,7 @@ static_assert(false, "Don't include Vector2.h directly. Include GameMath.h, whic
 XOMATH_BEGIN_XO_NS
 class Vector2 {
 public:
-    constexpr static const float Epsilon = FloatEpsilon * 2.0f;
+    constexpr static const float Epsilon = FloatEpsilon+FloatEpsilon;
 
     Vector2() : x(0.0f), y(0.0f) {
     }
@@ -13,12 +13,12 @@ public:
     }
     Vector2(float x, float y) : x(x), y(y) {
     }
-    Vector2(const Vector2& v) : x(v[0]), y(v[1]) {
+    Vector2(const Vector2& v) : x(v.x), y(v.y) {
     }
     //Vector2(const class Vector3& v);
 
-    float& operator [](int i) { switch (i) { default: case 0: return x; case 1: return y; } }
-    const float& operator [](int i) const { switch (i) { default: case 0: return x; case 1: return y; } }
+    float& operator [](int i) { return f[i]; }
+    const float& operator [](int i) const { return f[i]; }
 
     void Set(float x, float y) {
         this->x = x;
@@ -134,7 +134,10 @@ public:
         One, Zero;
 
 private:
-    float x, y;
+    union {
+        float f[2];
+        struct { float x, y; };
+    };
 };
 
 const Vector2 Vector2::UnitX(1.0f, 0.0f);

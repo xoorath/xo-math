@@ -94,9 +94,52 @@ int main() {
         VerifyMagnitude(Vector3::Backward, 1.0f);
         VerifyMagnitude((Vector3::Up*2.0f), 2.0f);
         VerifyMagnitude((Vector3::Down*2.0f), 2.0f);
-
+        VerifyMagnitude(Vector3::One, 1.7320508075688772f);
+        VerifyMagnitude((Vector3::Zero + 1.0f), 1.7320508075688772f);
 #undef VerifyMagnitude
+    });
 
+    t("Vector3: Dot", [&t, &itterations] {
+        t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Right), 0.0f, "Dot product was not as we expected. Up.Right");
+        t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Left), 0.0f, "Dot product was not as we expected. Up.Left");
+        t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Forward), 0.0f, "Dot product was not as we expected. Up.Forward");
+        t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Backward), 0.0f, "Dot product was not as we expected.Up.Backward");
+        t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Up), 1.0f, "Dot product was not as we expected. Up.Up");
+        t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Down), -1.0f, "Dot product was not as we expected. Up.Down");
+        t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Up * 2.0f), 2.0f, "Dot product was not as we expected. Up.(Upx2)");
+        t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Down * 2.0f), -2.0f, "Dot product was not as we expected. (Up.Downx2)");
+
+        auto upWithW = Vector3::Up + 1.0f;
+        upWithW.x = 0.0f;
+        upWithW.y = 1.0f;
+        upWithW.z = 0.0f;
+        t.ReportSuccessIf(Vector3::Up.Dot(upWithW), 1.0f, "Dot product was not as we expected. Up.(Up with W)");
+
+    });
+
+    t("Vector3: Cross", [&t, &itterations] {
+        t.ReportSuccessIf(Vector3::Up.Cross(Vector3::Forward), Vector3::Right, "Cross product was not as we expected. upxforward");
+        t.ReportSuccessIf(Vector3::Forward.Cross(Vector3::Up), Vector3::Left, "Cross product was not as we expected. forwardxup");
+
+        // todo: double check expectation
+        t.ReportSuccessIf(Vector3::Up.Cross(Vector3::Forward*2.0f), Vector3::Right*2.0f, "Cross product was not as we expected. upx(forwardx2)");
+    });
+
+    t("Vector3: Heap", [&t, &itterations] {
+        Vector3* v3 = new Vector3(1.0f, 2.0f, 3.0f);
+        t.ReportSuccessIf(*v3, Vector3(1.0f, 2.0f, 3.0f), "Heap vector does not match expectation.");
+        struct WithOffset {
+            char offset;
+            Vector3 v3;
+        };
+
+        WithOffset* s = new WithOffset();
+        s->v3.Set(1.0f, 2.0f, 3.0f);
+
+        t.ReportSuccessIf(s->v3, Vector3(1.0f, 2.0f, 3.0f), "Heap vector in offset struct does not match expectation.");
+
+        delete s;
+        delete v3;
     });
 
     return t.GetTotalFailures();
