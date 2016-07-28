@@ -1,17 +1,29 @@
 #include <iostream>
 
 #define NO_XO_NS 1
+//#define NO_XO_FAST 1
+//#define NO_XO_INLINE 1
 #include "../GameMath.h"
-#undef NO_XO_NS
+
+#ifdef NO_XO_NS
+#   undef NO_XO_NS
+#endif
+#ifdef NO_XO_FAST
+#   undef NO_XO_FAST
+#endif
+#ifdef NO_XO_INLINE
+#   undef NO_XO_INLINE
+#endif
 
 #include "Test.h"
 
 int main() {
     Test t;
 
-    const int itterations = 1;
-
-    t("Vector3: Basic assignment", [&t, &itterations] {
+    // set to one when testing, increase when finding speed.
+    const int itterations = 1000000;
+    double time = 0.0f;
+    time += t("Vector3: Basic assignment", [&t, &itterations] {
         for (int i = 0; i < itterations; ++i) {
             Vector3 v3 = { 1.0f, 2.0f, 3.0f };
 
@@ -41,7 +53,7 @@ int main() {
         }
     });
 
-    t("Vector3: Basic math", [&t, &itterations] {
+    time += t("Vector3: Basic math", [&t, &itterations] {
         for (int i = 0; i < itterations; ++i) {
 #define VerifyOperator(op, expectation) t.ReportSuccessIf(Vector3(1.0f, 2.0f, 3.0f) op Vector3(1.0f, 2.0f, 3.0f), expectation, "Failed expectation for operator " #op );
             VerifyOperator(+, Vector3(2.0f, 4.0f, 6.0f));
@@ -64,7 +76,8 @@ int main() {
         }
     });
 
-    t("Vector3: Rotations", [&t, &itterations] {
+    time += t("Vector3: Rotations", [&t, &itterations] {
+        for (int i = 0; i < itterations; ++i) {
 #define VerifyAngle(from, to, expected) t.ReportSuccessIf(Vector3:: from .AngleDegrees(Vector3:: to ), expected, #from " and " #to " are not at " #expected " degrees");
         VerifyAngle(Up, Right, 90.0f)
         VerifyAngle(Up, Left, 90.0f)
@@ -79,13 +92,14 @@ int main() {
         // should not be effected by length
         VerifyAngle(Up, Right*2.0f, 90.0f)
 #undef VerifyAngle
+        }
     });
 
-    t("Vector3: Magnitude", [&t, &itterations] {
+    time += t("Vector3: Magnitude", [&t, &itterations] {
+        for (int i = 0; i < itterations; ++i) {
 #define VerifyMagnitude(v, expected) \
         t.ReportSuccessIf(v .Magnitude(), expected, #v " does not have a magnitude of " #expected ".");\
         t.ReportSuccessIf(v .MagnitudeSquared(), expected * expected, #v " does not have a magnitude squared of " #expected "^2.");
-
         VerifyMagnitude(Vector3::Up, 1.0f);
         VerifyMagnitude(Vector3::Down, 1.0f);
         VerifyMagnitude(Vector3::Left, 1.0f);
@@ -97,50 +111,60 @@ int main() {
         VerifyMagnitude(Vector3::One, 1.7320508075688772f);
         VerifyMagnitude((Vector3::Zero + 1.0f), 1.7320508075688772f);
 #undef VerifyMagnitude
+        }
     });
 
-    t("Vector3: Dot", [&t, &itterations] {
-        t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Right), 0.0f, "Dot product was not as we expected. Up.Right");
-        t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Left), 0.0f, "Dot product was not as we expected. Up.Left");
-        t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Forward), 0.0f, "Dot product was not as we expected. Up.Forward");
-        t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Backward), 0.0f, "Dot product was not as we expected.Up.Backward");
-        t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Up), 1.0f, "Dot product was not as we expected. Up.Up");
-        t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Down), -1.0f, "Dot product was not as we expected. Up.Down");
-        t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Up * 2.0f), 2.0f, "Dot product was not as we expected. Up.(Upx2)");
-        t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Down * 2.0f), -2.0f, "Dot product was not as we expected. (Up.Downx2)");
+    time += t("Vector3: Dot", [&t, &itterations] {
+        for (int i = 0; i < itterations; ++i) {
+            t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Right), 0.0f, "Dot product was not as we expected. Up.Right");
+            t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Left), 0.0f, "Dot product was not as we expected. Up.Left");
+            t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Forward), 0.0f, "Dot product was not as we expected. Up.Forward");
+            t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Backward), 0.0f, "Dot product was not as we expected.Up.Backward");
+            t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Up), 1.0f, "Dot product was not as we expected. Up.Up");
+            t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Down), -1.0f, "Dot product was not as we expected. Up.Down");
+            t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Up * 2.0f), 2.0f, "Dot product was not as we expected. Up.(Upx2)");
+            t.ReportSuccessIf(Vector3::Up.Dot(Vector3::Down * 2.0f), -2.0f, "Dot product was not as we expected. (Up.Downx2)");
 
-        auto upWithW = Vector3::Up + 1.0f;
-        upWithW.x = 0.0f;
-        upWithW.y = 1.0f;
-        upWithW.z = 0.0f;
-        t.ReportSuccessIf(Vector3::Up.Dot(upWithW), 1.0f, "Dot product was not as we expected. Up.(Up with W)");
-
+            auto upWithW = Vector3::Up + 1.0f;
+            upWithW.x = 0.0f;
+            upWithW.y = 1.0f;
+            upWithW.z = 0.0f;
+            t.ReportSuccessIf(Vector3::Up.Dot(upWithW), 1.0f, "Dot product was not as we expected. Up.(Up with W)");
+        }
     });
 
-    t("Vector3: Cross", [&t, &itterations] {
-        t.ReportSuccessIf(Vector3::Up.Cross(Vector3::Forward), Vector3::Right, "Cross product was not as we expected. upxforward");
-        t.ReportSuccessIf(Vector3::Forward.Cross(Vector3::Up), Vector3::Left, "Cross product was not as we expected. forwardxup");
+    time += t("Vector3: Cross", [&t, &itterations] {
+        for (int i = 0; i < itterations; ++i) {
+            t.ReportSuccessIf(Vector3::Up.Cross(Vector3::Forward), Vector3::Right, "Cross product was not as we expected. upxforward");
+            t.ReportSuccessIf(Vector3::Forward.Cross(Vector3::Up), Vector3::Left, "Cross product was not as we expected. forwardxup");
 
-        // todo: double check expectation
-        t.ReportSuccessIf(Vector3::Up.Cross(Vector3::Forward*2.0f), Vector3::Right*2.0f, "Cross product was not as we expected. upx(forwardx2)");
+            // todo: double check expectation
+            t.ReportSuccessIf(Vector3::Up.Cross(Vector3::Forward*2.0f), Vector3::Right*2.0f, "Cross product was not as we expected. upx(forwardx2)");
+        }
     });
 
     t("Vector3: Heap", [&t, &itterations] {
-        Vector3* v3 = new Vector3(1.0f, 2.0f, 3.0f);
-        t.ReportSuccessIf(*v3, Vector3(1.0f, 2.0f, 3.0f), "Heap vector does not match expectation.");
-        struct WithOffset {
-            char offset;
-            Vector3 v3;
-        };
+        for (int i = 0; i < itterations; ++i) {
+            Vector3* v3 = new Vector3(1.0f, 2.0f, 3.0f);
+            t.ReportSuccessIf(*v3, Vector3(1.0f, 2.0f, 3.0f), "Heap vector does not match expectation.");
+            struct WithOffset {
+                char offset;
+                Vector3 v3;
+            };
 
-        WithOffset* s = new WithOffset();
-        s->v3.Set(1.0f, 2.0f, 3.0f);
+            WithOffset* s = new WithOffset();
+            s->v3.Set(1.0f, 2.0f, 3.0f);
 
-        t.ReportSuccessIf(s->v3, Vector3(1.0f, 2.0f, 3.0f), "Heap vector in offset struct does not match expectation.");
+            t.ReportSuccessIf(s->v3, Vector3(1.0f, 2.0f, 3.0f), "Heap vector in offset struct does not match expectation.");
 
-        delete s;
-        delete v3;
+            delete s;
+            delete v3;
+        }
     });
+
+    std::cout << "execution time: " << time << std::endl;
+
+    system("pause");
 
     return t.GetTotalFailures();
 }
