@@ -11,84 +11,81 @@ class Vector3 {
 public:
     constexpr static const float Epsilon = FloatEpsilon * 3.0f;
 
-    Vector3() : m(_mm_setzero_ps()) {
+    XOMATH_INLINE Vector3() : m(_mm_setzero_ps()) {
     }
-    Vector3(float f) : m(_mm_set1_ps(f)) {
+    XOMATH_INLINE Vector3(float f) : m(_mm_set1_ps(f)) {
     }
-    Vector3(float x, float y, float z) : m(_mm_set_ps(0.0f, z, y, x)) {
-        m.m128_f32[IDX_W] = 0.0f;
+    XOMATH_INLINE Vector3(float x, float y, float z) : m(_mm_set_ps(0.0f, z, y, x)) {
     }
-    Vector3(const Vector3& vec) : m(vec.m) {
+    XOMATH_INLINE Vector3(const Vector3& vec) : m(vec.m) {
     }
-    Vector3(const __m128& vec) : m(vec) {
-        m.m128_f32[IDX_W] = 0.0f;
+    XOMATH_INLINE Vector3(const __m128& vec) : m(vec) {
     }
     //Vector3(const class Vector2& v);
 
-    float& operator [](int i) {
+    XOMATH_INLINE float& operator [](int i) {
 #ifdef XO_SAFE_VEC_RANGE // paranoid about crashes?
-        return m.m128_f32[i & 0b11];
+        return f[i & 0b11];
 #else
-        return m.m128_f32[i];
+        return f[i];
 #endif
     }
 
-    const float& operator [](int i) const {
+    XOMATH_INLINE const float& operator [](int i) const {
 #ifdef XO_SAFE_VEC_RANGE // paranoid about crashes?
-        return m.m128_f32[i & 0b11];
+        return f[i & 0b11];
 #else
-        return m.m128_f32[i];
+        return f[i];
 #endif
     }
 
-    void Set(float x, float y, float z) {
+    XOMATH_INLINE void Set(float x, float y, float z) {
         m = _mm_set_ps(0.0f, z, y, x);
     }
 
-    void Set(float f) {
+    XOMATH_INLINE void Set(float f) {
         m = _mm_set1_ps(f);
     }
 
-    void Set(const Vector3& vec) {
+    XOMATH_INLINE void Set(const Vector3& vec) {
         m = vec.m;
     }
 
-    void Set(const __m128& vec) {
+    XOMATH_INLINE void Set(const __m128& vec) {
         m = vec;
     }
 
-    void Get(float& x, float& y, float &z) {
-        x = m.m128_f32[IDX_X];
-        y = m.m128_f32[IDX_Y];
-        z = m.m128_f32[IDX_Z];
+    XOMATH_INLINE void Get(float& x, float& y, float &z) {
+        x = f[IDX_X];
+        y = f[IDX_Y];
+        z = f[IDX_Z];
     }
 
-    // note: we zero out the z component during anything but a multiply (which would maintain 0 by itself)
-    // this keeps things like horizontal addition, and comparing __m128's simple.
-    VEC3D_SIMPLE_OP(+, _mm_add_ps, { ret.w = 0.0f; })
-    VEC3D_SIMPLE_OP(-, _mm_sub_ps, { ret.w = 0.0f; })
-    VEC3D_SIMPLE_OP(*, _mm_mul_ps, {})
-    VEC3D_SIMPLE_OP(/ , _mm_div_ps, { ret.w = 0.0f; })
+    VEC3D_SIMPLE_OP(+, _mm_add_ps)
+    VEC3D_SIMPLE_OP(-, _mm_sub_ps)
+    VEC3D_SIMPLE_OP(*, _mm_mul_ps)
+    VEC3D_SIMPLE_OP(/ , _mm_div_ps)
 
-    VEC3D_SIMPLE_OP_ADD(+=, _mm_add_ps, { w = 0.0f; })
-    VEC3D_SIMPLE_OP_ADD(-=, _mm_sub_ps, { w = 0.0f; })
-    VEC3D_SIMPLE_OP_ADD(*=, _mm_mul_ps, {})
-    VEC3D_SIMPLE_OP_ADD(/=, _mm_div_ps, { w = 0.0f; })
+    VEC3D_SIMPLE_OP_ADD(+=, _mm_add_ps)
+    VEC3D_SIMPLE_OP_ADD(-=, _mm_sub_ps)
+    VEC3D_SIMPLE_OP_ADD(*=, _mm_mul_ps)
+    VEC3D_SIMPLE_OP_ADD(/=, _mm_div_ps)
 
-    Vector3 operator - () const {
+    XOMATH_INLINE Vector3 operator - () const {
         static const __m128 anti = _mm_set1_ps(-1.0f);
         return Vector3(_mm_mul_ps(m, anti));
     }
 
-    Vector3 operator ~ () const {
+    XOMATH_INLINE Vector3 operator ~ () const {
         return Vector3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Y, IDX_Z)));
     }
 
-    Vector3 operator + (const class Vector2& v) const;
+    XOMATH_INLINE Vector3 operator + (const class Vector2& v) const;
 
-    float Magnitude() const {
-      // get all the elements multiplied by themselves.
+    XOMATH_INLINE float Magnitude() const {
+        // get all the elements multiplied by themselves.
         auto square = _mm_mul_ps(m, m);
+
         // add horizontally. Now the first two floats are [z+y, x+w]
         square = _mm_hadd_ps(square, square);
         // add horizontally. now the first float is [z+y+x+w]
@@ -96,18 +93,18 @@ public:
         return Sqrt(_mm_cvtss_f32(square));
     }
 
-    float MagnitudeSquared() const {
+    XOMATH_INLINE float MagnitudeSquared() const {
         // get all the elements multiplied by themselves.
         auto square = _mm_mul_ps(m, m);
+
         // add horizontally. Now the first two floats are [z+y, x+w]
         square = _mm_hadd_ps(square, square);
-
         // add horizontally. now the first float is [z+y+x+w]
         square = _mm_hadd_ps(square, square);
         return _mm_cvtss_f32(square);
     }
 
-    void Normalize() {
+    XOMATH_INLINE void Normalize() {
         float magnitude = MagnitudeSquared();
         if (magnitude - 1.0f <= Epsilon)
             return; // already normalized
@@ -118,7 +115,7 @@ public:
         (*this) *= magnitude;
     }
 
-    Vector3 Normalized() const {
+    XOMATH_INLINE Vector3 Normalized() const {
         float magnitude = MagnitudeSquared();
         if (magnitude - 1.0f <= Epsilon)
             return *this; // already normalized
@@ -129,35 +126,39 @@ public:
         return (*this) * magnitude;
     }
 
-    bool IsZero() const {
+    XOMATH_INLINE bool IsZero() const {
         return MagnitudeSquared() <= Epsilon;
     }
 
-    bool IsNormalized() const {
+    XOMATH_INLINE bool IsNormalized() const {
       // todo: check closeness
         return MagnitudeSquared() - 1.0f <= Epsilon;
     }
 
+    // Note: comparisons against another vector will compare the magnitude.
+    // comparisons against a number will also compare against magnitude (ignoring sign)
     VEC3_COMPARE_OP(<)
     VEC3_COMPARE_OP(<=)
     VEC3_COMPARE_OP(>)
     VEC3_COMPARE_OP(>=)
+    // Note: '== and !=' against another Vector3 will check for the exact X,Y,Z match.
+    // '== and !=' against a number will check against the magnitude (ignoring sign)
     VEC3_COMPARE_CLOSE_OP(==)
     VEC3_COMPARE_CLOSE_OP(!=)
 
-    static Vector3 Max(const Vector3& a, const Vector3& b) {
+    XOMATH_INLINE static Vector3 Max(const Vector3& a, const Vector3& b) {
         if (a.MagnitudeSquared() >= b.MagnitudeSquared())
             return a;
         return b;
     }
 
-    static Vector3 Min(const Vector3& a, const Vector3& b) {
+    XOMATH_INLINE static Vector3 Min(const Vector3& a, const Vector3& b) {
         if (a.MagnitudeSquared() <= b.MagnitudeSquared())
             return a;
         return b;
     }
 
-    static float Dot(const Vector3& a, const Vector3& b) {
+    XOMATH_INLINE static float Dot(const Vector3& a, const Vector3& b) {
         auto d = _mm_mul_ps(a.m, b.m);
         // add horizontally. Now the first two floats are [z+y, x+w]
         d = _mm_hadd_ps(d, d);
@@ -166,7 +167,7 @@ public:
         return _mm_cvtss_f32(d);
     }
 
-    static Vector3 Cross(const Vector3& a, const Vector3& b) {
+    XOMATH_INLINE static Vector3 Cross(const Vector3& a, const Vector3& b) {
       // for reference:
       // float x = (a[1] * b[2]) - (a[2] * b[1]);
       // float y = (a[2] * b[0]) - (a[0] * b[2]);
@@ -176,42 +177,43 @@ public:
         return Vector3(_mm_sub_ps(l, r));
     }
 
-    static float AngleRadians(const Vector3& a, const Vector3& b) {
+    XOMATH_INLINE static float AngleRadians(const Vector3& a, const Vector3& b) {
         auto l = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)));
         auto r = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)));
+
         auto s = _mm_sub_ps(l, r);
         s = _mm_mul_ps(s, s);
         s = _mm_hadd_ps(s, s);
         s = _mm_hadd_ps(s, s);
-
         return Atan2(Sqrt(_mm_cvtss_f32(s)) + Epsilon, Dot(a, b));
     }
 
-    static float AngleDegrees(const Vector3& a, const Vector3& b) {
+    XOMATH_INLINE static float AngleDegrees(const Vector3& a, const Vector3& b) {
         return AngleRadians(a, b) * Rad2Deg;
     }
 
-    static float DistanceSquared(const Vector3& a, const Vector3& b) {
+    XOMATH_INLINE static float DistanceSquared(const Vector3& a, const Vector3& b) {
         return (a - b).MagnitudeSquared();
     }
 
-    static float Distance(const Vector3&a, const Vector3&b) {
+    XOMATH_INLINE static float Distance(const Vector3&a, const Vector3&b) {
         return (a - b).Magnitude();
     }
 
-    static Vector3 Lerp(const Vector3& a, const Vector3& b, float t) {
+    XOMATH_INLINE static Vector3 Lerp(const Vector3& a, const Vector3& b, float t) {
         return a + ((b - a) * t);
     }
 
-    float Dot(const Vector3& v) const { return Dot(*this, v); }
-    Vector3 Cross(const Vector3& v) const { return Cross(*this, v); }
-    float AngleRadians(const Vector3& v) const { return AngleRadians(*this, v); }
-    float AngleDegrees(const Vector3& v) const { return AngleDegrees(*this, v); }
-    float DistanceSquared(const Vector3& v) const { return DistanceSquared(*this, v); }
-    float Distance(const Vector3& v) const { return Distance(*this, v); }
+    XOMATH_INLINE float Dot(const Vector3& v) const { return Dot(*this, v); }
+    XOMATH_INLINE Vector3 Cross(const Vector3& v) const { return Cross(*this, v); }
+    XOMATH_INLINE float AngleRadians(const Vector3& v) const { return AngleRadians(*this, v); }
+    XOMATH_INLINE float AngleDegrees(const Vector3& v) const { return AngleDegrees(*this, v); }
+    XOMATH_INLINE float DistanceSquared(const Vector3& v) const { return DistanceSquared(*this, v); }
+    XOMATH_INLINE float Distance(const Vector3& v) const { return Distance(*this, v); }
 
     friend std::ostream& operator <<(std::ostream& os, const Vector3& v) {
-        os << '(' << v.m.m128_f32[IDX_X] << ',' << v.m.m128_f32[IDX_Y] << ',' << v.m.m128_f32[IDX_Z] << ')';
+        os << "( x:" << v.x << ", y:" << v.y << ", z:" << v.z << ")[w:" << v.w << "]";
+
         return os;
     }
 
@@ -224,6 +226,7 @@ public:
         struct {
             float x, y, z, w;
         };
+      float f[4];
         __m128 m;
     };
 };

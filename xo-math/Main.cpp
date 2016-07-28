@@ -1,5 +1,4 @@
 #include <iostream>
-#include <conio.h>
 
 #define NO_XO_NS 1
 #include "../GameMath.h"
@@ -59,6 +58,7 @@ int main() {
                 VerifyOperatorAdd(/=, Vector3(1.0f, 1.0f, 1.0f));
             }
 #undef VerifyOperatorAdd
+            t.ReportSuccessIf(Vector3(1.0f, 2.0f, 3.0f) + 1.0f, Vector3(2.0f, 3.0f, 4.0f), "Float addition failed.");
             t.ReportSuccessIf(-Vector3(1.0f, 2.0f, 3.0f), Vector3(-1.0f, -2.0f, -3.0f), "Failed expectation for operator -v");
             t.ReportSuccessIf(~Vector3(1.0f, 2.0f, 3.0f), Vector3(3.0f, 2.0f, 1.0f), "Failed expectation for operator ~v");
         }
@@ -99,7 +99,5 @@ int main() {
 
     });
 
-    Vector3 vv(1.0f, 2.0f, 3.0f);
-    _getch();
     return t.GetTotalFailures();
 }
