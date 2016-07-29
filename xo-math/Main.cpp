@@ -1,12 +1,32 @@
+#pragma optimize("", off)
 #include <iostream>
-
-//
+#include <chrono>
+#include <ctime>
 
 #define XO_NO_NS 1
-//#define XO_NO_SIMD 1
-//#define XO_NO_FAST 1
-//#define XO_NO_INLINE 1
+#define XO_NO_SIMD 1
+#define XO_NO_FAST 1
+#define XO_NO_INLINE 1
 #include "../GameMath.h"
+
+// Perf test results, macbook air 2011 (intel i5)
+// All optimizations (0.229)
+// 0.035768
+// 0.038153
+// 0.035334
+// 0.041121
+// 0.042273
+// 0.036684
+// itterations = 2000: 56.2733
+
+// No optimizations (0.179)
+// 0.029232
+// 0.028764
+// 0.030222
+// 0.029046
+// 0.028391
+// 0.033691
+// itterations = 2000: 45.2135
 
 #ifdef XO_NO_SIMD
 #   undef XO_NO_SIMD
@@ -23,11 +43,54 @@
 
 #include "Test.h"
 
+void TestPerformance() {
+    typedef std::chrono::time_point<std::chrono::system_clock> TTime;
+    typedef std::chrono::duration<double> TDuration;
+
+    const int itterations = 2000;
+    const int vecCount = 1024*200;
+    Vector3 arr[vecCount];
+    int opIndex[vecCount];
+    srand((unsigned)time(nullptr));
+    for(int i = 0; i < vecCount; ++i) {
+        // give us random non-zero vectors
+        arr[i] = Vector3(
+                         (((float)rand()/(float)RAND_MAX)*1000.0f) + 1.0f,
+                         (((float)rand()/(float)RAND_MAX)*1000.0f) + 1.0f,
+                         (((float)rand()/(float)RAND_MAX)*1000.0f) + 1.0f);
+        opIndex[i] = rand()%(vecCount-1);
+    }
+
+    TTime start, end;
+    start = std::chrono::system_clock::now();
+    for(int i = 0; i < itterations; ++i) {
+        for(int j = 0; j < vecCount; ++j) {
+            arr[j] += arr[opIndex[j]];
+            arr[j] *= arr[opIndex[j]];
+            arr[j] /= arr[opIndex[j]];
+            arr[j] *= arr[opIndex[j]];
+            arr[j] -= arr[opIndex[j]];
+            arr[j] = ~arr[opIndex[j]];
+            arr[j].Dot(arr[opIndex[j]]);
+            arr[j].Cross(arr[opIndex[j]]);
+            arr[j].Magnitude();
+            arr[j] == arr[opIndex[j]];
+        }
+    }
+    end = std::chrono::system_clock::now();
+    TDuration seconds = end-start;
+
+    std::cout << "Perf tests took (" << seconds.count() << ") seconds. \n\n";
+}
+
+#define RUN_TESTS 0
+#define RUN_PERF_TESTS 1
 int main() {
+#if RUN_TESTS
     Test t;
 
-    // set to one when testing, increase when finding speed.
-    const int itterations = 1000000;
+    // set to one when testing, increase when finding speed of tests.
+    const int itterations = 1;
     double time = 0.0f;
     time += t("Vector3: Basic assignment", [&t, &itterations] {
         for (int i = 0; i < itterations; ++i) {
@@ -168,11 +231,21 @@ int main() {
         }
     });
 
-    std::cout << std::fixed << "execution time: " << time << std::endl;
+    std::cout << std::fixed << "Test execution time: " << time << std::endl;
+#endif
+
+#if RUN_PERF_TESTS
+    TestPerformance();
+#endif
 
 #if defined(_MSC_VER)
     system("pause");
 #endif
 
+#if RUN_TESTS
     return t.GetTotalFailures();
+#else
+    return 0;
+#endif
 }
+#pragma optimize("", on)
