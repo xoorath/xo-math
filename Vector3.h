@@ -3,6 +3,9 @@ static_assert(false, "Don't include Vector3.h directly. Include GameMath.h, whic
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS
+#if !defined(XO_NO_SIMD)
+_MM_ALIGN16 
+#endif
 class Vector3 {
 #if !defined(XO_NO_SIMD)
     static const unsigned IDX_X = 0;
@@ -14,38 +17,29 @@ class Vector3 {
 public:
     constexpr static const float Epsilon = FloatEpsilon+FloatEpsilon+FloatEpsilon;
 
-    XOMATH_INLINE Vector3() 
-#if defined(XO_NO_SIMD)
-        : x(0.0f), y(0.0f), z(0.0f) {
-#else
-        : m(_mm_setzero_ps()) {
-#endif
+    XOMATH_INLINE Vector3() :
+        XO_IF_SIMD(m(_mm_setzero_ps()))
+        XO_IFN_SIMD(x(0.0f), y(0.0f), z(0.0f))
+    {
     }
-    XOMATH_INLINE Vector3(float f) 
-#if defined(XO_NO_SIMD)
-        : x(f), y(f), z(f) {
-#else
-        : m(_mm_set1_ps(f)) {
-#endif
+    XOMATH_INLINE Vector3(float f) :
+        XO_IF_SIMD(m(_mm_set1_ps(f)))
+        XO_IFN_SIMD(x(f), y(f), z(f))
+    {
     }
-    XOMATH_INLINE Vector3(float x, float y, float z)
-#if defined(XO_NO_SIMD)
-        : x(x), y(y), z(z) {
-#else
-        : m(_mm_set_ps(0.0f, z, y, x)) {
-#endif
+    XOMATH_INLINE Vector3(float x, float y, float z) :
+        XO_IF_SIMD(m(_mm_set_ps(0.0f, z, y, x)))
+        XO_IFN_SIMD(x(x), y(y), z(z))
+    {
     }
-    XOMATH_INLINE Vector3(const Vector3& vec)
-#if defined(XO_NO_SIMD)
-        : x(vec.x), y(vec.y), z(vec.z) {
-#else
-        : m(vec.m) {
-#endif
-        
+    XOMATH_INLINE Vector3(const Vector3& vec) :
+        XO_IF_SIMD(m(vec.m))
+        XO_IFN_SIMD(x(vec.x), y(vec.y), z(vec.z))
+    {
     }
+
 #if !defined(XO_NO_SIMD)
-    XOMATH_INLINE Vector3(const __m128& vec) : m(vec) {
-    }
+    XOMATH_INLINE Vector3(const __m128& vec) : m(vec) { }
 #endif
     //Vector3(const class Vector2& v);
 
@@ -66,13 +60,10 @@ public:
     }
 
     XOMATH_INLINE void XOMATH_FAST(Set(float x, float y, float z)) {
-#if defined(XO_NO_SIMD)
-        this->x = x;
-        this->y = y;
-        this->z = z;
-#else
-        m = _mm_set_ps(0.0f, z, y, x);
-#endif
+        XO_IF_SIMD(m = _mm_set_ps(0.0f, z, y, x);)
+        XO_IFN_SIMD(this->x = x;)
+        XO_IFN_SIMD(this->y = y;)
+        XO_IFN_SIMD(this->z = z;)
     }
 
     XOMATH_INLINE void XOMATH_FAST(Set(float f)) {

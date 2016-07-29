@@ -9,24 +9,27 @@
 #define XO_NO_INLINE 1
 #include "../GameMath.h"
 
-// Perf test results, macbook air 2011 (intel i5)
-// All optimizations (0.229)
-// 0.035768
-// 0.038153
-// 0.035334
-// 0.041121
-// 0.042273
-// 0.036684
-// itterations = 2000: 56.2733
+//////////////////////////////////////////////////////////////////////////
+// results from macbook air 2011 (intel i5) 4GB ram
+// const int itterations = 2000;
+// const int vecCount = 1024*200;
 
-// No optimizations (0.179)
-// 0.029232
-// 0.028764
-// 0.030222
-// 0.029046
-// 0.028391
-// 0.033691
-// itterations = 2000: 45.2135
+// All optimizations
+// 56.2733
+
+// No optimizations
+// 45.2135
+
+//////////////////////////////////////////////////////////////////////////
+// results from desktop PC (intel i7-6700) 64GB ram
+// const int itterations = 4000;
+// const int vecCount = 1024;
+
+// All optimization
+// 1.75
+
+// No optimization
+//  2.05559
 
 #ifdef XO_NO_SIMD
 #   undef XO_NO_SIMD
@@ -47,8 +50,8 @@ void TestPerformance() {
     typedef std::chrono::time_point<std::chrono::system_clock> TTime;
     typedef std::chrono::duration<double> TDuration;
 
-    const int itterations = 2000;
-    const int vecCount = 1024*200;
+    const int itterations = 4000;
+    const int vecCount = 1024;
     Vector3 arr[vecCount];
     int opIndex[vecCount];
     srand((unsigned)time(nullptr));

@@ -51,7 +51,7 @@ XOMATH_INTERNAL_MACRO_WARNING
 #if defined(XOMATH_FAST)
 XOMATH_INTERNAL_MACRO_WARNING
 #else // XOMATH_FAST
-#   if defined(NO_XO_FAST)
+#   if defined(XO_NO_FAST)
         // I've found at least on msvc that fastcall doesn't effect our execution time in our test main. on 100k iterations.
 #       define XOMATH_FAST(func) func
 #   elif defined(_MSC_VER)
@@ -66,6 +66,14 @@ XOMATH_INTERNAL_MACRO_WARNING
 #       define XOMATH_FAST(func) func
 #   endif
 #endif // XOMATH_FAST
+
+#if defined(XO_NO_SIMD)
+#define XO_IF_SIMD(...)
+#define XO_IFN_SIMD(...) __VA_ARGS__
+#else
+#define XO_IF_SIMD(...) __VA_ARGS__
+#define XO_IFN_SIMD(...)
+#endif
 
 XOMATH_BEGIN_XO_NS
 constexpr const float PI = 3.141592653589793238462643383279502884197169399375105820f;
