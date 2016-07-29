@@ -27,6 +27,10 @@
 #   include <x86intrin.h>
 #endif
 
+#ifndef _MM_ALIGN16
+#   define _MM_ALIGN16 __attribute__((align(16)))
+#endif
+
 #if defined(XOMATH_INTERNAL_MACRO_WARNING) || defined(XOMATH_INTERNAL)
 static_assert(false, "Xomath found an internal macro where it shouldn't have.");
 #else

@@ -3,10 +3,7 @@ static_assert(false, "Don't include Vector3.h directly. Include GameMath.h, whic
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS
-#if !defined(XO_NO_SIMD)
-_MM_ALIGN16 
-#endif
-class Vector3 {
+class XO_IFN_SIMD(_MM_ALIGN16) Vector3 {
 #if !defined(XO_NO_SIMD)
     static const unsigned IDX_X = 0;
     static const unsigned IDX_Y = 1;
@@ -67,23 +64,17 @@ public:
     }
 
     XOMATH_INLINE void XOMATH_FAST(Set(float f)) {
-#if defined(XO_NO_SIMD)
-        this->x = f;
-        this->y = f;
-        this->z = f;
-#else
-        m = _mm_set1_ps(f);
-#endif
+        XO_IF_SIMD(m = _mm_set1_ps(f);)
+        XO_IFN_SIMD(this->x = f;)
+        XO_IFN_SIMD(this->y = f;)
+        XO_IFN_SIMD(this->z = f;)
     }
 
     XOMATH_INLINE void XOMATH_FAST(Set(const Vector3& vec)) {
-#if defined(XO_NO_SIMD)
-        this->x = vec.x;
-        this->y = vec.y;
-        this->z = vec.z;
-#else
-        m = vec.m;
-#endif
+        XO_IF_SIMD(m = vec.m;)
+        XO_IFN_SIMD(this->x = vec.x;)
+        XO_IFN_SIMD(this->y = vec.y;)
+        XO_IFN_SIMD(this->z = vec.z;)
     }
 
 #if !defined(XO_NO_SIMD)
@@ -99,13 +90,10 @@ public:
     }
 
     XOMATH_INLINE void XOMATH_FAST(Get(float* f) const) {
-#if defined(XO_NO_SIMD)
-        f[0] = this->x;
-        f[1] = this->y;
-        f[2] = this->z;
-#else
-        _mm_store_ps(f, m);
-#endif
+        XO_IF_SIMD(_mm_store_ps(f, m));
+        XO_IFN_SIMD(f[0] = this->x;)
+        XO_IFN_SIMD(f[1] = this->y;)
+        XO_IFN_SIMD(f[2] = this->z;)
     }
 
     VEC3D_SIMPLE_OP(+, _mm_add_ps)
@@ -119,50 +107,35 @@ public:
     VEC3D_SIMPLE_OP_ADD(/=, _mm_div_ps)
 
     XOMATH_INLINE Vector3 operator - () const {
-#if defined(XO_NO_SIMD)
-        return Vector3(-x, -y, -z);
-#else
-        static const __m128 anti = _mm_set1_ps(-1.0f);
-        return Vector3(_mm_mul_ps(m, anti));
-#endif
+        XO_IF_SIMD(static const __m128 anti = _mm_set1_ps(-1.0f);)
+        XO_IF_SIMD(return Vector3(_mm_mul_ps(m, anti));)
+        XO_IFN_SIMD(return Vector3(-x, -y, -z);)
     }
 
     XOMATH_INLINE Vector3 operator ~ () const {
-#if defined(XO_NO_SIMD)
-        return Vector3(z, y, x);
-#else
-        return Vector3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Y, IDX_Z)));
-#endif
+        XO_IF_SIMD(return Vector3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Y, IDX_Z)));)
+        XO_IFN_SIMD(return Vector3(z, y, x);)
     }
 
     XOMATH_INLINE Vector3 ZYX() const {
-#if defined(XO_NO_SIMD)
-        return Vector3(z, y, x);
-#else
-        return Vector3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Y, IDX_Z)));
-#endif
+        XO_IF_SIMD(return Vector3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Y, IDX_Z)));)
+        XO_IFN_SIMD(return Vector3(z, y, x);)
     }
 
     XOMATH_INLINE float Magnitude() const {
-#if defined(XO_NO_SIMD)
-        return Sqrt((x*x) + (y*y) + (z*z));
-#else
-        auto square = _mm_and_ps(_mm_mul_ps(m, m), MASK);
-        square = _mm_hadd_ps(square, square);
-        square = _mm_hadd_ps(square, square);
-        return Sqrt(_mm_cvtss_f32(square));
-#endif
+        XO_IF_SIMD(auto square = _mm_and_ps(_mm_mul_ps(m, m), MASK);)
+        XO_IF_SIMD(square = _mm_hadd_ps(square, square);)
+        XO_IF_SIMD(square = _mm_hadd_ps(square, square);)
+        XO_IF_SIMD(return Sqrt(_mm_cvtss_f32(square));)
+        XO_IFN_SIMD(return Sqrt((x*x) + (y*y) + (z*z));)
     }
 
     XOMATH_INLINE float MagnitudeSquared() const {
-#if defined(XO_NO_SIMD)
-        return (x*x) + (y*y) + (z*z);
-#else
-        auto square = _mm_and_ps(_mm_mul_ps(m, m), MASK);
-        square = _mm_hadd_ps(square, square);
-        square = _mm_hadd_ps(square, square);
-        return _mm_cvtss_f32(square);
-#endif
+        XO_IF_SIMD(auto square = _mm_and_ps(_mm_mul_ps(m, m), MASK);)
+        XO_IF_SIMD(square = _mm_hadd_ps(square, square);)
+        XO_IF_SIMD(square = _mm_hadd_ps(square, square);)
+        XO_IF_SIMD(return _mm_cvtss_f32(square);)
+        XO_IFN_SIMD(return (x*x) + (y*y) + (z*z);)
     }
 
     XOMATH_INLINE void Normalize() {
@@ -221,39 +194,30 @@ public:
     }
 
     XOMATH_INLINE static float XOMATH_FAST(Dot(const Vector3& a, const Vector3& b)) {
-#if defined(XO_NO_SIMD)
-        return (a.x*b.x) + (a.y*b.y) + (a.z*b.z);
-#else
-        auto d = _mm_and_ps(_mm_mul_ps(a.m, b.m), MASK);
-        d = _mm_hadd_ps(d, d);
-        d = _mm_hadd_ps(d, d);
-        return _mm_cvtss_f32(d);
-#endif
+        XO_IF_SIMD(auto d = _mm_and_ps(_mm_mul_ps(a.m, b.m), MASK);)
+        XO_IF_SIMD(d = _mm_hadd_ps(d, d);)
+        XO_IF_SIMD(d = _mm_hadd_ps(d, d);)
+        XO_IF_SIMD(return _mm_cvtss_f32(d);)
+        XO_IFN_SIMD(return (a.x*b.x) + (a.y*b.y) + (a.z*b.z);)
     }
 
     XOMATH_INLINE static Vector3 XOMATH_FAST(Cross(const Vector3& a, const Vector3& b)) {
-#if defined(XO_NO_SIMD)
-        return Vector3((a.y*b.z)-(a.z*b.y), (a.z*b.x)-(a.x*b.z), (a.x*b.y)-(a.y*b.x));
-#else
         // Todo: There's a trick to do this with three shuffles. Look into that.
-        auto l = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)));
-        auto r = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)));
-        return Vector3(_mm_sub_ps(l, r));
-#endif
+        XO_IF_SIMD(auto l = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z))));
+        XO_IF_SIMD(auto r = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y))));
+        XO_IF_SIMD(return Vector3(_mm_sub_ps(l, r)));
+        XO_IFN_SIMD(return Vector3((a.y*b.z)-(a.z*b.y), (a.z*b.x)-(a.x*b.z), (a.x*b.y)-(a.y*b.x));)
     }
 
     XOMATH_INLINE static float XOMATH_FAST(AngleRadians(const Vector3& a, const Vector3& b)) {
-#if defined(XO_NO_SIMD)
-        auto cross = Cross(a, b);
-        cross *= cross;
-        return Atan2(Sqrt(cross.x + cross.y + cross.z) + Epsilon, Dot(a, b));
-#else
-        auto cross = Cross(a, b).m;
-        cross = _mm_and_ps(_mm_mul_ps(cross, cross), MASK);
-        cross = _mm_hadd_ps(cross, cross);
-        cross = _mm_hadd_ps(cross, cross);
-        return Atan2(Sqrt(_mm_cvtss_f32(cross)) + Epsilon, Dot(a, b));
-#endif
+        XO_IF_SIMD(auto cross = Cross(a, b).m;)
+        XO_IF_SIMD(cross = _mm_and_ps(_mm_mul_ps(cross, cross), MASK);)
+        XO_IF_SIMD(cross = _mm_hadd_ps(cross, cross);)
+        XO_IF_SIMD(cross = _mm_hadd_ps(cross, cross);)
+        XO_IF_SIMD(return Atan2(Sqrt(_mm_cvtss_f32(cross)) + Epsilon, Dot(a, b));)
+        XO_IFN_SIMD(auto cross = Cross(a, b);)
+        XO_IFN_SIMD(cross *= cross;)
+        XO_IFN_SIMD(return Atan2(Sqrt(cross.x + cross.y + cross.z) + Epsilon, Dot(a, b));)
     }
 
     XOMATH_INLINE static float XOMATH_FAST(AngleDegrees(const Vector3& a, const Vector3& b)) {

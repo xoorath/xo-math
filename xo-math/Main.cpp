@@ -11,14 +11,14 @@
 
 //////////////////////////////////////////////////////////////////////////
 // results from macbook air 2011 (intel i5) 4GB ram
-// const int itterations = 2000;
-// const int vecCount = 1024*200;
+// const int itterations = 80000;
+// const int vecCount = 4096;
 
 // All optimizations
-// 56.2733
+// 1.5882
 
 // No optimizations
-// 45.2135
+// 3.7398
 
 //////////////////////////////////////////////////////////////////////////
 // results from desktop PC (intel i7-6700) 64GB ram
@@ -29,7 +29,7 @@
 // 1.75
 
 // No optimization
-//  2.05559
+// 2.05559
 
 #ifdef XO_NO_SIMD
 #   undef XO_NO_SIMD
@@ -50,8 +50,8 @@ void TestPerformance() {
     typedef std::chrono::time_point<std::chrono::system_clock> TTime;
     typedef std::chrono::duration<double> TDuration;
 
-    const int itterations = 4000;
-    const int vecCount = 1024;
+    const int itterations = 80000;
+    const int vecCount = 4096;
     Vector3 arr[vecCount];
     int opIndex[vecCount];
     srand((unsigned)time(nullptr));
