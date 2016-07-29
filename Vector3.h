@@ -24,7 +24,7 @@ public:
     }
     //Vector3(const class Vector2& v);
 
-    XOMATH_INLINE float& XOMATH_FAST(operator [])(int i) {
+    XOMATH_INLINE float& XOMATH_FAST(operator [](int i)) {
 #ifdef XO_SAFE_VEC_RANGE // paranoid about crashes?
         return f[i & 0b11];
 #else
@@ -32,7 +32,7 @@ public:
 #endif
     }
 
-    XOMATH_INLINE const float& XOMATH_FAST(operator [](int i)) const {
+    XOMATH_INLINE const float& XOMATH_FAST(operator [](int i) const) {
 #ifdef XO_SAFE_VEC_RANGE // paranoid about crashes?
         return f[i & 0b11];
 #else
@@ -56,10 +56,14 @@ public:
         m = vec;
     }
 
-    XOMATH_INLINE void XOMATH_FAST(Get(float& x, float& y, float &z)) const {
-        x = f[IDX_X];
-        y = f[IDX_Y];
-        z = f[IDX_Z];
+    XOMATH_INLINE void XOMATH_FAST(Get(float& x, float& y, float &z) const) {
+        x = this->x;
+        y = this->y;
+        z = this->z;
+    }
+
+    XOMATH_INLINE void XOMATH_FAST(Get(float* f) const) {
+        _mm_store_ps(f, m);
     }
 
     VEC3D_SIMPLE_OP(+, _mm_add_ps)
@@ -81,22 +85,20 @@ public:
         return Vector3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Y, IDX_Z)));
     }
 
+    XOMATH_INLINE Vector3 ZYX() const {
+        return Vector3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Y, IDX_Z)));
+    }
+
     XOMATH_INLINE float Magnitude() const {
-        // get all the elements multiplied by themselves (excluding w).
         auto square = _mm_and_ps(_mm_mul_ps(m, m), MASK);
-        // add horizontally. Now the first two floats are [z+y, x+w]
         square = _mm_hadd_ps(square, square);
-        // add horizontally. now the first float is [z+y+x+w]
         square = _mm_hadd_ps(square, square);
         return Sqrt(_mm_cvtss_f32(square));
     }
 
     XOMATH_INLINE float MagnitudeSquared() const {
-        // get all the elements multiplied by themselves (excluding w).
         auto square = _mm_and_ps(_mm_mul_ps(m, m), MASK);
-        // add horizontally. Now the first two floats are [z+y, x+w]
         square = _mm_hadd_ps(square, square);
-        // add horizontally. now the first float is [z+y+x+w]
         square = _mm_hadd_ps(square, square);
         return _mm_cvtss_f32(square);
     }
@@ -156,20 +158,13 @@ public:
     }
 
     XOMATH_INLINE static float XOMATH_FAST(Dot(const Vector3& a, const Vector3& b)) {
-        // get all the elements multiplied by each other (excluding w).
         auto d = _mm_and_ps(_mm_mul_ps(a.m, b.m), MASK);
-        // add horizontally. Now the first two floats are [z+y, x+w]
         d = _mm_hadd_ps(d, d);
-        // add horizontally. now the first float is [z+y+x+w]
         d = _mm_hadd_ps(d, d);
         return _mm_cvtss_f32(d);
     }
 
     XOMATH_INLINE static Vector3 XOMATH_FAST(Cross(const Vector3& a, const Vector3& b)) {
-        // for reference:
-        // float x = (a[1] * b[2]) - (a[2] * b[1]);
-        // float y = (a[2] * b[0]) - (a[0] * b[2]);
-        // float z = (a[0] * b[1]) - (a[1] * b[0]);
         auto l = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)));
         auto r = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)));
         return Vector3(_mm_sub_ps(l, r));
@@ -202,12 +197,12 @@ public:
         return a + ((b - a) * t);
     }
 
-    XOMATH_INLINE float XOMATH_FAST(Dot(const Vector3& v)) const { return Dot(*this, v); }
-    XOMATH_INLINE Vector3 XOMATH_FAST(Cross(const Vector3& v)) const { return Cross(*this, v); }
-    XOMATH_INLINE float XOMATH_FAST(AngleRadians(const Vector3& v)) const { return AngleRadians(*this, v); }
-    XOMATH_INLINE float XOMATH_FAST(AngleDegrees(const Vector3& v)) const { return AngleDegrees(*this, v); }
-    XOMATH_INLINE float XOMATH_FAST(DistanceSquared(const Vector3& v)) const { return DistanceSquared(*this, v); }
-    XOMATH_INLINE float XOMATH_FAST(Distance(const Vector3& v)) const { return Distance(*this, v); }
+    XOMATH_INLINE float XOMATH_FAST(Dot(const Vector3& v) const) { return Dot(*this, v); }
+    XOMATH_INLINE Vector3 XOMATH_FAST(Cross(const Vector3& v) const) { return Cross(*this, v); }
+    XOMATH_INLINE float XOMATH_FAST(AngleRadians(const Vector3& v) const) { return AngleRadians(*this, v); }
+    XOMATH_INLINE float XOMATH_FAST(AngleDegrees(const Vector3& v) const) { return AngleDegrees(*this, v); }
+    XOMATH_INLINE float XOMATH_FAST(DistanceSquared(const Vector3& v) const) { return DistanceSquared(*this, v); }
+    XOMATH_INLINE float XOMATH_FAST(Distance(const Vector3& v) const) { return Distance(*this, v); }
 
     friend std::ostream& operator <<(std::ostream& os, const Vector3& v) {
         os << "( x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", w:" << v.w << ", mag:" << v.Magnitude() << ")";
@@ -215,11 +210,12 @@ public:
     }
 
     static const Vector3
+        Origin,
         UnitX, UnitY, UnitZ,
         Up, Down, Left, Right, Forward, Backward,
         One, Zero;
 
-    union __declspec(align(16)) {
+    union {
         struct {
             float x, y, z, w;
         };
@@ -229,6 +225,8 @@ public:
 };
 
 const __m128 Vector3::MASK = _mm_castsi128_ps(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff));
+
+const Vector3 Vector3::Origin(0.0f, 0.0f, 0.0f);
 
 const Vector3 Vector3::UnitX(1.0f, 0.0f, 0.0f);
 const Vector3 Vector3::UnitY(0.0f, 1.0f, 0.0f);

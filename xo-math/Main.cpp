@@ -21,7 +21,7 @@ int main() {
     Test t;
 
     // set to one when testing, increase when finding speed.
-    const int itterations = 1000000;
+    const int itterations = 1;
     double time = 0.0f;
     time += t("Vector3: Basic assignment", [&t, &itterations] {
         for (int i = 0; i < itterations; ++i) {
@@ -164,7 +164,9 @@ int main() {
 
     std::cout << "execution time: " << time << std::endl;
 
+#if defined(_MSC_VER)
     system("pause");
+#endif
 
     return t.GetTotalFailures();
 }
