@@ -1,18 +1,24 @@
 #include <iostream>
 
-#define NO_XO_NS 1
-//#define NO_XO_FAST 1
-//#define NO_XO_INLINE 1
+//
+
+#define XO_NO_NS 1
+//#define XO_NO_SIMD 1
+//#define XO_NO_FAST 1
+//#define XO_NO_INLINE 1
 #include "../GameMath.h"
 
-#ifdef NO_XO_NS
-#   undef NO_XO_NS
+#ifdef XO_NO_SIMD
+#   undef XO_NO_SIMD
 #endif
-#ifdef NO_XO_FAST
-#   undef NO_XO_FAST
+#ifdef XO_NO_NS
+#   undef XO_NO_NS
 #endif
-#ifdef NO_XO_INLINE
-#   undef NO_XO_INLINE
+#ifdef XO_NO_FAST
+#   undef XO_NO_FAST
+#endif
+#ifdef XO_NO_INLINE
+#   undef XO_NO_INLINE
 #endif
 
 #include "Test.h"
@@ -21,7 +27,7 @@ int main() {
     Test t;
 
     // set to one when testing, increase when finding speed.
-    const int itterations = 1;
+    const int itterations = 1000000;
     double time = 0.0f;
     time += t("Vector3: Basic assignment", [&t, &itterations] {
         for (int i = 0; i < itterations; ++i) {
@@ -162,7 +168,7 @@ int main() {
         }
     });
 
-    std::cout << "execution time: " << time << std::endl;
+    std::cout << std::fixed << "execution time: " << time << std::endl;
 
 #if defined(_MSC_VER)
     system("pause");
