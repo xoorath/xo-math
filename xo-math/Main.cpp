@@ -4,32 +4,24 @@
 #include <ctime>
 
 #define XO_NO_NS 1
-#define XO_NO_SIMD 1
-#define XO_NO_FAST 1
-#define XO_NO_INLINE 1
+//#define XO_NO_SIMD 1              // Turn off SSE instructions
+//#define XO_NO_FAST 1              // Turn off __vectorcall
+//#define XO_NO_INLINE 1            // Turn off __forceinline
+//#define XO_NO_INVERSE_DIVISION 1  // Turn off (1/x)*Vec in place of (x,x,x)/Vec
 #include "../GameMath.h"
 
 //////////////////////////////////////////////////////////////////////////
 // results from macbook air 2011 (intel i5) 4GB ram
-// const int itterations = 80000;
-// const int vecCount = 4096;
+//const int itterations = 80000;
+//const int vecCount = 4096;
 
-// All optimizations
-// 1.5882
+// with XO_NO_INVERSE_DIVISION
+// Optimized: 10.749
+// Unoptimized: 31.4156
 
-// No optimizations
-// 3.7398
-
-//////////////////////////////////////////////////////////////////////////
-// results from desktop PC (intel i7-6700) 64GB ram
-// const int itterations = 4000;
-// const int vecCount = 1024;
-
-// All optimization
-// 1.75
-
-// No optimization
-// 2.05559
+// 1/d multiplication method:
+// optimized: 10.3723
+// unoptimized: 11.8718
 
 #ifdef XO_NO_SIMD
 #   undef XO_NO_SIMD
@@ -68,16 +60,18 @@ void TestPerformance() {
     start = std::chrono::system_clock::now();
     for(int i = 0; i < itterations; ++i) {
         for(int j = 0; j < vecCount; ++j) {
-            arr[j] += arr[opIndex[j]];
-            arr[j] *= arr[opIndex[j]];
-            arr[j] /= arr[opIndex[j]];
-            arr[j] *= arr[opIndex[j]];
-            arr[j] -= arr[opIndex[j]];
-            arr[j] = ~arr[opIndex[j]];
-            arr[j].Dot(arr[opIndex[j]]);
-            arr[j].Cross(arr[opIndex[j]]);
-            arr[j].Magnitude();
-            arr[j] == arr[opIndex[j]];
+            arr[j] /= arr[opIndex[j]].x;
+            arr[j] /= arr[opIndex[j]].y;
+            arr[j] /= arr[opIndex[j]].z;
+            arr[j] /= arr[opIndex[j]].x;
+            arr[j] /= arr[opIndex[j]].y;
+            arr[j] /= arr[opIndex[j]].z;
+            arr[j] /= arr[opIndex[j]].x;
+            arr[j] /= arr[opIndex[j]].y;
+            arr[j] /= arr[opIndex[j]].z;
+            arr[j] /= arr[opIndex[j]].x;
+            arr[j] /= arr[opIndex[j]].y;
+            arr[j] /= arr[opIndex[j]].z;
         }
     }
     end = std::chrono::system_clock::now();

@@ -28,7 +28,7 @@
 #endif
 
 #ifndef _MM_ALIGN16
-#   define _MM_ALIGN16 __attribute__((align(16)))
+#   define _MM_ALIGN16 __attribute__((aligned(16)))
 #endif
 
 #if defined(XOMATH_INTERNAL_MACRO_WARNING) || defined(XOMATH_INTERNAL)

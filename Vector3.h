@@ -99,13 +99,36 @@ public:
     VEC3D_SIMPLE_OP(+, _mm_add_ps)
     VEC3D_SIMPLE_OP(-, _mm_sub_ps)
     VEC3D_SIMPLE_OP(*, _mm_mul_ps)
+#if defined(XO_NO_INVERSE_DIVISION) // Scalar Division is slow, try not to use it
     VEC3D_SIMPLE_OP(/ , _mm_div_ps)
+#endif
 
     VEC3D_SIMPLE_OP_ADD(+=, _mm_add_ps)
     VEC3D_SIMPLE_OP_ADD(-=, _mm_sub_ps)
     VEC3D_SIMPLE_OP_ADD(*=, _mm_mul_ps)
+#if defined(XO_NO_INVERSE_DIVISION) // Scalar Division is slow, try not to use it
     VEC3D_SIMPLE_OP_ADD(/=, _mm_div_ps)
+#endif
 
+#if !defined(XO_NO_INVERSE_DIVISION)
+#   if defined(XO_NO_SIMD)
+    XOMATH_INLINE Vector3 XOMATH_FAST(operator / (const Vector3& v) const)      { return Vector3(x/v.x, y/v.y, z/v.z);} // no choice here, just divide each
+#   else
+    XOMATH_INLINE Vector3 XOMATH_FAST(operator / (const Vector3& v) const)      { return Vector3(_mm_div_ps(m, v.m));} // no choice here, just use _mm_div_ps
+#   endif
+    XOMATH_INLINE Vector3 XOMATH_FAST(operator / (float v) const)               { return (*this) * (1.0f/v); }
+    XOMATH_INLINE Vector3 XOMATH_FAST(operator / (double v) const)              { return (*this) * (1.0f/(float)v); }
+    XOMATH_INLINE Vector3 XOMATH_FAST(operator / (int v) const)                 { return (*this) * (1.0f/(float)v); }
+#   if defined(XO_NO_SIMD)
+    XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (const Vector3& v))     { x /= v.x; y /= v.y; z /= v.z; return *this; } // no choice here, just divide each
+#   else
+    XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (const Vector3& v))     { m = _mm_div_ps(m, v.m); return *this; } // no choice here, just use _mm_div_ps
+#   endif
+    XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (float v))              { return (*this) *= 1.0f / v; }
+    XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (double v))             { return (*this) *= 1.0f / (float)v; }
+    XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (int v))                { return (*this) *= 1.0f / (float)v; }
+#endif
+    
     XOMATH_INLINE Vector3 operator - () const {
         XO_IF_SIMD(static const __m128 anti = _mm_set1_ps(-1.0f);)
         XO_IF_SIMD(return Vector3(_mm_mul_ps(m, anti));)
