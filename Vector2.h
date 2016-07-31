@@ -57,11 +57,11 @@ public:
 
     void Normalize() {
         float magnitude = MagnitudeSquared();
-        if (magnitude - 1.0f <= Epsilon)
+        if (CloseEnough(magnitude, 1.0f, Epsilon))
             return; // already normalized
-        magnitude = sqrtf(magnitude);
-        if (magnitude < Epsilon)
+        if (CloseEnough(magnitude, 0.0f, Epsilon))
             return; // zero vec
+        magnitude = sqrtf(magnitude);
         magnitude = 1.0f / magnitude;
         x *= magnitude;
         y *= magnitude;
@@ -69,13 +69,13 @@ public:
 
     Vector2 Normalized() const {
         float magnitude = MagnitudeSquared();
-        if (magnitude - 1.0f <= Epsilon)
+        if (CloseEnough(magnitude, 1.0f, Epsilon))
             return *this; // already normalized
-        magnitude = sqrtf(magnitude);
-        if (magnitude < Epsilon)
+        if (CloseEnough(magnitude, 0.0f, Epsilon))
             return *this; // zero vec
+        magnitude = sqrtf(magnitude);
         magnitude = 1.0f / magnitude;
-        return{ x * magnitude, y * magnitude };
+        return { x * magnitude, y * magnitude };
     }
 
     bool IsZero() const {
@@ -106,8 +106,26 @@ public:
         return b;
     }
 
+    static float Dot(const Vector2& a, const Vector2& b) {
+        return (a.x * b.x) + (a.y * b.y);
+    }
+
+    static float Cross(const Vector2& a, const Vector2& b) {
+        return (a.x * b.y) - (a.y * b.x);
+    }
+
+    // input vector rotated 90 degrees
+    static Vector2 OrthogonalCCW(const Vector2& v) {
+        return Vector2(-v.y, v.x);
+    }
+
+    // input vector rotated -90 degrees
+    static Vector2 OrthogonalCW(const Vector2& v) {
+        return Vector2(v.y, -v.x);
+    }
+
     static float AngleRadians(const Vector2& a, const Vector2& b) {
-        return 0.0f; // todo
+        return atan2(Cross(a, b)+Epsilon, Dot(a, b));
     }
 
     static float AngleDegrees(const Vector2& a, const Vector2& b) {
@@ -118,8 +136,14 @@ public:
         return a + ((b - a) * t);
     }
 
-    float AngleRadians(const Vector2& v) { return AngleRadians(*this, v); }
-    float AngleDegrees(const Vector2& v) { return AngleDegrees(*this, v); }
+    
+    float Dot(const Vector2& v) const { return Dot(*this, v); }
+    Vector2 Cross(const Vector2& v) const { return Cross(*this, v); }
+    Vector2 OrthogonalCCW() const { return OrthogonalCCW(*this); }
+    Vector2 OrthogonalCW() const { return OrthogonalCW(*this); }
+    float AngleRadians(const Vector2& v) const { return AngleRadians(*this, v); }
+    float AngleDegrees(const Vector2& v) const { return AngleDegrees(*this, v); }
+    Vector2 Lerp(const Vector2& v, float t) const { return Lerp(*this, v, t); }
 
     friend std::ostream& operator <<(std::ostream& os, const Vector2& v) {
         os << '(' << v[0] << ',' << v[1] << ')';

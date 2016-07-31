@@ -3,7 +3,8 @@ static_assert(false, "Don't include Vector3.h directly. Include GameMath.h, whic
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS
-class XO_IFN_SIMD(_MM_ALIGN16) Vector3 {
+// TODO: align new/delete
+class _MM_ALIGN16 Vector3 {
     XO_IF_SIMD (
         static const unsigned IDX_X = 0;
         static const unsigned IDX_Y = 1;
@@ -114,7 +115,6 @@ public:
     VEC3D_SIMPLE_OP_ADD(+=, +, _mm_add_ps)
     VEC3D_SIMPLE_OP_ADD(-=, -,  _mm_sub_ps)
     VEC3D_SIMPLE_OP_ADD(*=, *, _mm_mul_ps)
-
 
 #if !defined(XO_NO_INVERSE_DIVISION)
     XOMATH_INLINE Vector3 XOMATH_FAST(operator / (const Vector3& v) const) {
@@ -253,11 +253,11 @@ public:
             cross = _mm_and_ps(_mm_mul_ps(cross, cross), MASK);
             cross = _mm_hadd_ps(cross, cross);
             cross = _mm_hadd_ps(cross, cross);
-            return Atan2(Sqrt(_mm_cvtss_f32(cross)) + Epsilon, Dot(a, b));
+            return Atan2(Sqrt(_mm_cvtss_f32(cross)), Dot(a, b));
         ) XO_IFN_SIMD (
             auto cross = Cross(a, b);
             cross *= cross;
-            return Atan2(Sqrt(cross.x + cross.y + cross.z) + Epsilon, Dot(a, b));
+            return Atan2(Sqrt(cross.x + cross.y + cross.z), Dot(a, b));
         )
     }
 
@@ -289,6 +289,67 @@ public:
         return RotateRadians(v, axis, angle * Deg2Rad);
     }
 
+    // A random vector on edge of a cone with a given angle relative to a given forward.
+    XOMATH_INLINE static Vector3 XOMATH_FAST(RandomOnConeRadians(const Vector3& forward, float angle)) {
+        auto cross = forward.Cross(forward == Up ? Left : Up); // cross anything but itself will do. We just need an orthogonal vector
+        auto tilted = forward.RotateRadians(cross, angle);
+        return tilted.RotateRadians(forward, RandomRange(-PI, PI));
+    }
+
+    // A random vector inside a cone with a given angle relative to a given forward.
+    XOMATH_INLINE static Vector3 XOMATH_FAST(RandomInConeRadians(const Vector3& forward, float angle)) {
+        auto cross = forward.Cross(forward == Up ? Left : Up); // cross anything but itself will do. We just need an orthogonal vector
+        auto tilted = forward.RotateRadians(cross, RandomRange(0.0f, angle));
+        return tilted.RotateRadians(forward, RandomRange(-PI, PI));
+    }
+
+    // A random vector on edge of a cone with a given angle relative to a given forward.
+    XOMATH_INLINE static Vector3 XOMATH_FAST(RandomOnConeDegrees(const Vector3& forward, float angle)) {
+        return RandomOnConeRadians(forward, angle * Deg2Rad);
+    }
+
+    // A random vector inside a cone with a given angle relative to a given forward.
+    XOMATH_INLINE static Vector3 XOMATH_FAST(RandomInConeDegrees(const Vector3& forward, float angle)) {
+        return RandomInConeRadians(forward, angle * Deg2Rad);
+    }
+
+    // A random vector with a length of 1.0f
+    XOMATH_INLINE static Vector3 XOMATH_FAST(RandomOnSphere()) {
+        return Vector3(
+            RandomRange(-1.0f, 1.0f), 
+            RandomRange(-1.0f, 1.0f), 
+            RandomRange(-1.0f, 1.0f)).Normalized();
+    }
+
+    // A random vector who's length does not exceed 1
+    XOMATH_INLINE static Vector3 XOMATH_FAST(RandomInSphere()) {
+        return RandomOnSphere() * RandomRange(0.0f, 1.0f);
+    }
+
+    // A random vector with length d
+    XOMATH_INLINE static Vector3 XOMATH_FAST(RandomAtDistance(float d)) {
+        return Vector3(
+            RandomRange(-1.0f, 1.0f),
+            RandomRange(-1.0f, 1.0f),
+            RandomRange(-1.0f, 1.0f)).Normalized() * d;
+    }
+
+    // A random vector who's length does not exceed d
+    XOMATH_INLINE static Vector3 XOMATH_FAST(RandomInDistance(float d)) {
+        return Vector3(
+            RandomRange(-1.0f, 1.0f),
+            RandomRange(-1.0f, 1.0f),
+            RandomRange(-1.0f, 1.0f)).Normalized() * RandomRange(0.0f, d);
+    }
+
+    // A random vector with a magnitude between low and high
+    XOMATH_INLINE static Vector3 XOMATH_FAST(RandomInRange(float low, float high)) {
+        return Vector3(
+            RandomRange(-1.0f, 1.0f),
+            RandomRange(-1.0f, 1.0f),
+            RandomRange(-1.0f, 1.0f)).Normalized() * RandomRange(low, high);
+    }
+
     XOMATH_INLINE float XOMATH_FAST(Dot(const Vector3& v) const)                                { return Dot(*this, v); }
     XOMATH_INLINE Vector3 XOMATH_FAST(Cross(const Vector3& v) const)                            { return Cross(*this, v); }
     XOMATH_INLINE float XOMATH_FAST(AngleRadians(const Vector3& v) const)                       { return AngleRadians(*this, v); }
@@ -298,6 +359,10 @@ public:
     XOMATH_INLINE Vector3 XOMATH_FAST(Lerp(const Vector3& v, float t) const)                    { return Lerp(*this, v, t); }
     XOMATH_INLINE Vector3 XOMATH_FAST(RotateRadians(const Vector3& axis, float angle) const)    { return RotateRadians(*this, axis, angle); }
     XOMATH_INLINE Vector3 XOMATH_FAST(RotateDegrees(const Vector3& axis, float angle) const)    { return RotateDegrees(*this, axis, angle); }
+    XOMATH_INLINE Vector3 XOMATH_FAST(RandomOnConeRadians(float angle) const)                   { return RandomOnConeRadians(*this, angle); }
+    XOMATH_INLINE Vector3 XOMATH_FAST(RandomInConeRadians(float angle) const)                   { return RandomInConeRadians(*this, angle); }
+    XOMATH_INLINE Vector3 XOMATH_FAST(RandomOnConeDegrees(float angle) const)                   { return RandomOnConeDegrees(*this, angle); }
+    XOMATH_INLINE Vector3 XOMATH_FAST(RandomInConeDegrees(float angle) const)                   { return RandomInConeDegrees(*this, angle); }
 
     friend std::ostream& operator <<(std::ostream& os, const Vector3& v) {
         XO_IF_SIMD (

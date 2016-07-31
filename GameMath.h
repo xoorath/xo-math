@@ -21,6 +21,8 @@
 
 #include <math.h>
 #include <ostream>
+#include <random>
+#include <thread>
 #if defined(_MSC_VER)
 #   include <xmmintrin.h>
 #else
@@ -91,16 +93,40 @@ constexpr const float Rad2Deg = 360.0f / TAU;
 constexpr const float Deg2Rad = TAU / 360.0f;
 
 // wrap for now, so we have the option to make a faster version later.
-XOMATH_INLINE float XOMATH_FAST(Sqrt(float f)) { return sqrtf(f); }
-XOMATH_INLINE float XOMATH_FAST(Sin(float f)) { return sinf(f); }
-XOMATH_INLINE float XOMATH_FAST(Cos(float f)) { return cosf(f); }
-XOMATH_INLINE float XOMATH_FAST(Tan(float f)) { return tanf(f); }
-XOMATH_INLINE float XOMATH_FAST(ASin(float f)) { return asinf(f); }
-XOMATH_INLINE float XOMATH_FAST(ACos(float f)) { return acosf(f); }
-XOMATH_INLINE float XOMATH_FAST(ATan(float f)) { return atanf(f); }
-XOMATH_INLINE float XOMATH_FAST(Atan2(float y, float x)) { return atan2f(y, x); }
+XOMATH_INLINE float XOMATH_FAST(Sqrt(float f))              { return sqrtf(f); }
+XOMATH_INLINE float XOMATH_FAST(Sin(float f))               { return sinf(f); }
+XOMATH_INLINE float XOMATH_FAST(Cos(float f))               { return cosf(f); }
+XOMATH_INLINE float XOMATH_FAST(Tan(float f))               { return tanf(f); }
+XOMATH_INLINE float XOMATH_FAST(ASin(float f))              { return asinf(f); }
+XOMATH_INLINE float XOMATH_FAST(ACos(float f))              { return acosf(f); }
+XOMATH_INLINE float XOMATH_FAST(ATan(float f))              { return atanf(f); }
+XOMATH_INLINE float XOMATH_FAST(Atan2(float y, float x))    { return atan2f(y, x); }
 
 XOMATH_INLINE bool XOMATH_FAST(CloseEnough(float y, float x, float tolerance = FloatEpsilon)) { return fabs(x - y) < tolerance; }
+
+template<typename T>
+XOMATH_INLINE T XOMATH_FAST(Square(const T& t)) {
+    return t*t;
+}
+
+XOMATH_INLINE bool XOMATH_FAST(RandomBool()) {
+    static thread_local std::mt19937 engine((unsigned)time(nullptr));
+    static const std::uniform_int_distribution<int> dist(0, 1);
+    return dist(engine) == 1;
+}
+
+XOMATH_INLINE int XOMATH_FAST(RandomRange(int low, int high)) {
+    static thread_local std::mt19937 engine((unsigned)time(nullptr));
+    std::uniform_int_distribution<int> dist(low, high);
+    return dist(engine);
+}
+
+XOMATH_INLINE float XOMATH_FAST(RandomRange(float low, float high)) {
+    static thread_local std::mt19937 engine((unsigned)time(nullptr));
+    std::uniform_real_distribution<float> dist(low, high);
+    return dist(engine);
+}
+
 XOMATH_END_XO_NS
 
 ////////////////////////////////////////////////////////////////////////// Math type macros

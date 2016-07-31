@@ -21,6 +21,10 @@
 #include <iostream>
 #include <chrono>
 #include <ctime>
+// Define XO_TEST_CLOSE to allow the close testing of floats within 0.0001f
+#if defined(XO_TEST_CLOSE)
+#include <cmath>
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Test
@@ -94,9 +98,21 @@ void Test::ReportSuccessIf(T got, T expected, const char* reason) {
     ReportSuccess();
   else {
     ReportFailure(reason);
-    std::cout << "expected: " << expected << " got: " << got << std::endl;
+    std::cout << "\texpected: " << expected << " got: " << got << std::endl;
   }
 }
+
+#if defined(XO_TEST_CLOSE)
+template<>
+void Test::ReportSuccessIf(float got, float expected, const char* reason) {
+    if (fabs(got - expected) < 0.0001f) // pretty darn close
+        ReportSuccess();
+    else {
+        ReportFailure(reason);
+        std::cout << "\texpected: " << expected << " got: " << got << std::endl;
+    }
+}
+#endif
 
 void Test::ReportSuccess() {
   m_CurrentSuccess++;
@@ -126,3 +142,6 @@ double Test::operator ()(const char* testName, TTestFunc func) {
 int Test::GetTotalFailures() const {
   return m_TotalFailure;
 }
+
+
+#define REPORT_SUCCESS_IF(test, expected, got) test.ReportSuccessIf((expected), (got),  ( #expected ) )
