@@ -1,4 +1,3 @@
-#pragma optimize("", off)
 #include <iostream>
 #include <chrono>
 #include <ctime>
@@ -10,18 +9,6 @@
 //#define XO_NO_INVERSE_DIVISION 1  // Turn off (1/x)*Vec in place of (x,x,x)/Vec
 #include "../GameMath.h"
 
-//////////////////////////////////////////////////////////////////////////
-// results from macbook air 2011 (intel i5) 4GB ram
-//const int itterations = 80000;
-//const int vecCount = 4096;
-
-// with XO_NO_INVERSE_DIVISION
-// Optimized: 10.749
-// Unoptimized: 31.4156
-
-// 1/d multiplication method:
-// optimized: 10.3723
-// unoptimized: 11.8718
 
 #ifdef XO_NO_SIMD
 #   undef XO_NO_SIMD
@@ -36,30 +23,31 @@
 #   undef XO_NO_INLINE
 #endif
 
+
 #include "Test.h"
 
 void TestPerformance() {
     typedef std::chrono::time_point<std::chrono::system_clock> TTime;
     typedef std::chrono::duration<double> TDuration;
 
-    const int itterations = 80000;
+    const int itterations = 8000;
     const int vecCount = 4096;
     Vector3 arr[vecCount];
     int opIndex[vecCount];
     srand((unsigned)time(nullptr));
-    for(int i = 0; i < vecCount; ++i) {
+    for (int i = 0; i < vecCount; ++i) {
         // give us random non-zero vectors
         arr[i] = Vector3(
-                         (((float)rand()/(float)RAND_MAX)*1000.0f) + 1.0f,
-                         (((float)rand()/(float)RAND_MAX)*1000.0f) + 1.0f,
-                         (((float)rand()/(float)RAND_MAX)*1000.0f) + 1.0f);
-        opIndex[i] = rand()%(vecCount-1);
+            (((float)rand() / (float)RAND_MAX)*1000.0f) + 1.0f,
+            (((float)rand() / (float)RAND_MAX)*1000.0f) + 1.0f,
+            (((float)rand() / (float)RAND_MAX)*1000.0f) + 1.0f);
+        opIndex[i] = rand() % (vecCount - 1);
     }
 
     TTime start, end;
     start = std::chrono::system_clock::now();
-    for(int i = 0; i < itterations; ++i) {
-        for(int j = 0; j < vecCount; ++j) {
+    for (int i = 0; i < itterations; ++i) {
+        for (int j = 0; j < vecCount; ++j) {
             arr[j] /= arr[opIndex[j]].x;
             arr[j] /= arr[opIndex[j]].y;
             arr[j] /= arr[opIndex[j]].z;
@@ -75,13 +63,13 @@ void TestPerformance() {
         }
     }
     end = std::chrono::system_clock::now();
-    TDuration seconds = end-start;
+    TDuration seconds = end - start;
 
     std::cout << "Perf tests took (" << seconds.count() << ") seconds. \n\n";
 }
 
-#define RUN_TESTS 0
-#define RUN_PERF_TESTS 1
+#define RUN_TESTS 1
+#define RUN_PERF_TESTS 0
 int main() {
 #if RUN_TESTS
     Test t;
@@ -121,21 +109,21 @@ int main() {
 
     time += t("Vector3: Basic math", [&t, &itterations] {
         for (int i = 0; i < itterations; ++i) {
-#define VerifyOperator(op, expectation) t.ReportSuccessIf(Vector3(1.0f, 2.0f, 3.0f) op Vector3(1.0f, 2.0f, 3.0f), expectation, "Failed expectation for operator " #op );
+        #define VerifyOperator(op, expectation) t.ReportSuccessIf(Vector3(1.0f, 2.0f, 3.0f) op Vector3(1.0f, 2.0f, 3.0f), expectation, "Failed expectation for operator " #op );
             VerifyOperator(+, Vector3(2.0f, 4.0f, 6.0f));
             VerifyOperator(-, Vector3(0.0f, 0.0f, 0.0f));
             VerifyOperator(*, Vector3(1.0f, 4.0f, 9.0f));
             VerifyOperator(/ , Vector3(1.0f, 1.0f, 1.0f));
-#undef VerifyOperator
+        #undef VerifyOperator
             {
                 Vector3 v3;
-#define VerifyOperatorAdd(op, expectation) v3 = {1.0f, 2.0f, 3.0f}; v3 op Vector3(1.0f, 2.0f, 3.0f); t.ReportSuccessIf(v3, expectation, "Failed expectation for operator " #op );
+            #define VerifyOperatorAdd(op, expectation) v3 = {1.0f, 2.0f, 3.0f}; v3 op Vector3(1.0f, 2.0f, 3.0f); t.ReportSuccessIf(v3, expectation, "Failed expectation for operator " #op );
                 VerifyOperatorAdd(+=, Vector3(2.0f, 4.0f, 6.0f));
                 VerifyOperatorAdd(-=, Vector3(0.0f, 0.0f, 0.0f));
                 VerifyOperatorAdd(*=, Vector3(1.0f, 4.0f, 9.0f));
                 VerifyOperatorAdd(/=, Vector3(1.0f, 1.0f, 1.0f));
             }
-#undef VerifyOperatorAdd
+        #undef VerifyOperatorAdd
             t.ReportSuccessIf(Vector3(1.0f, 2.0f, 3.0f) + 1.0f, Vector3(2.0f, 3.0f, 4.0f), "Float addition failed.");
             t.ReportSuccessIf(-Vector3(1.0f, 2.0f, 3.0f), Vector3(-1.0f, -2.0f, -3.0f), "Failed expectation for operator -v");
             t.ReportSuccessIf(~Vector3(1.0f, 2.0f, 3.0f), Vector3(3.0f, 2.0f, 1.0f), "Failed expectation for operator ~v");
@@ -144,39 +132,39 @@ int main() {
 
     time += t("Vector3: Rotations", [&t, &itterations] {
         for (int i = 0; i < itterations; ++i) {
-#define VerifyAngle(from, to, expected) t.ReportSuccessIf(Vector3:: from .AngleDegrees(Vector3:: to ), expected, #from " and " #to " are not at " #expected " degrees");
-        VerifyAngle(Up, Right, 90.0f)
-        VerifyAngle(Up, Left, 90.0f)
-        VerifyAngle(Up, Forward, 90.0f)
-        VerifyAngle(Up, Backward, 90.0f)
-        VerifyAngle(Down, Right, 90.0f)
-        VerifyAngle(Down, Left, 90.0f)
-        VerifyAngle(Down, Forward, 90.0f)
-        VerifyAngle(Down, Backward, 90.0f)
-        // should work at dot -1
-        VerifyAngle(Up, Down, 179.999969f)
-        // should not be effected by length
-        VerifyAngle(Up, Right*2.0f, 90.0f)
-#undef VerifyAngle
+        #define VerifyAngle(from, to, expected) t.ReportSuccessIf(Vector3:: from .AngleDegrees(Vector3:: to ), expected, #from " and " #to " are not at " #expected " degrees");
+            VerifyAngle(Up, Right, 90.0f)
+                VerifyAngle(Up, Left, 90.0f)
+                VerifyAngle(Up, Forward, 90.0f)
+                VerifyAngle(Up, Backward, 90.0f)
+                VerifyAngle(Down, Right, 90.0f)
+                VerifyAngle(Down, Left, 90.0f)
+                VerifyAngle(Down, Forward, 90.0f)
+                VerifyAngle(Down, Backward, 90.0f)
+                // should work at dot -1
+                VerifyAngle(Up, Down, 179.999969f)
+                // should not be effected by length
+                VerifyAngle(Up, Right*2.0f, 90.0f)
+            #undef VerifyAngle
         }
     });
 
     time += t("Vector3: Magnitude", [&t, &itterations] {
         for (int i = 0; i < itterations; ++i) {
-#define VerifyMagnitude(v, expected) \
+        #define VerifyMagnitude(v, expected) \
         t.ReportSuccessIf(v .Magnitude(), expected, #v " does not have a magnitude of " #expected ".");\
         t.ReportSuccessIf(v .MagnitudeSquared(), expected * expected, #v " does not have a magnitude squared of " #expected "^2.");
-        VerifyMagnitude(Vector3::Up, 1.0f);
-        VerifyMagnitude(Vector3::Down, 1.0f);
-        VerifyMagnitude(Vector3::Left, 1.0f);
-        VerifyMagnitude(Vector3::Right, 1.0f);
-        VerifyMagnitude(Vector3::Forward, 1.0f);
-        VerifyMagnitude(Vector3::Backward, 1.0f);
-        VerifyMagnitude((Vector3::Up*2.0f), 2.0f);
-        VerifyMagnitude((Vector3::Down*2.0f), 2.0f);
-        VerifyMagnitude(Vector3::One, 1.7320508075688772f);
-        VerifyMagnitude((Vector3::Zero + 1.0f), 1.7320508075688772f);
-#undef VerifyMagnitude
+            VerifyMagnitude(Vector3::Up, 1.0f);
+            VerifyMagnitude(Vector3::Down, 1.0f);
+            VerifyMagnitude(Vector3::Left, 1.0f);
+            VerifyMagnitude(Vector3::Right, 1.0f);
+            VerifyMagnitude(Vector3::Forward, 1.0f);
+            VerifyMagnitude(Vector3::Backward, 1.0f);
+            VerifyMagnitude((Vector3::Up*2.0f), 2.0f);
+            VerifyMagnitude((Vector3::Down*2.0f), 2.0f);
+            VerifyMagnitude(Vector3::One, 1.7320508075688772f);
+            VerifyMagnitude((Vector3::Zero + 1.0f), 1.7320508075688772f);
+        #undef VerifyMagnitude
         }
     });
 
@@ -245,4 +233,3 @@ int main() {
     return 0;
 #endif
 }
-#pragma optimize("", on)

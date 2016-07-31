@@ -4,77 +4,84 @@ static_assert(false, "Don't include Vector3.h directly. Include GameMath.h, whic
 
 XOMATH_BEGIN_XO_NS
 class XO_IFN_SIMD(_MM_ALIGN16) Vector3 {
-#if !defined(XO_NO_SIMD)
-    static const unsigned IDX_X = 0;
-    static const unsigned IDX_Y = 1;
-    static const unsigned IDX_Z = 2;
-    static const unsigned IDX_W = 3;
-    static const __m128 MASK;
-#endif
+    XO_IF_SIMD (
+        static const unsigned IDX_X = 0;
+        static const unsigned IDX_Y = 1;
+        static const unsigned IDX_Z = 2;
+        static const unsigned IDX_W = 3;
+        static const __m128 MASK;
+    )
+
 public:
     constexpr static const float Epsilon = FloatEpsilon+FloatEpsilon+FloatEpsilon;
 
     XOMATH_INLINE Vector3() :
-        XO_IF_SIMD(m(_mm_setzero_ps()))
-        XO_IFN_SIMD(x(0.0f), y(0.0f), z(0.0f))
-    {
-    }
+        XO_IF_SIMD (
+            m(_mm_setzero_ps())
+        ) XO_IFN_SIMD (
+            x(0.0f), y(0.0f), z(0.0f)
+        ) { }
     XOMATH_INLINE Vector3(float f) :
-        XO_IF_SIMD(m(_mm_set1_ps(f)))
-        XO_IFN_SIMD(x(f), y(f), z(f))
-    {
-    }
+        XO_IF_SIMD (
+            m(_mm_set1_ps(f))
+        ) XO_IFN_SIMD (
+            x(f), y(f), z(f)
+        ) { }
     XOMATH_INLINE Vector3(float x, float y, float z) :
-        XO_IF_SIMD(m(_mm_set_ps(0.0f, z, y, x)))
-        XO_IFN_SIMD(x(x), y(y), z(z))
-    {
-    }
+        XO_IF_SIMD (
+            m(_mm_set_ps(0.0f, z, y, x))
+        ) XO_IFN_SIMD (
+            x(x), y(y), z(z)
+        ) { }
     XOMATH_INLINE Vector3(const Vector3& vec) :
-        XO_IF_SIMD(m(vec.m))
-        XO_IFN_SIMD(x(vec.x), y(vec.y), z(vec.z))
-    {
-    }
+        XO_IF_SIMD (
+            m(vec.m)
+        ) XO_IFN_SIMD (
+            x(vec.x), y(vec.y), z(vec.z)
+        ) { }
 
 #if !defined(XO_NO_SIMD)
     XOMATH_INLINE Vector3(const __m128& vec) : m(vec) { }
 #endif
-    //Vector3(const class Vector2& v);
+
+    Vector3(const class Vector2& v);
 
     XOMATH_INLINE float& XOMATH_FAST(operator [](int i)) {
-#ifdef XO_SAFE_VEC_RANGE // paranoid about crashes?
-        return f[i & 0b11];
-#else
         return f[i];
-#endif
     }
 
     XOMATH_INLINE const float& XOMATH_FAST(operator [](int i) const) {
-#ifdef XO_SAFE_VEC_RANGE // paranoid about crashes?
-        return f[i & 0b11];
-#else
         return f[i];
-#endif
     }
 
     XOMATH_INLINE void XOMATH_FAST(Set(float x, float y, float z)) {
-        XO_IF_SIMD(m = _mm_set_ps(0.0f, z, y, x);)
-        XO_IFN_SIMD(this->x = x;)
-        XO_IFN_SIMD(this->y = y;)
-        XO_IFN_SIMD(this->z = z;)
+        XO_IF_SIMD (
+            m = _mm_set_ps(0.0f, z, y, x);
+        ) XO_IFN_SIMD (
+            this->x = x;
+            this->y = y;
+            this->z = z;
+        )
     }
 
     XOMATH_INLINE void XOMATH_FAST(Set(float f)) {
-        XO_IF_SIMD(m = _mm_set1_ps(f);)
-        XO_IFN_SIMD(this->x = f;)
-        XO_IFN_SIMD(this->y = f;)
-        XO_IFN_SIMD(this->z = f;)
+        XO_IF_SIMD (
+            m = _mm_set1_ps(f);
+        ) XO_IFN_SIMD (
+            this->x = f;
+            this->y = f;
+            this->z = f;
+        )
     }
 
     XOMATH_INLINE void XOMATH_FAST(Set(const Vector3& vec)) {
-        XO_IF_SIMD(m = vec.m;)
-        XO_IFN_SIMD(this->x = vec.x;)
-        XO_IFN_SIMD(this->y = vec.y;)
-        XO_IFN_SIMD(this->z = vec.z;)
+        XO_IF_SIMD (
+            m = vec.m;
+        ) XO_IFN_SIMD (
+            this->x = vec.x;
+            this->y = vec.y;
+            this->z = vec.z;
+        )
     }
 
 #if !defined(XO_NO_SIMD)
@@ -90,97 +97,103 @@ public:
     }
 
     XOMATH_INLINE void XOMATH_FAST(Get(float* f) const) {
-        XO_IF_SIMD(_mm_store_ps(f, m));
-        XO_IFN_SIMD(f[0] = this->x;)
-        XO_IFN_SIMD(f[1] = this->y;)
-        XO_IFN_SIMD(f[2] = this->z;)
+        XO_IF_SIMD (
+            _mm_store_ps(f, m);
+        ) XO_IFN_SIMD (
+            f[0] = this->x;
+            f[1] = this->y;
+            f[2] = this->z;
+        )
     }
 
     VEC3D_SIMPLE_OP(+, _mm_add_ps)
     VEC3D_SIMPLE_OP(-, _mm_sub_ps)
     VEC3D_SIMPLE_OP(*, _mm_mul_ps)
-#if defined(XO_NO_INVERSE_DIVISION) // Scalar Division is slow, try not to use it
-    VEC3D_SIMPLE_OP(/ , _mm_div_ps)
-#endif
 
-    VEC3D_SIMPLE_OP_ADD(+=, _mm_add_ps)
-    VEC3D_SIMPLE_OP_ADD(-=, _mm_sub_ps)
-    VEC3D_SIMPLE_OP_ADD(*=, _mm_mul_ps)
-#if defined(XO_NO_INVERSE_DIVISION) // Scalar Division is slow, try not to use it
-    VEC3D_SIMPLE_OP_ADD(/=, _mm_div_ps)
-#endif
+
+    VEC3D_SIMPLE_OP_ADD(+=, +, _mm_add_ps)
+    VEC3D_SIMPLE_OP_ADD(-=, -,  _mm_sub_ps)
+    VEC3D_SIMPLE_OP_ADD(*=, *, _mm_mul_ps)
+
 
 #if !defined(XO_NO_INVERSE_DIVISION)
-#   if defined(XO_NO_SIMD)
-    XOMATH_INLINE Vector3 XOMATH_FAST(operator / (const Vector3& v) const)      { return Vector3(x/v.x, y/v.y, z/v.z);} // no choice here, just divide each
-#   else
-    XOMATH_INLINE Vector3 XOMATH_FAST(operator / (const Vector3& v) const)      { return Vector3(_mm_div_ps(m, v.m));} // no choice here, just use _mm_div_ps
-#   endif
-    XOMATH_INLINE Vector3 XOMATH_FAST(operator / (float v) const)               { return (*this) * (1.0f/v); }
-    XOMATH_INLINE Vector3 XOMATH_FAST(operator / (double v) const)              { return (*this) * (1.0f/(float)v); }
-    XOMATH_INLINE Vector3 XOMATH_FAST(operator / (int v) const)                 { return (*this) * (1.0f/(float)v); }
-#   if defined(XO_NO_SIMD)
-    XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (const Vector3& v))     { x /= v.x; y /= v.y; z /= v.z; return *this; } // no choice here, just divide each
-#   else
-    XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (const Vector3& v))     { m = _mm_div_ps(m, v.m); return *this; } // no choice here, just use _mm_div_ps
-#   endif
-    XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (float v))              { return (*this) *= 1.0f / v; }
-    XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (double v))             { return (*this) *= 1.0f / (float)v; }
-    XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (int v))                { return (*this) *= 1.0f / (float)v; }
+    XOMATH_INLINE Vector3 XOMATH_FAST(operator / (const Vector3& v) const) {
+        XO_IF_SIMD (
+            return Vector3(_mm_div_ps(m, v.m));
+        ) XO_IFN_SIMD (
+            return Vector3(x/v.x, y/v.y, z/v.z);
+        )
+    } // no choice here, just divide each
+    XOMATH_INLINE Vector3 XOMATH_FAST(operator / (float v) const)       { return (*this) * (1.0f/v); }
+    XOMATH_INLINE Vector3 XOMATH_FAST(operator / (double v) const)      { return (*this) / (float)v; }
+    XOMATH_INLINE Vector3 XOMATH_FAST(operator / (int v) const)         { return (*this) / (float)v; }
+    XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (const Vector3& v)) {
+        XO_IF_SIMD (
+            m = _mm_div_ps(m, v.m);
+        ) XO_IFN_SIMD (
+            x /= v.x; 
+            y /= v.y; 
+            z /= v.z;
+        )
+        return *this;
+    }
+    XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (float v))     { return (*this) *= 1.0f / v; }
+    XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (double v))    { return (*this) /= (float)v; }
+    XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (int v))       { return (*this) /= (float)v; }
+#else
+    // scalar division is slower, so we try to avoid it unless XO_NO_INVERSE_DIVISION is defined.
+    VEC3D_SIMPLE_OP(/ , _mm_div_ps)
+    VEC3D_SIMPLE_OP_ADD(/=, / , _mm_div_ps)
 #endif
     
     XOMATH_INLINE Vector3 operator - () const {
-        XO_IF_SIMD(static const __m128 anti = _mm_set1_ps(-1.0f);)
-        XO_IF_SIMD(return Vector3(_mm_mul_ps(m, anti));)
-        XO_IFN_SIMD(return Vector3(-x, -y, -z);)
+        XO_IF_SIMD (
+            static const __m128 anti = _mm_set1_ps(-1.0f);
+            return Vector3(_mm_mul_ps(m, anti));
+        ) XO_IFN_SIMD (
+            return Vector3(-x, -y, -z);
+        )
     }
 
     XOMATH_INLINE Vector3 operator ~ () const {
-        XO_IF_SIMD(return Vector3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Y, IDX_Z)));)
-        XO_IFN_SIMD(return Vector3(z, y, x);)
+        XO_IF_SIMD (
+            return Vector3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Y, IDX_Z)));
+        ) XO_IFN_SIMD (
+            return Vector3(z, y, x);
+        )
     }
 
     XOMATH_INLINE Vector3 ZYX() const {
-        XO_IF_SIMD(return Vector3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Y, IDX_Z)));)
-        XO_IFN_SIMD(return Vector3(z, y, x);)
-    }
-
-    XOMATH_INLINE float Magnitude() const {
-        XO_IF_SIMD(auto square = _mm_and_ps(_mm_mul_ps(m, m), MASK);)
-        XO_IF_SIMD(square = _mm_hadd_ps(square, square);)
-        XO_IF_SIMD(square = _mm_hadd_ps(square, square);)
-        XO_IF_SIMD(return Sqrt(_mm_cvtss_f32(square));)
-        XO_IFN_SIMD(return Sqrt((x*x) + (y*y) + (z*z));)
+        return ~(*this);
     }
 
     XOMATH_INLINE float MagnitudeSquared() const {
-        XO_IF_SIMD(auto square = _mm_and_ps(_mm_mul_ps(m, m), MASK);)
-        XO_IF_SIMD(square = _mm_hadd_ps(square, square);)
-        XO_IF_SIMD(square = _mm_hadd_ps(square, square);)
-        XO_IF_SIMD(return _mm_cvtss_f32(square);)
-        XO_IFN_SIMD(return (x*x) + (y*y) + (z*z);)
+        XO_IF_SIMD (
+            auto square = _mm_and_ps(_mm_mul_ps(m, m), MASK);
+            square = _mm_hadd_ps(square, square);
+            square = _mm_hadd_ps(square, square);
+            return _mm_cvtss_f32(square);
+        ) XO_IFN_SIMD (
+            return (x*x) + (y*y) + (z*z);
+        )
     }
 
-    XOMATH_INLINE void Normalize() {
-        float magnitude = MagnitudeSquared();
-        if (magnitude - 1.0f <= Epsilon)
-            return; // already normalized
-        magnitude = Sqrt(magnitude);
-        if (magnitude < Epsilon)
-            return; // zero vec
-        magnitude = 1.0f / magnitude;
-        (*this) *= magnitude;
+    XOMATH_INLINE float Magnitude() const {
+        return Sqrt(MagnitudeSquared());
     }
 
     XOMATH_INLINE Vector3 Normalized() const {
         float magnitude = MagnitudeSquared();
-        if (magnitude - 1.0f <= Epsilon)
+        if (CloseEnough(magnitude, 1.0f, Epsilon))
             return *this; // already normalized
-        magnitude = Sqrt(magnitude);
-        if (magnitude < Epsilon)
+        if (CloseEnough(magnitude, 0.0f, Epsilon))
             return *this; // zero vec
-        magnitude = 1.0f / magnitude;
-        return (*this) * magnitude;
+        magnitude = Sqrt(magnitude);
+        return (*this) / magnitude;
+    }
+
+    XOMATH_INLINE void Normalize() {
+        (*this) = Normalized();
     }
 
     XOMATH_INLINE bool IsZero() const {
@@ -205,42 +218,47 @@ public:
 
 
     XOMATH_INLINE static Vector3 XOMATH_FAST(Max(const Vector3& a, const Vector3& b)) {
-        if (a.MagnitudeSquared() >= b.MagnitudeSquared())
-            return a;
-        return b;
+        return a >= b ? a : b;
     }
 
     XOMATH_INLINE static Vector3 XOMATH_FAST(Min(const Vector3& a, const Vector3& b)) {
-        if (a.MagnitudeSquared() <= b.MagnitudeSquared())
-            return a;
-        return b;
+        return a <= b ? a : b;
     }
 
     XOMATH_INLINE static float XOMATH_FAST(Dot(const Vector3& a, const Vector3& b)) {
-        XO_IF_SIMD(auto d = _mm_and_ps(_mm_mul_ps(a.m, b.m), MASK);)
-        XO_IF_SIMD(d = _mm_hadd_ps(d, d);)
-        XO_IF_SIMD(d = _mm_hadd_ps(d, d);)
-        XO_IF_SIMD(return _mm_cvtss_f32(d);)
-        XO_IFN_SIMD(return (a.x*b.x) + (a.y*b.y) + (a.z*b.z);)
+        XO_IF_SIMD (
+            auto d = _mm_and_ps(_mm_mul_ps(a.m, b.m), MASK);
+            d = _mm_hadd_ps(d, d);
+            d = _mm_hadd_ps(d, d);
+            return _mm_cvtss_f32(d);
+        ) XO_IFN_SIMD (
+            return (a.x*b.x) + (a.y*b.y) + (a.z*b.z);
+        )
     }
 
     XOMATH_INLINE static Vector3 XOMATH_FAST(Cross(const Vector3& a, const Vector3& b)) {
-        // Todo: There's a trick to do this with three shuffles. Look into that.
-        XO_IF_SIMD(auto l = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z))));
-        XO_IF_SIMD(auto r = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y))));
-        XO_IF_SIMD(return Vector3(_mm_sub_ps(l, r)));
-        XO_IFN_SIMD(return Vector3((a.y*b.z)-(a.z*b.y), (a.z*b.x)-(a.x*b.z), (a.x*b.y)-(a.y*b.x));)
+        XO_IF_SIMD (
+            // Todo: There's a trick to do this with three shuffles. Look into that.
+            auto l = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)));
+            auto r = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)));
+            return Vector3(_mm_sub_ps(l, r));
+        ) XO_IFN_SIMD (
+            return Vector3((a.y*b.z)-(a.z*b.y), (a.z*b.x)-(a.x*b.z), (a.x*b.y)-(a.y*b.x));
+        )
     }
 
     XOMATH_INLINE static float XOMATH_FAST(AngleRadians(const Vector3& a, const Vector3& b)) {
-        XO_IF_SIMD(auto cross = Cross(a, b).m;)
-        XO_IF_SIMD(cross = _mm_and_ps(_mm_mul_ps(cross, cross), MASK);)
-        XO_IF_SIMD(cross = _mm_hadd_ps(cross, cross);)
-        XO_IF_SIMD(cross = _mm_hadd_ps(cross, cross);)
-        XO_IF_SIMD(return Atan2(Sqrt(_mm_cvtss_f32(cross)) + Epsilon, Dot(a, b));)
-        XO_IFN_SIMD(auto cross = Cross(a, b);)
-        XO_IFN_SIMD(cross *= cross;)
-        XO_IFN_SIMD(return Atan2(Sqrt(cross.x + cross.y + cross.z) + Epsilon, Dot(a, b));)
+        XO_IF_SIMD (
+            auto cross = Cross(a, b).m;
+            cross = _mm_and_ps(_mm_mul_ps(cross, cross), MASK);
+            cross = _mm_hadd_ps(cross, cross);
+            cross = _mm_hadd_ps(cross, cross);
+            return Atan2(Sqrt(_mm_cvtss_f32(cross)) + Epsilon, Dot(a, b));
+        ) XO_IFN_SIMD (
+            auto cross = Cross(a, b);
+            cross *= cross;
+            return Atan2(Sqrt(cross.x + cross.y + cross.z) + Epsilon, Dot(a, b));
+        )
     }
 
     XOMATH_INLINE static float XOMATH_FAST(AngleDegrees(const Vector3& a, const Vector3& b)) {
@@ -248,30 +266,45 @@ public:
     }
 
     XOMATH_INLINE static float XOMATH_FAST(DistanceSquared(const Vector3& a, const Vector3& b)) {
-        return (a - b).MagnitudeSquared();
+        return (b - a).MagnitudeSquared();
     }
 
     XOMATH_INLINE static float XOMATH_FAST(Distance(const Vector3&a, const Vector3&b)) {
-        return (a - b).Magnitude();
+        return (b - a).Magnitude();
     }
 
     XOMATH_INLINE static Vector3 XOMATH_FAST(Lerp(const Vector3& a, const Vector3& b, float t)) {
         return a + ((b - a) * t);
     }
 
-    XOMATH_INLINE float XOMATH_FAST(Dot(const Vector3& v) const) { return Dot(*this, v); }
-    XOMATH_INLINE Vector3 XOMATH_FAST(Cross(const Vector3& v) const) { return Cross(*this, v); }
-    XOMATH_INLINE float XOMATH_FAST(AngleRadians(const Vector3& v) const) { return AngleRadians(*this, v); }
-    XOMATH_INLINE float XOMATH_FAST(AngleDegrees(const Vector3& v) const) { return AngleDegrees(*this, v); }
-    XOMATH_INLINE float XOMATH_FAST(DistanceSquared(const Vector3& v) const) { return DistanceSquared(*this, v); }
-    XOMATH_INLINE float XOMATH_FAST(Distance(const Vector3& v) const) { return Distance(*this, v); }
+    XOMATH_INLINE static Vector3 XOMATH_FAST(RotateRadians(const Vector3& v, const Vector3& axis, float angle)) {
+        // Rodrigues' rotation formula
+        // https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
+        auto sinAng = Sin(angle);
+        auto cosAng = Cos(angle);
+        return v * cosAng + axis.Cross(v) * sinAng + axis * axis.Dot(v) * (1.0f - cosAng);
+    }
+
+    XOMATH_INLINE static Vector3 XOMATH_FAST(RotateDegrees(const Vector3& v, const Vector3& axis, float angle)) {
+        return RotateRadians(v, axis, angle * Deg2Rad);
+    }
+
+    XOMATH_INLINE float XOMATH_FAST(Dot(const Vector3& v) const)                                { return Dot(*this, v); }
+    XOMATH_INLINE Vector3 XOMATH_FAST(Cross(const Vector3& v) const)                            { return Cross(*this, v); }
+    XOMATH_INLINE float XOMATH_FAST(AngleRadians(const Vector3& v) const)                       { return AngleRadians(*this, v); }
+    XOMATH_INLINE float XOMATH_FAST(AngleDegrees(const Vector3& v) const)                       { return AngleDegrees(*this, v); }
+    XOMATH_INLINE float XOMATH_FAST(DistanceSquared(const Vector3& v) const)                    { return DistanceSquared(*this, v); }
+    XOMATH_INLINE float XOMATH_FAST(Distance(const Vector3& v) const)                           { return Distance(*this, v); }
+    XOMATH_INLINE Vector3 XOMATH_FAST(Lerp(const Vector3& v, float t) const)                    { return Lerp(*this, v, t); }
+    XOMATH_INLINE Vector3 XOMATH_FAST(RotateRadians(const Vector3& axis, float angle) const)    { return RotateRadians(*this, axis, angle); }
+    XOMATH_INLINE Vector3 XOMATH_FAST(RotateDegrees(const Vector3& axis, float angle) const)    { return RotateDegrees(*this, axis, angle); }
 
     friend std::ostream& operator <<(std::ostream& os, const Vector3& v) {
-#if defined(XO_NO_SIMD)
-        os << "( x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", mag:" << v.Magnitude() << ")";
-#else
-        os << "( x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", w:" << v.w << ", mag:" << v.Magnitude() << ")";
-#endif
+        XO_IF_SIMD (
+            os << "( x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", w:" << v.w << ", mag:" << v.Magnitude() << ")";
+        ) XO_IFN_SIMD(
+            os << "( x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", mag:" << v.Magnitude() << ")";
+        )
         return os;
     }
 
@@ -299,9 +332,9 @@ public:
 #endif
 };
 
-#if !defined(XO_NO_SIMD)
-const __m128 Vector3::MASK = _mm_castsi128_ps(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff));
-#endif
+XO_IF_SIMD (
+    const __m128 Vector3::MASK = _mm_castsi128_ps(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff));
+)
 
 const Vector3 Vector3::Origin(0.0f, 0.0f, 0.0f);
 

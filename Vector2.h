@@ -15,7 +15,7 @@ public:
     }
     Vector2(const Vector2& v) : x(v.x), y(v.y) {
     }
-    //Vector2(const class Vector3& v);
+    Vector2(const class Vector3& v);
 
     float& operator [](int i) { return f[i]; }
     const float& operator [](int i) const { return f[i]; }
@@ -46,9 +46,7 @@ public:
 
     Vector2 operator - () const { return Vector2(-x, -y); }
     Vector2 operator ~ () const { return Vector2(y, x); }
-
-    Vector2 operator + (const class Vector3& v) const;
-
+    
     float Magnitude() const {
         return sqrtf(x*x + y*y);
     }
@@ -133,10 +131,9 @@ public:
         Up, Down, Left, Right,
         One, Zero;
 
-private:
     union {
-        float f[2];
         struct { float x, y; };
+        float f[2];
     };
 };
 
