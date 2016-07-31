@@ -28,6 +28,7 @@
 		812D15DC1D4993A900195264 /* GameMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameMath.h; path = ../GameMath.h; sourceTree = "<group>"; };
 		812D15DD1D4993A900195264 /* Vector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector2.h; path = ../Vector2.h; sourceTree = "<group>"; };
 		812D15DE1D4993A900195264 /* Vector3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector3.h; path = ../Vector3.h; sourceTree = "<group>"; };
+		81BB800A1D4E9FC40064AFE7 /* Test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Test.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,6 +45,7 @@
 		812D15C11D49669A00195264 = {
 			isa = PBXGroup;
 			children = (
+				81BB800A1D4E9FC40064AFE7 /* Test.h */,
 				812D15DC1D4993A900195264 /* GameMath.h */,
 				812D15DD1D4993A900195264 /* Vector2.h */,
 				812D15DE1D4993A900195264 /* Vector3.h */,
@@ -215,7 +217,7 @@
 		812D15D21D49669A00195264 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_X86_VECTOR_INSTRUCTIONS = default;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -224,7 +226,7 @@
 		812D15D31D49669A00195264 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_X86_VECTOR_INSTRUCTIONS = default;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

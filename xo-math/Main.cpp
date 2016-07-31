@@ -116,6 +116,8 @@ void TestVector3(Test& t) {
     });
 
     t("Vector3 Cross", [&t] {
+        REPORT_SUCCESS_IF(t, Vector3::Up.Cross(Vector3::Forward), Vector3::Right);
+        REPORT_SUCCESS_IF(t, Vector3::Forward.Cross(Vector3::Up), Vector3::Left);
     });
 
     t("Vector3 Lerp", [&t] {

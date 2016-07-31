@@ -73,6 +73,14 @@ XOMATH_INTERNAL_MACRO_WARNING
 #   endif
 #endif // XOMATH_FAST
 
+#ifdef __APPLE__
+// todo: find a way to get thread local storage out of xcode clang which allows for
+// non const-expr initialization
+#   define XO_TLS
+#else
+#   define XO_TLS thread_local
+#endif
+
 #if defined(XO_NO_SIMD)
 #define XO_IF_SIMD(...)
 #define XO_IFN_SIMD(...) __VA_ARGS__
@@ -110,19 +118,19 @@ XOMATH_INLINE T XOMATH_FAST(Square(const T& t)) {
 }
 
 XOMATH_INLINE bool XOMATH_FAST(RandomBool()) {
-    static thread_local std::mt19937 engine((unsigned)time(nullptr));
-    static const std::uniform_int_distribution<int> dist(0, 1);
+    static XO_TLS std::mt19937 engine((unsigned)time(nullptr));
+    std::uniform_int_distribution<int> dist(0, 1);
     return dist(engine) == 1;
 }
 
 XOMATH_INLINE int XOMATH_FAST(RandomRange(int low, int high)) {
-    static thread_local std::mt19937 engine((unsigned)time(nullptr));
+    static XO_TLS std::mt19937 engine((unsigned)time(nullptr));
     std::uniform_int_distribution<int> dist(low, high);
     return dist(engine);
 }
 
 XOMATH_INLINE float XOMATH_FAST(RandomRange(float low, float high)) {
-    static thread_local std::mt19937 engine((unsigned)time(nullptr));
+    static XO_TLS std::mt19937 engine((unsigned)time(nullptr));
     std::uniform_real_distribution<float> dist(low, high);
     return dist(engine);
 }

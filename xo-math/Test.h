@@ -135,7 +135,7 @@ double Test::operator ()(const char* testName, TTestFunc func) {
   TDuration seconds = end-start;
 
   std::cout << m_CurrentSuccess << " passed. " << m_CurrentFailure;
-  std::cout << " failed. took (" << seconds.count() << ") seconds. \n\n";
+    std::cout << " failed. took (" << std::fixed << seconds.count() << ") seconds. \n\n";
   return seconds.count();
 }
 
