@@ -113,7 +113,7 @@ XOMATH_INLINE float XOMATH_FAST(Atan2(float y, float x))    { return atan2f(y, x
 XOMATH_INLINE bool XOMATH_FAST(CloseEnough(float y, float x, float tolerance = FloatEpsilon)) { return fabs(x - y) < tolerance; }
 
 template<typename T>
-XOMATH_INLINE T XOMATH_FAST(Square(const T& t)) {
+constexpr XOMATH_INLINE T XOMATH_FAST(Square(const T& t)) {
     return t*t;
 }
 
@@ -207,8 +207,47 @@ XOMATH_INTERNAL_MACRO_WARNING
     XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector2& v) const);
 #endif
 
+#if defined(VEC4_COMPARE_OP) || defined(VEC4D_SIMPLE_OP) || defined(VEC4D_SIMPLE_OP_ADD)
+XOMATH_INTERNAL_MACRO_WARNING
+#else
+#   define VEC4D_SIMPLE_OP(op, simd_command) \
+    XOMATH_INLINE Vector4 XOMATH_FAST(operator op (const Vector4& v) const) { \
+        XO_IF_SIMD(return Vector4(simd_command(m, v.m));) \
+        XO_IFN_SIMD(return Vector4(x op v.x, y op v.y, z op v.z, w op v.w);)\
+    } \
+    XOMATH_INLINE Vector4 XOMATH_FAST(operator op (float v) const) { \
+        XO_IF_SIMD(return Vector4(simd_command(m, _mm_set1_ps(v)));) \
+        XO_IFN_SIMD(return Vector4(x op v, y op v, z op v, z op v);) \
+    } \
+    XOMATH_INLINE Vector4 XOMATH_FAST(operator op (double v) const)            { return (*this) op (float)v; } \
+    XOMATH_INLINE Vector4 XOMATH_FAST(operator op (int v) const)               { return (*this) op (float)v; } \
+    XOMATH_INLINE Vector4 XOMATH_FAST(operator op (const class Vector2& v) const);
+#   define VEC4D_SIMPLE_OP_ADD(op, simple_op, simd_command) \
+    XOMATH_INLINE const Vector4& XOMATH_FAST(operator op (const Vector4& v))   { return (*this) = (*this) simple_op v; } \
+    XOMATH_INLINE const Vector4& XOMATH_FAST(operator op (float v))            { return (*this) = (*this) simple_op v; } \
+    XOMATH_INLINE const Vector4& XOMATH_FAST(operator op (double v))           { return (*this) = (*this) simple_op v; } \
+    XOMATH_INLINE const Vector4& XOMATH_FAST(operator op (int v))              { return (*this) = (*this) simple_op v; } \
+    XOMATH_INLINE const Vector4& XOMATH_FAST(operator op (const class Vector2& v));
+#   define VEC4_COMPARE_OP(op) \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const Vector4& v) const)       { return MagnitudeSquared() op v.MagnitudeSquared(); } \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (float v) const)                { return MagnitudeSquared() op (v*v); } \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (double v) const)               { return (*this) op (float)v; } \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (int v) const)                  { return (*this) op (float)v; } \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector2& v) const);
+#   define VEC4_COMPARE_CLOSE_OP(op, andor) \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const Vector4& v) const) { \
+        XO_IF_SIMD(return (_mm_movemask_ps(_mm_cmpeq_ps(m, v.m)) & 0b0111) op 0b0111;) \
+        XO_IFN_SIMD(return x op v.x andor y op v.y andor z op v.z;) \
+    } \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (float v) const)                { return MagnitudeSquared() - (v*v) op Epsilon; } \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (double v) const)               { return (*this) op (float)v; } \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (int v) const)                  { return (*this) op (float)v; } \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector2& v) const);
+#endif
+
 #include "Vector2.h"
 #include "Vector3.h"
+#include "Vector4.h"
 
 ////////////////////////////////////////////////////////////////////////// Type dependent implementations
 XOMATH_BEGIN_XO_NS
@@ -218,37 +257,35 @@ Vector3::Vector3(const Vector2& v) :
     ) XO_IFN_SIMD(
         x(v.x), y(v.y), z(0.0f)
     ) { }
+Vector4::Vector4(const Vector2& v) :
+    XO_IF_SIMD(
+        m(_mm_set_ps(0.0f, 0.0f, v.y, v.x))
+    ) XO_IFN_SIMD(
+        x(v.x), y(v.y), z(0.0f), w(0.0f)
+    ) { }
 Vector2::Vector2(const Vector3& v) : x(v.x), y(v.y) { }
 
-XOMATH_INLINE Vector2 XOMATH_FAST(Vector2::operator + (const Vector3& v) const) { return (*this) + Vector2(v); }
-XOMATH_INLINE Vector2 XOMATH_FAST(Vector2::operator - (const Vector3& v) const) { return (*this) - Vector2(v); }
-XOMATH_INLINE Vector2 XOMATH_FAST(Vector2::operator * (const Vector3& v) const) { return (*this) * Vector2(v); }
-XOMATH_INLINE Vector2 XOMATH_FAST(Vector2::operator / (const Vector3& v) const) { return (*this) / Vector2(v); }
-XOMATH_INLINE const Vector2& XOMATH_FAST(Vector2::operator += (const Vector3& v)) { return (*this) += Vector2(v); }
-XOMATH_INLINE const Vector2& XOMATH_FAST(Vector2::operator -= (const Vector3& v)) { return (*this) -= Vector2(v); }
-XOMATH_INLINE const Vector2& XOMATH_FAST(Vector2::operator *= (const Vector3& v)) { return (*this) *= Vector2(v); }
-XOMATH_INLINE const Vector2& XOMATH_FAST(Vector2::operator /= (const Vector3& v)) { return (*this) /= Vector2(v); }
-XOMATH_INLINE bool XOMATH_FAST(Vector2::operator == (const Vector3& v) const) { return MagnitudeSquared() == Vector2(v).MagnitudeSquared(); }
-XOMATH_INLINE bool XOMATH_FAST(Vector2::operator != (const Vector3& v) const) { return MagnitudeSquared() != Vector2(v).MagnitudeSquared(); }
-XOMATH_INLINE bool XOMATH_FAST(Vector2::operator > (const Vector3& v) const) { return MagnitudeSquared() > Vector2(v).MagnitudeSquared(); }
-XOMATH_INLINE bool XOMATH_FAST(Vector2::operator >= (const Vector3& v) const) { return MagnitudeSquared() >= Vector2(v).MagnitudeSquared(); }
-XOMATH_INLINE bool XOMATH_FAST(Vector2::operator < (const Vector3& v) const) { return MagnitudeSquared() < Vector2(v).MagnitudeSquared(); }
-XOMATH_INLINE bool XOMATH_FAST(Vector2::operator <= (const Vector3& v) const) { return MagnitudeSquared() <= Vector2(v).MagnitudeSquared(); }
+#define XOMATH_CONVERT_OP(ourtype, thiertype) \
+    XOMATH_INLINE ourtype XOMATH_FAST(ourtype ::operator + (const thiertype& v) const) { return (*this) + ourtype(v); } \
+    XOMATH_INLINE ourtype XOMATH_FAST(ourtype ::operator - (const thiertype& v) const) { return (*this) - ourtype(v); } \
+    XOMATH_INLINE ourtype XOMATH_FAST(ourtype ::operator * (const thiertype& v) const) { return (*this) * ourtype(v); } \
+    XOMATH_INLINE ourtype XOMATH_FAST(ourtype ::operator / (const thiertype& v) const) { return (*this) / ourtype(v); } \
+    XOMATH_INLINE const ourtype & XOMATH_FAST(ourtype ::operator += (const thiertype& v)) { return (*this) += ourtype(v); } \
+    XOMATH_INLINE const ourtype & XOMATH_FAST(ourtype ::operator -= (const thiertype& v)) { return (*this) -= ourtype(v); } \
+    XOMATH_INLINE const ourtype & XOMATH_FAST(ourtype ::operator *= (const thiertype& v)) { return (*this) *= ourtype(v); } \
+    XOMATH_INLINE const ourtype & XOMATH_FAST(ourtype ::operator /= (const thiertype& v)) { return (*this) /= ourtype(v); } \
+    XOMATH_INLINE bool XOMATH_FAST(ourtype ::operator == (const thiertype& v) const) { return MagnitudeSquared() == ourtype(v).MagnitudeSquared(); } \
+    XOMATH_INLINE bool XOMATH_FAST(ourtype ::operator != (const thiertype& v) const) { return MagnitudeSquared() != ourtype(v).MagnitudeSquared(); } \
+    XOMATH_INLINE bool XOMATH_FAST(ourtype ::operator < (const thiertype& v) const) { return MagnitudeSquared() < ourtype(v).MagnitudeSquared(); } \
+    XOMATH_INLINE bool XOMATH_FAST(ourtype ::operator <= (const thiertype& v) const) { return MagnitudeSquared() <= ourtype(v).MagnitudeSquared(); } \
+    XOMATH_INLINE bool XOMATH_FAST(ourtype ::operator > (const thiertype& v) const) { return MagnitudeSquared() > ourtype(v).MagnitudeSquared(); } \
+    XOMATH_INLINE bool XOMATH_FAST(ourtype ::operator >= (const thiertype& v) const) { return MagnitudeSquared() >= ourtype(v).MagnitudeSquared(); }
 
-XOMATH_INLINE Vector3 XOMATH_FAST(Vector3::operator + (const Vector2& v) const) { return (*this) + Vector3(v); }
-XOMATH_INLINE Vector3 XOMATH_FAST(Vector3::operator - (const Vector2& v) const) { return (*this) - Vector3(v); }
-XOMATH_INLINE Vector3 XOMATH_FAST(Vector3::operator * (const Vector2& v) const) { return (*this) * Vector3(v); }
-XOMATH_INLINE Vector3 XOMATH_FAST(Vector3::operator / (const Vector2& v) const) { return (*this) / Vector3(v); }
-XOMATH_INLINE const Vector3& XOMATH_FAST(Vector3::operator += (const Vector2& v)) { return (*this) += Vector3(v); }
-XOMATH_INLINE const Vector3& XOMATH_FAST(Vector3::operator -= (const Vector2& v)) { return (*this) -= Vector3(v); }
-XOMATH_INLINE const Vector3& XOMATH_FAST(Vector3::operator *= (const Vector2& v)) { return (*this) *= Vector3(v); }
-XOMATH_INLINE const Vector3& XOMATH_FAST(Vector3::operator /= (const Vector2& v)) { return (*this) /= Vector3(v); }
-XOMATH_INLINE bool XOMATH_FAST(Vector3::operator == (const Vector2& v) const) { return MagnitudeSquared() == Vector3(v).MagnitudeSquared(); }
-XOMATH_INLINE bool XOMATH_FAST(Vector3::operator != (const Vector2& v) const) { return MagnitudeSquared() != Vector3(v).MagnitudeSquared(); }
-XOMATH_INLINE bool XOMATH_FAST(Vector3::operator > (const Vector2& v) const) { return MagnitudeSquared() > Vector3(v).MagnitudeSquared(); }
-XOMATH_INLINE bool XOMATH_FAST(Vector3::operator >= (const Vector2& v) const) { return MagnitudeSquared() >= Vector3(v).MagnitudeSquared(); }
-XOMATH_INLINE bool XOMATH_FAST(Vector3::operator < (const Vector2& v) const) { return MagnitudeSquared() < Vector3(v).MagnitudeSquared(); }
-XOMATH_INLINE bool XOMATH_FAST(Vector3::operator <= (const Vector2& v) const) { return MagnitudeSquared() <= Vector3(v).MagnitudeSquared(); }
+XOMATH_CONVERT_OP(Vector2, Vector3);
+
+XOMATH_CONVERT_OP(Vector3, Vector2);
+
+XOMATH_CONVERT_OP(Vector4, Vector2);
 
 XOMATH_END_XO_NS
 

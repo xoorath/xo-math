@@ -2,7 +2,7 @@
 #include <chrono>
 #include <ctime>
 
-#define XOMATH_VEC2_CW 1            // All 2d math using relative angles will assume positive to be clockwise, and that rotations start at (0, 1)
+//#define XOMATH_VEC2_CW 1            // All 2d math using relative angles will assume positive to be clockwise, and that rotations start at (0, 1)
 #define XO_NO_NS 1                  // Turn off all namespace options for xomath
 //#define XO_NO_SIMD 1              // Turn off SSE instructions
 //#define XO_NO_FAST 1              // Turn off __vectorcall

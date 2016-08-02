@@ -29,6 +29,7 @@
 		812D15DD1D4993A900195264 /* Vector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector2.h; path = ../Vector2.h; sourceTree = "<group>"; };
 		812D15DE1D4993A900195264 /* Vector3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector3.h; path = ../Vector3.h; sourceTree = "<group>"; };
 		81BB800A1D4E9FC40064AFE7 /* Test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Test.h; sourceTree = "<group>"; };
+		81BB800B1D50BCF80064AFE7 /* Vector4.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Vector4.h; path = ../Vector4.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,6 +46,7 @@
 		812D15C11D49669A00195264 = {
 			isa = PBXGroup;
 			children = (
+				81BB800B1D50BCF80064AFE7 /* Vector4.h */,
 				81BB800A1D4E9FC40064AFE7 /* Test.h */,
 				812D15DC1D4993A900195264 /* GameMath.h */,
 				812D15DD1D4993A900195264 /* Vector2.h */,
