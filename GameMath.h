@@ -144,25 +144,29 @@ XOMATH_END_XO_NS
 XOMATH_INTERNAL_MACRO_WARNING
 #else
 #   define VEC2D_SIMPLE_OP(op) \
-    Vector2 operator op (const Vector2& v) const    { return Vector2(x op v[0], y op v[1]); } \
-    Vector2 operator op (float v) const             { return Vector2(x op v, y op v); } \
-    Vector2 operator op (double v) const            { return Vector2(x op (float)v, y op (float)v); } \
-    Vector2 operator op (int v) const               { return Vector2(x op (float)v, y op (float)v); }
+    XOMATH_INLINE Vector2 XOMATH_FAST(operator op (const Vector2& v) const)    { return Vector2(x op v[0], y op v[1]); } \
+    XOMATH_INLINE Vector2 XOMATH_FAST(operator op (float v) const)             { return Vector2(x op v, y op v); } \
+    XOMATH_INLINE Vector2 XOMATH_FAST(operator op (double v) const)            { return Vector2(x op (float)v, y op (float)v); } \
+    XOMATH_INLINE Vector2 XOMATH_FAST(operator op (int v) const)               { return Vector2(x op (float)v, y op (float)v); } \
+    XOMATH_INLINE Vector2 XOMATH_FAST(operator op (const class Vector3& v) const);
 #   define VEC2D_SIMPLE_OP_ADD(op) \
-    const Vector2& operator op (const Vector2& v)   { x op v[0]; y op v[1]; return *this; } \
-    const Vector2& operator op (float v)            { x op v; y op v; return *this; } \
-    const Vector2& operator op (double v)           { x op (float)v; y op (float)v; return *this; } \
-    const Vector2& operator op (int v)              { x op (float)v; y op (float)v; return *this; }
+    XOMATH_INLINE const Vector2& XOMATH_FAST(operator op (const Vector2& v))   { x op v[0]; y op v[1]; return *this; } \
+    XOMATH_INLINE const Vector2& XOMATH_FAST(operator op (float v))            { x op v; y op v; return *this; } \
+    XOMATH_INLINE const Vector2& XOMATH_FAST(operator op (double v))           { x op (float)v; y op (float)v; return *this; } \
+    XOMATH_INLINE const Vector2& XOMATH_FAST(operator op (int v))              { x op (float)v; y op (float)v; return *this; }\
+    XOMATH_INLINE const Vector2& XOMATH_FAST(operator op (const class Vector3& v));
 #   define VEC2_COMPARE_OP(op) \
-    bool operator op (const Vector2& v) const       { return MagnitudeSquared() op v.MagnitudeSquared(); } \
-    bool operator op (float v) const                { return MagnitudeSquared() op (v*v); } \
-    bool operator op (double v) const               { return MagnitudeSquared() op (float)(v*v); } \
-    bool operator op (int v) const                  { return MagnitudeSquared() op (float)(v*v); }
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const Vector2& v) const)       { return MagnitudeSquared() op v.MagnitudeSquared(); } \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (float v) const)                { return MagnitudeSquared() op (v*v); } \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (double v) const)               { return MagnitudeSquared() op (float)(v*v); } \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (int v) const)                  { return MagnitudeSquared() op (float)(v*v); } \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector3& v) const);
 #   define VEC2_COMPARE_CLOSE_OP(op) \
-    bool operator op (const Vector2& v) const       { return (*this - v).MagnitudeSquared() <= Epsilon; } \
-    bool operator op (float v) const                { return MagnitudeSquared() - (v*v) <= Epsilon; } \
-    bool operator op (double v) const               { return MagnitudeSquared() - (float)(v*v) <= Epsilon; } \
-    bool operator op (int v) const                  { return MagnitudeSquared() - (float)(v*v) <= Epsilon; }
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const Vector2& v) const)       { return (*this - v).MagnitudeSquared() <= Epsilon; } \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (float v) const)                { return MagnitudeSquared() - (v*v) <= Epsilon; } \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (double v) const)               { return MagnitudeSquared() - (float)(v*v) <= Epsilon; } \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (int v) const)                  { return MagnitudeSquared() - (float)(v*v) <= Epsilon; } \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector3& v) const);
 #endif
 
 #if defined(VEC3_COMPARE_OP) || defined(VEC3D_SIMPLE_OP) || defined(VEC3D_SIMPLE_OP_ADD)
@@ -178,17 +182,20 @@ XOMATH_INTERNAL_MACRO_WARNING
         XO_IFN_SIMD(return Vector3(x op v, y op v, z op v);) \
     } \
     XOMATH_INLINE Vector3 XOMATH_FAST(operator op (double v) const)            { return (*this) op (float)v; } \
-    XOMATH_INLINE Vector3 XOMATH_FAST(operator op (int v) const)               { return (*this) op (float)v; }
+    XOMATH_INLINE Vector3 XOMATH_FAST(operator op (int v) const)               { return (*this) op (float)v; } \
+    XOMATH_INLINE Vector3 XOMATH_FAST(operator op (const class Vector2& v) const);
 #   define VEC3D_SIMPLE_OP_ADD(op, simple_op, simd_command) \
     XOMATH_INLINE const Vector3& XOMATH_FAST(operator op (const Vector3& v))   { return (*this) = (*this) simple_op v; } \
     XOMATH_INLINE const Vector3& XOMATH_FAST(operator op (float v))            { return (*this) = (*this) simple_op v; } \
     XOMATH_INLINE const Vector3& XOMATH_FAST(operator op (double v))           { return (*this) = (*this) simple_op v; } \
-    XOMATH_INLINE const Vector3& XOMATH_FAST(operator op (int v))              { return (*this) = (*this) simple_op v; }
+    XOMATH_INLINE const Vector3& XOMATH_FAST(operator op (int v))              { return (*this) = (*this) simple_op v; } \
+    XOMATH_INLINE const Vector3& XOMATH_FAST(operator op (const class Vector2& v));
 #   define VEC3_COMPARE_OP(op) \
     XOMATH_INLINE bool XOMATH_FAST(operator op (const Vector3& v) const)       { return MagnitudeSquared() op v.MagnitudeSquared(); } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (float v) const)                { return MagnitudeSquared() op (v*v); } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (double v) const)               { return (*this) op (float)v; } \
-    XOMATH_INLINE bool XOMATH_FAST(operator op (int v) const)                  { return (*this) op (float)v; }
+    XOMATH_INLINE bool XOMATH_FAST(operator op (int v) const)                  { return (*this) op (float)v; } \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector2& v) const);
 #   define VEC3_COMPARE_CLOSE_OP(op, andor) \
     XOMATH_INLINE bool XOMATH_FAST(operator op (const Vector3& v) const) { \
         XO_IF_SIMD(return (_mm_movemask_ps(_mm_cmpeq_ps(m, v.m)) & 0b0111) op 0b0111;) \
@@ -196,7 +203,8 @@ XOMATH_INTERNAL_MACRO_WARNING
     } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (float v) const)                { return MagnitudeSquared() - (v*v) op Epsilon; } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (double v) const)               { return (*this) op (float)v; } \
-    XOMATH_INLINE bool XOMATH_FAST(operator op (int v) const)                  { return (*this) op (float)v; }
+    XOMATH_INLINE bool XOMATH_FAST(operator op (int v) const)                  { return (*this) op (float)v; } \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector2& v) const);
 #endif
 
 #include "Vector2.h"
@@ -204,8 +212,43 @@ XOMATH_INTERNAL_MACRO_WARNING
 
 ////////////////////////////////////////////////////////////////////////// Type dependent implementations
 XOMATH_BEGIN_XO_NS
-Vector3::Vector3(const Vector2& v) : x(v.x), y(v.y), z(0.0f) { }
+Vector3::Vector3(const Vector2& v) :
+    XO_IF_SIMD(
+        m(_mm_set_ps(0.0f, 0.0f, v.y, v.x))
+    ) XO_IFN_SIMD(
+        x(v.x), y(v.y), z(0.0f)
+    ) { }
 Vector2::Vector2(const Vector3& v) : x(v.x), y(v.y) { }
+
+XOMATH_INLINE Vector2 XOMATH_FAST(Vector2::operator + (const Vector3& v) const) { return (*this) + Vector2(v); }
+XOMATH_INLINE Vector2 XOMATH_FAST(Vector2::operator - (const Vector3& v) const) { return (*this) - Vector2(v); }
+XOMATH_INLINE Vector2 XOMATH_FAST(Vector2::operator * (const Vector3& v) const) { return (*this) * Vector2(v); }
+XOMATH_INLINE Vector2 XOMATH_FAST(Vector2::operator / (const Vector3& v) const) { return (*this) / Vector2(v); }
+XOMATH_INLINE const Vector2& XOMATH_FAST(Vector2::operator += (const Vector3& v)) { return (*this) += Vector2(v); }
+XOMATH_INLINE const Vector2& XOMATH_FAST(Vector2::operator -= (const Vector3& v)) { return (*this) -= Vector2(v); }
+XOMATH_INLINE const Vector2& XOMATH_FAST(Vector2::operator *= (const Vector3& v)) { return (*this) *= Vector2(v); }
+XOMATH_INLINE const Vector2& XOMATH_FAST(Vector2::operator /= (const Vector3& v)) { return (*this) /= Vector2(v); }
+XOMATH_INLINE bool XOMATH_FAST(Vector2::operator == (const Vector3& v) const) { return MagnitudeSquared() == Vector2(v).MagnitudeSquared(); }
+XOMATH_INLINE bool XOMATH_FAST(Vector2::operator != (const Vector3& v) const) { return MagnitudeSquared() != Vector2(v).MagnitudeSquared(); }
+XOMATH_INLINE bool XOMATH_FAST(Vector2::operator > (const Vector3& v) const) { return MagnitudeSquared() > Vector2(v).MagnitudeSquared(); }
+XOMATH_INLINE bool XOMATH_FAST(Vector2::operator >= (const Vector3& v) const) { return MagnitudeSquared() >= Vector2(v).MagnitudeSquared(); }
+XOMATH_INLINE bool XOMATH_FAST(Vector2::operator < (const Vector3& v) const) { return MagnitudeSquared() < Vector2(v).MagnitudeSquared(); }
+XOMATH_INLINE bool XOMATH_FAST(Vector2::operator <= (const Vector3& v) const) { return MagnitudeSquared() <= Vector2(v).MagnitudeSquared(); }
+
+XOMATH_INLINE Vector3 XOMATH_FAST(Vector3::operator + (const Vector2& v) const) { return (*this) + Vector3(v); }
+XOMATH_INLINE Vector3 XOMATH_FAST(Vector3::operator - (const Vector2& v) const) { return (*this) - Vector3(v); }
+XOMATH_INLINE Vector3 XOMATH_FAST(Vector3::operator * (const Vector2& v) const) { return (*this) * Vector3(v); }
+XOMATH_INLINE Vector3 XOMATH_FAST(Vector3::operator / (const Vector2& v) const) { return (*this) / Vector3(v); }
+XOMATH_INLINE const Vector3& XOMATH_FAST(Vector3::operator += (const Vector2& v)) { return (*this) += Vector3(v); }
+XOMATH_INLINE const Vector3& XOMATH_FAST(Vector3::operator -= (const Vector2& v)) { return (*this) -= Vector3(v); }
+XOMATH_INLINE const Vector3& XOMATH_FAST(Vector3::operator *= (const Vector2& v)) { return (*this) *= Vector3(v); }
+XOMATH_INLINE const Vector3& XOMATH_FAST(Vector3::operator /= (const Vector2& v)) { return (*this) /= Vector3(v); }
+XOMATH_INLINE bool XOMATH_FAST(Vector3::operator == (const Vector2& v) const) { return MagnitudeSquared() == Vector3(v).MagnitudeSquared(); }
+XOMATH_INLINE bool XOMATH_FAST(Vector3::operator != (const Vector2& v) const) { return MagnitudeSquared() != Vector3(v).MagnitudeSquared(); }
+XOMATH_INLINE bool XOMATH_FAST(Vector3::operator > (const Vector2& v) const) { return MagnitudeSquared() > Vector3(v).MagnitudeSquared(); }
+XOMATH_INLINE bool XOMATH_FAST(Vector3::operator >= (const Vector2& v) const) { return MagnitudeSquared() >= Vector3(v).MagnitudeSquared(); }
+XOMATH_INLINE bool XOMATH_FAST(Vector3::operator < (const Vector2& v) const) { return MagnitudeSquared() < Vector3(v).MagnitudeSquared(); }
+XOMATH_INLINE bool XOMATH_FAST(Vector3::operator <= (const Vector2& v) const) { return MagnitudeSquared() <= Vector3(v).MagnitudeSquared(); }
 
 XOMATH_END_XO_NS
 

@@ -127,6 +127,7 @@ public:
     XOMATH_INLINE Vector3 XOMATH_FAST(operator / (float v) const)       { return (*this) * (1.0f/v); }
     XOMATH_INLINE Vector3 XOMATH_FAST(operator / (double v) const)      { return (*this) / (float)v; }
     XOMATH_INLINE Vector3 XOMATH_FAST(operator / (int v) const)         { return (*this) / (float)v; }
+    XOMATH_INLINE Vector3 XOMATH_FAST(operator / (const class  Vector2& v) const);
     XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (const Vector3& v)) {
         XO_IF_SIMD (
             m = _mm_div_ps(m, v.m);
@@ -140,6 +141,7 @@ public:
     XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (float v))     { return (*this) *= 1.0f / v; }
     XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (double v))    { return (*this) /= (float)v; }
     XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (int v))       { return (*this) /= (float)v; }
+    XOMATH_INLINE const Vector3& XOMATH_FAST(operator /= (const class Vector2& v));
 #else
     // scalar division is slower, so we try to avoid it unless XO_NO_INVERSE_DIVISION is defined.
     VEC3D_SIMPLE_OP(/ , _mm_div_ps)
@@ -366,9 +368,9 @@ public:
 
     friend std::ostream& operator <<(std::ostream& os, const Vector3& v) {
         XO_IF_SIMD (
-            os << "( x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", w:" << v.w << ", mag:" << v.Magnitude() << ")";
+            os << "(x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", w:" << v.w << ", mag:" << v.Magnitude() << ")";
         ) XO_IFN_SIMD(
-            os << "( x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", mag:" << v.Magnitude() << ")";
+            os << "(x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", mag:" << v.Magnitude() << ")";
         )
         return os;
     }

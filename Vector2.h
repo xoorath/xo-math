@@ -125,7 +125,11 @@ public:
     }
 
     static float AngleRadians(const Vector2& a, const Vector2& b) {
-        return atan2(Cross(a, b)+Epsilon, Dot(a, b));
+    #ifdef XOMATH_VEC2_CW
+        return -atan2(Cross(a, b), Dot(a, b));
+    #else
+        return atan2(Cross(a, b), Dot(a, b));
+    #endif
     }
 
     static float AngleDegrees(const Vector2& a, const Vector2& b) {
@@ -146,7 +150,7 @@ public:
     Vector2 Lerp(const Vector2& v, float t) const { return Lerp(*this, v, t); }
 
     friend std::ostream& operator <<(std::ostream& os, const Vector2& v) {
-        os << '(' << v[0] << ',' << v[1] << ')';
+        os << "(x:" << v[0] << ", y:" << v[1] << ", mag:" << v.Magnitude() << ")";
         return os;
     }
 

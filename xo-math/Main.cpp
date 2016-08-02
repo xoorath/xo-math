@@ -2,7 +2,8 @@
 #include <chrono>
 #include <ctime>
 
-#define XO_NO_NS 1
+#define XOMATH_VEC2_CW 1            // All 2d math using relative angles will assume positive to be clockwise, and that rotations start at (0, 1)
+#define XO_NO_NS 1                  // Turn off all namespace options for xomath
 //#define XO_NO_SIMD 1              // Turn off SSE instructions
 //#define XO_NO_FAST 1              // Turn off __vectorcall
 //#define XO_NO_INLINE 1            // Turn off __forceinline
@@ -34,9 +35,15 @@
 
 void TestVector2(Test& t) {
     t("Vector2 AngleDegrees", [&t] {
+    #ifdef XOMATH_VEC2_CW
+        REPORT_SUCCESS_IF(t, Vector2::Up.AngleDegrees(Vector2::Right), 90.0f);
+        REPORT_SUCCESS_IF(t, Vector2::Right.AngleDegrees(Vector2::Down), 90.0f);
+        REPORT_SUCCESS_IF(t, Vector2::Up.AngleDegrees(Vector2::Down), 180.0f);
+    #else
         REPORT_SUCCESS_IF(t, Vector2::Up.AngleDegrees(Vector2::Right), -90.0f);
         REPORT_SUCCESS_IF(t, Vector2::Right.AngleDegrees(Vector2::Down), -90.0f);
         REPORT_SUCCESS_IF(t, Vector2::Up.AngleDegrees(Vector2::Down), 180.0f);
+    #endif
     });
 
     t("Vector2 Dot", [&t] {
@@ -98,6 +105,13 @@ void TestVector2(Test& t) {
         REPORT_SUCCESS_IF(t, v2a > 1, true);
         REPORT_SUCCESS_IF(t, v2a < 4, true);
         REPORT_SUCCESS_IF(t, v2a < -4, true); // when checking magnitude, sign is ignored
+    });
+
+    t("Vector2 Conversions", [&t] {
+        REPORT_SUCCESS_IF(t, Vector2::Zero == Vector3::Zero, true);
+        REPORT_SUCCESS_IF(t, Vector2::One == Vector3::One, true);
+        REPORT_SUCCESS_IF(t, Vector2::One + Vector3::One, Vector2(2.0f, 2.0f));
+
     });
 }
 
@@ -167,6 +181,12 @@ void TestVector3(Test& t) {
         REPORT_SUCCESS_IF(t, v2a > 1, true);
         REPORT_SUCCESS_IF(t, v2a < 8, true);
         REPORT_SUCCESS_IF(t, v2a < -8, true); // when checking magnitude, sign is ignored
+    });
+
+    t("Vector3 Conversions", [&t] {
+        REPORT_SUCCESS_IF(t, Vector3::Zero == Vector2::Zero, true);
+        REPORT_SUCCESS_IF(t, Vector3::One == Vector2::One, false); // (1,1,1) has a greater magnitude than (1,1,0)
+        REPORT_SUCCESS_IF(t, Vector3::One + Vector2::One, Vector3(2.0f, 2.0f, 1.0f));
     });
 }
 
