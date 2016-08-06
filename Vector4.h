@@ -3,7 +3,7 @@ static_assert(false, "Don't include Vector4.h directly. Include GameMath.h, whic
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS
-
+// TODO: align new/delete
 class _MM_ALIGN16 Vector4 {
     XO_IF_SIMD (
         static const unsigned IDX_X = 0;
@@ -45,6 +45,7 @@ public:
 #endif
 
     Vector4(const class Vector2& v);
+    Vector4(const class Vector3& v);
 
     XOMATH_INLINE float& XOMATH_FAST(operator [](int i)) {
         return f[i];
@@ -131,6 +132,7 @@ public:
     XOMATH_INLINE Vector4 XOMATH_FAST(operator / (double v) const)      { return (*this) / (float)v; }
     XOMATH_INLINE Vector4 XOMATH_FAST(operator / (int v) const)         { return (*this) / (float)v; }
     XOMATH_INLINE Vector4 XOMATH_FAST(operator / (const class  Vector2& v) const);
+    XOMATH_INLINE Vector4 XOMATH_FAST(operator / (const class  Vector3& v) const);
     XOMATH_INLINE const Vector4& XOMATH_FAST(operator /= (const Vector4& v)) {
         XO_IF_SIMD (
             m = _mm_div_ps(m, v.m);
@@ -145,6 +147,7 @@ public:
     XOMATH_INLINE const Vector4& XOMATH_FAST(operator /= (double v))    { return (*this) /= (float)v; }
     XOMATH_INLINE const Vector4& XOMATH_FAST(operator /= (int v))       { return (*this) /= (float)v; }
     XOMATH_INLINE const Vector4& XOMATH_FAST(operator /= (const class Vector2& v));
+    XOMATH_INLINE const Vector4& XOMATH_FAST(operator /= (const class Vector3& v));
 #else
     // scalar division is slower, so we try to avoid it unless XO_NO_INVERSE_DIVISION is defined.
     VEC4D_SIMPLE_OP(/ , _mm_div_ps)
@@ -341,12 +344,6 @@ public:
         return os;
     }
 
-    static const Vector4
-        Origin,
-        UnitX, UnitY, UnitZ,
-        Up, Down, Left, Right, Forward, Backward,
-        One, Zero;
-
     union {
         struct {
             float x, y, z, w;
@@ -356,8 +353,6 @@ public:
         __m128 m;
 #endif
     };
-
-
 };
 
 XOMATH_END_XO_NS

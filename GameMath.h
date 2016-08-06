@@ -148,25 +148,29 @@ XOMATH_INTERNAL_MACRO_WARNING
     XOMATH_INLINE Vector2 XOMATH_FAST(operator op (float v) const)             { return Vector2(x op v, y op v); } \
     XOMATH_INLINE Vector2 XOMATH_FAST(operator op (double v) const)            { return Vector2(x op (float)v, y op (float)v); } \
     XOMATH_INLINE Vector2 XOMATH_FAST(operator op (int v) const)               { return Vector2(x op (float)v, y op (float)v); } \
-    XOMATH_INLINE Vector2 XOMATH_FAST(operator op (const class Vector3& v) const);
+    XOMATH_INLINE Vector2 XOMATH_FAST(operator op (const class Vector3& v) const); \
+    XOMATH_INLINE Vector2 XOMATH_FAST(operator op (const class Vector4& v) const);
 #   define VEC2D_SIMPLE_OP_ADD(op) \
     XOMATH_INLINE const Vector2& XOMATH_FAST(operator op (const Vector2& v))   { x op v[0]; y op v[1]; return *this; } \
     XOMATH_INLINE const Vector2& XOMATH_FAST(operator op (float v))            { x op v; y op v; return *this; } \
     XOMATH_INLINE const Vector2& XOMATH_FAST(operator op (double v))           { x op (float)v; y op (float)v; return *this; } \
     XOMATH_INLINE const Vector2& XOMATH_FAST(operator op (int v))              { x op (float)v; y op (float)v; return *this; }\
-    XOMATH_INLINE const Vector2& XOMATH_FAST(operator op (const class Vector3& v));
+    XOMATH_INLINE const Vector2& XOMATH_FAST(operator op (const class Vector3& v)); \
+    XOMATH_INLINE const Vector2& XOMATH_FAST(operator op (const class Vector4& v));
 #   define VEC2_COMPARE_OP(op) \
     XOMATH_INLINE bool XOMATH_FAST(operator op (const Vector2& v) const)       { return MagnitudeSquared() op v.MagnitudeSquared(); } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (float v) const)                { return MagnitudeSquared() op (v*v); } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (double v) const)               { return MagnitudeSquared() op (float)(v*v); } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (int v) const)                  { return MagnitudeSquared() op (float)(v*v); } \
-    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector3& v) const);
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector3& v) const); \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector4& v) const);
 #   define VEC2_COMPARE_CLOSE_OP(op) \
     XOMATH_INLINE bool XOMATH_FAST(operator op (const Vector2& v) const)       { return (*this - v).MagnitudeSquared() <= Epsilon; } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (float v) const)                { return MagnitudeSquared() - (v*v) <= Epsilon; } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (double v) const)               { return MagnitudeSquared() - (float)(v*v) <= Epsilon; } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (int v) const)                  { return MagnitudeSquared() - (float)(v*v) <= Epsilon; } \
-    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector3& v) const);
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector3& v) const); \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector4& v) const);
 #endif
 
 #if defined(VEC3_COMPARE_OP) || defined(VEC3D_SIMPLE_OP) || defined(VEC3D_SIMPLE_OP_ADD)
@@ -183,19 +187,22 @@ XOMATH_INTERNAL_MACRO_WARNING
     } \
     XOMATH_INLINE Vector3 XOMATH_FAST(operator op (double v) const)            { return (*this) op (float)v; } \
     XOMATH_INLINE Vector3 XOMATH_FAST(operator op (int v) const)               { return (*this) op (float)v; } \
-    XOMATH_INLINE Vector3 XOMATH_FAST(operator op (const class Vector2& v) const);
+    XOMATH_INLINE Vector3 XOMATH_FAST(operator op (const class Vector2& v) const); \
+    XOMATH_INLINE Vector3 XOMATH_FAST(operator op (const class Vector4& v) const);
 #   define VEC3D_SIMPLE_OP_ADD(op, simple_op, simd_command) \
     XOMATH_INLINE const Vector3& XOMATH_FAST(operator op (const Vector3& v))   { return (*this) = (*this) simple_op v; } \
     XOMATH_INLINE const Vector3& XOMATH_FAST(operator op (float v))            { return (*this) = (*this) simple_op v; } \
     XOMATH_INLINE const Vector3& XOMATH_FAST(operator op (double v))           { return (*this) = (*this) simple_op v; } \
     XOMATH_INLINE const Vector3& XOMATH_FAST(operator op (int v))              { return (*this) = (*this) simple_op v; } \
-    XOMATH_INLINE const Vector3& XOMATH_FAST(operator op (const class Vector2& v));
+    XOMATH_INLINE const Vector3& XOMATH_FAST(operator op (const class Vector2& v)); \
+    XOMATH_INLINE const Vector3& XOMATH_FAST(operator op (const class Vector4& v));
 #   define VEC3_COMPARE_OP(op) \
     XOMATH_INLINE bool XOMATH_FAST(operator op (const Vector3& v) const)       { return MagnitudeSquared() op v.MagnitudeSquared(); } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (float v) const)                { return MagnitudeSquared() op (v*v); } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (double v) const)               { return (*this) op (float)v; } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (int v) const)                  { return (*this) op (float)v; } \
-    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector2& v) const);
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector2& v) const); \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector4& v) const);
 #   define VEC3_COMPARE_CLOSE_OP(op, andor) \
     XOMATH_INLINE bool XOMATH_FAST(operator op (const Vector3& v) const) { \
         XO_IF_SIMD(return (_mm_movemask_ps(_mm_cmpeq_ps(m, v.m)) & 0b0111) op 0b0111;) \
@@ -204,7 +211,8 @@ XOMATH_INTERNAL_MACRO_WARNING
     XOMATH_INLINE bool XOMATH_FAST(operator op (float v) const)                { return MagnitudeSquared() - (v*v) op Epsilon; } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (double v) const)               { return (*this) op (float)v; } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (int v) const)                  { return (*this) op (float)v; } \
-    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector2& v) const);
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector2& v) const); \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector4& v) const);
 #endif
 
 #if defined(VEC4_COMPARE_OP) || defined(VEC4D_SIMPLE_OP) || defined(VEC4D_SIMPLE_OP_ADD)
@@ -221,19 +229,22 @@ XOMATH_INTERNAL_MACRO_WARNING
     } \
     XOMATH_INLINE Vector4 XOMATH_FAST(operator op (double v) const)            { return (*this) op (float)v; } \
     XOMATH_INLINE Vector4 XOMATH_FAST(operator op (int v) const)               { return (*this) op (float)v; } \
-    XOMATH_INLINE Vector4 XOMATH_FAST(operator op (const class Vector2& v) const);
+    XOMATH_INLINE Vector4 XOMATH_FAST(operator op (const class Vector2& v) const); \
+    XOMATH_INLINE Vector4 XOMATH_FAST(operator op (const class Vector3& v) const);
 #   define VEC4D_SIMPLE_OP_ADD(op, simple_op, simd_command) \
     XOMATH_INLINE const Vector4& XOMATH_FAST(operator op (const Vector4& v))   { return (*this) = (*this) simple_op v; } \
     XOMATH_INLINE const Vector4& XOMATH_FAST(operator op (float v))            { return (*this) = (*this) simple_op v; } \
     XOMATH_INLINE const Vector4& XOMATH_FAST(operator op (double v))           { return (*this) = (*this) simple_op v; } \
     XOMATH_INLINE const Vector4& XOMATH_FAST(operator op (int v))              { return (*this) = (*this) simple_op v; } \
-    XOMATH_INLINE const Vector4& XOMATH_FAST(operator op (const class Vector2& v));
+    XOMATH_INLINE const Vector4& XOMATH_FAST(operator op (const class Vector2& v)); \
+    XOMATH_INLINE const Vector4& XOMATH_FAST(operator op (const class Vector3& v));
 #   define VEC4_COMPARE_OP(op) \
     XOMATH_INLINE bool XOMATH_FAST(operator op (const Vector4& v) const)       { return MagnitudeSquared() op v.MagnitudeSquared(); } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (float v) const)                { return MagnitudeSquared() op (v*v); } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (double v) const)               { return (*this) op (float)v; } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (int v) const)                  { return (*this) op (float)v; } \
-    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector2& v) const);
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector2& v) const); \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector3& v) const);
 #   define VEC4_COMPARE_CLOSE_OP(op, andor) \
     XOMATH_INLINE bool XOMATH_FAST(operator op (const Vector4& v) const) { \
         XO_IF_SIMD(return (_mm_movemask_ps(_mm_cmpeq_ps(m, v.m)) & 0b0111) op 0b0111;) \
@@ -242,28 +253,47 @@ XOMATH_INTERNAL_MACRO_WARNING
     XOMATH_INLINE bool XOMATH_FAST(operator op (float v) const)                { return MagnitudeSquared() - (v*v) op Epsilon; } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (double v) const)               { return (*this) op (float)v; } \
     XOMATH_INLINE bool XOMATH_FAST(operator op (int v) const)                  { return (*this) op (float)v; } \
-    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector2& v) const);
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector2& v) const); \
+    XOMATH_INLINE bool XOMATH_FAST(operator op (const class Vector3& v) const);
 #endif
 
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
+#include "Matrix4x4.h"
 
 ////////////////////////////////////////////////////////////////////////// Type dependent implementations
 XOMATH_BEGIN_XO_NS
+Vector2::Vector2(const Vector3& v) : x(v.x), y(v.y) { }
+Vector2::Vector2(const Vector4& v) : x(v.x), y(v.y) { }
+
 Vector3::Vector3(const Vector2& v) :
     XO_IF_SIMD(
         m(_mm_set_ps(0.0f, 0.0f, v.y, v.x))
     ) XO_IFN_SIMD(
         x(v.x), y(v.y), z(0.0f)
     ) { }
+
+Vector3::Vector3(const Vector4& v) :
+    XO_IF_SIMD(
+        m(v.m)
+    ) XO_IFN_SIMD(
+        x(v.x), y(v.y), z(v.z)
+    ) { }
+
 Vector4::Vector4(const Vector2& v) :
     XO_IF_SIMD(
         m(_mm_set_ps(0.0f, 0.0f, v.y, v.x))
     ) XO_IFN_SIMD(
         x(v.x), y(v.y), z(0.0f), w(0.0f)
     ) { }
-Vector2::Vector2(const Vector3& v) : x(v.x), y(v.y) { }
+
+Vector4::Vector4(const Vector3& v) :
+    XO_IF_SIMD(
+        m(v.m)
+    ) XO_IFN_SIMD(
+        x(v.x), y(v.y), z(v.z), w(v.w)
+    ) { }
 
 #define XOMATH_CONVERT_OP(ourtype, thiertype) \
     XOMATH_INLINE ourtype XOMATH_FAST(ourtype ::operator + (const thiertype& v) const) { return (*this) + ourtype(v); } \
@@ -282,10 +312,13 @@ Vector2::Vector2(const Vector3& v) : x(v.x), y(v.y) { }
     XOMATH_INLINE bool XOMATH_FAST(ourtype ::operator >= (const thiertype& v) const) { return MagnitudeSquared() >= ourtype(v).MagnitudeSquared(); }
 
 XOMATH_CONVERT_OP(Vector2, Vector3);
+XOMATH_CONVERT_OP(Vector2, Vector4);
 
 XOMATH_CONVERT_OP(Vector3, Vector2);
+XOMATH_CONVERT_OP(Vector3, Vector4);
 
 XOMATH_CONVERT_OP(Vector4, Vector2);
+XOMATH_CONVERT_OP(Vector4, Vector3);
 
 XOMATH_END_XO_NS
 

@@ -3,7 +3,7 @@ static_assert(false, "Don't include Vector2.h directly. Include GameMath.h, whic
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS
-class Vector2 {
+class _MM_ALIGN16 Vector2 {
 public:
     constexpr static const float Epsilon = FloatEpsilon+FloatEpsilon;
 
@@ -16,6 +16,7 @@ public:
     Vector2(const Vector2& v) : x(v.x), y(v.y) {
     }
     Vector2(const class Vector3& v);
+    Vector2(const class Vector4& v);
 
     float& operator [](int i) { return f[i]; }
     const float& operator [](int i) const { return f[i]; }
