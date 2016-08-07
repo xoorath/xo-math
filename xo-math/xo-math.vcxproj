@@ -124,6 +124,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\GameMath.h" />
+    <ClInclude Include="..\Matrix4x4.h" />
     <ClInclude Include="..\Vector2.h" />
     <ClInclude Include="..\Vector3.h" />
     <ClInclude Include="..\Vector4.h" />

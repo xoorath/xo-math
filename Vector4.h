@@ -179,7 +179,7 @@ public:
         XO_IF_SIMD (
             auto s = _mm_hadd_ps(m, m);
             s = _mm_hadd_ps(s, s);
-            return s;
+            return _mm_cvtss_f32(s);
         ) XO_IFN_SIMD (
             return x+y+z+w;
         )
