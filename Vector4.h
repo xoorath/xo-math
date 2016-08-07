@@ -175,6 +175,16 @@ public:
         return ~(*this);
     }
 
+    XOMATH_INLINE float Sum() const {
+        XO_IF_SIMD (
+            auto s = _mm_hadd_ps(m, m);
+            s = _mm_hadd_ps(s, s);
+            return s;
+        ) XO_IFN_SIMD (
+            return x+y+z+w;
+        )
+    }
+
     XOMATH_INLINE float MagnitudeSquared() const {
         XO_IF_SIMD (
             auto square = _mm_mul_ps(m, m);
@@ -285,42 +295,6 @@ public:
         return a + ((b - a) * t);
     }
 
-    XOMATH_INLINE static Vector4 XOMATH_FAST(RotateRadians(const Vector4& v, const Vector4& axis, float angle)) {
-        // Rodrigues' rotation formula
-        // https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
-        auto sinAng = Sin(angle);
-        auto cosAng = Cos(angle);
-        return v * cosAng + axis.Cross(v) * sinAng + axis * axis.Dot(v) * (1.0f - cosAng);
-    }
-
-    XOMATH_INLINE static Vector4 XOMATH_FAST(RotateDegrees(const Vector4& v, const Vector4& axis, float angle)) {
-        return RotateRadians(v, axis, angle * Deg2Rad);
-    }
-
-    // A random vector on edge of a cone with a given angle relative to a given forward.
-    XOMATH_INLINE static Vector4 XOMATH_FAST(RandomOnConeRadians(const Vector4& forward, float angle)) {
-        auto cross = forward.Cross(forward == Up ? Left : Up); // cross anything but itself will do. We just need an orthogonal vector
-        auto tilted = forward.RotateRadians(cross, angle);
-        return tilted.RotateRadians(forward, RandomRange(-PI, PI));
-    }
-
-    // A random vector inside a cone with a given angle relative to a given forward.
-    XOMATH_INLINE static Vector4 XOMATH_FAST(RandomInConeRadians(const Vector4& forward, float angle)) {
-        auto cross = forward.Cross(forward == Up ? Left : Up); // cross anything but itself will do. We just need an orthogonal vector
-        auto tilted = forward.RotateRadians(cross, RandomRange(0.0f, angle));
-        return tilted.RotateRadians(forward, RandomRange(-PI, PI));
-    }
-
-    // A random vector on edge of a cone with a given angle relative to a given forward.
-    XOMATH_INLINE static Vector4 XOMATH_FAST(RandomOnConeDegrees(const Vector4& forward, float angle)) {
-        return RandomOnConeRadians(forward, angle * Deg2Rad);
-    }
-
-    // A random vector inside a cone with a given angle relative to a given forward.
-    XOMATH_INLINE static Vector4 XOMATH_FAST(RandomInConeDegrees(const Vector4& forward, float angle)) {
-        return RandomInConeRadians(forward, angle * Deg2Rad);
-    }
-
     XOMATH_INLINE float XOMATH_FAST(Dot(const Vector4& v) const)                                { return Dot(*this, v); }
     XOMATH_INLINE Vector4 XOMATH_FAST(Cross(const Vector4& v) const)                            { return Cross(*this, v); }
     XOMATH_INLINE float XOMATH_FAST(AngleRadians(const Vector4& v) const)                       { return AngleRadians(*this, v); }
@@ -328,12 +302,6 @@ public:
     XOMATH_INLINE float XOMATH_FAST(DistanceSquared(const Vector4& v) const)                    { return DistanceSquared(*this, v); }
     XOMATH_INLINE float XOMATH_FAST(Distance(const Vector4& v) const)                           { return Distance(*this, v); }
     XOMATH_INLINE Vector4 XOMATH_FAST(Lerp(const Vector4& v, float t) const)                    { return Lerp(*this, v, t); }
-    XOMATH_INLINE Vector4 XOMATH_FAST(RotateRadians(const Vector4& axis, float angle) const)    { return RotateRadians(*this, axis, angle); }
-    XOMATH_INLINE Vector4 XOMATH_FAST(RotateDegrees(const Vector4& axis, float angle) const)    { return RotateDegrees(*this, axis, angle); }
-    XOMATH_INLINE Vector4 XOMATH_FAST(RandomOnConeRadians(float angle) const)                   { return RandomOnConeRadians(*this, angle); }
-    XOMATH_INLINE Vector4 XOMATH_FAST(RandomInConeRadians(float angle) const)                   { return RandomInConeRadians(*this, angle); }
-    XOMATH_INLINE Vector4 XOMATH_FAST(RandomOnConeDegrees(float angle) const)                   { return RandomOnConeDegrees(*this, angle); }
-    XOMATH_INLINE Vector4 XOMATH_FAST(RandomInConeDegrees(float angle) const)                   { return RandomInConeDegrees(*this, angle); }
 
     friend std::ostream& operator <<(std::ostream& os, const Vector4& v) {
         XO_IF_SIMD (
