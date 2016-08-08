@@ -72,10 +72,29 @@ constexpr const float PIx2 = 2.0f * PI;
 constexpr const float TAU = PIx2;
 constexpr const float HalfPI = PI / 2.0f;
 
-constexpr const float FloatEpsilon = 1.192092896e-07F;
+constexpr const float FloatEpsilon = 0.0000001192092896f;
 
 constexpr const float Rad2Deg = 360.0f / TAU;
 constexpr const float Deg2Rad = TAU / 360.0f;
+
+#if XO_SSE
+namespace SSE {
+#   if XO_SSE2
+    static const __m128 AbsMask = _mm_castsi128_ps(_mm_srli_epi32(_mm_set1_epi32(-1), 1));
+
+    __m128 Abs(__m128 v) {
+        return _mm_and_ps(AbsMask, v);
+    }
+#   endif
+
+    // the quoted error on _mm_rcp_ps documentation
+    constexpr const float SSEFloatEpsilon = 0.000366210938f;
+
+    static const __m128 Zero = _mm_setzero_ps();
+    static const __m128 One = _mm_set1_ps(1.0f);
+    static const __m128 Epsilon = _mm_set_ps1(SSEFloatEpsilon);
+}
+#endif
 
 // wrap for now, so we have the option to make a faster version later.
 _XOINL 
@@ -103,7 +122,7 @@ _XOINL
 float Atan2(float y, float x) { return atan2f(y, x); }
 
 _XOINL 
-bool CloseEnough(float y, float x, float tolerance = FloatEpsilon) { return fabs(x - y) < tolerance; }
+bool CloseEnough(float x, float y, float tolerance = FloatEpsilon) { return fabs(y - x) < tolerance; }
 
 template<typename T>
 constexpr _XOINL 

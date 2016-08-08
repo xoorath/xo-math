@@ -204,7 +204,7 @@ void TestVector3(Test& t) {
 
     t("Vector3 Conversions", [&t] {
         REPORT_SUCCESS_IF(t, Vector3::Zero == Vector2::Zero, true);
-        REPORT_SUCCESS_IF(t, Vector3::One == Vector2::One, false); // (1,1,1) has a greater magnitude than (1,1,0)
+        REPORT_SUCCESS_IF(t, Vector3::One == Vector2::One, true);
         REPORT_SUCCESS_IF(t, Vector3::One + Vector2::One, Vector3(2.0f, 2.0f, 1.0f));
     });
 }
@@ -219,8 +219,6 @@ int main() {
 
     TestVector2(t);
     TestVector3(t);
-
-    constexpr auto bigBinary = 0b1111111111111111111111111111111111111111111111111111111111111111;
 
 #if defined(_MSC_VER)
     system("pause");
