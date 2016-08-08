@@ -4,17 +4,17 @@
 
 //#define XOMATH_VEC2_CW 1            // All 2d math using relative angles will assume positive to be clockwise, and that rotations start at (0, 1)
 #define XO_NO_NS 1                  // Turn off all namespace options for xomath
-//#define XO_NO_SIMD 1              // Turn off SSE instructions
-//#define XO_NO_FAST 1              // Turn off __vectorcall
 //#define XO_NO_INLINE 1            // Turn off __forceinline
 //#define XO_NO_INVERSE_DIVISION 1  // Turn off (1/x)*Vec in place of (x,x,x)/Vec
 
+//////////////////////////////////////////////////////////// In use
 // Allow SSE (1999) Intel Katmai, (2001) AMD Palomino
 #define XO_SSE 1
 // Allow SSE2 (2001) Intel Willamette, (2003) AMD Opteron
 #define XO_SSE2 1
 // Allow SSE3 (2004) Intel Prescott, (2005) AMD Venice/San Diego
 #define XO_SSE3 1
+//////////////////////////////////////////////////////////// Not yet used
 // Allow SSSE3 (2006) Intel Woodcrest, (2011) AMD Bobcat
 #define XO_SSSE3 1
 // Allow SSE4 (2008) Intel Nehalem, (2011) AMD Bulldozer, Playstation 4, Xbox One
@@ -25,7 +25,6 @@
 #define XO_AVX2 1
 // Allow AVX512 (2016) Intel Knights Landing
 #define XO_AVX512 1
-
 
 #include "../GameMath.h"
 
@@ -211,7 +210,6 @@ void TestVector3(Test& t) {
 
 #include <memory.h>
 #include <immintrin.h>
-
 
 int main() {
  

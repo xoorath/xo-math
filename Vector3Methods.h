@@ -17,7 +17,7 @@ Vector3::Vector3(float f) :
 {
 }
 #else
-    x(f), y(f), z(f), w(0.0f)
+    x(f), y(f), z(f)
 {
 }
 #endif
@@ -193,7 +193,7 @@ float Vector3::Dot(const Vector3& a, const Vector3& b) {
     return _mm_cvtss_f32(d);
 #elif XO_SSE
     auto d = _mm_mul_ps(a.m, b.m);
-    return _mm_cvtss_f32(x+y+z);
+    return d.m128_f32[IDX_X] + d.m128_f32[IDX_Y] + d.m128_f32[IDX_Z];
 #else
     return (a.x*b.x) + (a.y*b.y) + (a.z*b.z);
 #endif

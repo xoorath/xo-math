@@ -310,17 +310,6 @@ public:
 #endif
     }
 
-    _XOINL static
-    Vector4 Cross(const Vector4& a, const Vector4& b) {
-#if XO_SSE
-        // Todo: There's a trick to do this with three shuffles. Look into that.
-        auto l = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)));
-        auto r = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)));
-        return Vector4(_mm_sub_ps(l, r));
-#else
-        return Vector4((a.y*b.z)-(a.z*b.y), (a.z*b.x)-(a.x*b.z), (a.x*b.y)-(a.y*b.x));
-#endif
-    }
 
     _XOINL static
     float DistanceSquared(const Vector4& a, const Vector4& b) {
@@ -339,9 +328,6 @@ public:
 
     _XOINL
     float Dot(const Vector4& v) const                                { return Dot(*this, v); }
-
-    _XOINL
-    Vector4 Cross(const Vector4& v) const                            { return Cross(*this, v); }
 
     _XOINL
     float DistanceSquared(const Vector4& v) const                    { return DistanceSquared(*this, v); }

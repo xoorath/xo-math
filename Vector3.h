@@ -147,88 +147,142 @@ public:
     _XOINL bool operator != (const class Vector2& v) const;
     _XOINL bool operator != (const class Vector4& v) const;
 
+    // Return a copy of this vector swizzled so that x=z, y=y and z=x.
     _XOINL Vector3 ZYX() const;
 
+    // Return the magnitude (length) of this vector squared. This is faster than Magnitude().
     _XOINL float MagnitudeSquared() const;
 
+    // Return the magnitude (length) of this vector.
     _XOINL float Magnitude() const;
 
+    // Normalize this vector so that the magnitude (length) is 1, then return a reference to this vector.
+    // Note: This method has no effect if the length of the vector is already 1.
     _XOINL const Vector3& Normalize();
 
+    // Return a copy of this vector normalized so that the magnitude (length) is 1.
+    // Note: This method has no effect if the length of the vector is already 1.
     _XOINL Vector3 Normalized() const;
 
+    // Return true if the magnitude (length) of this vector is zero.
     _XOINL bool IsZero() const;
 
+    // Return true if the magnitude (length) of this vector is 1.
     _XOINL bool IsNormalized() const;
 
+    // Return a vector with each element equal to the max of that element in and b.
+    // Example: Max({1.0f, -1.0f, -1.0f}, {-1.0f, 1.0f, -1.0f}) == {1.0f, 1.0f, -1.0f}
     _XOINL static Vector3 Max(const Vector3& a, const Vector3& b);
 
+    // Return a vector with each element equal to the min of that element in and b.
+    // Example: Max({1.0f, -1.0f, 1.0f}, {-1.0f, 1.0f, 1.0f}) == {-1.0f, -1.0f, 1.0f}
     _XOINL static Vector3 Min(const Vector3& a, const Vector3& b);
 
+    // Returns the dot product (scalar product) of vectors a and b.
+    // See: https://en.wikipedia.org/wiki/Dot_product
     _XOINL static float Dot(const Vector3& a, const Vector3& b);
 
+    // Returns the cross product (vector product) of vectors a and b.
+    // https://en.wikipedia.org/wiki/Cross_product
     _XOINL static  Vector3 Cross(const Vector3& a, const Vector3& b);
 
+    // Returns the angle in radians between vectors a and b.
     _XOINL static float AngleRadians(const Vector3& a, const Vector3& b);
 
+    // Returns the angle in degrees between vectors a and b.
     _XOINL static float AngleDegrees(const Vector3& a, const Vector3& b);
 
+    // Returns the distance between vectors a and b. This is faster than Distance().
     _XOINL static float DistanceSquared(const Vector3& a, const Vector3& b);
 
+    // Returns the distance between vectors a and b.
     _XOINL static  float Distance(const Vector3&a, const Vector3&b);
 
+    // Returns a point linearly interpolated between a and b by a factor of t. 
+    // Where t is 0, a is returned. Where t is 1, b is returned.
+    // See: https://en.wikipedia.org/wiki/Linear_interpolation
     _XOINL static Vector3 Lerp(const Vector3& a, const Vector3& b, float t);
 
+    // Rotate the input vector v by 'angle' radians on the specified axis, and return the result.
+    // Example: RotateRadians(Vector3::Up, Vector3::Right, Pi/2.0f) == Vector3::Forward
     _XOINL static Vector3 RotateRadians(const Vector3& v, const Vector3& axis, float angle);
 
+    // Rotate the input vector v by 'angle' degrees on the specified axis, and return the result.
+    // Example: RotateDegrees(Vector3::Up, Vector3::Right, 90.0f) == Vector3::Forward
     _XOINL static Vector3 RotateDegrees(const Vector3& v, const Vector3& axis, float angle);
 
-    // A random vector on edge of a cone with a given angle relative to a given forward.
+    // Return a random vector on edge of a cone with an angle relative to forward.
+    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
+    // angles at and beyond PI radians will no longer represent a meaningful cone.
     _XOINL static Vector3 RandomOnConeRadians(const Vector3& forward, float angle);
 
-    // A random vector inside a cone with a given angle relative to a given forward.
-    // Note: this cone in this context will be rounded at the bottom, not flat. The
-    //  forward vector magnitude will be the same as the returned vector.
+    // Return a random vector inside a cone with an angle relative to forward.
+    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
+    // angles at and beyond PI radians will no longer represent a meaningful cone.
     _XOINL static Vector3 RandomInConeRadians(const Vector3& forward, float angle);
 
-    // A random vector on edge of a cone with a given angle relative to a given forward.
-    // Note: this cone in this context will be rounded at the bottom, not flat. The
-    //  forward vector magnitude will be the same as the returned vector.
+    // Return a random vector on edge of a cone with an angle relative forward.
+    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
+    // angles at and beyond 180.0f degrees will no longer represent a meaningful cone.
     _XOINL static Vector3 RandomOnConeDegrees(const Vector3& forward, float angle);
 
-    // A random vector inside a cone with a given angle relative to a given forward.
-    // Note: this cone in this context will be rounded at the bottom, not flat. The
-    //  forward vector magnitude will be the same as the returned vector.
+    // Return a random vector inside a cone with an angle relative to forward.
+    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
+    // angles at and beyond 180.0f degrees will no longer represent a meaningful cone.
     _XOINL static Vector3 RandomInConeDegrees(const Vector3& forward, float angle);
 
-    // A random vector with a length of 1.0f
+    // Return a random vector with a length of 1.0f
     _XOINL static Vector3 RandomOnSphere();
 
-    // A random vector who's length does not exceed 1
+    // Return a random vector who's length does not exceed 1
     _XOINL static Vector3 RandomInSphere();
 
-    // A random vector with length d
+    // Return a random vector with length d
     _XOINL static Vector3 RandomAtDistance(float d);
 
-    // A random vector who's length does not exceed d
+    // Return a random vector who's length does not exceed d
     _XOINL static Vector3 RandomInDistance(float d);
 
-    // A random vector with a magnitude between low and high
+    // Return a random vector with a magnitude between low and high
     _XOINL static Vector3 RandomInRange(float low, float high);
 
-    // passthrough methods, will call the static counterpart.
+    // See static Vector3::Dot
     _XOINL float Dot(const Vector3& v) const;
-    _XOINL  Vector3 Cross(const Vector3& v) const;
+
+    // See static Vector3::Cross
+    _XOINL Vector3 Cross(const Vector3& v) const;
+
+    // See static Vector3::Dot
     _XOINL float AngleRadians(const Vector3& v) const;
+
+    // See static Vector3::AngleDegrees
     _XOINL float AngleDegrees(const Vector3& v) const;
+
+    // See static Vector3::DistanceSquared
     _XOINL float DistanceSquared(const Vector3& v) const;
+
+    // See static Vector3::Distance
     _XOINL float Distance(const Vector3& v) const;
+
+    // See static Vector3::Lerp
     _XOINL Vector3 Lerp(const Vector3& v, float t) const;
+
+    // See static Vector3::RotateRadians
     _XOINL Vector3 RotateRadians(const Vector3& axis, float angle) const;
+
+    // See static Vector3::RotateDegrees
     _XOINL Vector3 RotateDegrees(const Vector3& axis, float angle) const;
+
+    // See static Vector3::RandomOnConeRadians
     _XOINL Vector3 RandomOnConeRadians(float angle) const;
+
+    // See static Vector3::RandomInConeRadians
     _XOINL Vector3 RandomInConeRadians(float angle) const;
+
+    // See static Vector3::RandomOnConeDegrees
     _XOINL Vector3 RandomOnConeDegrees(float angle) const;
+
+    // See static Vector3::RandomInConeDegrees
     _XOINL Vector3 RandomInConeDegrees(float angle) const;
 
     friend std::ostream& operator <<(std::ostream& os, const Vector3& v) {
@@ -264,8 +318,10 @@ public:
 #endif
 };
 
-#if XO_SSE
+#if XO_SSE2
 const __m128 Vector3::MASK = _mm_castsi128_ps(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff));
+#elif XO_SSE
+const __m128 Vector3::MASK = {-1, -1, -1, 0};
 #endif
 
 const Vector3 Vector3::Origin(0.0f, 0.0f, 0.0f);

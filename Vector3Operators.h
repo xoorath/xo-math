@@ -255,7 +255,7 @@ bool Vector3::operator == (const Vector3& v) const {
     // TODO: find a faster way with SSE to do a 'close enough' check.
     // I'm not sure if there's a way to do the sign bit masking like we have in SSE::Abs to acomplish
     // what we're doing in SSE2
-    return CloseEnough(x, v.x) && CloseEnough(y, v.y) && CloseEnough(z, v.z);
+    return CloseEnough(x, v.x, SSE::SSEFloatEpsilon) && CloseEnough(y, v.y, SSE::SSEFloatEpsilon) && CloseEnough(z, v.z, SSE::SSEFloatEpsilon);
 #   else
     return CloseEnough(x, v.x) && CloseEnough(y, v.y) && CloseEnough(z, v.z);
 #   endif

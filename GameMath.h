@@ -315,7 +315,7 @@ Vector4::Vector4(const Vector3& v) :
 #if XO_SSE
         m(v.m) { }
 #else
-        x(v.x), y(v.y), z(v.z), w(v.w) { }
+        x(v.x), y(v.y), z(v.z), w(0.0f) { }
 #endif
 
 #define XOMATH_CONVERT_OP(ourtype, thiertype) \

@@ -4,3 +4,4 @@ xo-math/x32
 *.sdf
 *opendb
 *.opensdf
+*.db
