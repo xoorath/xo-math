@@ -24,6 +24,12 @@
 
 /* Begin PBXFileReference section */
 		8108E8BA1D568CB400D73D5F /* Matrix4x4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Matrix4x4.h; path = ../Matrix4x4.h; sourceTree = "<group>"; };
+		8108E8BB1D58B71D00D73D5F /* Vector2Methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector2Methods.h; path = ../Vector2Methods.h; sourceTree = "<group>"; };
+		8108E8BC1D58B71D00D73D5F /* Vector2Operators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector2Operators.h; path = ../Vector2Operators.h; sourceTree = "<group>"; };
+		8108E8BD1D58B71D00D73D5F /* Vector3Methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector3Methods.h; path = ../Vector3Methods.h; sourceTree = "<group>"; };
+		8108E8BE1D58B71D00D73D5F /* Vector3Operators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector3Operators.h; path = ../Vector3Operators.h; sourceTree = "<group>"; };
+		8108E8BF1D58B71D00D73D5F /* Vector4Methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector4Methods.h; path = ../Vector4Methods.h; sourceTree = "<group>"; };
+		8108E8C01D58B71D00D73D5F /* Vector4Operators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector4Operators.h; path = ../Vector4Operators.h; sourceTree = "<group>"; };
 		812D15CA1D49669A00195264 /* xo-math */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "xo-math"; sourceTree = BUILT_PRODUCTS_DIR; };
 		812D15DA1D49679300195264 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = SOURCE_ROOT; };
 		812D15DC1D4993A900195264 /* GameMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameMath.h; path = ../GameMath.h; sourceTree = "<group>"; };
@@ -47,14 +53,20 @@
 		812D15C11D49669A00195264 = {
 			isa = PBXGroup;
 			children = (
-				8108E8BA1D568CB400D73D5F /* Matrix4x4.h */,
-				81BB800B1D50BCF80064AFE7 /* Vector4.h */,
-				81BB800A1D4E9FC40064AFE7 /* Test.h */,
 				812D15DC1D4993A900195264 /* GameMath.h */,
-				812D15DD1D4993A900195264 /* Vector2.h */,
-				812D15DE1D4993A900195264 /* Vector3.h */,
-				812D15CC1D49669A00195264 /* xo-math */,
+				8108E8BA1D568CB400D73D5F /* Matrix4x4.h */,
 				812D15CB1D49669A00195264 /* Products */,
+				81BB800A1D4E9FC40064AFE7 /* Test.h */,
+				812D15DD1D4993A900195264 /* Vector2.h */,
+				8108E8BB1D58B71D00D73D5F /* Vector2Methods.h */,
+				8108E8BC1D58B71D00D73D5F /* Vector2Operators.h */,
+				812D15DE1D4993A900195264 /* Vector3.h */,
+				8108E8BD1D58B71D00D73D5F /* Vector3Methods.h */,
+				8108E8BE1D58B71D00D73D5F /* Vector3Operators.h */,
+				81BB800B1D50BCF80064AFE7 /* Vector4.h */,
+				8108E8BF1D58B71D00D73D5F /* Vector4Methods.h */,
+				8108E8C01D58B71D00D73D5F /* Vector4Operators.h */,
+				812D15CC1D49669A00195264 /* xo-math */,
 			);
 			sourceTree = "<group>";
 		};

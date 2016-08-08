@@ -31,9 +31,6 @@ public:
     _XOINL Vector3(const class Vector2& v);
     _XOINL Vector3(const class Vector4& v);
 
-    _XOINL float& operator [](int i);
-    _XOINL const float& operator [](int i) const;
-
     _XOINL void Set(float x, float y, float z);
 
     _XOINL void Set(float f);
@@ -45,6 +42,12 @@ public:
 
     _XOINL void Get(float& x, float& y, float &z) const;
     _XOINL void Get(float* f) const;
+
+    _XOINL float& operator [](int i);
+    _XOINL const float& operator [](int i) const;
+
+    _XOINL Vector3 operator -() const;
+    _XOINL Vector3 operator ~() const;
 
     _XOINL Vector3 operator + (const Vector3& v) const;
     _XOINL Vector3 operator + (float v) const;
@@ -144,274 +147,89 @@ public:
     _XOINL bool operator != (const class Vector2& v) const;
     _XOINL bool operator != (const class Vector4& v) const;
 
-    _XOINL 
-    Vector3 operator - () const {
-#if XO_SSE
-        static const __m128 anti = _mm_set1_ps(-1.0f);
-        return Vector3(_mm_mul_ps(m, anti));
-#else
-        return Vector3(-x, -y, -z);
-#endif
-    }
+    _XOINL Vector3 ZYX() const;
 
-    _XOINL
-    Vector3 operator ~ () const {
-#if XO_SSE
-        return Vector3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Y, IDX_Z)));
-#else
-        return Vector3(z, y, x);
-#endif
-    }
+    _XOINL float MagnitudeSquared() const;
 
-    _XOINL 
-    Vector3 ZYX() const {
-        return ~(*this);
-    }
+    _XOINL float Magnitude() const;
 
-    _XOINL 
-    float MagnitudeSquared() const {
-#if XO_SSE3
-        auto square = _mm_and_ps(_mm_mul_ps(m, m), MASK);
-        square = _mm_hadd_ps(square, square);
-        square = _mm_hadd_ps(square, square);
-        return _mm_cvtss_f32(square);
-#elif XO_SSE
-        auto square = _mm_mul_ps(m, m);
-        return square.m128_f32[IDX_X] + square.m128_f32[IDX_Y] + square.m128_f32[IDX_Z];
-#else
-        return (x*x) + (y*y) + (z*z);
-#endif
-    }
+    _XOINL const Vector3& Normalize();
 
-    _XOINL 
-    float Magnitude() const {
-        return Sqrt(MagnitudeSquared());
-    }
+    _XOINL Vector3 Normalized() const;
 
-    _XOINL
-    const Vector3& Normalize() {
-        float magnitude = MagnitudeSquared();
-        if (CloseEnough(magnitude, 1.0f, Epsilon))
-            return *this; // already normalized
-        if (CloseEnough(magnitude, 0.0f, Epsilon))
-            return *this; // zero vec
-        magnitude = Sqrt(magnitude);
-        return (*this) /= magnitude;
-    }
+    _XOINL bool IsZero() const;
 
-    _XOINL 
-    Vector3 Normalized() const {
-        return Vector3(*this).Normalize();
-    }
+    _XOINL bool IsNormalized() const;
 
-    _XOINL 
-    bool IsZero() const {
-        return CloseEnough(MagnitudeSquared(), 0.0f, Epsilon);
-    }
+    _XOINL static Vector3 Max(const Vector3& a, const Vector3& b);
 
-    _XOINL 
-    bool IsNormalized() const {
-        return CloseEnough(MagnitudeSquared(), 1.0f, Epsilon);
-    }
+    _XOINL static Vector3 Min(const Vector3& a, const Vector3& b);
 
-    _XOINL static 
-    Vector3 Max(const Vector3& a, const Vector3& b) {
-        return a >= b ? a : b;
-    }
+    _XOINL static float Dot(const Vector3& a, const Vector3& b);
 
-    _XOINL static 
-    Vector3 Min(const Vector3& a, const Vector3& b) {
-        return a <= b ? a : b;
-    }
+    _XOINL static  Vector3 Cross(const Vector3& a, const Vector3& b);
 
-    _XOINL static 
-    float Dot(const Vector3& a, const Vector3& b) {
-#if XO_SSE3
-        auto d = _mm_and_ps(_mm_mul_ps(a.m, b.m), MASK);
-        d = _mm_hadd_ps(d, d);
-        d = _mm_hadd_ps(d, d);
-        return _mm_cvtss_f32(d);
-#elif XO_SSE
-        auto d = _mm_mul_ps(a.m, b.m);
-        return _mm_cvtss_f32(x+y+z);
-#else
-        return (a.x*b.x) + (a.y*b.y) + (a.z*b.z);
-#endif
-    }
+    _XOINL static float AngleRadians(const Vector3& a, const Vector3& b);
 
-    _XOINL static 
-    Vector3 Cross(const Vector3& a, const Vector3& b) {
-#if XO_SSE
-            // Todo: There's a trick to do this with three shuffles. Look into that.
-            auto l = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)));
-            auto r = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)));
-            return Vector3(_mm_sub_ps(l, r));
-#else
-            return Vector3((a.y*b.z)-(a.z*b.y), (a.z*b.x)-(a.x*b.z), (a.x*b.y)-(a.y*b.x));
-#endif
-    }
+    _XOINL static float AngleDegrees(const Vector3& a, const Vector3& b);
 
-    _XOINL static
-    float AngleRadians(const Vector3& a, const Vector3& b) {
-#if XO_SSE3
-        auto cross = Cross(a, b).m;
-        cross = _mm_and_ps(_mm_mul_ps(cross, cross), MASK);
-        cross = _mm_hadd_ps(cross, cross);
-        cross = _mm_hadd_ps(cross, cross);
-        return Atan2(Sqrt(_mm_cvtss_f32(cross)), Dot(a, b));
-#elif XO_SSE
-        auto cross = Cross(a, b).m;
-        cross = _mm_mul_ps(cross, cross);
-        return Atan2(Sqrt(cross.m128_f32[IDX_X] + cross.m128_f32[IDX_Y] + cross.m128_f32[IDX_Z]), Dot(a, b));
-#else
-        auto cross = Cross(a, b);
-        cross *= cross;
-        return Atan2(Sqrt(cross.x + cross.y + cross.z), Dot(a, b));
-#endif
-    }
+    _XOINL static float DistanceSquared(const Vector3& a, const Vector3& b);
 
-    _XOINL static
-    float AngleDegrees(const Vector3& a, const Vector3& b) {
-        return AngleRadians(a, b) * Rad2Deg;
-    }
+    _XOINL static  float Distance(const Vector3&a, const Vector3&b);
 
-    _XOINL static
-    float DistanceSquared(const Vector3& a, const Vector3& b) {
-        return (b - a).MagnitudeSquared();
-    }
+    _XOINL static Vector3 Lerp(const Vector3& a, const Vector3& b, float t);
 
-    _XOINL static 
-    float Distance(const Vector3&a, const Vector3&b) {
-        return (b - a).Magnitude();
-    }
+    _XOINL static Vector3 RotateRadians(const Vector3& v, const Vector3& axis, float angle);
 
-    _XOINL static
-    Vector3 Lerp(const Vector3& a, const Vector3& b, float t) {
-        return a + ((b - a) * t);
-    }
-
-    _XOINL static
-    Vector3 RotateRadians(const Vector3& v, const Vector3& axis, float angle) {
-        // Rodrigues' rotation formula
-        // https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
-        auto sinAng = Sin(angle);
-        auto cosAng = Cos(angle);
-        return v * cosAng + axis.Cross(v) * sinAng + axis * axis.Dot(v) * (1.0f - cosAng);
-    }
-
-    _XOINL static
-    Vector3 RotateDegrees(const Vector3& v, const Vector3& axis, float angle) {
-        return RotateRadians(v, axis, angle * Deg2Rad);
-    }
+    _XOINL static Vector3 RotateDegrees(const Vector3& v, const Vector3& axis, float angle);
 
     // A random vector on edge of a cone with a given angle relative to a given forward.
-    _XOINL static
-    Vector3 RandomOnConeRadians(const Vector3& forward, float angle) {
-        auto cross = forward.Cross(forward == Up ? Left : Up); // cross anything but itself will do. We just need an orthogonal vector
-        auto tilted = forward.RotateRadians(cross, angle);
-        return tilted.RotateRadians(forward, RandomRange(-PI, PI));
-    }
+    _XOINL static Vector3 RandomOnConeRadians(const Vector3& forward, float angle);
 
     // A random vector inside a cone with a given angle relative to a given forward.
-    _XOINL static
-    Vector3 RandomInConeRadians(const Vector3& forward, float angle) {
-        auto cross = forward.Cross(forward == Up ? Left : Up); // cross anything but itself will do. We just need an orthogonal vector
-        auto tilted = forward.RotateRadians(cross, RandomRange(0.0f, angle));
-        return tilted.RotateRadians(forward, RandomRange(-PI, PI));
-    }
+    // Note: this cone in this context will be rounded at the bottom, not flat. The
+    //  forward vector magnitude will be the same as the returned vector.
+    _XOINL static Vector3 RandomInConeRadians(const Vector3& forward, float angle);
 
     // A random vector on edge of a cone with a given angle relative to a given forward.
-    _XOINL static
-    Vector3 RandomOnConeDegrees(const Vector3& forward, float angle) {
-        return RandomOnConeRadians(forward, angle * Deg2Rad);
-    }
+    // Note: this cone in this context will be rounded at the bottom, not flat. The
+    //  forward vector magnitude will be the same as the returned vector.
+    _XOINL static Vector3 RandomOnConeDegrees(const Vector3& forward, float angle);
 
     // A random vector inside a cone with a given angle relative to a given forward.
-    _XOINL static
-    Vector3 RandomInConeDegrees(const Vector3& forward, float angle) {
-        return RandomInConeRadians(forward, angle * Deg2Rad);
-    }
+    // Note: this cone in this context will be rounded at the bottom, not flat. The
+    //  forward vector magnitude will be the same as the returned vector.
+    _XOINL static Vector3 RandomInConeDegrees(const Vector3& forward, float angle);
 
     // A random vector with a length of 1.0f
-    _XOINL static
-    Vector3 RandomOnSphere() {
-        return Vector3(
-            RandomRange(-1.0f, 1.0f), 
-            RandomRange(-1.0f, 1.0f), 
-            RandomRange(-1.0f, 1.0f)).Normalized();
-    }
+    _XOINL static Vector3 RandomOnSphere();
 
     // A random vector who's length does not exceed 1
-    _XOINL static
-    Vector3 RandomInSphere() {
-        return RandomOnSphere() * RandomRange(0.0f, 1.0f);
-    }
+    _XOINL static Vector3 RandomInSphere();
 
     // A random vector with length d
-    _XOINL static
-    Vector3 RandomAtDistance(float d) {
-        return Vector3(
-            RandomRange(-1.0f, 1.0f),
-            RandomRange(-1.0f, 1.0f),
-            RandomRange(-1.0f, 1.0f)).Normalized() * d;
-    }
+    _XOINL static Vector3 RandomAtDistance(float d);
 
     // A random vector who's length does not exceed d
-    _XOINL static
-    Vector3 RandomInDistance(float d) {
-        return Vector3(
-            RandomRange(-1.0f, 1.0f),
-            RandomRange(-1.0f, 1.0f),
-            RandomRange(-1.0f, 1.0f)).Normalized() * RandomRange(0.0f, d);
-    }
+    _XOINL static Vector3 RandomInDistance(float d);
 
     // A random vector with a magnitude between low and high
-    _XOINL static
-    Vector3 RandomInRange(float low, float high) {
-        return Vector3(
-            RandomRange(-1.0f, 1.0f),
-            RandomRange(-1.0f, 1.0f),
-            RandomRange(-1.0f, 1.0f)).Normalized() * RandomRange(low, high);
-    }
+    _XOINL static Vector3 RandomInRange(float low, float high);
 
-    _XOINL
-    float Dot(const Vector3& v) const                                { return Dot(*this, v); }
-
-    _XOINL 
-    Vector3 Cross(const Vector3& v) const                            { return Cross(*this, v); }
-
-    _XOINL
-    float AngleRadians(const Vector3& v) const                       { return AngleRadians(*this, v); }
-
-    _XOINL
-    float AngleDegrees(const Vector3& v) const                       { return AngleDegrees(*this, v); }
-
-    _XOINL
-    float DistanceSquared(const Vector3& v) const                    { return DistanceSquared(*this, v); }
-
-    _XOINL
-    float Distance(const Vector3& v) const                           { return Distance(*this, v); }
-
-    _XOINL
-    Vector3 Lerp(const Vector3& v, float t) const                    { return Lerp(*this, v, t); }
-
-    _XOINL
-    Vector3 RotateRadians(const Vector3& axis, float angle) const    { return RotateRadians(*this, axis, angle); }
-
-    _XOINL
-    Vector3 RotateDegrees(const Vector3& axis, float angle) const    { return RotateDegrees(*this, axis, angle); }
-
-    _XOINL
-    Vector3 RandomOnConeRadians(float angle) const                   { return RandomOnConeRadians(*this, angle); }
-
-    _XOINL
-    Vector3 RandomInConeRadians(float angle) const                   { return RandomInConeRadians(*this, angle); }
-
-    _XOINL
-    Vector3 RandomOnConeDegrees(float angle) const                   { return RandomOnConeDegrees(*this, angle); }
-
-    _XOINL
-    Vector3 RandomInConeDegrees(float angle) const                   { return RandomInConeDegrees(*this, angle); }
+    // passthrough methods, will call the static counterpart.
+    _XOINL float Dot(const Vector3& v) const;
+    _XOINL  Vector3 Cross(const Vector3& v) const;
+    _XOINL float AngleRadians(const Vector3& v) const;
+    _XOINL float AngleDegrees(const Vector3& v) const;
+    _XOINL float DistanceSquared(const Vector3& v) const;
+    _XOINL float Distance(const Vector3& v) const;
+    _XOINL Vector3 Lerp(const Vector3& v, float t) const;
+    _XOINL Vector3 RotateRadians(const Vector3& axis, float angle) const;
+    _XOINL Vector3 RotateDegrees(const Vector3& axis, float angle) const;
+    _XOINL Vector3 RandomOnConeRadians(float angle) const;
+    _XOINL Vector3 RandomInConeRadians(float angle) const;
+    _XOINL Vector3 RandomOnConeDegrees(float angle) const;
+    _XOINL Vector3 RandomInConeDegrees(float angle) const;
 
     friend std::ostream& operator <<(std::ostream& os, const Vector3& v) {
 #if XO_SSE
