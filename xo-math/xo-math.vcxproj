@@ -126,8 +126,14 @@
     <ClInclude Include="..\GameMath.h" />
     <ClInclude Include="..\Matrix4x4.h" />
     <ClInclude Include="..\Vector2.h" />
+    <ClInclude Include="..\Vector2Methods.h" />
+    <ClInclude Include="..\Vector2Operators.h" />
     <ClInclude Include="..\Vector3.h" />
+    <ClInclude Include="..\Vector3Methods.h" />
+    <ClInclude Include="..\Vector3Operators.h" />
     <ClInclude Include="..\Vector4.h" />
+    <ClInclude Include="..\Vector4Methods.h" />
+    <ClInclude Include="..\Vector4Operators.h" />
     <ClInclude Include="Test.h" />
   </ItemGroup>
   <ItemGroup>

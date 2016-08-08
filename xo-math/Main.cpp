@@ -8,6 +8,25 @@
 //#define XO_NO_FAST 1              // Turn off __vectorcall
 //#define XO_NO_INLINE 1            // Turn off __forceinline
 //#define XO_NO_INVERSE_DIVISION 1  // Turn off (1/x)*Vec in place of (x,x,x)/Vec
+
+// Allow SSE (1999) Intel Katmai, (2001) AMD Palomino
+#define XO_SSE 1
+// Allow SSE2 (2001) Intel Willamette, (2003) AMD Opteron
+#define XO_SSE2 1
+// Allow SSE3 (2004) Intel Prescott, (2005) AMD Venice/San Diego
+#define XO_SSE3 1
+// Allow SSSE3 (2006) Intel Woodcrest, (2011) AMD Bobcat
+#define XO_SSSE3 1
+// Allow SSE4 (2008) Intel Nehalem, (2011) AMD Bulldozer, Playstation 4, Xbox One
+#define XO_SSE4 1
+// Allow AVX (2011) Intel Sandy Bridge, (2011) AMD Bulldozer
+#define XO_AVX 1
+// Allow AVX2 (2013) Intel Haswell, (2015) AMD Excavator, Playstation 4, Xbox One
+#define XO_AVX2 1
+// Allow AVX512 (2016) Intel Knights Landing
+#define XO_AVX512 1
+
+
 #include "../GameMath.h"
 
 #ifdef XO_NO_NS
@@ -42,7 +61,7 @@ void TestVector2(Test& t) {
     #else
         REPORT_SUCCESS_IF(t, Vector2::Up.AngleDegrees(Vector2::Right), -90.0f);
         REPORT_SUCCESS_IF(t, Vector2::Right.AngleDegrees(Vector2::Down), -90.0f);
-        REPORT_SUCCESS_IF(t, Vector2::Up.AngleDegrees(Vector2::Down), 180.0f);
+        REPORT_SUCCESS_IF(t, Vector2::Up.AngleDegrees(Vector2::Down), -180.0f);
     #endif
     });
 
@@ -143,44 +162,44 @@ void TestVector3(Test& t) {
     });
 
     t("Vector3 Operators", [&t] {
-        const Vector3 v2a = { 1.1f, 2.2f, 3.3f };
-        const Vector3 v2b = { 4.4f, 5.5f, 6.6f };
+        const Vector3 v3a = { 1.1f, 2.2f, 3.3f };
+        const Vector3 v3b = { 4.4f, 5.5f, 6.6f };
         const float fa = 7.7f;
-        REPORT_SUCCESS_IF(t, v2a / v2b, Vector3(v2a.x / v2b.x, v2a.y / v2b.y, v2a.z / v2b.z));
-        REPORT_SUCCESS_IF(t, v2a + v2b, Vector3(v2a.x + v2b.x, v2a.y + v2b.y, v2a.z + v2b.z));
-        REPORT_SUCCESS_IF(t, v2a * v2b, Vector3(v2a.x * v2b.x, v2a.y * v2b.y, v2a.z * v2b.z));
-        REPORT_SUCCESS_IF(t, v2a - v2b, Vector3(v2a.x - v2b.x, v2a.y - v2b.y, v2a.z - v2b.z));
-        REPORT_SUCCESS_IF(t, v2a / fa, Vector3(v2a.x / fa, v2a.y / fa, v2a.z / fa));
-        REPORT_SUCCESS_IF(t, v2a + fa, Vector3(v2a.x + fa, v2a.y + fa, v2a.z + fa));
-        REPORT_SUCCESS_IF(t, v2a * fa, Vector3(v2a.x * fa, v2a.y * fa, v2a.z * fa));
-        REPORT_SUCCESS_IF(t, v2a - fa, Vector3(v2a.x - fa, v2a.y - fa, v2a.z - fa));
+        REPORT_SUCCESS_IF(t, v3a / v3b, Vector3(v3a.x / v3b.x, v3a.y / v3b.y, v3a.z / v3b.z));
+        REPORT_SUCCESS_IF(t, v3a + v3b, Vector3(v3a.x + v3b.x, v3a.y + v3b.y, v3a.z + v3b.z));
+        REPORT_SUCCESS_IF(t, v3a * v3b, Vector3(v3a.x * v3b.x, v3a.y * v3b.y, v3a.z * v3b.z));
+        REPORT_SUCCESS_IF(t, v3a - v3b, Vector3(v3a.x - v3b.x, v3a.y - v3b.y, v3a.z - v3b.z));
+        REPORT_SUCCESS_IF(t, v3a / fa, Vector3(v3a.x / fa, v3a.y / fa, v3a.z / fa));
+        REPORT_SUCCESS_IF(t, v3a + fa, Vector3(v3a.x + fa, v3a.y + fa, v3a.z + fa));
+        REPORT_SUCCESS_IF(t, v3a * fa, Vector3(v3a.x * fa, v3a.y * fa, v3a.z * fa));
+        REPORT_SUCCESS_IF(t, v3a - fa, Vector3(v3a.x - fa, v3a.y - fa, v3a.z - fa));
 
         Vector3 v2c;
-        v2c = v2a;  // reset
-        v2c /= v2b; // perform operation
-        REPORT_SUCCESS_IF(t, v2c, Vector3(v2a.x / v2b.x, v2a.y / v2b.y, v2a.z / v2b.z));
-        v2c = v2a;  // reset
-        v2c += v2b; // perform operation
-        REPORT_SUCCESS_IF(t, v2c, Vector3(v2a.x + v2b.x, v2a.y + v2b.y, v2a.z + v2b.z));
-        v2c = v2a;  // reset
-        v2c *= v2b; // perform operation
-        REPORT_SUCCESS_IF(t, v2c, Vector3(v2a.x * v2b.x, v2a.y * v2b.y, v2a.z * v2b.z));
-        v2c = v2a;  // reset
-        v2c -= v2b; // perform operation
-        REPORT_SUCCESS_IF(t, v2c, Vector3(v2a.x - v2b.x, v2a.y - v2b.y, v2a.z - v2b.z));
+        v2c = v3a;  // reset
+        v2c /= v3b; // perform operation
+        REPORT_SUCCESS_IF(t, v2c, Vector3(v3a.x / v3b.x, v3a.y / v3b.y, v3a.z / v3b.z));
+        v2c = v3a;  // reset
+        v2c += v3b; // perform operation
+        REPORT_SUCCESS_IF(t, v2c, Vector3(v3a.x + v3b.x, v3a.y + v3b.y, v3a.z + v3b.z));
+        v2c = v3a;  // reset
+        v2c *= v3b; // perform operation
+        REPORT_SUCCESS_IF(t, v2c, Vector3(v3a.x * v3b.x, v3a.y * v3b.y, v3a.z * v3b.z));
+        v2c = v3a;  // reset
+        v2c -= v3b; // perform operation
+        REPORT_SUCCESS_IF(t, v2c, Vector3(v3a.x - v3b.x, v3a.y - v3b.y, v3a.z - v3b.z));
 
 
-        REPORT_SUCCESS_IF(t, ~v2a, Vector3(v2a.z, v2a.y, v2a.x));
-        REPORT_SUCCESS_IF(t, -v2a, Vector3(-v2a.x, -v2a.y, -v2a.z));
+        REPORT_SUCCESS_IF(t, ~v3a, Vector3(v3a.z, v3a.y, v3a.x));
+        REPORT_SUCCESS_IF(t, -v3a, Vector3(-v3a.x, -v3a.y, -v3a.z));
 
-        REPORT_SUCCESS_IF(t, v2a < v2b, true);
-        REPORT_SUCCESS_IF(t, v2a <= v2b, true);
-        REPORT_SUCCESS_IF(t, v2b > v2a, true);
-        REPORT_SUCCESS_IF(t, v2b >= v2a, true);
+        REPORT_SUCCESS_IF(t, v3a < v3b, true);
+        REPORT_SUCCESS_IF(t, v3a <= v3b, true);
+        REPORT_SUCCESS_IF(t, v3b > v3a, true);
+        REPORT_SUCCESS_IF(t, v3b >= v3a, true);
 
-        REPORT_SUCCESS_IF(t, v2a > 1, true);
-        REPORT_SUCCESS_IF(t, v2a < 8, true);
-        REPORT_SUCCESS_IF(t, v2a < -8, true); // when checking magnitude, sign is ignored
+        REPORT_SUCCESS_IF(t, v3a > 1, true);
+        REPORT_SUCCESS_IF(t, v3a < 8, true);
+        REPORT_SUCCESS_IF(t, v3a < -8, true); // when checking magnitude, sign is ignored
     });
 
     t("Vector3 Conversions", [&t] {
@@ -190,6 +209,9 @@ void TestVector3(Test& t) {
     });
 }
 
+#include <memory.h>
+#include <immintrin.h>
+
 
 int main() {
  
@@ -197,6 +219,8 @@ int main() {
 
     TestVector2(t);
     TestVector3(t);
+
+    constexpr auto bigBinary = 0b1111111111111111111111111111111111111111111111111111111111111111;
 
 #if defined(_MSC_VER)
     system("pause");
