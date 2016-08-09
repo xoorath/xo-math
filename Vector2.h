@@ -7,148 +7,150 @@ class _MM_ALIGN16 Vector2 {
 public:
     constexpr static const float Epsilon = FloatEpsilon+FloatEpsilon;
 
-    Vector2() : x(0.0f), y(0.0f) {
-    }
-    Vector2(float v) : x(v), y(v) {
-    }
-    Vector2(float x, float y) : x(x), y(y) {
-    }
-    Vector2(const Vector2& v) : x(v.x), y(v.y) {
-    }
-    Vector2(const class Vector3& v);
-    Vector2(const class Vector4& v);
+    _XOINL Vector2();
+    _XOINL Vector2(float v);
+    _XOINL Vector2(float x, float y);
+    _XOINL Vector2(const Vector2& v);
+    _XOINL Vector2(const class Vector3& v);
+    _XOINL Vector2(const class Vector4& v);
 
-    float& operator [](int i) { return f[i]; }
-    const float& operator [](int i) const { return f[i]; }
+    _XOINL void Set(float x, float y);
+    _XOINL void Set(float v);
+    _XOINL void Set(const Vector2& v);
 
-    void Set(float x, float y) {
-        this->x = x;
-        this->y = y;
-    }
+    _XOINL float& operator [](int i);
+    _XOINL const float& operator [](int i) const;
 
-    void Set(float v) {
-        this->x = v;
-        this->y = v;
-    }
+    _XOINL Vector2 operator - () const;
+    _XOINL Vector2 operator ~ () const;
 
-    void Set(const Vector2& v) {
-        this->x = v[0];
-        this->y = v[1];
-    }
+    _XOINL const Vector2& operator += (const Vector2& v);
+    _XOINL const Vector2& operator += (float v);
+    _XOINL const Vector2& operator += (double v);
+    _XOINL const Vector2& operator += (int v);
+    _XOINL const Vector2& operator += (const class Vector3& v);
+    _XOINL const Vector2& operator += (const class Vector4& v);
+
+    _XOINL const Vector2& operator -= (const Vector2& v);
+    _XOINL const Vector2& operator -= (float v);
+    _XOINL const Vector2& operator -= (double v);
+    _XOINL const Vector2& operator -= (int v);
+    _XOINL const Vector2& operator -= (const class Vector3& v);
+    _XOINL const Vector2& operator -= (const class Vector4& v);
+
+    _XOINL const Vector2& operator *= (const Vector2& v);
+    _XOINL const Vector2& operator *= (float v);
+    _XOINL const Vector2& operator *= (double v);
+    _XOINL const Vector2& operator *= (int v);
+    _XOINL const Vector2& operator *= (const class Vector3& v);
+    _XOINL const Vector2& operator *= (const class Vector4& v);
+
+    _XOINL const Vector2& operator /= (const Vector2& v);
+    _XOINL const Vector2& operator /= (float v);
+    _XOINL const Vector2& operator /= (double v);
+    _XOINL const Vector2& operator /= (int v);
+    _XOINL const Vector2& operator /= (const class Vector3& v);
+    _XOINL const Vector2& operator /= (const class Vector4& v);
+
+    _XOINL Vector2 operator + (const Vector2& v) const;
+    _XOINL Vector2 operator + (float v) const;
+    _XOINL Vector2 operator + (double v) const;
+    _XOINL Vector2 operator + (int v) const;
+    _XOINL Vector2 operator + (const class Vector3& v) const;
+    _XOINL Vector2 operator + (const class Vector4& v) const;
+
+    _XOINL Vector2 operator - (const Vector2& v) const;
+    _XOINL Vector2 operator - (float v) const;
+    _XOINL Vector2 operator - (double v) const;
+    _XOINL Vector2 operator - (int v) const;
+    _XOINL Vector2 operator - (const class Vector3& v) const;
+    _XOINL Vector2 operator - (const class Vector4& v) const;
+
+    _XOINL Vector2 operator * (const Vector2& v) const;
+    _XOINL Vector2 operator * (float v) const;
+    _XOINL Vector2 operator * (double v) const;
+    _XOINL Vector2 operator * (int v) const;
+    _XOINL Vector2 operator * (const class Vector3& v) const;
+    _XOINL Vector2 operator * (const class Vector4& v) const;
+
+    _XOINL Vector2 operator / (const Vector2& v) const;
+    _XOINL Vector2 operator / (float v) const;
+    _XOINL Vector2 operator / (double v) const;
+    _XOINL Vector2 operator / (int v) const;
+    _XOINL Vector2 operator / (const class Vector3& v) const;
+    _XOINL Vector2 operator / (const class Vector4& v) const;
+
+    _XOINL bool operator < (const Vector2& v) const;
+    _XOINL bool operator < (float v) const;
+    _XOINL bool operator < (double v) const;
+    _XOINL bool operator < (int v) const;
+    _XOINL bool operator < (const class Vector3& v) const;
+    _XOINL bool operator < (const class Vector4& v) const;
+
+    _XOINL bool operator <= (const Vector2& v) const;
+    _XOINL bool operator <= (float v) const;
+    _XOINL bool operator <= (double v) const;
+    _XOINL bool operator <= (int v) const;
+    _XOINL bool operator <= (const class Vector3& v) const;
+    _XOINL bool operator <= (const class Vector4& v) const;
+
+    _XOINL bool operator > (const Vector2& v) const;
+    _XOINL bool operator > (float v) const;
+    _XOINL bool operator > (double v) const;
+    _XOINL bool operator > (int v) const;
+    _XOINL bool operator > (const class Vector3& v) const;
+    _XOINL bool operator > (const class Vector4& v) const;
+
+    _XOINL bool operator >= (const Vector2& v) const;
+    _XOINL bool operator >= (float v) const;
+    _XOINL bool operator >= (double v) const;
+    _XOINL bool operator >= (int v) const;
+    _XOINL bool operator >= (const class Vector3& v) const;
+    _XOINL bool operator >= (const class Vector4& v) const;
+
+    _XOINL bool operator == (const Vector2& v) const;
+    _XOINL bool operator == (float v) const;
+    _XOINL bool operator == (double v) const;
+    _XOINL bool operator == (int v) const;
+    _XOINL bool operator == (const class Vector3& v) const;
+    _XOINL bool operator == (const class Vector4& v) const;
+
+    _XOINL bool operator != (const Vector2& v) const;
+    _XOINL bool operator != (float v) const;
+    _XOINL bool operator != (double v) const;
+    _XOINL bool operator != (int v) const;
+    _XOINL bool operator != (const class Vector3& v) const;
+    _XOINL bool operator != (const class Vector4& v) const;
     
-    VEC2D_SIMPLE_OP(+)
-    VEC2D_SIMPLE_OP(-)
-    VEC2D_SIMPLE_OP(*)
-    VEC2D_SIMPLE_OP(/ )
-    VEC2D_SIMPLE_OP_ADD(+=)
-    VEC2D_SIMPLE_OP_ADD(-=)
-    VEC2D_SIMPLE_OP_ADD(*=)
-    VEC2D_SIMPLE_OP_ADD(/=)
+    _XOINL float Magnitude() const;
+    _XOINL float MagnitudeSquared() const;
+    _XOINL const Vector2& Normalize();
+    _XOINL Vector2 Normalized() const;
+    _XOINL bool IsZero() const;
+    _XOINL bool IsNormalized() const;
 
-    Vector2 operator - () const { return Vector2(-x, -y); }
-    Vector2 operator ~ () const { return Vector2(y, x); }
-    
-    float Magnitude() const {
-        return sqrtf(x*x + y*y);
-    }
-
-    float MagnitudeSquared() const {
-        return x*x + y*y;
-    }
-
-    void Normalize() {
-        float magnitude = MagnitudeSquared();
-        if (CloseEnough(magnitude, 1.0f, Epsilon))
-            return; // already normalized
-        if (CloseEnough(magnitude, 0.0f, Epsilon))
-            return; // zero vec
-        magnitude = sqrtf(magnitude);
-        magnitude = 1.0f / magnitude;
-        x *= magnitude;
-        y *= magnitude;
-    }
-
-    Vector2 Normalized() const {
-        float magnitude = MagnitudeSquared();
-        if (CloseEnough(magnitude, 1.0f, Epsilon))
-            return *this; // already normalized
-        if (CloseEnough(magnitude, 0.0f, Epsilon))
-            return *this; // zero vec
-        magnitude = sqrtf(magnitude);
-        magnitude = 1.0f / magnitude;
-        return { x * magnitude, y * magnitude };
-    }
-
-    bool IsZero() const {
-        return MagnitudeSquared() <= Epsilon;
-    }
-
-    bool IsNormalized() const {
-      // todo: check closeness
-        return MagnitudeSquared() - 1.0f <= Epsilon;
-    }
-
-    VEC2_COMPARE_OP(<)
-    VEC2_COMPARE_OP(<= )
-    VEC2_COMPARE_OP(>)
-    VEC2_COMPARE_OP(>= )
-    VEC2_COMPARE_CLOSE_OP(==)
-    VEC2_COMPARE_CLOSE_OP(!=)
-
-    static Vector2 Max(const Vector2& a, const Vector2& b) {
-        if (a.MagnitudeSquared() >= b.MagnitudeSquared())
-            return a;
-        return b;
-    }
-
-    static Vector2 Min(const Vector2& a, const Vector2& b) {
-        if (a.MagnitudeSquared() <= b.MagnitudeSquared())
-            return a;
-        return b;
-    }
-
-    static float Dot(const Vector2& a, const Vector2& b) {
-        return (a.x * b.x) + (a.y * b.y);
-    }
-
-    static float Cross(const Vector2& a, const Vector2& b) {
-        return (a.x * b.y) - (a.y * b.x);
-    }
+    _XOINL static Vector2 Max(const Vector2& a, const Vector2& b);
+    _XOINL static Vector2 Min(const Vector2& a, const Vector2& b);
+    _XOINL static float Dot(const Vector2& a, const Vector2& b);
+    _XOINL static float Cross(const Vector2& a, const Vector2& b);
 
     // input vector rotated 90 degrees
-    static Vector2 OrthogonalCCW(const Vector2& v) {
-        return Vector2(-v.y, v.x);
-    }
+    _XOINL static Vector2 OrthogonalCCW(const Vector2& v);
 
     // input vector rotated -90 degrees
-    static Vector2 OrthogonalCW(const Vector2& v) {
-        return Vector2(v.y, -v.x);
-    }
-
-    static float AngleRadians(const Vector2& a, const Vector2& b) {
-    #ifdef XOMATH_VEC2_CW
-        return -atan2(Cross(a, b), Dot(a, b));
-    #else
-        return atan2(Cross(a, b), Dot(a, b));
-    #endif
-    }
-
-    static float AngleDegrees(const Vector2& a, const Vector2& b) {
-        return AngleRadians(a, b) * Rad2Deg;
-    }
-
-    static Vector2 Lerp(const Vector2& a, const Vector2& b, float t) {
-        return a + ((b - a) * t);
-    }
+    _XOINL static Vector2 OrthogonalCW(const Vector2& v);
+    _XOINL static float AngleRadians(const Vector2& a, const Vector2& b);
+    _XOINL static float AngleDegrees(const Vector2& a, const Vector2& b);
+    _XOINL static Vector2 Lerp(const Vector2& a, const Vector2& b, float t);
 
     
-    float Dot(const Vector2& v) const { return Dot(*this, v); }
-    Vector2 Cross(const Vector2& v) const { return Cross(*this, v); }
-    Vector2 OrthogonalCCW() const { return OrthogonalCCW(*this); }
-    Vector2 OrthogonalCW() const { return OrthogonalCW(*this); }
-    float AngleRadians(const Vector2& v) const { return AngleRadians(*this, v); }
-    float AngleDegrees(const Vector2& v) const { return AngleDegrees(*this, v); }
-    Vector2 Lerp(const Vector2& v, float t) const { return Lerp(*this, v, t); }
+    _XOINL float Dot(const Vector2& v) const;
+    _XOINL Vector2 Cross(const Vector2& v) const;
+    _XOINL Vector2 OrthogonalCCW() const;
+    _XOINL Vector2 OrthogonalCW() const;
+    _XOINL float AngleRadians(const Vector2& v) const;
+    _XOINL float AngleDegrees(const Vector2& v) const;
+    _XOINL Vector2 Lerp(const Vector2& v, float t) const;
 
     friend std::ostream& operator <<(std::ostream& os, const Vector2& v) {
         os << "(x:" << v[0] << ", y:" << v[1] << ", mag:" << v.Magnitude() << ")";

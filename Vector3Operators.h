@@ -47,10 +47,10 @@ const Vector3& Vector3::operator += (float v) {
     return *this;
 }
 
-const Vector3& Vector3::operator += (double v)  { return (*this) += float(v); }
-const Vector3& Vector3::operator += (int v)     { return (*this) += float(v); }
-const Vector3& Vector3::operator += (const Vector2& v) { return (*this) += Vector3(v); }
-const Vector3& Vector3::operator += (const Vector4& v) { return (*this) += Vector3(v); }
+const Vector3& Vector3::operator += (double v)          { return (*this) += float(v); }
+const Vector3& Vector3::operator += (int v)             { return (*this) += float(v); }
+const Vector3& Vector3::operator += (const Vector2& v)  { return (*this) += Vector3(v); }
+const Vector3& Vector3::operator += (const Vector4& v)  { return (*this) += Vector3(v); }
 
 const Vector3& Vector3::operator -= (const Vector3& v) {
 #if XO_SSE
@@ -74,10 +74,10 @@ const Vector3& Vector3::operator -= (float v) {
     return *this;
 }
 
-const Vector3& Vector3::operator -= (double v)  { return (*this) -= float(v); }
-const Vector3& Vector3::operator -= (int v)     { return (*this) -= float(v); }
-const Vector3& Vector3::operator -= (const Vector2& v) { return (*this) -= Vector3(v); }
-const Vector3& Vector3::operator -= (const Vector4& v) { return (*this) -= Vector3(v); }
+const Vector3& Vector3::operator -= (double v)          { return (*this) -= float(v); }
+const Vector3& Vector3::operator -= (int v)             { return (*this) -= float(v); }
+const Vector3& Vector3::operator -= (const Vector2& v)  { return (*this) -= Vector3(v); }
+const Vector3& Vector3::operator -= (const Vector4& v)  { return (*this) -= Vector3(v); }
 
 const Vector3& Vector3::operator *= (const Vector3& v) {
 #if XO_SSE
@@ -100,10 +100,10 @@ const Vector3& Vector3::operator *= (float v) {
 #endif
     return *this;
 }
-const Vector3& Vector3::operator *= (double v)  { return (*this) *= float(v); }
-const Vector3& Vector3::operator *= (int v)     { return (*this) *= float(v); }
-const Vector3& Vector3::operator *= (const Vector2& v) { return (*this) *= Vector3(v); }
-const Vector3& Vector3::operator *= (const Vector4& v) { return (*this) *= Vector3(v); }
+const Vector3& Vector3::operator *= (double v)          { return (*this) *= float(v); }
+const Vector3& Vector3::operator *= (int v)             { return (*this) *= float(v); }
+const Vector3& Vector3::operator *= (const Vector2& v)  { return (*this) *= Vector3(v); }
+const Vector3& Vector3::operator *= (const Vector4& v)  { return (*this) *= Vector3(v); }
 
 
 #if XO_NO_INVERSE_DIVISION
@@ -220,33 +220,33 @@ Vector3 Vector3::operator / (const Vector2& v) const        { return Vector3(*th
 Vector3 Vector3::operator / (const Vector4& v) const        { return Vector3(*this) /= v; }
 
 
-bool Vector3::operator < (const Vector3& v) const       { return MagnitudeSquared() < v.MagnitudeSquared(); }
-bool Vector3::operator < (float v) const                { return MagnitudeSquared() < (v * v); }
-bool Vector3::operator < (double v) const               { return MagnitudeSquared() < (float)(v * v); }
-bool Vector3::operator < (int v) const                  { return MagnitudeSquared() < (float)(v * v); }
-bool Vector3::operator < (const Vector2& v) const { return MagnitudeSquared() < v.MagnitudeSquared(); }
-bool Vector3::operator < (const Vector4& v) const { return MagnitudeSquared() < v.MagnitudeSquared(); }
+bool Vector3::operator < (const Vector3& v) const   { return MagnitudeSquared() < v.MagnitudeSquared(); }
+bool Vector3::operator < (float v) const            { return MagnitudeSquared() < (v * v); }
+bool Vector3::operator < (double v) const           { return MagnitudeSquared() < (float)(v * v); }
+bool Vector3::operator < (int v) const              { return MagnitudeSquared() < (float)(v * v); }
+bool Vector3::operator < (const Vector2& v) const   { return MagnitudeSquared() < v.MagnitudeSquared(); }
+bool Vector3::operator < (const Vector4& v) const   { return MagnitudeSquared() < v.MagnitudeSquared(); }
 
-bool Vector3::operator <= (const Vector3& v) const          { return MagnitudeSquared() <= v.MagnitudeSquared(); }
-bool Vector3::operator <= (float v) const                   { return MagnitudeSquared() <= (v * v); }
-bool Vector3::operator <= (double v) const                  { return MagnitudeSquared() <= (float)(v * v); }
-bool Vector3::operator <= (int v) const                     { return MagnitudeSquared() <= (float)(v * v); }
-bool Vector3::operator <= (const Vector2& v) const    { return MagnitudeSquared() <= v.MagnitudeSquared(); }
-bool Vector3::operator <= (const Vector4& v) const    { return MagnitudeSquared() <= v.MagnitudeSquared(); }
+bool Vector3::operator <= (const Vector3& v) const  { return MagnitudeSquared() <= v.MagnitudeSquared(); }
+bool Vector3::operator <= (float v) const           { return MagnitudeSquared() <= (v * v); }
+bool Vector3::operator <= (double v) const          { return MagnitudeSquared() <= (float)(v * v); }
+bool Vector3::operator <= (int v) const             { return MagnitudeSquared() <= (float)(v * v); }
+bool Vector3::operator <= (const Vector2& v) const  { return MagnitudeSquared() <= v.MagnitudeSquared(); }
+bool Vector3::operator <= (const Vector4& v) const  { return MagnitudeSquared() <= v.MagnitudeSquared(); }
 
-bool Vector3::operator > (const Vector3& v) const       { return MagnitudeSquared() > v.MagnitudeSquared(); }
-bool Vector3::operator > (float v) const                { return MagnitudeSquared() > (v * v); }
-bool Vector3::operator > (double v) const               { return MagnitudeSquared() > (float)(v * v); }
-bool Vector3::operator > (int v) const                  { return MagnitudeSquared() > (float)(v * v); }
-bool Vector3::operator > (const Vector2& v) const { return MagnitudeSquared() > v.MagnitudeSquared(); }
-bool Vector3::operator > (const Vector4& v) const { return MagnitudeSquared() > v.MagnitudeSquared(); }
+bool Vector3::operator > (const Vector3& v) const   { return MagnitudeSquared() > v.MagnitudeSquared(); }
+bool Vector3::operator > (float v) const            { return MagnitudeSquared() > (v * v); }
+bool Vector3::operator > (double v) const           { return MagnitudeSquared() > (float)(v * v); }
+bool Vector3::operator > (int v) const              { return MagnitudeSquared() > (float)(v * v); }
+bool Vector3::operator > (const Vector2& v) const   { return MagnitudeSquared() > v.MagnitudeSquared(); }
+bool Vector3::operator > (const Vector4& v) const   { return MagnitudeSquared() > v.MagnitudeSquared(); }
 
-bool Vector3::operator >= (const Vector3& v) const          { return MagnitudeSquared() >= v.MagnitudeSquared(); }
-bool Vector3::operator >= (float v) const                   { return MagnitudeSquared() >= (v * v); }
-bool Vector3::operator >= (double v) const                  { return MagnitudeSquared() >= (float)(v * v); }
-bool Vector3::operator >= (int v) const                     { return MagnitudeSquared() >= (float)(v * v); }
-bool Vector3::operator >= (const Vector2& v) const    { return MagnitudeSquared() >= v.MagnitudeSquared(); }
-bool Vector3::operator >= (const Vector4& v) const    { return MagnitudeSquared() >= v.MagnitudeSquared(); }
+bool Vector3::operator >= (const Vector3& v) const  { return MagnitudeSquared() >= v.MagnitudeSquared(); }
+bool Vector3::operator >= (float v) const           { return MagnitudeSquared() >= (v * v); }
+bool Vector3::operator >= (double v) const          { return MagnitudeSquared() >= (float)(v * v); }
+bool Vector3::operator >= (int v) const             { return MagnitudeSquared() >= (float)(v * v); }
+bool Vector3::operator >= (const Vector2& v) const  { return MagnitudeSquared() >= v.MagnitudeSquared(); }
+bool Vector3::operator >= (const Vector4& v) const  { return MagnitudeSquared() >= v.MagnitudeSquared(); }
 
 bool Vector3::operator == (const Vector3& v) const {
 #   if XO_SSE2
@@ -257,7 +257,7 @@ bool Vector3::operator == (const Vector3& v) const {
     // what we're doing in SSE2
     return CloseEnough(x, v.x, SSE::SSEFloatEpsilon) && CloseEnough(y, v.y, SSE::SSEFloatEpsilon) && CloseEnough(z, v.z, SSE::SSEFloatEpsilon);
 #   else
-    return CloseEnough(x, v.x) && CloseEnough(y, v.y) && CloseEnough(z, v.z);
+    return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon) && CloseEnough(z, v.z, Epsilon);
 #   endif
 }
 bool Vector3::operator == (float v) const                   { return CloseEnough(MagnitudeSquared(), v*v);}
@@ -271,9 +271,9 @@ bool Vector3::operator == (const Vector2& v) const {
     // TODO: find a faster way with SSE to do a 'close enough' check.
     // I'm not sure if there's a way to do the sign bit masking like we have in SSE::Abs to acomplish
     // what we're doing in SSE2
-    return CloseEnough(x, v.x) && CloseEnough(y, v.y);
+    return CloseEnough(x, v.x, SSE::SSEFloatEpsilon) && CloseEnough(y, v.y, SSE::SSEFloatEpsilon);
 #   else
-    return CloseEnough(x, v.x) && CloseEnough(y, v.y);
+    return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
 #   endif
 }
 bool Vector3::operator == (const Vector4& v) const {
@@ -283,9 +283,9 @@ bool Vector3::operator == (const Vector4& v) const {
     // TODO: find a faster way with SSE to do a 'close enough' check.
     // I'm not sure if there's a way to do the sign bit masking like we have in SSE::Abs to acomplish
     // what we're doing in SSE2
-    return CloseEnough(x, v.x) && CloseEnough(y, v.y) && CloseEnough(z, v.z);
+    return CloseEnough(x, v.x, SSE::SSEFloatEpsilon) && CloseEnough(y, v.y, SSE::SSEFloatEpsilon) && CloseEnough(z, v.z, SSE::SSEFloatEpsilon);
 #   else
-    return CloseEnough(x, v.x) && CloseEnough(y, v.y) && CloseEnough(z, v.z);
+    return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon) && CloseEnough(z, v.z, Epsilon);
 #   endif
 }
 

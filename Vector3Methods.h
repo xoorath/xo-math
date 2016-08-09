@@ -1,4 +1,8 @@
+#ifndef XOMATH_INTERNAL
+static_assert(false, "Don't include Vector3Methods.h directly. Include GameMath.h, which fully implements this type.");
+#else // XOMATH_INTERNAL
 
+XOMATH_BEGIN_XO_NS
 
 Vector3::Vector3() :
 #if XO_SSE
@@ -334,3 +338,7 @@ Vector3 Vector3::RandomInConeRadians(float angle) const                   { retu
 Vector3 Vector3::RandomOnConeDegrees(float angle) const                   { return RandomOnConeDegrees(*this, angle); }
 
 Vector3 Vector3::RandomInConeDegrees(float angle) const                   { return RandomInConeDegrees(*this, angle); }
+
+XOMATH_END_XO_NS
+
+#endif

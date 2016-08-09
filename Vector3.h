@@ -49,34 +49,6 @@ public:
     _XOINL Vector3 operator -() const;
     _XOINL Vector3 operator ~() const;
 
-    _XOINL Vector3 operator + (const Vector3& v) const;
-    _XOINL Vector3 operator + (float v) const;
-    _XOINL Vector3 operator + (double v) const;
-    _XOINL Vector3 operator + (int v) const;
-    _XOINL Vector3 operator + (const class Vector2& v) const;
-    _XOINL Vector3 operator + (const class Vector4& v) const;
-
-    _XOINL Vector3 operator - (const Vector3& v) const;
-    _XOINL Vector3 operator - (float v) const;
-    _XOINL Vector3 operator - (double v) const;
-    _XOINL Vector3 operator - (int v) const;
-    _XOINL Vector3 operator - (const class Vector2& v) const;
-    _XOINL Vector3 operator - (const class Vector4& v) const;
-
-    _XOINL Vector3 operator * (const Vector3& v) const;
-    _XOINL Vector3 operator * (float v) const;
-    _XOINL Vector3 operator * (double v) const;
-    _XOINL Vector3 operator * (int v) const;
-    _XOINL Vector3 operator * (const class Vector2& v) const;
-    _XOINL Vector3 operator * (const class Vector4& v) const;
-
-    _XOINL Vector3 operator / (const Vector3& v) const;
-    _XOINL Vector3 operator / (float v) const;
-    _XOINL Vector3 operator / (double v) const;
-    _XOINL Vector3 operator / (int v) const;
-    _XOINL Vector3 operator / (const class Vector2& v) const;
-    _XOINL Vector3 operator / (const class Vector4& v) const;
-
     _XOINL const Vector3& operator += (const Vector3& v);
     _XOINL const Vector3& operator += (float v);
     _XOINL const Vector3& operator += (double v);
@@ -104,6 +76,34 @@ public:
     _XOINL const Vector3& operator /= (int v);
     _XOINL const Vector3& operator /= (const class Vector2& v);
     _XOINL const Vector3& operator /= (const class Vector4& v);
+
+    _XOINL Vector3 operator + (const Vector3& v) const;
+    _XOINL Vector3 operator + (float v) const;
+    _XOINL Vector3 operator + (double v) const;
+    _XOINL Vector3 operator + (int v) const;
+    _XOINL Vector3 operator + (const class Vector2& v) const;
+    _XOINL Vector3 operator + (const class Vector4& v) const;
+
+    _XOINL Vector3 operator - (const Vector3& v) const;
+    _XOINL Vector3 operator - (float v) const;
+    _XOINL Vector3 operator - (double v) const;
+    _XOINL Vector3 operator - (int v) const;
+    _XOINL Vector3 operator - (const class Vector2& v) const;
+    _XOINL Vector3 operator - (const class Vector4& v) const;
+
+    _XOINL Vector3 operator * (const Vector3& v) const;
+    _XOINL Vector3 operator * (float v) const;
+    _XOINL Vector3 operator * (double v) const;
+    _XOINL Vector3 operator * (int v) const;
+    _XOINL Vector3 operator * (const class Vector2& v) const;
+    _XOINL Vector3 operator * (const class Vector4& v) const;
+
+    _XOINL Vector3 operator / (const Vector3& v) const;
+    _XOINL Vector3 operator / (float v) const;
+    _XOINL Vector3 operator / (double v) const;
+    _XOINL Vector3 operator / (int v) const;
+    _XOINL Vector3 operator / (const class Vector2& v) const;
+    _XOINL Vector3 operator / (const class Vector4& v) const;
 
     _XOINL bool operator < (const Vector3& v) const;
     _XOINL bool operator < (float v) const;
@@ -183,7 +183,7 @@ public:
     _XOINL static float Dot(const Vector3& a, const Vector3& b);
 
     // Returns the cross product (vector product) of vectors a and b.
-    // https://en.wikipedia.org/wiki/Cross_product
+    // See: https://en.wikipedia.org/wiki/Cross_product
     _XOINL static  Vector3 Cross(const Vector3& a, const Vector3& b);
 
     // Returns the angle in radians between vectors a and b.

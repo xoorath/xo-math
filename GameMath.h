@@ -156,72 +156,6 @@ XOMATH_END_XO_NS
 ////////////////////////////////////////////////////////////////////////// Math type macros
 // used to condense the math type code and make it easier to read
 
-#if defined(VEC2D_SIMPLE_OP) || defined(VEC2D_SIMPLE_OP_ADD) || defined(VEC2_COMPARE_OP) || defined(VEC2_COMPARE_CLOSE_OP)
-_XOMATH_INTERNAL_MACRO_WARNING
-#else
-#   define VEC2D_SIMPLE_OP(op) \
-    _XOINL Vector2 operator op (const Vector2& v) const    { return Vector2(x op v[0], y op v[1]); } \
-    _XOINL Vector2 operator op (float v) const             { return Vector2(x op v, y op v); } \
-    _XOINL Vector2 operator op (double v) const            { return Vector2(x op (float)v, y op (float)v); } \
-    _XOINL Vector2 operator op (int v) const               { return Vector2(x op (float)v, y op (float)v); } \
-    _XOINL Vector2 operator op (const class Vector3& v) const; \
-    _XOINL Vector2 operator op (const class Vector4& v) const;
-#   define VEC2D_SIMPLE_OP_ADD(op) \
-    _XOINL const Vector2& operator op (const Vector2& v)   { x op v[0]; y op v[1]; return *this; } \
-    _XOINL const Vector2& operator op (float v)            { x op v; y op v; return *this; } \
-    _XOINL const Vector2& operator op (double v)           { x op (float)v; y op (float)v; return *this; } \
-    _XOINL const Vector2& operator op (int v)              { x op (float)v; y op (float)v; return *this; }\
-    _XOINL const Vector2& operator op (const class Vector3& v); \
-    _XOINL const Vector2& operator op (const class Vector4& v);
-#   define VEC2_COMPARE_OP(op) \
-    _XOINL bool operator op (const Vector2& v) const       { return MagnitudeSquared() op v.MagnitudeSquared(); } \
-    _XOINL bool operator op (float v) const                { return MagnitudeSquared() op (v*v); } \
-    _XOINL bool operator op (double v) const               { return MagnitudeSquared() op (float)(v*v); } \
-    _XOINL bool operator op (int v) const                  { return MagnitudeSquared() op (float)(v*v); } \
-    _XOINL bool operator op (const class Vector3& v) const; \
-    _XOINL bool operator op (const class Vector4& v) const;
-#   define VEC2_COMPARE_CLOSE_OP(op) \
-    _XOINL bool operator op (const Vector2& v) const       { return (*this - v).MagnitudeSquared() <= Epsilon; } \
-    _XOINL bool operator op (float v) const                { return MagnitudeSquared() - (v*v) <= Epsilon; } \
-    _XOINL bool operator op (double v) const               { return MagnitudeSquared() - (float)(v*v) <= Epsilon; } \
-    _XOINL bool operator op (int v) const                  { return MagnitudeSquared() - (float)(v*v) <= Epsilon; } \
-    _XOINL bool operator op (const class Vector3& v) const; \
-    _XOINL bool operator op (const class Vector4& v) const;
-#endif
-
-#if defined(VEC3_COMPARE_OP) || defined(VEC3D_SIMPLE_OP) || defined(VEC3D_SIMPLE_OP_ADD)
-_XOMATH_INTERNAL_MACRO_WARNING
-#else
-#   define VEC3_COMPARE_OP(op) \
-    _XOINL bool operator op (const Vector3& v) const       { return MagnitudeSquared() op v.MagnitudeSquared(); } \
-    _XOINL bool operator op (float v) const                { return MagnitudeSquared() op (v*v); } \
-    _XOINL bool operator op (double v) const               { return (*this) op (float)v; } \
-    _XOINL bool operator op (int v) const                  { return (*this) op (float)v; } \
-    _XOINL bool operator op (const class Vector2& v) const; \
-    _XOINL bool operator op (const class Vector4& v) const;
-#   if XO_SSE
-#       define VEC3_COMPARE_CLOSE_OP(op, andor) \
-        _XOINL bool operator op (const Vector3& v) const { \
-            return (_mm_movemask_ps(_mm_cmpeq_ps(m, v.m)) & 0b0111) op 0b0111; \
-        } \
-        _XOINL bool operator op (float v) const                { return MagnitudeSquared() - (v*v) op Epsilon; } \
-        _XOINL bool operator op (double v) const               { return (*this) op (float)v; } \
-        _XOINL bool operator op (int v) const                  { return (*this) op (float)v; } \
-        _XOINL bool operator op (const class Vector2& v) const; \
-        _XOINL bool operator op (const class Vector4& v) const;
-#   else
-#       define VEC3_COMPARE_CLOSE_OP(op, andor) \
-        _XOINL bool operator op (const Vector3& v) const { \
-            return x op v.x andor y op v.y andor z op v.z; \
-        } \
-        _XOINL bool operator op (float v) const                { return MagnitudeSquared() - (v*v) op Epsilon; } \
-        _XOINL bool operator op (double v) const               { return (*this) op (float)v; } \
-        _XOINL bool operator op (int v) const                  { return (*this) op (float)v; } \
-        _XOINL bool operator op (const class Vector2& v) const; \
-        _XOINL bool operator op (const class Vector4& v) const;
-#   endif
-#endif
-
 #if defined(VEC4_COMPARE_OP) || defined(VEC4D_SIMPLE_OP) || defined(VEC4D_SIMPLE_OP_ADD)
 _XOMATH_INTERNAL_MACRO_WARNING
 #else
@@ -301,8 +235,6 @@ _XOMATH_INTERNAL_MACRO_WARNING
 
 ////////////////////////////////////////////////////////////////////////// Type dependent implementations
 XOMATH_BEGIN_XO_NS
-Vector2::Vector2(const Vector3& v) : x(v.x), y(v.y) { }
-Vector2::Vector2(const Vector4& v) : x(v.x), y(v.y) { }
 
 Vector4::Vector4(const Vector2& v) :
 #if XO_SSE
@@ -333,9 +265,6 @@ Vector4::Vector4(const Vector3& v) :
     _XOINL bool ourtype ::operator <= (const thiertype& v) const { return MagnitudeSquared() <= ourtype(v).MagnitudeSquared(); } \
     _XOINL bool ourtype ::operator > (const thiertype& v) const { return MagnitudeSquared() > ourtype(v).MagnitudeSquared(); } \
     _XOINL bool ourtype ::operator >= (const thiertype& v) const { return MagnitudeSquared() >= ourtype(v).MagnitudeSquared(); }
-
-XOMATH_CONVERT_OP(Vector2, Vector3);
-XOMATH_CONVERT_OP(Vector2, Vector4);
 
 XOMATH_CONVERT_OP(Vector4, Vector2);
 XOMATH_CONVERT_OP(Vector4, Vector3);
