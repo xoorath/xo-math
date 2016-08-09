@@ -14,8 +14,7 @@ const float& Vector3::operator [](int i) const {
 
 Vector3 Vector3::operator -() const {
 #if XO_SSE
-    static const __m128 anti = _mm_set1_ps(-1.0f);
-    return Vector3(_mm_mul_ps(m, anti));
+    return Vector3(_mm_mul_ps(m, SSE::NegativeOne));
 #else
     return Vector3(-x, -y, -z);
 #endif
@@ -104,7 +103,6 @@ const Vector3& Vector3::operator *= (double v)          { return (*this) *= floa
 const Vector3& Vector3::operator *= (int v)             { return (*this) *= float(v); }
 const Vector3& Vector3::operator *= (const Vector2& v)  { return (*this) *= Vector3(v); }
 const Vector3& Vector3::operator *= (const Vector4& v)  { return (*this) *= Vector3(v); }
-
 
 #if XO_NO_INVERSE_DIVISION
 const Vector3& Vector3::operator /= (const Vector3& v) {

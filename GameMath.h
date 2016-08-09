@@ -92,6 +92,7 @@ namespace SSE {
 
     static const __m128 Zero = _mm_setzero_ps();
     static const __m128 One = _mm_set1_ps(1.0f);
+    static const __m128 NegativeOne = _mm_set1_ps(-1.0f);
     static const __m128 Epsilon = _mm_set_ps1(SSEFloatEpsilon);
 }
 #endif
@@ -232,44 +233,6 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #include "Vector3Methods.h"
 #include "Vector4Operators.h"
 #include "Vector4Methods.h"
-
-////////////////////////////////////////////////////////////////////////// Type dependent implementations
-XOMATH_BEGIN_XO_NS
-
-Vector4::Vector4(const Vector2& v) :
-#if XO_SSE
-    m(_mm_set_ps(0.0f, 0.0f, v.y, v.x)) { }
-#else
-    x(v.x), y(v.y), z(0.0f), w(0.0f) { }
-#endif
-
-Vector4::Vector4(const Vector3& v) :
-#if XO_SSE
-        m(v.m) { }
-#else
-        x(v.x), y(v.y), z(v.z), w(0.0f) { }
-#endif
-
-#define XOMATH_CONVERT_OP(ourtype, thiertype) \
-    _XOINL ourtype ourtype ::operator + (const thiertype& v) const { return (*this) + ourtype(v); } \
-    _XOINL ourtype ourtype ::operator - (const thiertype& v) const { return (*this) - ourtype(v); } \
-    _XOINL ourtype ourtype ::operator * (const thiertype& v) const { return (*this) * ourtype(v); } \
-    _XOINL ourtype ourtype ::operator / (const thiertype& v) const { return (*this) / ourtype(v); } \
-    _XOINL const ourtype & ourtype ::operator += (const thiertype& v) { return (*this) += ourtype(v); } \
-    _XOINL const ourtype & ourtype ::operator -= (const thiertype& v) { return (*this) -= ourtype(v); } \
-    _XOINL const ourtype & ourtype ::operator *= (const thiertype& v) { return (*this) *= ourtype(v); } \
-    _XOINL const ourtype & ourtype ::operator /= (const thiertype& v) { return (*this) /= ourtype(v); } \
-    _XOINL bool ourtype ::operator == (const thiertype& v) const { return MagnitudeSquared() == ourtype(v).MagnitudeSquared(); } \
-    _XOINL bool ourtype ::operator != (const thiertype& v) const { return MagnitudeSquared() != ourtype(v).MagnitudeSquared(); } \
-    _XOINL bool ourtype ::operator < (const thiertype& v) const { return MagnitudeSquared() < ourtype(v).MagnitudeSquared(); } \
-    _XOINL bool ourtype ::operator <= (const thiertype& v) const { return MagnitudeSquared() <= ourtype(v).MagnitudeSquared(); } \
-    _XOINL bool ourtype ::operator > (const thiertype& v) const { return MagnitudeSquared() > ourtype(v).MagnitudeSquared(); } \
-    _XOINL bool ourtype ::operator >= (const thiertype& v) const { return MagnitudeSquared() >= ourtype(v).MagnitudeSquared(); }
-
-XOMATH_CONVERT_OP(Vector4, Vector2);
-XOMATH_CONVERT_OP(Vector4, Vector3);
-
-XOMATH_END_XO_NS
 
 ////////////////////////////////////////////////////////////////////////// Remove internal macros
 
