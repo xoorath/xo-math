@@ -212,15 +212,15 @@ float Vector3::AngleRadians(const Vector3& a, const Vector3& b) {
     cross = _mm_and_ps(_mm_mul_ps(cross, cross), MASK);
     cross = _mm_hadd_ps(cross, cross);
     cross = _mm_hadd_ps(cross, cross);
-    return Atan2(Sqrt(_mm_cvtss_f32(cross)), Dot(a, b));
+    return ATan2(Sqrt(_mm_cvtss_f32(cross)), Dot(a, b));
 #elif XO_SSE
     auto cross = Cross(a, b).m;
     cross = _mm_mul_ps(cross, cross);
-    return Atan2(Sqrt(cross.m128_f32[IDX_X] + cross.m128_f32[IDX_Y] + cross.m128_f32[IDX_Z]), Dot(a, b));
+    return ATan2(Sqrt(cross.m128_f32[IDX_X] + cross.m128_f32[IDX_Y] + cross.m128_f32[IDX_Z]), Dot(a, b));
 #else
     auto cross = Cross(a, b);
     cross *= cross;
-    return Atan2(Sqrt(cross.x + cross.y + cross.z), Dot(a, b));
+    return ATan2(Sqrt(cross.x + cross.y + cross.z), Dot(a, b));
 #endif
 }
 

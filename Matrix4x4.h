@@ -46,79 +46,124 @@ public:
     // See: https://en.wikipedia.org/wiki/Transpose
     _XOINL Matrix4x4 Transpose() const;
 
-    _XOINL
-    Matrix4x4 operator ~() const {
-        auto m = *this;
-        return m.MakeTranspose();
-    }
+    // Get a constant reference to a row in the matrix
+    _XOINL const Vector4& operator [](int i) const;
 
+    // Get a mutatable reference to a row in the matrix
+    _XOINL Vector4& operator [](int i);
+
+    // Get a constant reference to a float in the matrix
+    _XOINL const float& operator ()(int r, int c) const;
     
-    _XOINL Matrix4x4 operator* (const Matrix4x4& m);
+    // Get a mutatable reference to a float in the matrix
+    _XOINL float& operator ()(int r, int c);
 
-    _XOINL 
-    Vector4 operator* (const Vector4& m) {
-        return Vector4(r[0].Sum(), r[1].Sum(), r[2].Sum(), r[3].Sum()) *= m; // *= to avoid an extra copy
+    // Get a reference to a row in the matrix.
+    _XOINL const Vector4& GetRow(int i) const;
+
+    // Return a column, copied out of the matrix
+    _XOINL Vector4 GetColumn(int i) const;
+
+    // Return a copy of the transpose.
+    // See: https://en.wikipedia.org/wiki/Transpose
+    _XOINL Matrix4x4 operator ~() const;
+
+    _XOINL const Matrix4x4& operator += (const Matrix4x4& m);
+    _XOINL const Matrix4x4& operator -= (const Matrix4x4& m);
+    _XOINL const Matrix4x4& operator *= (const Matrix4x4& m);
+
+    _XOINL Matrix4x4 operator + (const Matrix4x4& m) const;
+    _XOINL Matrix4x4 operator - (const Matrix4x4& m) const;
+    _XOINL Matrix4x4 operator * (const Matrix4x4& m) const;
+
+    _XOINL static
+    Matrix4x4 Scale(float xyz) {
+        return{ {xyz,  0.0f, 0.0f, 0.0f},
+                {0.0f, xyz,  0.0f, 0.0f},
+                {0.0f, 0.0f, xyz,  0.0f},
+                {0.0f, 0.0f, 0.0f, 1.0f}};
+
     }
 
-    _XOINL
-    static Matrix4x4 RotationXRadians(float radians) {
+    _XOINL static 
+    Matrix4x4 Scale(float x, float y, float z) {
+        return{ {x,    0.0f, 0.0f, 0.0f},
+                {0.0f, y,    0.0f, 0.0f},
+                {0.0f, 0.0f, z,    0.0f},
+                {0.0f, 0.0f, 0.0f, 1.0f}};
+    }
+
+    _XOINL static
+    Matrix4x4 Scale(const Vector3& v) {
+        return{ {v.x,  0.0f, 0.0f, 0.0f},
+                {0.0f, v.y,  0.0f, 0.0f},
+                {0.0f, 0.0f, v.z,  0.0f},
+                {0.0f, 0.0f, 0.0f, 1.0f}};
+    }
+
+    _XOINL static 
+    Matrix4x4 Translation(float x, float y, float z) {
+        return{ {1.0f, 0.0f, 0.0f, x   },
+                {0.0f, 1.0f, 0.0f, y   },
+                {0.0f, 0.0f, 1.0f, z   },
+                {0.0f, 0.0f, 0.0f, 1.0f}};
+    }
+
+    _XOINL static
+    Matrix4x4 Translation(const Vector3& v) {
+        return{ {1.0f, 0.0f, 0.0f, v.x },
+                {0.0f, 1.0f, 0.0f, v.y },
+                {0.0f, 0.0f, 1.0f, v.z },
+                {0.0f, 0.0f, 0.0f, 1.0f} };
+    }
+
+    _XOINL static
+    Matrix4x4 RotationXRadians(float radians) {
         float cosr = Cos(radians);
         float sinr = Sin(radians);
-        return {1.0f, 0.0f, 0.0f, 0.0f,
-                0.0f, cosr,-sinr, 0.0f,
-                0.0f, sinr, cosr, 0.0f,
-                0.0f, 0.0f, 0.0f, 1.0f};
+        return {{1.0f, 0.0f, 0.0f, 0.0f},
+                {0.0f, cosr,-sinr, 0.0f},
+                {0.0f, sinr, cosr, 0.0f},
+                {0.0f, 0.0f, 0.0f, 1.0f}};
         
     }
 
-    _XOINL
-    static Matrix4x4 RotationYRadians(float radians) {
+    _XOINL static 
+    Matrix4x4 RotationYRadians(float radians) {
         float cosr = Cos(radians);
         float sinr = Sin(radians);
-        return {cosr, 0.0f,-sinr, 0.0f,
-                0.0f, 1.0f, 0.0f, 0.0f,
-                sinr, 0.0f, cosr, 0.0f,
-                0.0f, 0.0f, 0.0f, 1.0f};
+        return {{cosr, 0.0f,-sinr, 0.0f},
+                {0.0f, 1.0f, 0.0f, 0.0f},
+                {sinr, 0.0f, cosr, 0.0f},
+                {0.0f, 0.0f, 0.0f, 1.0f}};
     }
 
-    _XOINL
-    static Matrix4x4 RotationZRadians(float radians) {
+    _XOINL static
+    Matrix4x4 RotationZRadians(float radians) {
         float cosr = Cos(radians);
         float sinr = Sin(radians);
-        return {cosr,-sinr, 0.0f, 0.0f,
-                sinr, cosr, 0.0f, 0.0f,
-                0.0f, 0.0f, 1.0f, 0.0f,
-                0.0f, 0.0f, 0.0f, 1.0f};
+        return {{cosr,-sinr, 0.0f, 0.0f},
+                {sinr, cosr, 0.0f, 0.0f},
+                {0.0f, 0.0f, 1.0f, 0.0f},
+                {0.0f, 0.0f, 0.0f, 1.0f}};
     }
 
-    _XOINL
-    const Vector4& operator [](int i) const {
-        return r[i];
+    _XOINL static 
+    Matrix4x4 OrthographicProjection(float w, float h, float n, float f) {
+        auto fmn = f - n;
+        return{ {1.0f/w,    0.0f,   0.0f,           0.0f},
+                {0.0f,      1.0f/h, 0.0f,           0.0f},
+                {0.0f,      0.0f,   -(2.0f/ fmn),  -((f+n)/ fmn)},
+                {0.0f,      0.0f,   0.0f,           1.0f}};
     }
 
-    _XOINL
-    Vector4& operator [](int i) {
-        return r[i];
-    }
-
-    _XOINL
-    const float& operator ()(int r, int c) const {
-        return this->r[r][c];
-    }
-
-    _XOINL
-    float& operator ()(int r, int c) {
-        return this->r[r][c];
-    }
-
-    _XOINL
-    const Vector4& GetRow(int i) const {
-        return r[i];
-    }
-
-    _XOINL
-    Vector4 GetColumn(int i) const {
-        return Vector4(r[0][i], r[1][i], r[2][i], r[3][i]);
+    _XOINL static 
+    Matrix4x4 Projection(float fovx, float fovy, float n, float f) {
+        auto fmn = f - n;
+        return{ {ATan(fovx/2.0f),   0.0f,               0.0f,               0.0f},
+                {0.0f,              ATan(fovy/2.0f),    0.0f,               0.0f},
+                {0.0f,              0.0f,               -((f+n)/(fmn)),     -((2.0f*(n*f))/fmn)},
+                {0.0f,              0.0f,               0.0f,               1.0f}};
     }
 
     Vector4 r[4];
@@ -127,20 +172,20 @@ public:
         Identity, One, Zero;
 };
 
-const Matrix4x4 Matrix4x4::Identity =   {1.0f, 0.0f, 0.0f, 0.0f,
-                                         0.0f, 1.0f, 0.0f, 0.0f,
-                                         0.0f, 0.0f, 1.0f, 0.0f,
-                                         0.0f, 0.0f, 0.0f, 1.0f};
+const Matrix4x4 Matrix4x4::Identity =   {{1.0f, 0.0f, 0.0f, 0.0f},
+                                         {0.0f, 1.0f, 0.0f, 0.0f},
+                                         {0.0f, 0.0f, 1.0f, 0.0f},
+                                         {0.0f, 0.0f, 0.0f, 1.0f}};
 
-const Matrix4x4 Matrix4x4::One =    {1.0f, 1.0f, 1.0f, 1.0f,
-                                     1.0f, 1.0f, 1.0f, 1.0f,
-                                     1.0f, 1.0f, 1.0f, 1.0f,
-                                     1.0f, 1.0f, 1.0f, 1.0f};
+const Matrix4x4 Matrix4x4::One =    {{1.0f, 1.0f, 1.0f, 1.0f},
+                                     {1.0f, 1.0f, 1.0f, 1.0f},
+                                     {1.0f, 1.0f, 1.0f, 1.0f},
+                                     {1.0f, 1.0f, 1.0f, 1.0f}};
 
-const Matrix4x4 Matrix4x4::Zero =   {0.0f, 0.0f, 0.0f, 0.0f,
-                                     0.0f, 0.0f, 0.0f, 0.0f,
-                                     0.0f, 0.0f, 0.0f, 0.0f,
-                                     0.0f, 0.0f, 0.0f, 0.0f};
+const Matrix4x4 Matrix4x4::Zero =   {{0.0f, 0.0f, 0.0f, 0.0f},
+                                     {0.0f, 0.0f, 0.0f, 0.0f},
+                                     {0.0f, 0.0f, 0.0f, 0.0f},
+                                     {0.0f, 0.0f, 0.0f, 0.0f}};
 
 XOMATH_END_XO_NS
 

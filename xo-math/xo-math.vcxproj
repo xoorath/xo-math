@@ -125,6 +125,8 @@
   <ItemGroup>
     <ClInclude Include="..\GameMath.h" />
     <ClInclude Include="..\Matrix4x4.h" />
+    <ClInclude Include="..\Matrix4x4Methods.h" />
+    <ClInclude Include="..\Matrix4x4Operators.h" />
     <ClInclude Include="..\Vector2.h" />
     <ClInclude Include="..\Vector2Methods.h" />
     <ClInclude Include="..\Vector2Operators.h" />

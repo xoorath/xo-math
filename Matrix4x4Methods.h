@@ -37,14 +37,7 @@ Matrix4x4::Matrix4x4(const class Vector3& r0, const class Vector3& r1, const cla
 
 const Matrix4x4& Matrix4x4::MakeTranspose() {
 #if XO_SSE
-    // // TODO: transform in place. Expose ref to .m ?
-    // __m128 r0 = r[0], r1 = r[1], r2 = r[2], r3 = r[3];
-    // _MM_TRANSPOSE4_PS(r0, r1, r2, r3);
-    // r[0] = r0;
-    // r[1] = r1;
-    // r[2] = r2;
-    // r[3] = r3;
-    _MM_TRANSPOSE4_PS(r[0], r[1], r[2], r[3]);
+    _MM_TRANSPOSE4_PS(r[0].m, r[1].m, r[2].m, r[3].m);
 #else
     float t;
 #   define _XO_TRANSPOSE_SWAP(i,j) t = r[i][j]; r[i][j] = r[j][i]; r[j][i] = t;

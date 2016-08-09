@@ -101,9 +101,9 @@ Vector2 Vector2::OrthogonalCW(const Vector2& v) {
 
 float Vector2::AngleRadians(const Vector2& a, const Vector2& b) {
 #ifdef XOMATH_VEC2_CW
-    return -atan2(Cross(a, b), Dot(a, b));
+    return -ATan2(Cross(a, b), Dot(a, b));
 #else
-    return atan2(Cross(a, b), Dot(a, b));
+    return ATan2(Cross(a, b), Dot(a, b));
 #endif
 }
 

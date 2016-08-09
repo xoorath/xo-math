@@ -120,7 +120,7 @@ _XOINL
 float ATan(float f) { return atanf(f); }
 
 _XOINL 
-float Atan2(float y, float x) { return atan2f(y, x); }
+float ATan2(float y, float x) { return atan2f(y, x); }
 
 _XOINL 
 bool CloseEnough(float x, float y, float tolerance = FloatEpsilon) { return fabs(y - x) < tolerance; }
