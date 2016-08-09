@@ -4,16 +4,8 @@ static_assert(false, "Don't include Vector4Methods.h directly. Include GameMath.
 
 XOMATH_BEGIN_XO_NS
 
-Vector4::Vector4() :
-#if XO_SSE
-    m(_mm_setzero_ps())
-{
+Vector4::Vector4() {
 }
-#else
-    x(0.0f), y(0.0f), z(0.0f), w(0.0f)
-{
-}
-#endif
 
 Vector4::Vector4(float f) :
 #if XO_SSE

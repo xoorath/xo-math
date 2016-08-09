@@ -211,6 +211,13 @@ void TestVector3(Test& t) {
 #include <memory.h>
 #include <immintrin.h>
 
+template<unsigned ammount>
+class VectorMemory {
+
+
+    Vector3 v3[ammount];
+};
+
 int main() {
  
     Test t;

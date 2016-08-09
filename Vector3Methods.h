@@ -4,16 +4,8 @@ static_assert(false, "Don't include Vector3Methods.h directly. Include GameMath.
 
 XOMATH_BEGIN_XO_NS
 
-Vector3::Vector3() :
-#if XO_SSE
-    m(_mm_setzero_ps())
-{
+Vector3::Vector3() {
 }
-#else
-    x(0.0f), y(0.0f), z(0.0f)
-{
-}
-#endif
 
 Vector3::Vector3(float f) :
 #if XO_SSE
@@ -39,7 +31,7 @@ Vector3::Vector3(float x, float y, float z) :
 
 Vector3::Vector3(const Vector3& vec) :
 #if XO_SSE
-    m(vec.m) 
+    m(vec) 
 {
 }
 #else

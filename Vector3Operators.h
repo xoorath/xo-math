@@ -4,6 +4,12 @@ static_assert(false, "Don't include Vector3Operators.h directly. Include GameMat
 
 XOMATH_BEGIN_XO_NS
 
+#if XO_SSE
+Vector3::operator __m128() const {
+    return m;
+}
+#endif
+
 float& Vector3::operator [](int i) {
     return f[i];
 }
@@ -26,7 +32,7 @@ Vector3 Vector3::operator ~() const {
 
 const Vector3& Vector3::operator += (const Vector3& v) {
 #if XO_SSE
-    m = _mm_add_ps(m, v.m);
+    m = _mm_add_ps(m, v);
 #else
     x += v.x;
     y += v.y;
@@ -53,7 +59,7 @@ const Vector3& Vector3::operator += (const Vector4& v)  { return (*this) += Vect
 
 const Vector3& Vector3::operator -= (const Vector3& v) {
 #if XO_SSE
-    m = _mm_sub_ps(m, v.m);
+    m = _mm_sub_ps(m, v);
 #else
     x -= v.x;
     y -= v.y;
@@ -80,7 +86,7 @@ const Vector3& Vector3::operator -= (const Vector4& v)  { return (*this) -= Vect
 
 const Vector3& Vector3::operator *= (const Vector3& v) {
 #if XO_SSE
-    m = _mm_mul_ps(m, v.m);
+    m = _mm_mul_ps(m, v);
 #else
     x *= v.x;
     y *= v.y;
@@ -118,7 +124,7 @@ const Vector3& Vector3::operator /= (const Vector3& v) {
     // Sandy Bridge    14      14
     // Westmere        14      12
     // Nehalem         14      12
-    m = _mm_div_ps(m, v.m);
+    m = _mm_div_ps(m, v);
 #else
     x /= v.x;
     y /= v.y;
@@ -141,7 +147,7 @@ const Vector3& Vector3::operator /= (float v) {
 #else
 
 const Vector3& Vector3::operator /= (const Vector3& v) {
-#if XO_SSE
+#   if XO_SSE
     // see: https://software.intel.com/sites/landingpage/IntrinsicsGuide
     // see: https://software.intel.com/en-us/articles/measuring-instruction-latency-and-throughput
 
@@ -162,12 +168,12 @@ const Vector3& Vector3::operator /= (const Vector3& v) {
     // Sandy Bridge    5        1
     // Westmere        4        1
     // Nehalem         4        1
-    m = _mm_mul_ps(m, _mm_rcp_ps(v.m));
-#else
+    m = _mm_mul_ps(m, _mm_rcp_ps(v));
+#   else
     x /= v.x;
     y /= v.y;
     z /= v.z;
-#endif
+#   endif
 
     return *this;
 }
@@ -184,10 +190,10 @@ const Vector3& Vector3::operator /= (float v) {
     return *this;
 }
 #endif
-const Vector3& Vector3::operator /= (double v)  { return (*this) /= float(v); }
-const Vector3& Vector3::operator /= (int v)     { return (*this) /= float(v); }
-const Vector3& Vector3::operator /= (const Vector2& v) { return (*this) /= Vector3(v); }
-const Vector3& Vector3::operator /= (const Vector4& v) { return (*this) /= Vector3(v); }
+const Vector3& Vector3::operator /= (double v)              { return (*this) /= float(v); }
+const Vector3& Vector3::operator /= (int v)                 { return (*this) /= float(v); }
+const Vector3& Vector3::operator /= (const Vector2& v)      { return (*this) /= Vector3(v); }
+const Vector3& Vector3::operator /= (const Vector4& v)      { return (*this) /= Vector3(v); }
 
 Vector3 Vector3::operator + (const Vector3& v) const        { return Vector3(*this) += v; }
 Vector3 Vector3::operator + (float v) const                 { return Vector3(*this) += v; }
@@ -248,7 +254,7 @@ bool Vector3::operator >= (const Vector4& v) const  { return MagnitudeSquared() 
 
 bool Vector3::operator == (const Vector3& v) const {
 #   if XO_SSE2
-    return (_mm_movemask_ps(_mm_cmplt_ps(SSE::Abs(_mm_sub_ps(v.m, m)), SSE::Epsilon)) & 0b0111) == 0b0111;
+    return (_mm_movemask_ps(_mm_cmplt_ps(SSE::Abs(_mm_sub_ps(v, m)), SSE::Epsilon)) & 0b0111) == 0b0111;
 #   elif XO_SSE
     // TODO: find a faster way with SSE to do a 'close enough' check.
     // I'm not sure if there's a way to do the sign bit masking like we have in SSE::Abs to acomplish

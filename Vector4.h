@@ -15,19 +15,20 @@ class _MM_ALIGN16 Vector4 {
 public:
     constexpr static const float Epsilon = FloatEpsilon * 4.0f;
 
+    // No initialization is done.
     _XOINL Vector4();
+    
     _XOINL Vector4(float f);
     _XOINL Vector4(float x, float y, float z, float w);
     _XOINL Vector4(const Vector4& vec);
-
 
 #if XO_SSE
     _XOINL 
     Vector4(const __m128& vec);
 #endif
 
-    Vector4(const class Vector2& v);
-    Vector4(const class Vector3& v);
+    _XOINL Vector4(const class Vector2& v);
+    _XOINL Vector4(const class Vector3& v);
 
     _XOINL void Set(float x, float y, float z, float w);
     _XOINL void Set(float f);
@@ -39,6 +40,11 @@ public:
 
     _XOINL void Get(float& x, float& y, float& z, float& w) const;
     _XOINL void Get(float* f) const;
+
+#if XO_SSE
+    // type cast operator
+    _XOINL operator const __m128&() const;
+#endif
 
     _XOINL float& operator [](int i);
     _XOINL const float& operator [](int i) const;

@@ -4,7 +4,7 @@ static_assert(false, "Don't include Vector2Methods.h directly. Include GameMath.
 
 XOMATH_BEGIN_XO_NS
 
-Vector2::Vector2() : x(0.0f), y(0.0f) {
+Vector2::Vector2() {
 }
 
 Vector2::Vector2(float v) : x(v), y(v) {

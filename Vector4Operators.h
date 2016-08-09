@@ -4,6 +4,13 @@ static_assert(false, "Don't include Vector4Operators.h directly. Include GameMat
 
 XOMATH_BEGIN_XO_NS
 
+#if XO_SSE
+// type cast operator
+Vector4::operator const __m128&() const {
+    return m;
+}
+#endif
+
 float& Vector4::operator [](int i) {
     return f[i];
 }

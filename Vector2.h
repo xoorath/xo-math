@@ -7,7 +7,9 @@ class _MM_ALIGN16 Vector2 {
 public:
     constexpr static const float Epsilon = FloatEpsilon+FloatEpsilon;
 
+    // No initialization is done.
     _XOINL Vector2();
+    
     _XOINL Vector2(float v);
     _XOINL Vector2(float x, float y);
     _XOINL Vector2(const Vector2& v);

@@ -154,73 +154,7 @@ float RandomRange(float low, float high) {
 
 XOMATH_END_XO_NS
 
-////////////////////////////////////////////////////////////////////////// Math type macros
-// used to condense the math type code and make it easier to read
-
-#if defined(VEC4_COMPARE_OP) || defined(VEC4D_SIMPLE_OP) || defined(VEC4D_SIMPLE_OP_ADD)
-_XOMATH_INTERNAL_MACRO_WARNING
-#else
-#   if XO_SSE
-#       define VEC4D_SIMPLE_OP(op, simd_command) \
-            _XOINL Vector4 operator op (const Vector4& v) const { \
-                return Vector4(simd_command(m, v.m)); \
-            } \
-            _XOINL Vector4 operator op (float v) const { \
-                return Vector4(simd_command(m, _mm_set1_ps(v))); \
-            } \
-            _XOINL Vector4 operator op (double v) const            { return (*this) op (float)v; } \
-            _XOINL Vector4 operator op (int v) const               { return (*this) op (float)v; } \
-            _XOINL Vector4 operator op (const class Vector2& v) const; \
-            _XOINL Vector4 operator op (const class Vector3& v) const;
-#   else
-#       define VEC4D_SIMPLE_OP(op, simd_command) \
-            _XOINL Vector4 operator op (const Vector4& v) const { \
-                return Vector4(x op v.x, y op v.y, z op v.z, w op v.w);\
-            } \
-            _XOINL Vector4 operator op (float v) const { \
-                return Vector4(x op v, y op v, z op v, z op v); \
-            } \
-            _XOINL Vector4 operator op (double v) const            { return (*this) op (float)v; } \
-            _XOINL Vector4 operator op (int v) const               { return (*this) op (float)v; } \
-            _XOINL Vector4 operator op (const class Vector2& v) const; \
-            _XOINL Vector4 operator op (const class Vector3& v) const;
-#   endif
-#   define VEC4D_SIMPLE_OP_ADD(op, simple_op, simd_command) \
-    _XOINL const Vector4& operator op (const Vector4& v)   { return (*this) = (*this) simple_op v; } \
-    _XOINL const Vector4& operator op (float v)            { return (*this) = (*this) simple_op v; } \
-    _XOINL const Vector4& operator op (double v)           { return (*this) = (*this) simple_op v; } \
-    _XOINL const Vector4& operator op (int v)              { return (*this) = (*this) simple_op v; } \
-    _XOINL const Vector4& operator op (const class Vector2& v); \
-    _XOINL const Vector4& operator op (const class Vector3& v);
-#   define VEC4_COMPARE_OP(op) \
-    _XOINL bool operator op (const Vector4& v) const       { return MagnitudeSquared() op v.MagnitudeSquared(); } \
-    _XOINL bool operator op (float v) const                { return MagnitudeSquared() op (v*v); } \
-    _XOINL bool operator op (double v) const               { return (*this) op (float)v; } \
-    _XOINL bool operator op (int v) const                  { return (*this) op (float)v; } \
-    _XOINL bool operator op (const class Vector2& v) const; \
-    _XOINL bool operator op (const class Vector3& v) const;
-#   if XO_SSE
-#   define VEC4_COMPARE_CLOSE_OP(op, andor) \
-        _XOINL bool operator op (const Vector4& v) const { \
-            return (_mm_movemask_ps(_mm_cmpeq_ps(m, v.m)) & 0b1111) op 0b1111; \
-        } \
-        _XOINL bool operator op (float v) const                { return MagnitudeSquared() - (v*v) op Epsilon; } \
-        _XOINL bool operator op (double v) const               { return (*this) op (float)v; } \
-        _XOINL bool operator op (int v) const                  { return (*this) op (float)v; } \
-        _XOINL bool operator op (const class Vector2& v) const; \
-        _XOINL bool operator op (const class Vector3& v) const;
-#   else
-#   define VEC4_COMPARE_CLOSE_OP(op, andor) \
-        _XOINL bool operator op (const Vector4& v) const { \
-            return x op v.x andor y op v.y andor z op v.z andor w op v.w; \
-        } \
-        _XOINL bool operator op (float v) const                { return MagnitudeSquared() - (v*v) op Epsilon; } \
-        _XOINL bool operator op (double v) const               { return (*this) op (float)v; } \
-        _XOINL bool operator op (int v) const                  { return (*this) op (float)v; } \
-        _XOINL bool operator op (const class Vector2& v) const; \
-        _XOINL bool operator op (const class Vector3& v) const;
-#   endif
-#endif
+////////////////////////////////////////////////////////////////////////// Module Includes
 
 #include "Vector2.h"
 #include "Vector3.h"
@@ -233,6 +167,8 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #include "Vector3Methods.h"
 #include "Vector4Operators.h"
 #include "Vector4Methods.h"
+#include "Matrix4x4Operators.h"
+#include "Matrix4x4Methods.h"
 
 ////////////////////////////////////////////////////////////////////////// Remove internal macros
 

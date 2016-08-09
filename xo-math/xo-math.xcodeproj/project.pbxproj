@@ -30,6 +30,8 @@
 		8108E8BE1D58B71D00D73D5F /* Vector3Operators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector3Operators.h; path = ../Vector3Operators.h; sourceTree = "<group>"; };
 		8108E8BF1D58B71D00D73D5F /* Vector4Methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector4Methods.h; path = ../Vector4Methods.h; sourceTree = "<group>"; };
 		8108E8C01D58B71D00D73D5F /* Vector4Operators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector4Operators.h; path = ../Vector4Operators.h; sourceTree = "<group>"; };
+		8108E8C11D5A089400D73D5F /* Matrix4x4Methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Matrix4x4Methods.h; path = ../Matrix4x4Methods.h; sourceTree = "<group>"; };
+		8108E8C21D5A089400D73D5F /* Matrix4x4Operators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Matrix4x4Operators.h; path = ../Matrix4x4Operators.h; sourceTree = "<group>"; };
 		812D15CA1D49669A00195264 /* xo-math */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "xo-math"; sourceTree = BUILT_PRODUCTS_DIR; };
 		812D15DA1D49679300195264 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = SOURCE_ROOT; };
 		812D15DC1D4993A900195264 /* GameMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameMath.h; path = ../GameMath.h; sourceTree = "<group>"; };
@@ -55,6 +57,8 @@
 			children = (
 				812D15DC1D4993A900195264 /* GameMath.h */,
 				8108E8BA1D568CB400D73D5F /* Matrix4x4.h */,
+				8108E8C11D5A089400D73D5F /* Matrix4x4Methods.h */,
+				8108E8C21D5A089400D73D5F /* Matrix4x4Operators.h */,
 				812D15CB1D49669A00195264 /* Products */,
 				81BB800A1D4E9FC40064AFE7 /* Test.h */,
 				812D15DD1D4993A900195264 /* Vector2.h */,
