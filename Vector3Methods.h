@@ -182,7 +182,9 @@ Vector3 Vector3::Min(const Vector3& a, const Vector3& b) {
 }
  
 float Vector3::Dot(const Vector3& a, const Vector3& b) {
-#if XO_SSE3
+#if XO_SSE4
+    return _mm_cvtss_f32(_mm_dp_ps(a, b, 0xff));
+#elif XO_SSE3
     auto d = _mm_and_ps(_mm_mul_ps(a.m, b.m), MASK);
     d = _mm_hadd_ps(d, d);
     d = _mm_hadd_ps(d, d);

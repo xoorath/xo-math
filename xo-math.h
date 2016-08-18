@@ -1,6 +1,6 @@
 #pragma once
-#ifndef XO_GAME_MATH
-#define XO_GAME_MATH
+#ifndef XO_MATH_H
+#define XO_MATH_H
 
 ////////////////////////////////////////////////////////////////////////// XOMATH_BEGIN_XO_NS, XOMATH_END_XO_NS
 #ifdef XO_SINGLE_NS
@@ -90,10 +90,10 @@ namespace SSE {
     // the quoted error on _mm_rcp_ps documentation
     constexpr const float SSEFloatEpsilon = 0.000366210938f;
 
-    static const __m128 Zero = _mm_setzero_ps();
-    static const __m128 One = _mm_set1_ps(1.0f);
-    static const __m128 NegativeOne = _mm_set1_ps(-1.0f);
-    static const __m128 Epsilon = _mm_set_ps1(SSEFloatEpsilon);
+    static const _MM_ALIGN16 __m128 Zero = _mm_setzero_ps();
+    static const _MM_ALIGN16 __m128 One = _mm_set1_ps(1.0f);
+    static const _MM_ALIGN16 __m128 NegativeOne = _mm_set1_ps(-1.0f);
+    static const _MM_ALIGN16 __m128 Epsilon = _mm_set_ps1(SSEFloatEpsilon);
 }
 #endif
 
@@ -191,4 +191,4 @@ XOMATH_END_XO_NS
 #undef XOMATH_BEGIN_XO_NS
 #undef XOMATH_END_XO_NS
 
-#endif // XO_GAME_MATH
+#endif // XO_MATH_H

@@ -238,7 +238,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
-				CLANG_X86_VECTOR_INSTRUCTIONS = default;
+				CLANG_X86_VECTOR_INSTRUCTIONS = sse4.2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -247,7 +247,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
-				CLANG_X86_VECTOR_INSTRUCTIONS = default;
+				CLANG_X86_VECTOR_INSTRUCTIONS = sse4.2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

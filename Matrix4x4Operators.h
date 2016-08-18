@@ -38,6 +38,7 @@ const Matrix4x4& Matrix4x4::operator += (const Matrix4x4& m) {
     r[1] += m[1];
     r[2] += m[2];
     r[3] += m[3];
+    return *this;
 }
 
 const Matrix4x4& Matrix4x4::operator -= (const Matrix4x4& m) {
@@ -45,6 +46,7 @@ const Matrix4x4& Matrix4x4::operator -= (const Matrix4x4& m) {
     r[1] -= m[1];
     r[2] -= m[2];
     r[3] -= m[3];
+    return *this;
 }
 
 const Matrix4x4& Matrix4x4::operator *= (const Matrix4x4& m) {

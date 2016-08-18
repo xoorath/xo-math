@@ -14,11 +14,11 @@
 #define XO_SSE2 1
 // Allow SSE3 (2004) Intel Prescott, (2005) AMD Venice/San Diego
 #define XO_SSE3 1
+// Allow SSE4 (2008) Intel Nehalem, (2011) AMD Bulldozer, Playstation 4, Xbox One
+#define XO_SSE4 1
 //////////////////////////////////////////////////////////// Not yet used
 // Allow SSSE3 (2006) Intel Woodcrest, (2011) AMD Bobcat
 #define XO_SSSE3 1
-// Allow SSE4 (2008) Intel Nehalem, (2011) AMD Bulldozer, Playstation 4, Xbox One
-#define XO_SSE4 1
 // Allow AVX (2011) Intel Sandy Bridge, (2011) AMD Bulldozer
 #define XO_AVX 1
 // Allow AVX2 (2013) Intel Haswell, (2015) AMD Excavator, Playstation 4, Xbox One
@@ -50,6 +50,72 @@
 #ifdef XO_TEST_CLOSE
 #   undef XO_TEST_CLOSE
 #endif
+
+template<class functype>
+struct ExecutionComparison {
+    const char* LeftName;
+    const char* RightName;
+    std::function<functype> LeftFunc;
+    std::function<functype> RightFunc;
+};
+
+template<class functype>
+void RunComparison(std::function<functype> Func, unsigned long long* Count, bool* KeepRunning) {
+    while(*KeepRunning) {
+        Func();
+        ++*Count;
+    }
+}
+
+void CompareResults(const ExecutionComparison<void()>& Comparison, int Seconds) {
+    std::cout << "Comparing functions " << Comparison.LeftName << " to " << Comparison.RightName << std::endl;
+    unsigned long long LeftCount = 0, RightCount = 0;
+    bool KeepRunning = true;
+
+    std::thread t1(std::bind(&RunComparison<void()>, Comparison.LeftFunc, &LeftCount, &KeepRunning));
+    std::thread t2(std::bind(&RunComparison<void()>, Comparison.RightFunc, &RightCount, &KeepRunning));
+
+
+    const int secondsPerUpdate = 1;
+    for(int i = 0; i < Seconds; i += secondsPerUpdate) {
+        std::cout << "Running... " << (i+1) << "/" << Seconds << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(secondsPerUpdate));
+    }
+
+    KeepRunning = false;
+
+    t1.join();
+    t2.join();
+
+    const char* winner;
+    const char* loser;
+    bool tie = false;
+    float delta = 0.0f;
+
+    if(LeftCount == RightCount) {
+        delta = 0.0f;
+        tie = true;
+    } else if(LeftCount > RightCount) {
+        delta = ((float)LeftCount / (float)RightCount) * 100.0f;
+        winner = Comparison.LeftName;
+        loser = Comparison.RightName;
+    } else {
+        delta = ((float)RightCount / (float)LeftCount) * 100.0f;
+        winner = Comparison.RightName;
+        loser = Comparison.LeftName;
+    }
+
+    if(tie) {
+        std:: cout << "It was a tie. ";
+    }
+    else {
+        std::cout.precision(3);
+        std::cout << winner << " won, and is %" << std::fixed << delta << " faster.\n"
+        << Comparison.LeftName << " [" << ((double)Seconds / (double)(LeftCount/1000) * 1000000.0) << "ns] ";
+
+        std::cout << Comparison.RightName << " [" <<((double)Seconds / (double)(RightCount/1000) * 1000000.0) << "ns]" << std::endl ;
+    }
+}
 
 void TestVector2(Test& t) {
     t("Vector2 AngleDegrees", [&t] {
@@ -207,16 +273,6 @@ void TestVector3(Test& t) {
         REPORT_SUCCESS_IF(t, Vector3::One + Vector2::One, Vector3(2.0f, 2.0f, 1.0f));
     });
 }
-
-#include <memory.h>
-#include <immintrin.h>
-
-template<unsigned ammount>
-class VectorMemory {
-
-
-    Vector3 v3[ammount];
-};
 
 int main() {
  
