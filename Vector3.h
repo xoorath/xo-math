@@ -28,13 +28,13 @@ public:
     _XOINL Vector3(const class Vector2& v);
     _XOINL Vector3(const class Vector4& v);
 
-    _XOINL void Set(float x, float y, float z);
+    _XOINL const Vector3& Set(float x, float y, float z);
 
-    _XOINL void Set(float f);
-    _XOINL void Set(const Vector3& vec);
+    _XOINL const Vector3& Set(float f);
+    _XOINL const Vector3& Set(const Vector3& vec);
 
 #if XO_SSE
-    _XOINL void Set(const __m128& vec);
+    _XOINL const Vector3& Set(const __m128& vec);
 #endif
 
     _XOINL void Get(float& x, float& y, float &z) const;
@@ -71,6 +71,8 @@ public:
     _XOINL const Vector3& operator *= (int v);
     _XOINL const Vector3& operator *= (const class Vector2& v);
     _XOINL const Vector3& operator *= (const class Vector4& v);
+    // Converts to Vector4 and back for the mutliplication.
+    _XOINL const Vector3& operator *= (const class Matrix4x4& v);
 
     _XOINL const Vector3& operator /= (const Vector3& v);
     _XOINL const Vector3& operator /= (float v);
@@ -99,6 +101,8 @@ public:
     _XOINL Vector3 operator * (int v) const;
     _XOINL Vector3 operator * (const class Vector2& v) const;
     _XOINL Vector3 operator * (const class Vector4& v) const;
+    // Converts to Vector4 and back for the mutliplication.
+    _XOINL Vector3 operator * (const class Matrix4x4& v) const;
 
     _XOINL Vector3 operator / (const Vector3& v) const;
     _XOINL Vector3 operator / (float v) const;

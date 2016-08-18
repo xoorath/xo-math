@@ -12,7 +12,7 @@ public:
     _XOINL Matrix4x4();
 
     // initialize all elements to m
-    _XOINL Matrix4x4(float m);
+    _XOINL explicit Matrix4x4(float m);
 
     // specify each element in row major form.
     // [a0, b0, c0, d0]
@@ -71,100 +71,28 @@ public:
     _XOINL const Matrix4x4& operator += (const Matrix4x4& m);
     _XOINL const Matrix4x4& operator -= (const Matrix4x4& m);
     _XOINL const Matrix4x4& operator *= (const Matrix4x4& m);
+    // calls Scale(float xyz) with parameter scale.
+    _XOINL const Matrix4x4& operator *= (float scale);
 
     _XOINL Matrix4x4 operator + (const Matrix4x4& m) const;
     _XOINL Matrix4x4 operator - (const Matrix4x4& m) const;
     _XOINL Matrix4x4 operator * (const Matrix4x4& m) const;
+    // calls Scale(float xyz) with parameter scale.
+    _XOINL Matrix4x4 operator * (float scale) const;
 
-    _XOINL static
-    Matrix4x4 Scale(float xyz) {
-        return{ {xyz,  0.0f, 0.0f, 0.0f},
-                {0.0f, xyz,  0.0f, 0.0f},
-                {0.0f, 0.0f, xyz,  0.0f},
-                {0.0f, 0.0f, 0.0f, 1.0f}};
+    const Matrix4x4& Transform(Vector3& v) const;
+    const Matrix4x4& Transform(Vector4& v) const;
 
-    }
-
-    _XOINL static 
-    Matrix4x4 Scale(float x, float y, float z) {
-        return{ {x,    0.0f, 0.0f, 0.0f},
-                {0.0f, y,    0.0f, 0.0f},
-                {0.0f, 0.0f, z,    0.0f},
-                {0.0f, 0.0f, 0.0f, 1.0f}};
-    }
-
-    _XOINL static
-    Matrix4x4 Scale(const Vector3& v) {
-        return{ {v.x,  0.0f, 0.0f, 0.0f},
-                {0.0f, v.y,  0.0f, 0.0f},
-                {0.0f, 0.0f, v.z,  0.0f},
-                {0.0f, 0.0f, 0.0f, 1.0f}};
-    }
-
-    _XOINL static 
-    Matrix4x4 Translation(float x, float y, float z) {
-        return{ {1.0f, 0.0f, 0.0f, x   },
-                {0.0f, 1.0f, 0.0f, y   },
-                {0.0f, 0.0f, 1.0f, z   },
-                {0.0f, 0.0f, 0.0f, 1.0f}};
-    }
-
-    _XOINL static
-    Matrix4x4 Translation(const Vector3& v) {
-        return{ {1.0f, 0.0f, 0.0f, v.x },
-                {0.0f, 1.0f, 0.0f, v.y },
-                {0.0f, 0.0f, 1.0f, v.z },
-                {0.0f, 0.0f, 0.0f, 1.0f} };
-    }
-
-    _XOINL static
-    Matrix4x4 RotationXRadians(float radians) {
-        float cosr = Cos(radians);
-        float sinr = Sin(radians);
-        return {{1.0f, 0.0f, 0.0f, 0.0f},
-                {0.0f, cosr,-sinr, 0.0f},
-                {0.0f, sinr, cosr, 0.0f},
-                {0.0f, 0.0f, 0.0f, 1.0f}};
-        
-    }
-
-    _XOINL static 
-    Matrix4x4 RotationYRadians(float radians) {
-        float cosr = Cos(radians);
-        float sinr = Sin(radians);
-        return {{cosr, 0.0f,-sinr, 0.0f},
-                {0.0f, 1.0f, 0.0f, 0.0f},
-                {sinr, 0.0f, cosr, 0.0f},
-                {0.0f, 0.0f, 0.0f, 1.0f}};
-    }
-
-    _XOINL static
-    Matrix4x4 RotationZRadians(float radians) {
-        float cosr = Cos(radians);
-        float sinr = Sin(radians);
-        return {{cosr,-sinr, 0.0f, 0.0f},
-                {sinr, cosr, 0.0f, 0.0f},
-                {0.0f, 0.0f, 1.0f, 0.0f},
-                {0.0f, 0.0f, 0.0f, 1.0f}};
-    }
-
-    _XOINL static 
-    Matrix4x4 OrthographicProjection(float w, float h, float n, float f) {
-        auto fmn = f - n;
-        return{ {1.0f/w,    0.0f,   0.0f,           0.0f},
-                {0.0f,      1.0f/h, 0.0f,           0.0f},
-                {0.0f,      0.0f,   -(2.0f/ fmn),  -((f+n)/ fmn)},
-                {0.0f,      0.0f,   0.0f,           1.0f}};
-    }
-
-    _XOINL static 
-    Matrix4x4 Projection(float fovx, float fovy, float n, float f) {
-        auto fmn = f - n;
-        return{ {ATan(fovx/2.0f),   0.0f,               0.0f,               0.0f},
-                {0.0f,              ATan(fovy/2.0f),    0.0f,               0.0f},
-                {0.0f,              0.0f,               -((f+n)/(fmn)),     -((2.0f*(n*f))/fmn)},
-                {0.0f,              0.0f,               0.0f,               1.0f}};
-    }
+    _XOINL static Matrix4x4 Scale(float xyz);
+    _XOINL static Matrix4x4 Scale(float x, float y, float z);
+    _XOINL static Matrix4x4 Scale(const Vector3& v);
+    _XOINL static Matrix4x4 Translation(float x, float y, float z);
+    _XOINL static Matrix4x4 Translation(const Vector3& v);
+    _XOINL static Matrix4x4 RotationXRadians(float radians);
+    _XOINL static Matrix4x4 RotationYRadians(float radians);
+    _XOINL static Matrix4x4 RotationZRadians(float radians);
+    _XOINL static Matrix4x4 OrthographicProjection(float w, float h, float n, float f);
+    _XOINL static Matrix4x4 Projection(float fovx, float fovy, float n, float f);
 
     Vector4 r[4];
 

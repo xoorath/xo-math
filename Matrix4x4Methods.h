@@ -61,6 +61,95 @@ Matrix4x4 Matrix4x4::Transpose() const {
     return m.MakeTranspose();
 }
 
+Matrix4x4 Matrix4x4::Scale(float xyz) {
+    return{ {xyz,  0.0f, 0.0f, 0.0f},
+            {0.0f, xyz,  0.0f, 0.0f},
+            {0.0f, 0.0f, xyz,  0.0f},
+            {0.0f, 0.0f, 0.0f, 1.0f}};
+
+}
+ 
+Matrix4x4 Matrix4x4::Scale(float x, float y, float z) {
+    return{ {x,    0.0f, 0.0f, 0.0f},
+            {0.0f, y,    0.0f, 0.0f},
+            {0.0f, 0.0f, z,    0.0f},
+            {0.0f, 0.0f, 0.0f, 1.0f}};
+}
+
+Matrix4x4 Matrix4x4::Scale(const Vector3& v) {
+    return{ {v.x,  0.0f, 0.0f, 0.0f},
+            {0.0f, v.y,  0.0f, 0.0f},
+            {0.0f, 0.0f, v.z,  0.0f},
+            {0.0f, 0.0f, 0.0f, 1.0f}};
+}
+ 
+Matrix4x4 Matrix4x4::Translation(float x, float y, float z) {
+    return{ {1.0f, 0.0f, 0.0f, x   },
+            {0.0f, 1.0f, 0.0f, y   },
+            {0.0f, 0.0f, 1.0f, z   },
+            {0.0f, 0.0f, 0.0f, 1.0f}};
+}
+
+Matrix4x4 Matrix4x4::Translation(const Vector3& v) {
+    return{ {1.0f, 0.0f, 0.0f, v.x },
+            {0.0f, 1.0f, 0.0f, v.y },
+            {0.0f, 0.0f, 1.0f, v.z },
+            {0.0f, 0.0f, 0.0f, 1.0f} };
+}
+
+Matrix4x4 Matrix4x4::RotationXRadians(float radians) {
+    float cosr = Cos(radians);
+    float sinr = Sin(radians);
+    return {{1.0f, 0.0f, 0.0f, 0.0f},
+            {0.0f, cosr,-sinr, 0.0f},
+            {0.0f, sinr, cosr, 0.0f},
+            {0.0f, 0.0f, 0.0f, 1.0f}};
+    
+}
+ 
+Matrix4x4 Matrix4x4::RotationYRadians(float radians) {
+    float cosr = Cos(radians);
+    float sinr = Sin(radians);
+    return {{cosr, 0.0f,-sinr, 0.0f},
+            {0.0f, 1.0f, 0.0f, 0.0f},
+            {sinr, 0.0f, cosr, 0.0f},
+            {0.0f, 0.0f, 0.0f, 1.0f}};
+}
+
+Matrix4x4 Matrix4x4::RotationZRadians(float radians) {
+    float cosr = Cos(radians);
+    float sinr = Sin(radians);
+    return {{cosr,-sinr, 0.0f, 0.0f},
+            {sinr, cosr, 0.0f, 0.0f},
+            {0.0f, 0.0f, 1.0f, 0.0f},
+            {0.0f, 0.0f, 0.0f, 1.0f}};
+}
+ 
+Matrix4x4 Matrix4x4::OrthographicProjection(float w, float h, float n, float f) {
+    auto fmn = f - n;
+    return{ {1.0f/w,    0.0f,   0.0f,           0.0f},
+            {0.0f,      1.0f/h, 0.0f,           0.0f},
+            {0.0f,      0.0f,   -(2.0f/ fmn),  -((f+n)/ fmn)},
+            {0.0f,      0.0f,   0.0f,           1.0f}};
+}
+ 
+Matrix4x4 Matrix4x4::Projection(float fovx, float fovy, float n, float f) {
+    auto fmn = f - n;
+    return{ {ATan(fovx/2.0f),   0.0f,               0.0f,               0.0f},
+            {0.0f,              ATan(fovy/2.0f),    0.0f,               0.0f},
+            {0.0f,              0.0f,               -((f+n)/(fmn)),     -((2.0f*(n*f))/fmn)},
+            {0.0f,              0.0f,               0.0f,               1.0f}};
+}
+
+const Matrix4x4& Matrix4x4::Transform(Vector3& v) const {
+    v *= *this;
+    return *this;
+}
+
+const Matrix4x4& Matrix4x4::Transform(Vector4& v) const {
+    v *= *this;
+    return *this;
+}
 
 XOMATH_END_XO_NS
 

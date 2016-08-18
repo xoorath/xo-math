@@ -274,12 +274,25 @@ void TestVector3(Test& t) {
     });
 }
 
+void TestMatrix4x4(Test& t) {
+    t("Matrix4x4 Multiplication", [&t] {
+        REPORT_SUCCESS_IF(t, Vector3::One * Matrix4x4::Identity, Vector3::One);
+        REPORT_SUCCESS_IF(t, (Vector3::One*2.0f) * Matrix4x4::Identity, (Vector3::One*2.0f));
+        REPORT_SUCCESS_IF(t, (Vector3::One) * (Matrix4x4::Identity*2.0f), (Vector3::One*2.0f));
+    });
+
+    t("Matrix4x4 Rotation", [&t] {
+        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationXRadians(HalfPI), Vector3::Forward);
+    });
+}
+
 int main() {
  
     Test t;
 
-    TestVector2(t);
-    TestVector3(t);
+    //TestVector2(t);
+    //TestVector3(t);
+    TestMatrix4x4(t);
 
 #if defined(_MSC_VER)
     system("pause");

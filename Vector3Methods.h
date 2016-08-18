@@ -68,7 +68,7 @@ Vector3::Vector3(const Vector4& v) :
 }
 #endif
 
-void Vector3::Set(float x, float y, float z) {
+const Vector3& Vector3::Set(float x, float y, float z) {
 #if XO_SSE
     m = _mm_set_ps(0.0f, z, y, x);
 #else
@@ -76,9 +76,10 @@ void Vector3::Set(float x, float y, float z) {
     this->y = y;
     this->z = z;
 #endif
+    return *this;
 }
 
-void Vector3::Set(float f) {
+const Vector3& Vector3::Set(float f) {
 #if XO_SSE
     m = _mm_set1_ps(f);
 #else
@@ -86,9 +87,10 @@ void Vector3::Set(float f) {
     this->y = f;
     this->z = f;
 #endif
+    return *this;
 }
 
-void Vector3::Set(const Vector3& vec) {
+const Vector3& Vector3::Set(const Vector3& vec) {
 #if XO_SSE
     m = vec.m;
 #else
@@ -96,11 +98,13 @@ void Vector3::Set(const Vector3& vec) {
     this->y = vec.y;
     this->z = vec.z;
 #endif
+    return *this;
 }
 
 #if XO_SSE
-void Vector3::Set(const __m128& vec) {
+const Vector3& Vector3::Set(const __m128& vec) {
     m = vec;
+    return *this;
 }
 #endif
 

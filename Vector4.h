@@ -30,12 +30,12 @@ public:
     _XOINL Vector4(const class Vector2& v);
     _XOINL Vector4(const class Vector3& v);
 
-    _XOINL void Set(float x, float y, float z, float w);
-    _XOINL void Set(float f);
-    _XOINL void Set(const Vector4& vec);
+    _XOINL const Vector4& Set(float x, float y, float z, float w);
+    _XOINL const Vector4& Set(float f);
+    _XOINL const Vector4& Set(const Vector4& vec);
 
 #if XO_SSE
-    _XOINL void Set(const __m128& vec);
+    _XOINL const Vector4& Set(const __m128& vec);
 #endif
 
     _XOINL void Get(float& x, float& y, float& z, float& w) const;
@@ -70,6 +70,7 @@ public:
     _XOINL const Vector4& operator *= (int v);
     _XOINL const Vector4& operator *= (const class Vector2& v);
     _XOINL const Vector4& operator *= (const class Vector3& v);
+    _XOINL const Vector4& operator *= (const class Matrix4x4& m);
 
     _XOINL const Vector4& operator /= (const Vector4& v);
     _XOINL const Vector4& operator /= (float v);
@@ -98,6 +99,7 @@ public:
     _XOINL Vector4 operator * (int v) const;
     _XOINL Vector4 operator * (const class Vector2& v) const;
     _XOINL Vector4 operator * (const class Vector3& v) const;
+    _XOINL Vector4 operator * (const class Matrix4x4& m) const;
 
     _XOINL Vector4 operator / (const Vector4& v) const;
     _XOINL Vector4 operator / (float v) const;

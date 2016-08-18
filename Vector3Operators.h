@@ -105,6 +105,11 @@ const Vector3& Vector3::operator *= (float v) {
 #endif
     return *this;
 }
+
+const Vector3& Vector3::operator *= (const Matrix4x4& v) {
+    return (*this) = ((Vector4)*this) *= v;
+}
+
 const Vector3& Vector3::operator *= (double v)          { return (*this) *= float(v); }
 const Vector3& Vector3::operator *= (int v)             { return (*this) *= float(v); }
 const Vector3& Vector3::operator *= (const Vector2& v)  { return (*this) *= Vector3(v); }
@@ -215,6 +220,7 @@ Vector3 Vector3::operator * (double v) const                { return Vector3(*th
 Vector3 Vector3::operator * (int v) const                   { return Vector3(*this) *= v; }
 Vector3 Vector3::operator * (const Vector2& v) const        { return Vector3(*this) *= v; }
 Vector3 Vector3::operator * (const Vector4& v) const        { return Vector3(*this) *= v; }
+Vector3 Vector3::operator * (const Matrix4x4& m) const      { return Vector3(*this) *= m; }
 
 Vector3 Vector3::operator / (const Vector3& v) const        { return Vector3(*this) /= v; }
 Vector3 Vector3::operator / (float v) const                 { return Vector3(*this) /= v; }
