@@ -26,7 +26,7 @@
 // Allow AVX512 (2016) Intel Knights Landing
 #define XO_AVX512 1
 
-#include "../GameMath.h"
+#include "../xo-math.h"
 
 #ifdef XO_NO_NS
 #   undef XO_NO_NS
