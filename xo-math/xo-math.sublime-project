@@ -4,5 +4,29 @@
 		{
 			"path": "/Users/xoorath/xo-math"
 		}
-	]
+	],
+  "build_systems":
+    [
+        {
+            "name": "clang",
+            "windows": {
+                "cmd": ["clang++", "-std=c++11", "-target", "x86_64-pc-windows-gnu", "-O0", "-msse4.2", "-o", "$project_path/build/a.exe", "$project_path/main.cpp"],
+            },
+            "osx": {
+                "cmd": ["clang++", "-std=c++11", "-O0", "-msse4.2", "-o", "$project_path/build/a.out", "$project_path/main.cpp"]
+            },
+            "variants": [
+                {
+                    "name": "Run",
+                    "windows": {
+                        "shell_cmd": "$project_path/build/a.exe"
+                    },
+                    "osx": {
+                        "shell_cmd": "$project_path/build/a.out"
+                    }
+            
+                }
+            ]   
+        }
+    ]
 }
