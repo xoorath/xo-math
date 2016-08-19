@@ -283,6 +283,12 @@ void TestMatrix4x4(Test& t) {
 
     t("Matrix4x4 Rotation", [&t] {
         REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationXRadians(HalfPI), Vector3::Forward);
+        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationZRadians(HalfPI), Vector3::Left);
+        REPORT_SUCCESS_IF(t, Vector3::Right * Matrix4x4::RotationYRadians(HalfPI), Vector3::Forward);
+
+        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationXDegrees(90), Vector3::Forward);
+        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationZDegrees(90), Vector3::Left);
+        REPORT_SUCCESS_IF(t, Vector3::Right * Matrix4x4::RotationYDegrees(90), Vector3::Forward);
     });
 }
 

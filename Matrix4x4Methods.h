@@ -124,7 +124,35 @@ Matrix4x4 Matrix4x4::RotationZRadians(float radians) {
             {0.0f, 0.0f, 1.0f, 0.0f},
             {0.0f, 0.0f, 0.0f, 1.0f}};
 }
- 
+
+Matrix4x4 Matrix4x4::RotationRadians(float x, float y, float z) {
+    return RotationXRadians(x) * RotationYRadians(y) * RotationZRadians(z);
+}
+
+Matrix4x4 Matrix4x4::RotationRadians(const Vector3& v) {
+    return RotationXRadians(v.x) * RotationYRadians(v.y) * RotationZRadians(v.z);
+}
+
+Matrix4x4 Matrix4x4::RotationXDegrees(float degrees) {
+    return RotationXRadians(degrees * Deg2Rad);
+}
+
+Matrix4x4 Matrix4x4::RotationYDegrees(float degrees) {
+    return RotationYRadians(degrees * Deg2Rad);
+}
+
+Matrix4x4 Matrix4x4::RotationZDegrees(float degrees) {
+    return RotationZRadians(degrees * Deg2Rad);
+}
+
+Matrix4x4 Matrix4x4::RotationDegrees(float x, float y, float z) {
+    return RotationXDegrees(x) * RotationYDegrees(y) * RotationZDegrees(z);
+}
+
+Matrix4x4 Matrix4x4::RotationDegrees(const Vector3& v) {
+    return RotationXDegrees(v.x) * RotationYDegrees(v.y) * RotationZDegrees(v.z);
+}
+
 Matrix4x4 Matrix4x4::OrthographicProjection(float w, float h, float n, float f) {
     auto fmn = f - n;
     return{ {1.0f/w,    0.0f,   0.0f,           0.0f},

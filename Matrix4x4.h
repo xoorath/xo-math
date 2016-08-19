@@ -88,9 +88,19 @@ public:
     _XOINL static Matrix4x4 Scale(const Vector3& v);
     _XOINL static Matrix4x4 Translation(float x, float y, float z);
     _XOINL static Matrix4x4 Translation(const Vector3& v);
+    
     _XOINL static Matrix4x4 RotationXRadians(float radians);
     _XOINL static Matrix4x4 RotationYRadians(float radians);
     _XOINL static Matrix4x4 RotationZRadians(float radians);
+    _XOINL static Matrix4x4 RotationRadians(float x, float y, float z);
+    _XOINL static Matrix4x4 RotationRadians(const Vector3& v);
+
+    _XOINL static Matrix4x4 RotationXDegrees(float degrees);
+    _XOINL static Matrix4x4 RotationYDegrees(float degrees);
+    _XOINL static Matrix4x4 RotationDegrees(float x, float y, float z);
+    _XOINL static Matrix4x4 RotationDegrees(const Vector3& v);
+    
+    _XOINL static Matrix4x4 RotationZDegrees(float degrees);
     _XOINL static Matrix4x4 OrthographicProjection(float w, float h, float n, float f);
     _XOINL static Matrix4x4 Projection(float fovx, float fovy, float n, float f);
 
