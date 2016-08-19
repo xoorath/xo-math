@@ -141,7 +141,9 @@ float Vector3::MagnitudeSquared() const {
     return _mm_cvtss_f32(square);
 #elif XO_SSE
     auto square = _mm_mul_ps(m, m);
-    return square.m128_f32[IDX_X] + square.m128_f32[IDX_Y] + square.m128_f32[IDX_Z];
+    _MM_ALIGN16 float t[4];
+    _mm_store_ps(t, m);
+    return t[IDX_X] + t[IDX_Y] + t[IDX_Z];
 #else
     return (x*x) + (y*y) + (z*z);
 #endif
@@ -195,7 +197,9 @@ float Vector3::Dot(const Vector3& a, const Vector3& b) {
     return _mm_cvtss_f32(d);
 #elif XO_SSE
     auto d = _mm_mul_ps(a.m, b.m);
-    return d.m128_f32[IDX_X] + d.m128_f32[IDX_Y] + d.m128_f32[IDX_Z];
+    _MM_ALIGN16 float t[4];
+    _mm_store_ps(t, d);
+    return t[IDX_X] + t[IDX_Y] + t[IDX_Z];
 #else
     return (a.x*b.x) + (a.y*b.y) + (a.z*b.z);
 #endif
@@ -222,7 +226,9 @@ float Vector3::AngleRadians(const Vector3& a, const Vector3& b) {
 #elif XO_SSE
     auto cross = Cross(a, b).m;
     cross = _mm_mul_ps(cross, cross);
-    return ATan2(Sqrt(cross.m128_f32[IDX_X] + cross.m128_f32[IDX_Y] + cross.m128_f32[IDX_Z]), Dot(a, b));
+    _MM_ALIGN16 float t[4];
+    _mm_store_ps(t, cross);
+    return ATan2(Sqrt(t[IDX_X] + t[IDX_Y] + t[IDX_Z]), Dot(a, b));
 #else
     auto cross = Cross(a, b);
     cross *= cross;

@@ -193,7 +193,9 @@ float Vector4::Dot(const Vector4& a, const Vector4& b) {
     return _mm_cvtss_f32(d);
 #elif XO_SSE
     auto d = _mm_mul_ps(a.m, b.m);
-    return d.m128_f32[IDX_X] + d.m128_f32[IDX_Y] + d.m128_f32[IDX_Z] + d.m128_f32[IDX_W];
+    _MM_ALIGN16 float t[4];
+    _mm_store_ps(t, d);
+    return t[IDX_X] + t[IDX_Y] + t[IDX_Z] + t[IDX_W];
 #else
     return (a.x*b.x) + (a.y*b.y) + (a.z*b.z);
 #endif

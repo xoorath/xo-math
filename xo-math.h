@@ -1,9 +1,14 @@
+#if !defined(XO_REDEFINABLE) // For testing it's helpful to change settings and re-include xo-math.
 #pragma once
+#endif
 #ifndef XO_MATH_H
 #define XO_MATH_H
 
 ////////////////////////////////////////////////////////////////////////// XOMATH_BEGIN_XO_NS, XOMATH_END_XO_NS
-#ifdef XO_SINGLE_NS
+#ifdef XO_CUSTOM_NS
+#   define XOMATH_BEGIN_XO_NS  namespace XO_CUSTOM_NS {
+#   define XOMATH_END_XO_NS    }
+#elif defined(XO_SINGLE_NS)
 #   define XOMATH_BEGIN_XO_NS  namespace xo {
 #   define XOMATH_END_XO_NS    }
 #elif defined(XO_SIMPLE_NS)
@@ -175,23 +180,19 @@ XOMATH_END_XO_NS
 
 ////////////////////////////////////////////////////////////////////////// Remove internal macros
 
-#undef _XOINL
-#undef _XOTLS
+#if defined(XO_REDEFINABLE)
+#undef XO_MATH_H
+#endif
+
+#undef XOMATH_BEGIN_XO_NS
+#undef XOMATH_END_XO_NS
 
 #undef _XOMATH_INTERNAL_MACRO_WARNING
 
-#undef VEC2D_SIMPLE_OP
-#undef VEC2D_SIMPLE_OP_ADD
-#undef VEC2_COMPARE_OP
-#undef VEC2_COMPARE_CLOSE_OP
-
-#undef VEC3D_SIMPLE_OP
-#undef VEC3D_SIMPLE_OP_ADD
-#undef VEC3_COMPARE_OP
-#undef VEC3_COMPARE_CLOSE_OP
+#undef _XOINL
+#undef _XOTLS
 
 #undef XOMATH_INTERNAL
-#undef XOMATH_BEGIN_XO_NS
-#undef XOMATH_END_XO_NS
+
 
 #endif // XO_MATH_H
