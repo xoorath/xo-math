@@ -230,8 +230,8 @@ int main() {
  
     Test t;
 
-    //TestVector2(t);
-    //TestVector3(t);
+    TestVector2(t);
+    TestVector3(t);
     TestMatrix4x4(t);
 
 #if defined(_MSC_VER)

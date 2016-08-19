@@ -106,8 +106,8 @@ const Vector3& Vector3::operator *= (float v) {
     return *this;
 }
 
-const Vector3& Vector3::operator *= (const Matrix4x4& v) {
-    return (*this) = ((Vector4)*this) *= v;
+const Vector3& Vector3::operator *= (const Matrix4x4& m) {
+    return (*this) = ((Vector4)*this) *= m;
 }
 
 const Vector3& Vector3::operator *= (double v)          { return (*this) *= float(v); }
