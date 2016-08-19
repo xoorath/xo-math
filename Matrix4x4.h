@@ -49,13 +49,13 @@ public:
     // Get a constant reference to a row in the matrix
     _XOINL const Vector4& operator [](int i) const;
 
-    // Get a mutatable reference to a row in the matrix
+    // Get a mutable reference to a row in the matrix
     _XOINL Vector4& operator [](int i);
 
     // Get a constant reference to a float in the matrix
     _XOINL const float& operator ()(int r, int c) const;
     
-    // Get a mutatable reference to a float in the matrix
+    // Get a mutable reference to a float in the matrix
     _XOINL float& operator ()(int r, int c);
 
     // Get a reference to a row in the matrix.
@@ -80,8 +80,8 @@ public:
     // calls Scale(float xyz) with parameter scale.
     _XOINL Matrix4x4 operator * (float scale) const;
 
-    const Matrix4x4& Transform(Vector3& v) const;
-    const Matrix4x4& Transform(Vector4& v) const;
+    _XOINL const Matrix4x4& Transform(Vector3& v) const;
+    _XOINL const Matrix4x4& Transform(Vector4& v) const;
 
     _XOINL static Matrix4x4 Scale(float xyz);
     _XOINL static Matrix4x4 Scale(float x, float y, float z);

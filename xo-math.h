@@ -160,6 +160,7 @@ XOMATH_END_XO_NS
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Matrix4x4.h"
+#include "Quaternion.h"
 
 #include "Vector2Operators.h"
 #include "Vector2Methods.h"
@@ -169,6 +170,8 @@ XOMATH_END_XO_NS
 #include "Vector4Methods.h"
 #include "Matrix4x4Operators.h"
 #include "Matrix4x4Methods.h"
+#include "QuaternionOperators.h"
+#include "QuaternionMethods.h"
 
 ////////////////////////////////////////////////////////////////////////// Remove internal macros
 
