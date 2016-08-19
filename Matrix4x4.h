@@ -77,32 +77,40 @@ public:
     _XOINL Matrix4x4 operator + (const Matrix4x4& m) const;
     _XOINL Matrix4x4 operator - (const Matrix4x4& m) const;
     _XOINL Matrix4x4 operator * (const Matrix4x4& m) const;
-    // calls Scale(float xyz) with parameter scale.
+    // Sets the diagonal of the matrix to a scale value.
     _XOINL Matrix4x4 operator * (float scale) const;
 
     _XOINL const Matrix4x4& Transform(Vector3& v) const;
     _XOINL const Matrix4x4& Transform(Vector4& v) const;
 
-    _XOINL static Matrix4x4 Scale(float xyz);
-    _XOINL static Matrix4x4 Scale(float x, float y, float z);
-    _XOINL static Matrix4x4 Scale(const Vector3& v);
-    _XOINL static Matrix4x4 Translation(float x, float y, float z);
-    _XOINL static Matrix4x4 Translation(const Vector3& v);
-    
-    _XOINL static Matrix4x4 RotationXRadians(float radians);
-    _XOINL static Matrix4x4 RotationYRadians(float radians);
-    _XOINL static Matrix4x4 RotationZRadians(float radians);
-    _XOINL static Matrix4x4 RotationRadians(float x, float y, float z);
-    _XOINL static Matrix4x4 RotationRadians(const Vector3& v);
+    _XOINL static Matrix4x4 CreateScale(float xyz);
+    _XOINL static Matrix4x4 CreateScale(float x, float y, float z);
+    _XOINL static Matrix4x4 CreateScale(const Vector3& v);
 
-    _XOINL static Matrix4x4 RotationXDegrees(float degrees);
-    _XOINL static Matrix4x4 RotationYDegrees(float degrees);
-    _XOINL static Matrix4x4 RotationDegrees(float x, float y, float z);
-    _XOINL static Matrix4x4 RotationDegrees(const Vector3& v);
+    _XOINL static Matrix4x4 CreateTranslation(float x, float y, float z);
+    _XOINL static Matrix4x4 CreateTranslation(const Vector3& v);
     
-    _XOINL static Matrix4x4 RotationZDegrees(float degrees);
-    _XOINL static Matrix4x4 OrthographicProjection(float w, float h, float n, float f);
-    _XOINL static Matrix4x4 Projection(float fovx, float fovy, float n, float f);
+    _XOINL static Matrix4x4 CreateRotationXRadians(float radians);
+    _XOINL static Matrix4x4 CreateRotationYRadians(float radians);
+    _XOINL static Matrix4x4 CreateRotationZRadians(float radians);
+    _XOINL static Matrix4x4 CreateRotationRadians(float x, float y, float z);
+    _XOINL static Matrix4x4 CreateRotationRadians(const Vector3& v);
+    _XOINL static Matrix4x4 CreateAxisAngleRadians(const Vector3& axis, float radians);
+
+    _XOINL static Matrix4x4 CreateRotationXDegrees(float degrees);
+    _XOINL static Matrix4x4 CreateRotationYDegrees(float degrees);
+    _XOINL static Matrix4x4 CreateRotationZDegrees(float degrees);
+    _XOINL static Matrix4x4 CreateRotationDegrees(float x, float y, float z);
+    _XOINL static Matrix4x4 CreateRotationDegrees(const Vector3& v);
+    _XOINL static Matrix4x4 CreateAxisAngleDegrees(const Vector3& axis, float degrees);
+
+    _XOINL static Matrix4x4 CreateOrthographicProjection(float w, float h, float n, float f);
+    _XOINL static Matrix4x4 CreateProjection(float fovx, float fovy, float n, float f);
+
+    _XOINL static Matrix4x4 CreateLookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up);
+    _XOINL static Matrix4x4 CreateLookAtFromPosition(const Vector3& from, const Vector3& to); // defaults up to Vector3::Up
+    _XOINL static Matrix4x4 CreateLookAtFromDirection(const Vector3& direction, const Vector3& up);
+    _XOINL static Matrix4x4 CreateLookAtFromDirection(const Vector3& direction); // defaults up to Vector3::Up
 
     Vector4 r[4];
 

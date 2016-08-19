@@ -61,7 +61,17 @@ Matrix4x4 Matrix4x4::Transpose() const {
     return m.MakeTranspose();
 }
 
-Matrix4x4 Matrix4x4::Scale(float xyz) {
+const Matrix4x4& Matrix4x4::Transform(Vector3& v) const {
+    v *= *this;
+    return *this;
+}
+
+const Matrix4x4& Matrix4x4::Transform(Vector4& v) const {
+    v *= *this;
+    return *this;
+}
+
+Matrix4x4 Matrix4x4::CreateScale(float xyz) {
     return{ {xyz,  0.0f, 0.0f, 0.0f},
             {0.0f, xyz,  0.0f, 0.0f},
             {0.0f, 0.0f, xyz,  0.0f},
@@ -69,35 +79,35 @@ Matrix4x4 Matrix4x4::Scale(float xyz) {
 
 }
  
-Matrix4x4 Matrix4x4::Scale(float x, float y, float z) {
+Matrix4x4 Matrix4x4::CreateScale(float x, float y, float z) {
     return{ {x,    0.0f, 0.0f, 0.0f},
             {0.0f, y,    0.0f, 0.0f},
             {0.0f, 0.0f, z,    0.0f},
             {0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
-Matrix4x4 Matrix4x4::Scale(const Vector3& v) {
+Matrix4x4 Matrix4x4::CreateScale(const Vector3& v) {
     return{ {v.x,  0.0f, 0.0f, 0.0f},
             {0.0f, v.y,  0.0f, 0.0f},
             {0.0f, 0.0f, v.z,  0.0f},
             {0.0f, 0.0f, 0.0f, 1.0f}};
 }
  
-Matrix4x4 Matrix4x4::Translation(float x, float y, float z) {
+Matrix4x4 Matrix4x4::CreateTranslation(float x, float y, float z) {
     return{ {1.0f, 0.0f, 0.0f, x   },
             {0.0f, 1.0f, 0.0f, y   },
             {0.0f, 0.0f, 1.0f, z   },
             {0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
-Matrix4x4 Matrix4x4::Translation(const Vector3& v) {
+Matrix4x4 Matrix4x4::CreateTranslation(const Vector3& v) {
     return{ {1.0f, 0.0f, 0.0f, v.x },
             {0.0f, 1.0f, 0.0f, v.y },
             {0.0f, 0.0f, 1.0f, v.z },
             {0.0f, 0.0f, 0.0f, 1.0f} };
 }
 
-Matrix4x4 Matrix4x4::RotationXRadians(float radians) {
+Matrix4x4 Matrix4x4::CreateRotationXRadians(float radians) {
     float cosr = Cos(radians);
     float sinr = Sin(radians);
     return {{1.0f, 0.0f, 0.0f, 0.0f},
@@ -107,7 +117,7 @@ Matrix4x4 Matrix4x4::RotationXRadians(float radians) {
     
 }
  
-Matrix4x4 Matrix4x4::RotationYRadians(float radians) {
+Matrix4x4 Matrix4x4::CreateRotationYRadians(float radians) {
     float cosr = Cos(radians);
     float sinr = Sin(radians);
     return {{cosr, 0.0f,-sinr, 0.0f},
@@ -116,7 +126,7 @@ Matrix4x4 Matrix4x4::RotationYRadians(float radians) {
             {0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
-Matrix4x4 Matrix4x4::RotationZRadians(float radians) {
+Matrix4x4 Matrix4x4::CreateRotationZRadians(float radians) {
     float cosr = Cos(radians);
     float sinr = Sin(radians);
     return {{cosr,-sinr, 0.0f, 0.0f},
@@ -125,43 +135,61 @@ Matrix4x4 Matrix4x4::RotationZRadians(float radians) {
             {0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
-Matrix4x4 Matrix4x4::RotationRadians(float x, float y, float z) {
-    return RotationXRadians(x) * RotationYRadians(y) * RotationZRadians(z);
+Matrix4x4 Matrix4x4::CreateRotationRadians(float x, float y, float z) {
+    return CreateRotationXRadians(x) * CreateRotationYRadians(y) * CreateRotationZRadians(z);
 }
 
-Matrix4x4 Matrix4x4::RotationRadians(const Vector3& v) {
-    return RotationXRadians(v.x) * RotationYRadians(v.y) * RotationZRadians(v.z);
+Matrix4x4 Matrix4x4::CreateRotationRadians(const Vector3& v) {
+    return CreateRotationXRadians(v.x) * CreateRotationYRadians(v.y) * CreateRotationZRadians(v.z);
 }
 
-Matrix4x4 Matrix4x4::RotationXDegrees(float degrees) {
-    return RotationXRadians(degrees * Deg2Rad);
+Matrix4x4 Matrix4x4::CreateAxisAngleRadians(const Vector3& a, float radians) {
+    float c = Cos(radians);
+    float s = Sin(radians);
+    float t = 1.0f - c;
+    const float& x = a.x;
+    const float& y = a.y;
+    const float& z = a.z;
+    return{ { t*x*x+c  ,    t*x*y-z*s,  t*x*z+y*s,  0.0f},
+            { t*x*y+z*s,    t*y*y+c  ,  t*y*z-x*s,  0.0f},
+            { t*x*z-y*s,    t*y*z+x*s,  t*z*z+c  ,  0.0f},
+            { 0.0f,         0.0f,       0.0f,       1.0f} };
 }
 
-Matrix4x4 Matrix4x4::RotationYDegrees(float degrees) {
-    return RotationYRadians(degrees * Deg2Rad);
+Matrix4x4 Matrix4x4::CreateRotationXDegrees(float degrees) {
+    return CreateRotationXRadians(degrees * Deg2Rad);
 }
 
-Matrix4x4 Matrix4x4::RotationZDegrees(float degrees) {
-    return RotationZRadians(degrees * Deg2Rad);
+Matrix4x4 Matrix4x4::CreateRotationYDegrees(float degrees) {
+    return CreateRotationYRadians(degrees * Deg2Rad);
 }
 
-Matrix4x4 Matrix4x4::RotationDegrees(float x, float y, float z) {
-    return RotationXDegrees(x) * RotationYDegrees(y) * RotationZDegrees(z);
+Matrix4x4 Matrix4x4::CreateRotationZDegrees(float degrees) {
+    return CreateRotationZRadians(degrees * Deg2Rad);
 }
 
-Matrix4x4 Matrix4x4::RotationDegrees(const Vector3& v) {
-    return RotationXDegrees(v.x) * RotationYDegrees(v.y) * RotationZDegrees(v.z);
+Matrix4x4 Matrix4x4::CreateRotationDegrees(float x, float y, float z) {
+    return CreateRotationXDegrees(x) * CreateRotationYDegrees(y) * CreateRotationZDegrees(z);
 }
 
-Matrix4x4 Matrix4x4::OrthographicProjection(float w, float h, float n, float f) {
+Matrix4x4 Matrix4x4::CreateRotationDegrees(const Vector3& v) {
+    return CreateRotationXDegrees(v.x) * CreateRotationYDegrees(v.y) * CreateRotationZDegrees(v.z);
+}
+
+
+Matrix4x4 Matrix4x4::CreateAxisAngleDegrees(const Vector3& a, float degrees) {
+    return CreateAxisAngleDegrees(a, degrees * Deg2Rad);
+}
+
+Matrix4x4 Matrix4x4::CreateOrthographicProjection(float w, float h, float n, float f) {
     auto fmn = f - n;
     return{ {1.0f/w,    0.0f,   0.0f,           0.0f},
             {0.0f,      1.0f/h, 0.0f,           0.0f},
-            {0.0f,      0.0f,   -(2.0f/ fmn),  -((f+n)/ fmn)},
+            {0.0f,      0.0f,   -(2.0f/fmn),    -((f+n)/fmn)},
             {0.0f,      0.0f,   0.0f,           1.0f}};
 }
  
-Matrix4x4 Matrix4x4::Projection(float fovx, float fovy, float n, float f) {
+Matrix4x4 Matrix4x4::CreateProjection(float fovx, float fovy, float n, float f) {
     auto fmn = f - n;
     return{ {ATan(fovx/2.0f),   0.0f,               0.0f,               0.0f},
             {0.0f,              ATan(fovy/2.0f),    0.0f,               0.0f},
@@ -169,14 +197,33 @@ Matrix4x4 Matrix4x4::Projection(float fovx, float fovy, float n, float f) {
             {0.0f,              0.0f,               0.0f,               1.0f}};
 }
 
-const Matrix4x4& Matrix4x4::Transform(Vector3& v) const {
-    v *= *this;
-    return *this;
+
+Matrix4x4 Matrix4x4::CreateLookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up) {
+    Vector3 zAxis = (to - from).Normalized();
+    Vector3 xAxis = Vector3::Cross(up, zAxis).Normalized();
+    Vector3 yAxis = Vector3::Cross(zAxis, xAxis);
+    return{ {xAxis.x,           yAxis.x,            zAxis.x,            0.0f},
+            {xAxis.y,           yAxis.y,            zAxis.y,            0.0f},
+            {xAxis.z,           yAxis.z,            zAxis.z,            0.0f},
+            {-xAxis.Dot(from),  -yAxis.Dot(from),   -zAxis.Dot(from),   1.0f}};
 }
 
-const Matrix4x4& Matrix4x4::Transform(Vector4& v) const {
-    v *= *this;
-    return *this;
+Matrix4x4 Matrix4x4::CreateLookAtFromPosition(const Vector3& from, const Vector3& to) {
+    return CreateLookAtFromPosition(from, to, Vector3::Up);
+}
+
+Matrix4x4 Matrix4x4::CreateLookAtFromDirection(const Vector3& direction, const Vector3& up) {
+    Vector3 zAxis = direction.Normalized();
+    Vector3 xAxis = Vector3::Cross(up, zAxis).Normalized();
+    Vector3 yAxis = Vector3::Cross(zAxis, xAxis);
+    return{ {xAxis.x,           yAxis.x,            zAxis.x,            0.0f},
+            {xAxis.y,           yAxis.y,            zAxis.y,            0.0f},
+            {xAxis.z,           yAxis.z,            zAxis.z,            0.0f},
+            {0.0f,              0.0f,               0.0f,               1.0f}};
+}
+
+Matrix4x4 Matrix4x4::CreateLookAtFromDirection(const Vector3& direction) {
+    return CreateLookAtFromDirection(direction, Vector3::Up);
 }
 
 XOMATH_END_XO_NS
