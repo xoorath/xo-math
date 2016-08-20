@@ -17,38 +17,6 @@
             endingLineNumber = "296"
             landmarkName = "main()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "std::__1::__function::__func&lt;main::$_12, std::__1::allocator&lt;main::$_12&gt;, void ()&gt;::operator()()"
-                  moduleName = "xo-math"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/xoorath/xo-math/xo-math/Main.cpp"
-                  timestampString = "492525531.754598"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "297"
-                  endingLineNumber = "297"
-                  offsetFromSymbolStart = "11">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "std::__1::__function::__func&lt;main::$_12, std::__1::allocator&lt;main::$_12&gt;, void ()&gt;::operator()()"
-                  moduleName = "xo-math"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/xoorath/xo-math/xo-math/Main.cpp"
-                  timestampString = "492525531.754902"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "297"
-                  endingLineNumber = "297"
-                  offsetFromSymbolStart = "21">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

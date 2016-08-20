@@ -142,7 +142,7 @@ float Vector3::MagnitudeSquared() const {
 #elif XO_SSE
     auto square = _mm_mul_ps(m, m);
     _MM_ALIGN16 float t[4];
-    _mm_store_ps(t, m);
+    _mm_store_ps(t, square);
     return t[IDX_X] + t[IDX_Y] + t[IDX_Z];
 #else
     return (x*x) + (y*y) + (z*z);
