@@ -1,8 +1,66 @@
 #if !defined(XO_REDEFINABLE) // For testing it's helpful to change settings and re-include xo-math.
-#pragma once
+#   pragma once
 #endif
 #ifndef XO_MATH_H
 #define XO_MATH_H
+
+////////////////////////////////////////////////////////////////////////// auto SSE detection based on compiler settings
+// First check that the user isn't overriding our SSE settings. If they are, it's up to them to define all of it.
+#if !defined(XO_SSE) && !defined(XO_SSE2) && !defined(XO_SSE3) && !defined(XO_SSSE3) && !defined(XO_SSE4) && !defined(XO_AVX) && !defined(XO_AVX2) && !defined(XO_AVX512)
+#   if defined(_MSC_VER)
+#       if defined(_M_IX86_FP)
+#           if _M_IX86_FP == 1
+#               define XO_SSE 1
+#           elif _M_IX86_FP == 2
+#               define XO_SSE 1
+#               define XO_SSE2 1
+#           endif
+#       endif
+#       if defined(__AVX__)
+#           define XO_SSE 1
+#           define XO_SSE2 1
+#           define XO_SSE3 1
+#           define XO_SSSE3 1
+#           define XO_SSE4 1 // Todo: specify 4_1 and 4_2
+#           define XO_AVX 1
+#       endif
+#       if defined(__AVX2__)
+#           define XO_SSE 1
+#           define XO_SSE2 1
+#           define XO_SSE3 1
+#           define XO_SSSE3 1
+#           define XO_SSE4 1 // Todo: specify 4_1 and 4_2
+#           define XO_AVX 1
+#           define XO_AVX2 1
+#       endif
+// TODO: add AVX512 for msvc when it exists.
+#   elif defined(__clang__) || defined (__gcc__) // Todo: verify the gcc pre-proc, I'm just guessing here.
+#       if defined(__SSE__)
+#           define XO_SSE 1
+#       endif
+#       if defined(__SSE2__)
+#           define XO_SSE2 1
+#       endif
+#       if defined(__SSE3__)
+#           define XO_SSE3 1
+#       endif
+#       if defined(__SSSE3__)
+#           define XO_SSSE3 1
+#       endif
+#       if defined(__SSE4_1__)
+#           define XO_SSE4 1 // Todo: specify 4_1 and 4_2 like gcc does
+#       endif
+#       if defined(__AVX__)
+#           define XO_AVX 1
+#       endif
+#       if defined(__AVX2__) // Todo: verify this pre-proc
+#           define XO_AVX2 1
+#       endif
+#       if defined(__AVX512__) // Todo: verify this pre-proc
+#           define XO_AVX512 1
+#       endif
+#   endif
+#endif
 
 ////////////////////////////////////////////////////////////////////////// XOMATH_BEGIN_XO_NS, XOMATH_END_XO_NS
 #ifdef XO_CUSTOM_NS
@@ -49,7 +107,7 @@ static_assert(false, "Xomath found an internal macro where it shouldn't have.");
 #if defined(_XOINL)
 _XOMATH_INTERNAL_MACRO_WARNING
 #else
-#   ifdef NO_XO_INLINE
+#   ifdef XO_NO_INLINE
         // I've found at least on msvc that inline will improve execution time in our test main. on 100k iterations I saw 0.51s without inline and 0.46s with inline.
 #       define _XOINL
 #   elif defined(_MSC_VER)
@@ -62,9 +120,8 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #if defined(_XOTLS)
 _XOMATH_INTERNAL_MACRO_WARNING
 #else
-#   ifdef __APPLE__
-        // todo: find a way to get thread local storage out of xcode clang which allows for
-        // non const-expr initialization
+#   ifdef __clang__
+        // todo: find a way to get thread local storage out of clang which allows for non const-expr initialization
 #       define _XOTLS
 #   else
 #       define _XOTLS thread_local
@@ -103,38 +160,20 @@ namespace SSE {
 #endif
 
 // wrap for now, so we have the option to make a faster version later.
-_XOINL 
-float Sqrt(float f) { return sqrtf(f); }
+_XOINL float Sqrt(float f)              { return sqrtf(f); }
+_XOINL float Sin(float f)               { return sinf(f); }
+_XOINL float Cos(float f)               { return cosf(f); }
+_XOINL float Tan(float f)               { return tanf(f); }
+_XOINL float ASin(float f)              { return asinf(f); }
+_XOINL float ACos(float f)              { return acosf(f); }
+_XOINL float ATan(float f)              { return atanf(f); }
+_XOINL float ATan2(float y, float x)    { return atan2f(y, x); }
+_XOINL bool CloseEnough(float x, float y, float tolerance = FloatEpsilon) { return fabs(y - x) < tolerance; }
 
-_XOINL 
-float Sin(float f) { return sinf(f); }
 
-_XOINL 
-float Cos(float f) { return cosf(f); }
-
-_XOINL 
-float Tan(float f) { return tanf(f); }
-
-_XOINL 
-float ASin(float f) { return asinf(f); }
-
-_XOINL 
-float ACos(float f) { return acosf(f); }
-
-_XOINL 
-float ATan(float f) { return atanf(f); }
-
-_XOINL 
-float ATan2(float y, float x) { return atan2f(y, x); }
-
-_XOINL 
-bool CloseEnough(float x, float y, float tolerance = FloatEpsilon) { return fabs(y - x) < tolerance; }
-
-template<typename T>
-constexpr _XOINL 
-T Square(const T& t) {
-    return t*t;
-}
+constexpr _XOINL float Square(float t)      { return t*t; }
+constexpr _XOINL double Square(double t)    { return t*t; }
+constexpr _XOINL int Square(int t)          { return t*t; }
 
 _XOINL 
 bool RandomBool() {
@@ -181,7 +220,7 @@ XOMATH_END_XO_NS
 ////////////////////////////////////////////////////////////////////////// Remove internal macros
 
 #if defined(XO_REDEFINABLE)
-#undef XO_MATH_H
+#   undef XO_MATH_H
 #endif
 
 #undef XOMATH_BEGIN_XO_NS

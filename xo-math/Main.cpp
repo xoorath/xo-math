@@ -216,17 +216,17 @@ void TestMatrix4x4(Test& t) {
     t("Matrix4x4 Multiplication", [&t] {
         REPORT_SUCCESS_IF(t, Vector3::One * Matrix4x4::Identity, Vector3::One);
         REPORT_SUCCESS_IF(t, (Vector3::One*2.0f) * Matrix4x4::Identity, (Vector3::One*2.0f));
-        REPORT_SUCCESS_IF(t, (Vector3::One) * (Matrix4x4::Identity*2.0f), (Vector3::One*2.0f));
+        REPORT_SUCCESS_IF(t, Vector3::One * (Matrix4x4::Scale(2.0f)), (Vector3::One*2.0f));
     });
 
     t("Matrix4x4 Rotation", [&t] {
-        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::CreateRotationXRadians(T_NS::HalfPI), Vector3::Forward);
-        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::CreateRotationZRadians(T_NS::HalfPI), Vector3::Left);
-        REPORT_SUCCESS_IF(t, Vector3::Right * Matrix4x4::CreateRotationYRadians(T_NS::HalfPI), Vector3::Forward);
+        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationXRadians(T_NS::HalfPI), Vector3::Forward);
+        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationZRadians(T_NS::HalfPI), Vector3::Left);
+        REPORT_SUCCESS_IF(t, Vector3::Right * Matrix4x4::RotationYRadians(T_NS::HalfPI), Vector3::Forward);
 
-        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::CreateRotationXDegrees(90), Vector3::Forward);
-        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::CreateRotationZDegrees(90), Vector3::Left);
-        REPORT_SUCCESS_IF(t, Vector3::Right * Matrix4x4::CreateRotationYDegrees(90), Vector3::Forward);
+        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationXDegrees(90), Vector3::Forward);
+        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationZDegrees(90), Vector3::Left);
+        REPORT_SUCCESS_IF(t, Vector3::Right * Matrix4x4::RotationYDegrees(90), Vector3::Forward);
     });
 }
 

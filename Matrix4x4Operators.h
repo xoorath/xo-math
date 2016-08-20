@@ -59,17 +59,9 @@ const Matrix4x4& Matrix4x4::operator *= (const Matrix4x4& m) {
     };
 }
 
-const Matrix4x4& Matrix4x4::operator *= (float scale) {
-    r[0][0] *= scale;
-    r[1][1] *= scale;
-    r[2][2] *= scale;
-    return *this;
-}
-
 Matrix4x4 Matrix4x4::operator + (const Matrix4x4& m) const { return Matrix4x4(*this) += m; }
 Matrix4x4 Matrix4x4::operator - (const Matrix4x4& m) const { return Matrix4x4(*this) -= m; }
 Matrix4x4 Matrix4x4::operator * (const Matrix4x4& m) const { return Matrix4x4(*this) *= m; }
-Matrix4x4 Matrix4x4::operator * (float scale) const { return Matrix4x4(*this) *= scale; }
 
 XOMATH_END_XO_NS
 

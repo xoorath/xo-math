@@ -71,46 +71,71 @@ public:
     _XOINL const Matrix4x4& operator += (const Matrix4x4& m);
     _XOINL const Matrix4x4& operator -= (const Matrix4x4& m);
     _XOINL const Matrix4x4& operator *= (const Matrix4x4& m);
-    // calls Scale(float xyz) with parameter scale.
-    _XOINL const Matrix4x4& operator *= (float scale);
-
+    
     _XOINL Matrix4x4 operator + (const Matrix4x4& m) const;
     _XOINL Matrix4x4 operator - (const Matrix4x4& m) const;
     _XOINL Matrix4x4 operator * (const Matrix4x4& m) const;
-    // Sets the diagonal of the matrix to a scale value.
-    _XOINL Matrix4x4 operator * (float scale) const;
-
+    
     _XOINL const Matrix4x4& Transform(Vector3& v) const;
     _XOINL const Matrix4x4& Transform(Vector4& v) const;
 
-    _XOINL static Matrix4x4 CreateScale(float xyz);
-    _XOINL static Matrix4x4 CreateScale(float x, float y, float z);
-    _XOINL static Matrix4x4 CreateScale(const Vector3& v);
+    _XOINL static void Scale(float xyz, Matrix4x4& outMatrix);
+    _XOINL static void Scale(float x, float y, float z, Matrix4x4& outMatrix);
+    _XOINL static void Scale(const Vector3& v, Matrix4x4& outMatrix);
 
-    _XOINL static Matrix4x4 CreateTranslation(float x, float y, float z);
-    _XOINL static Matrix4x4 CreateTranslation(const Vector3& v);
+    _XOINL static void Translation(float x, float y, float z, Matrix4x4& outMatrix);
+    _XOINL static void Translation(const Vector3& v, Matrix4x4& outMatrix);
     
-    _XOINL static Matrix4x4 CreateRotationXRadians(float radians);
-    _XOINL static Matrix4x4 CreateRotationYRadians(float radians);
-    _XOINL static Matrix4x4 CreateRotationZRadians(float radians);
-    _XOINL static Matrix4x4 CreateRotationRadians(float x, float y, float z);
-    _XOINL static Matrix4x4 CreateRotationRadians(const Vector3& v);
-    _XOINL static Matrix4x4 CreateAxisAngleRadians(const Vector3& axis, float radians);
+    _XOINL static void RotationXRadians(float radians, Matrix4x4& outMatrix);
+    _XOINL static void RotationYRadians(float radians, Matrix4x4& outMatrix);
+    _XOINL static void RotationZRadians(float radians, Matrix4x4& outMatrix);
+    _XOINL static void RotationRadians(float x, float y, float z, Matrix4x4& outMatrix);
+    _XOINL static void RotationRadians(const Vector3& v, Matrix4x4& outMatrix);
+    _XOINL static void AxisAngleRadians(const Vector3& axis, float radians, Matrix4x4& outMatrix);
 
-    _XOINL static Matrix4x4 CreateRotationXDegrees(float degrees);
-    _XOINL static Matrix4x4 CreateRotationYDegrees(float degrees);
-    _XOINL static Matrix4x4 CreateRotationZDegrees(float degrees);
-    _XOINL static Matrix4x4 CreateRotationDegrees(float x, float y, float z);
-    _XOINL static Matrix4x4 CreateRotationDegrees(const Vector3& v);
-    _XOINL static Matrix4x4 CreateAxisAngleDegrees(const Vector3& axis, float degrees);
+    _XOINL static void RotationXDegrees(float degrees, Matrix4x4& outMatrix);
+    _XOINL static void RotationYDegrees(float degrees, Matrix4x4& outMatrix);
+    _XOINL static void RotationZDegrees(float degrees, Matrix4x4& outMatrix);
+    _XOINL static void RotationDegrees(float x, float y, float z, Matrix4x4& outMatrix);
+    _XOINL static void RotationDegrees(const Vector3& v, Matrix4x4& outMatrix);
+    _XOINL static void AxisAngleDegrees(const Vector3& axis, float degrees, Matrix4x4& outMatrix);
 
-    _XOINL static Matrix4x4 CreateOrthographicProjection(float w, float h, float n, float f);
-    _XOINL static Matrix4x4 CreateProjection(float fovx, float fovy, float n, float f);
+    _XOINL static void OrthographicProjection(float width, float height, float near, float far, Matrix4x4& outMatrix);
+    _XOINL static void Projection(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix);
 
-    _XOINL static Matrix4x4 CreateLookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up);
-    _XOINL static Matrix4x4 CreateLookAtFromPosition(const Vector3& from, const Vector3& to); // defaults up to Vector3::Up
-    _XOINL static Matrix4x4 CreateLookAtFromDirection(const Vector3& direction, const Vector3& up);
-    _XOINL static Matrix4x4 CreateLookAtFromDirection(const Vector3& direction); // defaults up to Vector3::Up
+    _XOINL static void LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up, Matrix4x4& outMatrix);
+    _XOINL static void LookAtFromPosition(const Vector3& from, const Vector3& to, Matrix4x4& outMatrix);
+    _XOINL static void LookAtFromDirection(const Vector3& direction, const Vector3& up, Matrix4x4& outMatrix);
+    _XOINL static void LookAtFromDirection(const Vector3& direction, Matrix4x4& outMatrix);
+
+    _XOINL static Matrix4x4 Scale(float xyz);
+    _XOINL static Matrix4x4 Scale(float x, float y, float z);
+    _XOINL static Matrix4x4 Scale(const Vector3& v);
+
+    _XOINL static Matrix4x4 Translation(float x, float y, float z);
+    _XOINL static Matrix4x4 Translation(const Vector3& v);
+    
+    _XOINL static Matrix4x4 RotationXRadians(float radians);
+    _XOINL static Matrix4x4 RotationYRadians(float radians);
+    _XOINL static Matrix4x4 RotationZRadians(float radians);
+    _XOINL static Matrix4x4 RotationRadians(float x, float y, float z);
+    _XOINL static Matrix4x4 RotationRadians(const Vector3& v);
+    _XOINL static Matrix4x4 AxisAngleRadians(const Vector3& axis, float radians);
+
+    _XOINL static Matrix4x4 RotationXDegrees(float degrees);
+    _XOINL static Matrix4x4 RotationYDegrees(float degrees);
+    _XOINL static Matrix4x4 RotationZDegrees(float degrees);
+    _XOINL static Matrix4x4 RotationDegrees(float x, float y, float z);
+    _XOINL static Matrix4x4 RotationDegrees(const Vector3& v);
+    _XOINL static Matrix4x4 AxisAngleDegrees(const Vector3& axis, float degrees);
+
+    _XOINL static Matrix4x4 OrthographicProjection(float width, float height, float near, float far);
+    _XOINL static Matrix4x4 Projection(float fovx, float fovy, float near, float far);
+
+    _XOINL static Matrix4x4 LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up);
+    _XOINL static Matrix4x4 LookAtFromPosition(const Vector3& from, const Vector3& to);
+    _XOINL static Matrix4x4 LookAtFromDirection(const Vector3& direction, const Vector3& up);
+    _XOINL static Matrix4x4 LookAtFromDirection(const Vector3& direction);
 
     Vector4 r[4];
 
@@ -118,20 +143,26 @@ public:
         Identity, One, Zero;
 };
 
-const Matrix4x4 Matrix4x4::Identity =   {{1.0f, 0.0f, 0.0f, 0.0f},
-                                         {0.0f, 1.0f, 0.0f, 0.0f},
-                                         {0.0f, 0.0f, 1.0f, 0.0f},
-                                         {0.0f, 0.0f, 0.0f, 1.0f}};
+const Matrix4x4 Matrix4x4::Identity = {
+                                        {1.0f, 0.0f, 0.0f, 0.0f},
+                                        {0.0f, 1.0f, 0.0f, 0.0f},
+                                        {0.0f, 0.0f, 1.0f, 0.0f},
+                                        {0.0f, 0.0f, 0.0f, 1.0f}
+                                    };
 
-const Matrix4x4 Matrix4x4::One =    {{1.0f, 1.0f, 1.0f, 1.0f},
-                                     {1.0f, 1.0f, 1.0f, 1.0f},
-                                     {1.0f, 1.0f, 1.0f, 1.0f},
-                                     {1.0f, 1.0f, 1.0f, 1.0f}};
+const Matrix4x4 Matrix4x4::One = {
+                                    {1.0f, 1.0f, 1.0f, 1.0f},
+                                    {1.0f, 1.0f, 1.0f, 1.0f},
+                                    {1.0f, 1.0f, 1.0f, 1.0f},
+                                    {1.0f, 1.0f, 1.0f, 1.0f}
+                                };
 
-const Matrix4x4 Matrix4x4::Zero =   {{0.0f, 0.0f, 0.0f, 0.0f},
-                                     {0.0f, 0.0f, 0.0f, 0.0f},
-                                     {0.0f, 0.0f, 0.0f, 0.0f},
-                                     {0.0f, 0.0f, 0.0f, 0.0f}};
+const Matrix4x4 Matrix4x4::Zero = {
+                                    {0.0f, 0.0f, 0.0f, 0.0f},
+                                    {0.0f, 0.0f, 0.0f, 0.0f},
+                                    {0.0f, 0.0f, 0.0f, 0.0f},
+                                    {0.0f, 0.0f, 0.0f, 0.0f}
+                                };
 
 XOMATH_END_XO_NS
 

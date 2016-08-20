@@ -23,8 +23,7 @@ public:
     _XOINL Vector4(const Vector4& vec);
 
 #if XO_SSE
-    _XOINL 
-    Vector4(const __m128& vec);
+    _XOINL Vector4(const __m128& vec);
 #endif
 
     _XOINL Vector4(const class Vector2& v);
