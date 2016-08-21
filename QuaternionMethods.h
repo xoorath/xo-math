@@ -186,7 +186,7 @@ void Quaternion::AxisAngleRadians(const Vector3& axis, float radians, Quaternion
     float sr = Sin(hr);
 
     Vector3 n = axis.Normalized();
-    n *= hr;
+    n *= sr;
     // TODO: Assign with intrinsics here. We already have n.m equal to three quarters of the m128 we want.
     _XO_ASSIGN_QUAT_Q(outQuat, Cos(radians), n.x, n.y, n.z);
 }
