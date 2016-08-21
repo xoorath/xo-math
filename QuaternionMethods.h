@@ -212,96 +212,89 @@ void Quaternion::Slerp(const Quaternion& a, const Quaternion& b, float t, Quater
     // It contains no division operations, no trig, no inverse trig
     // and no sqrt. Not only does this code tolerate small constraint
     // errors in the input quaternions, it actually corrects for them.
-    if (CloseEnough(t, 0.0f))
-    {
+    if (CloseEnough(t, 0.0f)) {
         outQuat = a;
         return;
     }
-    else if (CloseEnough(t, 1.0f))
-    {
+    else if (CloseEnough(t, 1.0f)) {
         outQuat = b;
         return;
     }
-    if (a == b)
-    {
+    else if (a == b) {
         outQuat = a;
-        return;
     }
+    else {
+        float halfY, alpha, beta;
+        float u, f1, f2a, f2b;
+        float ratio1, ratio2;
+        float halfSecHalfTheta, versHalfTheta;
+        float sqNotU, sqU;
 
-    float halfY, alpha, beta;
-    float u, f1, f2a, f2b;
-    float ratio1, ratio2;
-    float halfSecHalfTheta, versHalfTheta;
-    float sqNotU, sqU;
+        Vector4 * va = (Vector4*)&a;
+        Vector4 * vb = (Vector4*)&b;
 
-    Vector4 * va = (Vector4*)&a;
-    Vector4 * vb = (Vector4*)&b;
+        float cosTheta = ((*va) * (*vb)).Sum();
 
-    float cosTheta = ((*va) * (*vb)).Sum();
+        // As usual in all slerp implementations, we fold theta.
+        alpha = cosTheta >= 0 ? 1.0f : -1.0f;
+        halfY = 1.0f + alpha * cosTheta;
 
-    // As usual in all slerp implementations, we fold theta.
-    alpha = cosTheta >= 0 ? 1.0f : -1.0f;
-    halfY = 1.0f + alpha * cosTheta;
+        // Here we bisect the interval, so we need to fold t as well.
+        f2b = t - 0.5f;
+        u = f2b >= 0 ? f2b : -f2b;
+        f2a = u - f2b;
+        f2b += u;
+        u += u;
+        f1 = 1.0f - u;
 
-    // Here we bisect the interval, so we need to fold t as well.
-    f2b = t - 0.5f;
-    u = f2b >= 0 ? f2b : -f2b;
-    f2a = u - f2b;
-    f2b += u;
-    u += u;
-    f1 = 1.0f - u;
+        // One iteration of Newton to get 1-cos(theta / 2) to good accuracy.
+        halfSecHalfTheta = 1.09f - (0.476537f - 0.0903321f * halfY) * halfY;
+        halfSecHalfTheta *= 1.5f - halfY * halfSecHalfTheta * halfSecHalfTheta;
+        versHalfTheta = 1.0f - halfY * halfSecHalfTheta;
 
-    // One iteration of Newton to get 1-cos(theta / 2) to good accuracy.
-    halfSecHalfTheta = 1.09f - (0.476537f - 0.0903321f * halfY) * halfY;
-    halfSecHalfTheta *= 1.5f - halfY * halfSecHalfTheta * halfSecHalfTheta;
-    versHalfTheta = 1.0f - halfY * halfSecHalfTheta;
+        // Evaluate series expansions of the coefficients.
+        sqNotU = f1 * f1;
+        ratio2 = 0.0000440917108f * versHalfTheta;
+        ratio1 = -0.00158730159f + (sqNotU - 16.0f) * ratio2;
+        ratio1 = 0.0333333333f + ratio1 * (sqNotU - 9.0f) * versHalfTheta;
+        ratio1 = -0.333333333f + ratio1 * (sqNotU - 4.0f) * versHalfTheta;
+        ratio1 = 1.0f + ratio1 * (sqNotU - 1.0f) * versHalfTheta;
 
-    // Evaluate series expansions of the coefficients.
-    sqNotU = f1 * f1;
-    ratio2 = 0.0000440917108f * versHalfTheta;
-    ratio1 = -0.00158730159f + (sqNotU - 16.0f) * ratio2;
-    ratio1 = 0.0333333333f + ratio1 * (sqNotU - 9.0f) * versHalfTheta;
-    ratio1 = -0.333333333f + ratio1 * (sqNotU - 4.0f) * versHalfTheta;
-    ratio1 = 1.0f + ratio1 * (sqNotU - 1.0f) * versHalfTheta;
+        sqU = u * u;
+        ratio2 = -0.00158730159f + (sqU - 16.0f) * ratio2;
+        ratio2 = 0.0333333333f + ratio2 * (sqU - 9.0f) * versHalfTheta;
+        ratio2 = -0.333333333f + ratio2 * (sqU - 4.0f) * versHalfTheta;
+        ratio2 = 1.0f + ratio2 * (sqU - 1.0f) * versHalfTheta;
 
-    sqU = u * u;
-    ratio2 = -0.00158730159f + (sqU - 16.0f) * ratio2;
-    ratio2 = 0.0333333333f + ratio2 * (sqU - 9.0f) * versHalfTheta;
-    ratio2 = -0.333333333f + ratio2 * (sqU - 4.0f) * versHalfTheta;
-    ratio2 = 1.0f + ratio2 * (sqU - 1.0f) * versHalfTheta;
+        // Perform the bisection and resolve the folding done earlier.
+        f1 *= ratio1 * halfSecHalfTheta;
+        f2a *= ratio2;
+        f2b *= ratio2;
+        alpha *= f1 + f2a;
+        beta = f1 + f2b;
 
-    // Perform the bisection and resolve the folding done earlier.
-    f1 *= ratio1 * halfSecHalfTheta;
-    f2a *= ratio2;
-    f2b *= ratio2;
-    alpha *= f1 + f2a;
-    beta = f1 + f2b;
+        // Apply final coefficients to a and b as usual.
+        float w = alpha * a.w + beta * b.w;
+        float x = alpha * a.x + beta * b.x;
+        float y = alpha * a.y + beta * b.y;
+        float z = alpha * a.z + beta * b.z;
 
-    // Apply final coefficients to a and b as usual.
-    float w = alpha * a.w + beta * b.w;
-    float x = alpha * a.x + beta * b.x;
-    float y = alpha * a.y + beta * b.y;
-    float z = alpha * a.z + beta * b.z;
-
-    // This final adjustment to the quaternion's length corrects for
-    // any small constraint error in the inputs q1 and q2 But as you
-    // can see, it comes at the cost of 9 additional multiplication
-    // operations. If this error-correcting feature is not required,
-    // the following code may be removed.
-    f1 = 1.5f - 0.5f * (w * w + x * x + y * y + z * z);
-    _XO_ASSIGN_QUAT_Q(outQuat, w * f1, x * f1, y * f1, z * f1);
+        // This final adjustment to the quaternion's length corrects for
+        // any small constraint error in the inputs q1 and q2 But as you
+        // can see, it comes at the cost of 9 additional multiplication
+        // operations. If this error-correcting feature is not required,
+        // the following code may be removed.
+        f1 = 1.5f - 0.5f * (w * w + x * x + y * y + z * z);
+        _XO_ASSIGN_QUAT_Q(outQuat, w * f1, x * f1, y * f1, z * f1);
+    }
 }
 
 void Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat) {
-    if (CloseEnough(t, 0.0f))
-    {
+    if (CloseEnough(t, 0.0f)) {
         outQuat = a;
-        return;
     }
-    else if (CloseEnough(t, 1.0f))
-    {
+    else if (CloseEnough(t, 1.0f)) {
         outQuat = b;
-        return;
     }
     else {
         Vector4* vq = (Vector4*)&outQuat;
@@ -311,6 +304,61 @@ void Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t, Quatern
         (*vq) = *va + ((*vb - *va) * t);
     }
 }
+
+Quaternion RotationRadians(float x, float y, float z) {
+    Quaternion q;
+    RotationRadians(x, y, z, q);
+    return q;
+}
+
+Quaternion RotationRadians(const Vector3& v) {
+    Quaternion q;
+    RotationRadians(v, q);
+    return q;
+}
+
+Quaternion AxisAngleRadians(const Vector3& axis, float radians) {
+    Quaternion q;
+    AxisAngleRadians(axis, radians, q);
+    return q;
+}
+
+Quaternion LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up) {
+    Quaternion q;
+    LookAtFromPosition(from, to, up, q);
+    return q;
+}
+
+Quaternion LookAtFromPosition(const Vector3& from, const Vector3& to) {
+    Quaternion q;
+    LookAtFromPosition(from, to, q);
+    return q;
+}
+
+Quaternion LookAtFromDirection(const Vector3& direction, const Vector3& up) {
+    Quaternion q;
+    LookAtFromDirection(direction, up, q);
+    return q;
+}
+
+Quaternion LookAtFromDirection(const Vector3& direction) {
+    Quaternion q;
+    LookAtFromDirection(direction, q);
+    return q;
+}
+
+Quaternion Slerp(const Quaternion& a, const Quaternion& b, float t) {
+    Quaternion q;
+    Slerp(a, b, t, q);
+    return q;
+}
+
+Quaternion Lerp(const Quaternion& a, const Quaternion& b, float t) {
+    Quaternion q;
+    Lerp(a, b, t, q);
+    return q;
+}
+
 
 XOMATH_END_XO_NS
 

@@ -18,27 +18,27 @@
 //#define XO_AVX512 1 // Allow AVX512 (2016) Intel Knights Landing
 
 #define XO_REDEFINABLE 1
-#define XO_CUSTOM_NS sse4
+#define XO_CUSTOM_NS xo_sse4
 #include "../xo-math.h"
 
 #undef XO_SSE4
 #undef XO_CUSTOM_NS
-#define XO_CUSTOM_NS sse3
+#define XO_CUSTOM_NS xo_sse3
 #include "../xo-math.h"
 
 #undef XO_SSE3
 #undef XO_CUSTOM_NS
-#define XO_CUSTOM_NS sse2
+#define XO_CUSTOM_NS xo_sse2
 #include "../xo-math.h"
 
 #undef XO_SSE2
 #undef XO_CUSTOM_NS
-#define XO_CUSTOM_NS sse1
+#define XO_CUSTOM_NS xo_sse1
 #include "../xo-math.h"
 
 #undef XO_SSE
 #undef XO_CUSTOM_NS
-#define XO_CUSTOM_NS sse0
+#define XO_CUSTOM_NS xo_sse0
 #include "../xo-math.h"
 
 #define XO_TEST_CLOSE 1
@@ -46,7 +46,7 @@
 #undef XO_TEST_CLOSE
 
 
-#define T_NS sse4
+#define T_NS xo_sse4
 
 typedef T_NS::Matrix4x4 Matrix4x4;
 typedef T_NS::Quaternion Quaternion;

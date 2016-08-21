@@ -50,6 +50,17 @@ public:
     _XOINL static void Slerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat);
     _XOINL static void Lerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat);
 
+    _XOINL static Quaternion RotationRadians(float x, float y, float z);
+    _XOINL static Quaternion RotationRadians(const Vector3& v);
+    _XOINL static Quaternion AxisAngleRadians(const Vector3& axis, float radians);
+    
+    _XOINL static Quaternion LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up);
+    _XOINL static Quaternion LookAtFromPosition(const Vector3& from, const Vector3& to);
+    _XOINL static Quaternion LookAtFromDirection(const Vector3& direction, const Vector3& up);
+    _XOINL static Quaternion LookAtFromDirection(const Vector3& direction);
+
+    _XOINL static Quaternion Slerp(const Quaternion& a, const Quaternion& b, float t);
+    _XOINL static Quaternion Lerp(const Quaternion& a, const Quaternion& b, float t);
 
     union {
         struct {
