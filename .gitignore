@@ -6,3 +6,5 @@ xo-math/x32
 *.opensdf
 *.db
 *.sublime-workspace
+xo-math/build/a.out
+xo-math/build/a.exe
