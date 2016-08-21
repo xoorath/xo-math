@@ -157,13 +157,18 @@ public:
     _XOINL bool IsZero() const;
     _XOINL bool IsNormalized() const;
 
+    _XOINL static void Max(const Vector4& a, const Vector4& b, Vector4& outVec);
+    _XOINL static void Min(const Vector4& a, const Vector4& b, Vector4& outVec);
+    _XOINL static void Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec);
+
     _XOINL static Vector4 Max(const Vector4& a, const Vector4& b);
     _XOINL static Vector4 Min(const Vector4& a, const Vector4& b);
+    _XOINL static Vector4 Lerp(const Vector4& a, const Vector4& b, float t);
+
     _XOINL static float Dot(const Vector4& a, const Vector4& b);
 
     _XOINL static float DistanceSquared(const Vector4& a, const Vector4& b);
     _XOINL static float Distance(const Vector4&a, const Vector4&b);
-    _XOINL static Vector4 Lerp(const Vector4& a, const Vector4& b, float t);
 
     _XOINL float Dot(const Vector4& v) const;
     _XOINL float DistanceSquared(const Vector4& v) const;

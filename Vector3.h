@@ -156,6 +156,9 @@ public:
     // Return a copy of this vector swizzled so that x=z, y=y and z=x.
     _XOINL Vector3 ZYX() const;
 
+    // Return x+y+z
+    _XOINL float Sum() const;
+
     // Return the magnitude (length) of this vector squared. This is faster than Magnitude().
     _XOINL float MagnitudeSquared() const;
 
@@ -176,21 +179,69 @@ public:
     // Return true if the magnitude (length) of this vector is 1.
     _XOINL bool IsNormalized() const;
 
-    // Return a vector with each element equal to the max of that element in and b.
-    // Example: Max({1.0f, -1.0f, -1.0f}, {-1.0f, 1.0f, -1.0f}) == {1.0f, 1.0f, -1.0f}
-    _XOINL static Vector3 Max(const Vector3& a, const Vector3& b);
-
-    // Return a vector with each element equal to the min of that element in and b.
-    // Example: Max({1.0f, -1.0f, 1.0f}, {-1.0f, 1.0f, 1.0f}) == {-1.0f, -1.0f, 1.0f}
-    _XOINL static Vector3 Min(const Vector3& a, const Vector3& b);
-
     // Returns the dot product (scalar product) of vectors a and b.
     // See: https://en.wikipedia.org/wiki/Dot_product
     _XOINL static float Dot(const Vector3& a, const Vector3& b);
 
     // Returns the cross product (vector product) of vectors a and b.
     // See: https://en.wikipedia.org/wiki/Cross_product
-    _XOINL static  Vector3 Cross(const Vector3& a, const Vector3& b);
+    _XOINL static void Cross(const Vector3& a, const Vector3& b, Vector3& outVec);
+
+        // Return a vector with each element equal to the max of that element in and b.
+    // Example: Max({1.0f, -1.0f, -1.0f}, {-1.0f, 1.0f, -1.0f}) == {1.0f, 1.0f, -1.0f}
+    _XOINL static void Max(const Vector3& a, const Vector3& b, Vector3& outVec);
+
+    // Return a vector with each element equal to the min of that element in and b.
+    // Example: Max({1.0f, -1.0f, 1.0f}, {-1.0f, 1.0f, 1.0f}) == {-1.0f, -1.0f, 1.0f}
+    _XOINL static void Min(const Vector3& a, const Vector3& b, Vector3& outVec);
+
+    // Returns a point linearly interpolated between a and b by a factor of t. 
+    // Where t is 0, a is returned. Where t is 1, b is returned.
+    // See: https://en.wikipedia.org/wiki/Linear_interpolation
+    _XOINL static void Lerp(const Vector3& a, const Vector3& b, float t, Vector3& outVec);
+
+    // Rotate the input vector v by 'angle' radians on the specified axis, and return the result.
+    // Example: RotateRadians(Vector3::Up, Vector3::Right, Pi/2.0f) == Vector3::Forward
+    _XOINL static void RotateRadians(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec);
+
+    // Rotate the input vector v by 'angle' degrees on the specified axis, and return the result.
+    // Example: RotateDegrees(Vector3::Up, Vector3::Right, 90.0f) == Vector3::Forward
+    _XOINL static void RotateDegrees(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec);
+
+    // Return a random vector on edge of a cone with an angle relative to forward.
+    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
+    // angles at and beyond PI radians will no longer represent a meaningful cone.
+    _XOINL static void RandomOnConeRadians(const Vector3& forward, float angle, Vector3& outVec);
+
+    // Return a random vector inside a cone with an angle relative to forward.
+    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
+    // angles at and beyond PI radians will no longer represent a meaningful cone.
+    _XOINL static void RandomInConeRadians(const Vector3& forward, float angle, Vector3& outVec);
+
+    // Return a random vector on edge of a cone with an angle relative forward.
+    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
+    // angles at and beyond 180.0f degrees will no longer represent a meaningful cone.
+    _XOINL static void RandomOnConeDegrees(const Vector3& forward, float angle, Vector3& outVec);
+
+    // Return a random vector inside a cone with an angle relative to forward.
+    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
+    // angles at and beyond 180.0f degrees will no longer represent a meaningful cone.
+    _XOINL static void RandomInConeDegrees(const Vector3& forward, float angle, Vector3& outVec);
+
+    // Return a random vector with a length of 1.0f
+    _XOINL static void RandomOnSphere(Vector3& outVec);
+
+    // Return a random vector who's length does not exceed 1
+    _XOINL static void RandomInSphere(Vector3& outVec);
+
+    // Return a random vector with length d
+    _XOINL static void RandomAtDistance(float d, Vector3& outVec);
+
+    // Return a random vector who's length does not exceed d
+    _XOINL static void RandomInDistance(float d, Vector3& outVec);
+
+    // Return a random vector with a magnitude between low and high
+    _XOINL static void RandomInRange(float low, float high, Vector3& outVec);
 
     // Returns the angle in radians between vectors a and b.
     _XOINL static float AngleRadians(const Vector3& a, const Vector3& b);
@@ -202,54 +253,51 @@ public:
     _XOINL static float DistanceSquared(const Vector3& a, const Vector3& b);
 
     // Returns the distance between vectors a and b.
-    _XOINL static  float Distance(const Vector3&a, const Vector3&b);
+    _XOINL static float Distance(const Vector3&a, const Vector3&b);
 
-    // Returns a point linearly interpolated between a and b by a factor of t. 
-    // Where t is 0, a is returned. Where t is 1, b is returned.
-    // See: https://en.wikipedia.org/wiki/Linear_interpolation
+    // See static Vector3::Cross variant with the outVec parameter.
+    _XOINL static Vector3 Cross(const Vector3& a, const Vector3& b);
+    
+    // See static Vector3::Max variant with the outVec parameter.
+    _XOINL static Vector3 Max(const Vector3& a, const Vector3& b);
+    
+    // See static Vector3::Min variant with the outVec parameter.
+    _XOINL static Vector3 Min(const Vector3& a, const Vector3& b);
+    
+    // See static Vector3::Lerp variant with the outVec parameter.
     _XOINL static Vector3 Lerp(const Vector3& a, const Vector3& b, float t);
-
-    // Rotate the input vector v by 'angle' radians on the specified axis, and return the result.
-    // Example: RotateRadians(Vector3::Up, Vector3::Right, Pi/2.0f) == Vector3::Forward
+    
+    // See static Vector3::RotateRadians variant with the outVec parameter.
     _XOINL static Vector3 RotateRadians(const Vector3& v, const Vector3& axis, float angle);
-
-    // Rotate the input vector v by 'angle' degrees on the specified axis, and return the result.
-    // Example: RotateDegrees(Vector3::Up, Vector3::Right, 90.0f) == Vector3::Forward
+    
+    // See static Vector3::RotateDegrees variant with the outVec parameter.
     _XOINL static Vector3 RotateDegrees(const Vector3& v, const Vector3& axis, float angle);
-
-    // Return a random vector on edge of a cone with an angle relative to forward.
-    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
-    // angles at and beyond PI radians will no longer represent a meaningful cone.
+    
+    // See static Vector3::RandomOnConeRadians variant with the outVec parameter.
     _XOINL static Vector3 RandomOnConeRadians(const Vector3& forward, float angle);
-
-    // Return a random vector inside a cone with an angle relative to forward.
-    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
-    // angles at and beyond PI radians will no longer represent a meaningful cone.
+    
+    // See static Vector3::RandomInConeRadians variant with the outVec parameter.
     _XOINL static Vector3 RandomInConeRadians(const Vector3& forward, float angle);
-
-    // Return a random vector on edge of a cone with an angle relative forward.
-    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
-    // angles at and beyond 180.0f degrees will no longer represent a meaningful cone.
+    
+    // See static Vector3::RandomOnConeDegrees variant with the outVec parameter.
     _XOINL static Vector3 RandomOnConeDegrees(const Vector3& forward, float angle);
-
-    // Return a random vector inside a cone with an angle relative to forward.
-    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
-    // angles at and beyond 180.0f degrees will no longer represent a meaningful cone.
+    
+    // See static Vector3::RandomInConeDegrees variant with the outVec parameter.
     _XOINL static Vector3 RandomInConeDegrees(const Vector3& forward, float angle);
-
-    // Return a random vector with a length of 1.0f
+    
+    // See static Vector3::RandomOnSphere variant with the outVec parameter.
     _XOINL static Vector3 RandomOnSphere();
-
-    // Return a random vector who's length does not exceed 1
+    
+    // See static Vector3::RandomInSphere variant with the outVec parameter.
     _XOINL static Vector3 RandomInSphere();
-
-    // Return a random vector with length d
+    
+    // See static Vector3::RandomAtDistance variant with the outVec parameter.
     _XOINL static Vector3 RandomAtDistance(float d);
-
-    // Return a random vector who's length does not exceed d
+    
+    // See static Vector3::RandomInDistance variant with the outVec parameter.
     _XOINL static Vector3 RandomInDistance(float d);
-
-    // Return a random vector with a magnitude between low and high
+    
+    // See static Vector3::RandomInRange variant with the outVec parameter.
     _XOINL static Vector3 RandomInRange(float low, float high);
 
     // See static Vector3::Dot

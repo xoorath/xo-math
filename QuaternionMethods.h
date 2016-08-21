@@ -111,10 +111,10 @@ Quaternion Quaternion::Inverse() const {
 const Quaternion& Quaternion::MakeInverse() {
     float magnitude = QuaternionSquareSum(*this);
     
-    if (CloseEnough(magnitude, 1.0f)) {
+    if (CloseEnough(magnitude, 1.0f, Epsilon)) {
         return MakeConjugate();
     }
-    if (CloseEnough(magnitude, 0.0f)) {
+    if (CloseEnough(magnitude, 0.0f, Epsilon)) {
         return *this;
     }
 
@@ -129,12 +129,12 @@ Quaternion Quaternion::Normalized() const {
 
 const Quaternion& Quaternion::Normalize() {
     float magnitude = QuaternionSquareSum(*this);
-    if (CloseEnough(magnitude, 1.0f)) {
+    if (CloseEnough(magnitude, 1.0f, Epsilon)) {
         return *this;
     }
 
     magnitude = Sqrt(magnitude);
-    if (CloseEnough(magnitude, 0.0f)) {
+    if (CloseEnough(magnitude, 0.0f, Epsilon)) {
         return *this;
     }
 
@@ -290,10 +290,10 @@ void Quaternion::Slerp(const Quaternion& a, const Quaternion& b, float t, Quater
 }
 
 void Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat) {
-    if (CloseEnough(t, 0.0f)) {
+    if (CloseEnough(t, 0.0f, Epsilon)) {
         outQuat = a;
     }
-    else if (CloseEnough(t, 1.0f)) {
+    else if (CloseEnough(t, 1.0f, Epsilon)) {
         outQuat = b;
     }
     else {
@@ -305,55 +305,55 @@ void Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t, Quatern
     }
 }
 
-Quaternion RotationRadians(float x, float y, float z) {
+Quaternion Quaternion::RotationRadians(float x, float y, float z) {
     Quaternion q;
     RotationRadians(x, y, z, q);
     return q;
 }
 
-Quaternion RotationRadians(const Vector3& v) {
+Quaternion Quaternion::RotationRadians(const Vector3& v) {
     Quaternion q;
     RotationRadians(v, q);
     return q;
 }
 
-Quaternion AxisAngleRadians(const Vector3& axis, float radians) {
+Quaternion Quaternion::AxisAngleRadians(const Vector3& axis, float radians) {
     Quaternion q;
     AxisAngleRadians(axis, radians, q);
     return q;
 }
 
-Quaternion LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up) {
+Quaternion Quaternion::LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up) {
     Quaternion q;
     LookAtFromPosition(from, to, up, q);
     return q;
 }
 
-Quaternion LookAtFromPosition(const Vector3& from, const Vector3& to) {
+Quaternion Quaternion::LookAtFromPosition(const Vector3& from, const Vector3& to) {
     Quaternion q;
     LookAtFromPosition(from, to, q);
     return q;
 }
 
-Quaternion LookAtFromDirection(const Vector3& direction, const Vector3& up) {
+Quaternion Quaternion::LookAtFromDirection(const Vector3& direction, const Vector3& up) {
     Quaternion q;
     LookAtFromDirection(direction, up, q);
     return q;
 }
 
-Quaternion LookAtFromDirection(const Vector3& direction) {
+Quaternion Quaternion::LookAtFromDirection(const Vector3& direction) {
     Quaternion q;
     LookAtFromDirection(direction, q);
     return q;
 }
 
-Quaternion Slerp(const Quaternion& a, const Quaternion& b, float t) {
+Quaternion Quaternion::Slerp(const Quaternion& a, const Quaternion& b, float t) {
     Quaternion q;
     Slerp(a, b, t, q);
     return q;
 }
 
-Quaternion Lerp(const Quaternion& a, const Quaternion& b, float t) {
+Quaternion Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t) {
     Quaternion q;
     Lerp(a, b, t, q);
     return q;
