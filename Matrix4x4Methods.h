@@ -176,19 +176,19 @@ void Matrix4x4::RotationZRadians(float radians, Matrix4x4& m) {
 }
 
 void Matrix4x4::RotationRadians(float x, float y, float z, Matrix4x4& m) {
-    Matrix4x4 m0, m1, m2;
-    RotationXRadians(x, m0);
-    RotationYRadians(y, m1);
-    RotationZRadians(z, m2);
-    m = m0 * m1 * m2;
+    Matrix4x4 mx, mz;
+    RotationXRadians(x, mx);
+    RotationYRadians(y, m);
+    RotationZRadians(z, mz);
+    m *= mx * mz;
 }
 
 void Matrix4x4::RotationRadians(const Vector3& v, Matrix4x4& m) {
-    Matrix4x4 m0, m1, m2;
-    RotationXRadians(v.x, m0);
-    RotationYRadians(v.y, m1);
-    RotationZRadians(v.z, m2);
-    m = m0 * m1 * m2;
+    Matrix4x4 mx, mz;
+    RotationXRadians(v.x, mx);
+    RotationYRadians(v.y, m);
+    RotationZRadians(v.z, mz);
+    m *= mx * mz;
 }
 
 void Matrix4x4::AxisAngleRadians(const Vector3& a, float radians, Matrix4x4& m) {
