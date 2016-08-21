@@ -233,10 +233,20 @@ void TestMatrix4x4(Test& t) {
 int main() {
  
     Test t;
+    xo_sse1::SSE::UpdateControlWord();       // updates the thread-local state.
+    xo_sse1::SSE::SetDenormalsAreZero(true); // force all denormal values to 0
+    xo_sse1::SSE::SetFlushToZero(true);      // underflowing operations produce 0
+
+    //xo_sse1::SSE::ThrowAllExceptions();
+    xo_sse1::SSE::ThrowNoExceptions();
+
+    xo_sse1::SSE::GetAllMXCSRInfo(std::cout);
+    std::cout << std::endl;
 
     TestVector2(t);
     TestVector3(t);
     TestMatrix4x4(t);
+    
 
 #if defined(_MSC_VER)
     system("pause");
