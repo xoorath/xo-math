@@ -4,22 +4,18 @@ static_assert(false, "Don't include QuaternionMethods.h directly. Include GameMa
 
 XOMATH_BEGIN_XO_NS
 
-#if defined(_XO_ASSIGN_QUAT)
-_XOMATH_INTERNAL_MACRO_WARNING
-#   undef _XO_ASSIGN_QUAT
-#endif
-#if defined(_XO_ASSIGN_QUAT_Q)
-_XOMATH_INTERNAL_MACRO_WARNING
-#   undef _XO_ASSIGN_QUAT_Q
-#endif
-
+namespace  {
+    _XOINL float QuaternionSquareSum(const Quaternion& q) {
 #if XO_SSE
-#define _XO_ASSIGN_QUAT(W, X, Y, Z) m = _mm_set_ps(W, Z, Y, X);
-#define _XO_ASSIGN_QUAT_Q(Q, W, X, Y, Z) Q.m = _mm_set_ps(W, Z, Y, X);
+        __m128 square = _mm_mul_ps(q.m, q.m);
+        square = _mm_hadd_ps(square, square);
+        square = _mm_hadd_ps(square, square);
+        return _mm_cvtss_f32(square);
 #else
-#define _XO_ASSIGN_QUAT(W, X, Y, Z) this->w = W; this->x = X; this->y = Y; this->z = Z;
-#define _XO_ASSIGN_QUAT_Q(Q, W, X, Y, Z) q.w = W; q.x = X; q.y = Y; q.z = Z;
+        return q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w;
 #endif
+    }
+}
 
 Quaternion::Quaternion() {
 }
@@ -113,53 +109,17 @@ Quaternion Quaternion::Inverse() const {
 }
 
 const Quaternion& Quaternion::MakeInverse() {
-#if XO_SSE
-    __m128 square = _mm_mul_ps(m, m);
-    square = _mm_hadd_ps(square, square);
-    square = _mm_hadd_ps(square, square);
-    float n = _mm_cvtss_f32(square);
-#else
-    float n = x * x + y * y + z * z + w * w;
-#endif
+    float magnitude = QuaternionSquareSum(*this);
     
-    if (CloseEnough(n, 1.0f))
-    {
-        // TODO: is there an intrinsic to negate
-        x = -x;
-        y = -y;
-        z = -z;
-        w = w;
+    if (CloseEnough(magnitude, 1.0f)) {
+        return MakeConjugate();
+    }
+    if (CloseEnough(magnitude, 0.0f)) {
         return *this;
     }
-    if (CloseEnough(n, 0.0f))
-        return *this;
 
-#if XO_SSE
-#   if XO_NO_INVERSE_DIVISION
-    square = _mm_rcp_ps(square);
-#   else
-    // Todo: make and use SSE::One
-    square = _mm_div_ps(Vector4::One.m, square);
-#   endif
-    x = -x;
-    y = -y;
-    z = -z;
-    w = w;
-    m = _mm_mul_ps(m, square);
-#else
-#   if XO_NO_INVERSE_DIVISION
-    x = -x / n;
-    y = -y / n;
-    z = -z / n;
-    w = w / n;
-#   else
-    n = 1.0f / n;
-    x = -x * n;
-    y = -y * n;
-    z = -z * n;
-    w = w * n;
-#   endif
-#endif
+    MakeConjugate();
+    (*(Vector4*)this) /= magnitude;
     return *this;
 }
 
@@ -168,27 +128,41 @@ Quaternion Quaternion::Normalized() const {
 }
 
 const Quaternion& Quaternion::Normalize() {
-#if XO_SSE
-    __m128 square = _mm_mul_ps(m, m);
-    square = _mm_hadd_ps(square, square);
-    square = _mm_hadd_ps(square, square);
-    float n = _mm_cvtss_f32(square);
-#else
-    float n = x * x + y * y + z * z + w * w;
-#endif
-    // Already normalized.
-    if (CloseEnough(n, 1.0f))
+    float magnitude = QuaternionSquareSum(*this);
+    if (CloseEnough(magnitude, 1.0f)) {
         return *this;
+    }
 
-    n = Sqrt(n);
-    // Too close to zero.
-    if (CloseEnough(n, 0.0f))
+    magnitude = Sqrt(magnitude);
+    if (CloseEnough(magnitude, 0.0f)) {
         return *this;
+    }
 
-    // let it take care of sse and no_inverse_division
-    (*(Vector4*)this) /= n;
-
+    (*(Vector4*)this) /= magnitude;
     return *this;
+}
+
+Quaternion Quaternion::Conjugate() const {
+    return Quaternion(*this).MakeConjugate();
+}
+
+const Quaternion& Quaternion::MakeConjugate() {
+    _XO_ASSIGN_QUAT(w, -x, -y, -z);
+    return *this;
+}
+
+void Quaternion::GetAxisAngleRadians(Vector3& axis, float& radians) const {
+    Quaternion q = Normalized();
+
+#if XO_SSE
+    axis.m = q.m;
+#else
+    axis.x = q.x;
+    axis.y = q.y;
+    axis.z = q.z;
+    axis.Normalize();
+#endif
+    radians = (2.0f * ACos(q.w));
 }
 
 void Quaternion::RotationRadians(float x, float y, float z, Quaternion& outQuat) {
@@ -199,7 +173,7 @@ void Quaternion::RotationRadians(const Vector3& v, Quaternion& outQuat) {
     Vector3 hv = v * 0.5f;
     // TODO: use intrinsics for sin/cos here
     Vector3 vs(Sin(hv.x), Sin(hv.y), Sin(hv.z));
-    Vector3 vc(Sin(hv.x), Sin(hv.y), Sin(hv.z));
+    Vector3 vc(Cos(hv.x), Cos(hv.y), Cos(hv.z));
     _XO_ASSIGN_QUAT_Q(outQuat,
         vc.x * vc.y * vc.z + vs.x * vs.y * vs.z,
         vs.x * vc.y * vc.z - vc.x * vs.y * vs.z,
@@ -337,24 +311,6 @@ void Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t, Quatern
         (*vq) = *va + ((*vb - *va) * t);
     }
 }
-
-void Quaternion::GetAxisAngleRadians(Vector3& axis, float& radians) const {
-    
-    Quaternion q = Normalized();
-
-#if XO_SSE
-    axis.m = q.m;
-#else
-    axis.x = q.x;
-    axis.y = q.y;
-    axis.z = q.z;
-    axis.Normalize();
-#endif
-    radians = (2.0f * ACos(q.w));
-}
-
-#undef _XO_ASSIGN_QUAT
-#undef _XO_ASSIGN_QUAT_Q
 
 XOMATH_END_XO_NS
 

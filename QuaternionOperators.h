@@ -13,7 +13,12 @@ const float& Quaternion::operator [](int i) const {
 }
 
 const Quaternion& Quaternion::operator *= (const Quaternion& q) {
-
+    // TODO: see if there's a cute intrinsic way to do this.
+    _XO_ASSIGN_QUAT(
+      w * q.x + x * q.w + y * q.z - z * q.y,
+      w * q.y - x * q.z + y * q.w + z * q.x,
+      w * q.z + x * q.y - y * q.x + z * q.w,
+      w * q.w - x * q.x - y * q.y - z * q.z);
   return *this;
 }
 
@@ -45,7 +50,6 @@ bool Quaternion::operator == (const Quaternion& q) const {
 bool Quaternion::operator != (const Quaternion& q) const {
   return !((*this) == q);
 }
-
 
 XOMATH_END_XO_NS
 

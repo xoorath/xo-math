@@ -18,12 +18,6 @@ public:
     _XOINL Quaternion(const Matrix4x4& m);
     _XOINL Quaternion(float x, float y, float z, float w);
 
-    _XOINL Quaternion Inverse() const;
-    _XOINL const Quaternion& MakeInverse();
-
-    _XOINL Quaternion Normalized() const;
-    _XOINL const Quaternion& Normalize();
-
     _XOINL float& operator [](int i);
     _XOINL const float& operator [](int i) const;
 
@@ -32,6 +26,17 @@ public:
 
     _XOINL bool operator == (const Quaternion& q) const;
     _XOINL bool operator != (const Quaternion& q) const;
+
+    _XOINL Quaternion Inverse() const;
+    _XOINL const Quaternion& MakeInverse();
+
+    _XOINL Quaternion Normalized() const;
+    _XOINL const Quaternion& Normalize();
+
+    _XOINL Quaternion Conjugate() const;
+    _XOINL const Quaternion& MakeConjugate();
+
+    _XOINL void GetAxisAngleRadians(Vector3& axis, float& radians) const;
 
     _XOINL static void RotationRadians(float x, float y, float z, Quaternion& outQuat);
     _XOINL static void RotationRadians(const Vector3& v, Quaternion& outQuat);
@@ -45,16 +50,15 @@ public:
     _XOINL static void Slerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat);
     _XOINL static void Lerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat);
 
-    _XOINL void GetAxisAngleRadians(Vector3& axis, float& radians) const;
 
     union {
         struct {
             float x, y, z, w;
         };
         float f[4];
-    #if XO_SSE
+#if XO_SSE
         __m128 m;
-    #endif
+#endif
     };
 
     static const Quaternion

@@ -95,6 +95,7 @@
 #       endif
         // Hey, if you know for a fact that AVX512 is supported on your version of msvc
         // could you please find out if there's a macro to detect it? (such as __AVX512__?)
+        // At the time of writing, there is no such macro documented.
         // If there is I'd appreciate a quick email or pull request. I can be reached at jared@xoorath.com
         
         // Assuming __AVX512__ is the macro for example, you can substitute:
@@ -174,14 +175,15 @@
 #   include <x86intrin.h>
 #endif
 
+// Not available in clang, so far as I can tell.
 #ifndef _MM_ALIGN16
 #   define _MM_ALIGN16 __attribute__((aligned(16)))
 #endif
 
 #if defined(_XOMATH_INTERNAL_MACRO_WARNING) || defined(XOMATH_INTERNAL)
-static_assert(false, "Xomath found an internal macro where it shouldn't have.");
+static_assert(false, "xo-math found an internal macro where it shouldn't have.");
 #else
-#define _XOMATH_INTERNAL_MACRO_WARNING static_assert(false, "Xomath found an internal macro where it shouldn't have.");
+#define _XOMATH_INTERNAL_MACRO_WARNING static_assert(false, "xo-math found an internal macro where it shouldn't have.");
 #endif
 
 #define XOMATH_INTERNAL 1
@@ -224,7 +226,8 @@ constexpr const float Deg2Rad = TAU / 360.0f;
 #if XO_SSE
 namespace SSE {
 #   if XO_SSE2
-    static const __m128 AbsMask = _mm_castsi128_ps(_mm_srli_epi32(_mm_set1_epi32(-1), 1));
+    // TODO: check if this still requires SSE2 or not. Unsure if removing the shift will do it for us.
+    static const __m128 AbsMask = _mm_castsi128_ps(_mm_set1_epi32(0x7FFFFFFF));
 
     __m128 Abs(__m128 v) {
         return _mm_and_ps(AbsMask, v);
@@ -234,14 +237,15 @@ namespace SSE {
     // the quoted error on _mm_rcp_ps documentation
     constexpr const float SSEFloatEpsilon = 0.000366210938f;
 
-    static const _MM_ALIGN16 __m128 Zero = _mm_setzero_ps();
-    static const _MM_ALIGN16 __m128 One = _mm_set1_ps(1.0f);
-    static const _MM_ALIGN16 __m128 NegativeOne = _mm_set1_ps(-1.0f);
-    static const _MM_ALIGN16 __m128 Epsilon = _mm_set_ps1(SSEFloatEpsilon);
+    static const __m128 Zero = _mm_setzero_ps();
+    static const __m128 One = _mm_set1_ps(1.0f);
+    static const __m128 NegativeOne = _mm_set1_ps(-1.0f);
+    static const __m128 Epsilon = _mm_set_ps1(SSEFloatEpsilon);
 }
 #endif
 
 // wrap for now, so we have the option to make a faster version later.
+_XOINL float Abs(float f)               { return f > 0.0f ? f : -f; }
 _XOINL float Sqrt(float f)              { return sqrtf(f); }
 _XOINL float Sin(float f)               { return sinf(f); }
 _XOINL float Cos(float f)               { return cosf(f); }
@@ -280,6 +284,23 @@ float RandomRange(float low, float high) {
 
 XOMATH_END_XO_NS
 
+#if defined(_XO_ASSIGN_QUAT)
+_XOMATH_INTERNAL_MACRO_WARNING
+#   undef _XO_ASSIGN_QUAT
+#endif
+#if defined(_XO_ASSIGN_QUAT_Q)
+_XOMATH_INTERNAL_MACRO_WARNING
+#   undef _XO_ASSIGN_QUAT_Q
+#endif
+
+#if XO_SSE
+#define _XO_ASSIGN_QUAT(W, X, Y, Z) m = _mm_set_ps(W, Z, Y, X);
+#define _XO_ASSIGN_QUAT_Q(Q, W, X, Y, Z) Q.m = _mm_set_ps(W, Z, Y, X);
+#else
+#define _XO_ASSIGN_QUAT(W, X, Y, Z) this->w = W; this->x = X; this->y = Y; this->z = Z;
+#define _XO_ASSIGN_QUAT_Q(Q, W, X, Y, Z) q.w = W; q.x = X; q.y = Y; q.z = Z;
+#endif
+
 ////////////////////////////////////////////////////////////////////////// Module Includes
 
 #include "Vector2.h"
@@ -299,6 +320,29 @@ XOMATH_END_XO_NS
 #include "QuaternionOperators.h"
 #include "QuaternionMethods.h"
 
+////////////////////////////////////////////////////////////////////////// Funcs dependant on xo-math types.
+
+XOMATH_BEGIN_XO_NS
+
+_XOINL
+Vector2 Abs(const Vector2& v) {
+    return Vector2(Abs(v.x), Abs(v.y));
+}
+
+#if XO_SSE2 // TODO: check if SSE2 is required
+_XOINL
+Vector3 Abs(const Vector3& v) {
+    return (SSE::Abs(v.m));
+}
+
+_XOINL
+Vector4 Abs(const Vector4& v) {
+    return Vector4(SSE::Abs(v.m));
+}
+#endif
+
+XOMATH_END_XO_NS
+
 ////////////////////////////////////////////////////////////////////////// Remove internal macros
 
 #if defined(XO_REDEFINABLE)
@@ -312,6 +356,9 @@ XOMATH_END_XO_NS
 
 #undef _XOINL
 #undef _XOTLS
+
+#undef _XO_ASSIGN_QUAT
+#undef _XO_ASSIGN_QUAT_Q
 
 #undef XOMATH_INTERNAL
 
