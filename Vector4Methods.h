@@ -4,6 +4,27 @@ static_assert(false, "Don't include Vector4Methods.h directly. Include GameMath.
 
 XOMATH_BEGIN_XO_NS
 
+#if defined IDX_X
+_XOMATH_INTERNAL_MACRO_WARNING
+#   else
+#       define IDX_X 0
+#   endif
+#if defined IDX_Y
+_XOMATH_INTERNAL_MACRO_WARNING
+#   else
+#       define IDX_Y 1
+#   endif
+#if defined IDX_Z
+_XOMATH_INTERNAL_MACRO_WARNING
+#   else
+#       define IDX_Z 2
+#   endif
+#if defined IDX_W
+_XOMATH_INTERNAL_MACRO_WARNING
+#   else
+#       define IDX_W 3
+#   endif
+
 Vector4::Vector4() {
 }
 
@@ -255,6 +276,12 @@ Vector4 Vector4::Lerp(const Vector4& v, float t) const {
     Vector4::Lerp(*this, v, t, temp);
     return temp;
 }
+
+#undef IDX_X
+#undef IDX_Y
+#undef IDX_Z
+#undef IDX_W
+
 
 XOMATH_END_XO_NS
 

@@ -4,6 +4,31 @@ static_assert(false, "Don't include Vector3Methods.h directly. Include GameMath.
 
 XOMATH_BEGIN_XO_NS
 
+#if XO_SSE
+
+#if defined IDX_X
+_XOMATH_INTERNAL_MACRO_WARNING
+#   else
+#       define IDX_X 0
+#   endif
+#if defined IDX_Y
+_XOMATH_INTERNAL_MACRO_WARNING
+#   else
+#       define IDX_Y 1
+#   endif
+#if defined IDX_Z
+_XOMATH_INTERNAL_MACRO_WARNING
+#   else
+#       define IDX_Z 2
+#   endif
+#if defined IDX_W
+_XOMATH_INTERNAL_MACRO_WARNING
+#   else
+#       define IDX_W 3
+#   endif
+
+#endif
+
 Vector3::Vector3() {
 }
 
@@ -114,7 +139,6 @@ void Vector3::Get(float* f) const {
     f[2] = this->z;
 #endif
 }
-
 
 Vector3 Vector3::ZYX() const {
 #if XO_SSE
@@ -425,6 +449,11 @@ Vector3 Vector3::RandomInConeRadians(float angle) const                   { retu
 Vector3 Vector3::RandomOnConeDegrees(float angle) const                   { return RandomOnConeDegrees(*this, angle); }
 
 Vector3 Vector3::RandomInConeDegrees(float angle) const                   { return RandomInConeDegrees(*this, angle); }
+
+#undef IDX_X
+#undef IDX_Y
+#undef IDX_Z
+#undef IDX_W
 
 XOMATH_END_XO_NS
 

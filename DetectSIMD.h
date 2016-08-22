@@ -65,37 +65,48 @@ static_assert(false, "Don't include DetectSIMD.h directly. Include GameMath.h.")
 // If XO_NO_VECTOR_DETECT_WARNING is not defined then we'll tell them about the lack of support on their platform 
 #elif !defined(XO_NO_VECTOR_DETECT_WARNING)
 #   if defined(_MSC_VER)
+#       if defined(_XO_MATH_MSC_PRAGMALINK)
+_XOMATH_INTERNAL_MACRO_WARNING
+#       else
+#           define _XO_MATH_MSC_PRAGMALINK __FILE__ "(" _XO_MATH_STRINGIFY(__LINE__) ") : "
+#       endif
+#       if defined(_XO_MATH_WARN)
+_XOMATH_INTERNAL_MACRO_WARNING
+#       else
+#           define _XO_MATH_WARN(exp) (_XO_MATH_MSC_PRAGMALINK "WARNING: " exp)
+#       endif
+
 #       if !(defined(__AVX__) || defined(__AVX2__) || defined(_M_IX86_FP) || _M_IX86_FP < 1) && defined(XO_SSE)
 #           undef XO_SSE
-#           warning "xo-math detected that XO_SSE is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
+#           pragma message _XO_MATH_WARN("xo-math detected that XO_SSE is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features.")
 #       endif
 #       if !(defined(__AVX__) || defined(__AVX2__) || defined(_M_IX86_FP) || _M_IX86_FP < 2) && defined(XO_SSE2)
 #           undef XO_SSE2
-#           warning "xo-math detected that XO_SSE2 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
+#           pragma message _XO_MATH_WARN("xo-math detected that XO_SSE2 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features.")
 #       endif
 #       if !(defined(__AVX__) || defined(__AVX2__)) && defined(XO_SSE3)
 #           undef XO_SSE3
-#           warning "xo-math detected that XO_SSE3 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
+#           pragma message _XO_MATH_WARN("xo-math detected that XO_SSE3 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features.")
 #       endif
 #       if !(defined(__AVX__) || defined(__AVX2__)) && defined(XO_SSSE3)
 #           undef XO_SSSE3
-#           warning "xo-math detected that XO_SSSE3 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
+#           pragma message _XO_MATH_WARN("xo-math detected that XO_SSSE3 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features.")
 #       endif
 #       if !(defined(__AVX__) || defined(__AVX2__)) && defined(XO_SSE4_1)
 #           undef XO_SSE4_1
-#           warning "xo-math detected that XO_SSE4_1 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
+#           pragma message _XO_MATH_WARN("xo-math detected that XO_SSE4_1 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features.")
 #       endif
 #       if !(defined(__AVX__) || defined(__AVX2__)) && defined(XO_SSE4_2)
 #           undef XO_SSE4_2
-#           warning "xo-math detected that XO_SSE4_2 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
+#           pragma message _XO_MATH_WARN("xo-math detected that XO_SSE4_2 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features.")
 #       endif
 #       if !(defined(__AVX__) || defined(__AVX2__)) && defined(XO_AVX)
 #           undef XO_AVX
-#           warning "xo-math detected that XO_AVX is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
+#           pragma message _XO_MATH_WARN("xo-math detected that XO_AVX is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features.")
 #       endif
 #       if !defined(__AVX2__) && defined(XO_AVX2)
 #           undef XO_AVX2
-#           warning "xo-math detected that XO_AVX2 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
+#           pragma message _XO_MATH_WARN("xo-math detected that XO_AVX2 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features.")
 #       endif
         // Hey, if you know for a fact that AVX512 is supported on your version of msvc
         // could you please find out if there's a macro to detect it? (such as __AVX512__?)
@@ -111,8 +122,11 @@ static_assert(false, "Don't include DetectSIMD.h directly. Include GameMath.h.")
         // to get your code to stop throwing this warning.
 #       if defined(XO_AVX512)
 #           undef XO_AVX512
-#           warning "xo-math detected that XO_AVX512 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
+#           pragma message _XO_MATH_WARN("xo-math detected that XO_AVX512 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features.")
 #       endif
+
+#   undef _XO_MATH_MSC_PRAGMALINK
+#   undef _XO_MATH_WARN
 #   elif defined(__clang__) || defined (__gcc__) // Todo: verify the gcc pre-proc, I'm just guessing here.
 #       if !defined(__SSE__) && defined(XO_SSE)
 #           undef XO_SSE

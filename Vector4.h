@@ -5,13 +5,6 @@ static_assert(false, "Don't include Vector4.h directly. Include GameMath.h, whic
 XOMATH_BEGIN_XO_NS
 // TODO: align new/delete
 class _MM_ALIGN16 Vector4 {
-#if XO_SSE
-        static const unsigned IDX_X = 0;
-        static const unsigned IDX_Y = 1;
-        static const unsigned IDX_Z = 2;
-        static const unsigned IDX_W = 3;
-#endif
-
 public:
 #if XO_SSE
     constexpr static const float Epsilon = SSE::SSEFloatEpsilon * 4.0f;

@@ -2,6 +2,8 @@
 #include <chrono>
 #include <ctime>
 
+using namespace std;
+
 //#define XOMATH_VEC2_CW 1            // All 2d math using relative angles will assume positive to be clockwise, and that rotations start at (0, 1)
 //#define XO_NO_NS 1                  // Turn off all namespace options for xomath
 //#define XO_NO_INLINE 1            // Turn off __forceinline
@@ -239,16 +241,16 @@ int main() {
     T_NS::SSE::SetFlushToZero(true);      // underflowing operations produce 0
 
     //xo_sse1::SSE::ThrowAllExceptions();
-    T_NS::SSE::ThrowNoExceptions();
-
-    T_NS::SSE::GetAllMXCSRInfo(std::cout);
-    std::cout << XO_MATH_VERSION_TXT << std::endl;
-    std::cout << XO_MATH_COMPILER_INFO << std::endl;
+    //T_NS::SSE::ThrowNoExceptions();
 
     TestVector2(t);
     TestVector3(t);
     TestMatrix4x4(t);
-    
+
+    T_NS::SSE::GetAllMXCSRInfo(cout);
+    cout << "\n" << XO_MATH_VERSION_TXT << "\n" << XO_MATH_COMPILER_INFO << endl;
+
+
 
 #if defined(_MSC_VER)
     system("pause");

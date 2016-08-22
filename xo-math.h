@@ -51,6 +51,16 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #   define XOMATH_INTERNAL 1
 #endif
 
+#if !defined(_XO_MATH_STRINGIFY_HELPER)
+    // Do not undef at end of file. Will break XO_MATH_VERSION... and XO_MATH_COMPILER... defines
+#   define _XO_MATH_STRINGIFY_HELPER(x) #x
+#endif
+
+#if !defined(_XO_MATH_STRINGIFY)
+    // Do not undef at end of file. Will break XO_MATH_VERSION... and XO_MATH_COMPILER... defines
+#   define _XO_MATH_STRINGIFY(x) _XO_MATH_STRINGIFY_HELPER(x)
+#endif
+
 #include "DetectSIMD.h"
 
 #if defined(_XOINL)
@@ -206,14 +216,6 @@ _XOMATH_INTERNAL_MACRO_WARNING
 
 ////////////////////////////////////////////////////////////////////////// Add external macros
 
-#if !defined(_XO_MATH_STRINGIFY_HELPER)
-#   define _XO_MATH_STRINGIFY_HELPER(x) #x
-#endif
-
-#if !defined(_XO_MATH_STRINGIFY)
-#   define _XO_MATH_STRINGIFY(x) _XO_MATH_STRINGIFY_HELPER(x)
-#endif
-
 // version kinds:
 // x: experimental, do not use for production.
 // a: alpha, for specific feature testing. Contains untested features not in the last major revision.
@@ -229,17 +231,19 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #define XO_MATH_VERSION_STR _XO_MATH_STRINGIFY(XO_MATH_VERSION_MAJOR) "." _XO_MATH_STRINGIFY(XO_MATH_VERSION_MINOR) "." XO_MATH_VERSION_KIND _XO_MATH_STRINGIFY(XO_MATH_VERSION_SUB)
 #define XO_MATH_VERSION (XO_MATH_VERSION_MAJOR*10000) + (XO_MATH_VERSION_MINOR*1000) + (XO_MATH_VERSION_SUB*100)
 
-
 #define XO_MATH_VERSION_TXT "xo-math version " XO_MATH_VERSION_STR " " XO_MATH_VERSION_DATE "."
 
 #if defined(_MSC_VER)
-#   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with msvc " _XO_MATH_STRINGIFY(_MSC_VER) ", supporting simd: " _XO_MATH_STRINGIFY(XO_MATH_HIGHEST_SIMD) "."
+#   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with msvc " _XO_MATH_STRINGIFY(_MSC_VER) ", supporting simd: " XO_MATH_HIGHEST_SIMD "."
+#   pragma message(XO_MATH_COMPILER_INFO)
 #elif defined(__clang__)
-#   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with clang " _XO_MATH_STRINGIFY(__clang_major__) "." _XO_MATH_STRINGIFY(__clang_minor__) "." _XO_MATH_STRINGIFY(__clang_patchlevel__) ", supporting simd: " _XO_MATH_STRINGIFY(XO_MATH_HIGHEST_SIMD) "."
+#   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with clang " _XO_MATH_STRINGIFY(__clang_major__) "." _XO_MATH_STRINGIFY(__clang_minor__) "." _XO_MATH_STRINGIFY(__clang_patchlevel__) ", supporting simd: " XO_MATH_HIGHEST_SIMD "."
+// pragma message is a warning on clang.
+//#   pragma message XO_MATH_COMPILER_INFO
 #elif defined(__GNUC__)
-#   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with gcc " _XO_MATH_STRINGIFY(__GNUC__) "." _XO_MATH_STRINGIFY(__GNUC_MINOR__) "." _XO_MATH_STRINGIFY(__GNUC_PATCHLEVEL__) ", supporting simd: " _XO_MATH_STRINGIFY(XO_MATH_HIGHEST_SIMD) "."
+#   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with gcc " _XO_MATH_STRINGIFY(__GNUC__) "." _XO_MATH_STRINGIFY(__GNUC_MINOR__) "." _XO_MATH_STRINGIFY(__GNUC_PATCHLEVEL__) ", supporting simd: " XO_MATH_HIGHEST_SIMD "."
 #else
-#   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with an unknown compiler, supporting simd: " _XO_MATH_STRINGIFY(XO_MATH_HIGHEST_SIMD) "."
+#   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with an unknown compiler, supporting simd: " XO_MATH_HIGHEST_SIMD "."
 #endif
 
 #endif // XO_MATH_H
