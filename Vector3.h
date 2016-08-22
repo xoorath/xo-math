@@ -14,7 +14,11 @@ class _MM_ALIGN16 Vector3 {
 #endif
 
 public:
-    constexpr static const float Epsilon = FloatEpsilon*3.0f;
+#if XO_SSE
+    constexpr static const float Epsilon = SSE::SSEFloatEpsilon * 3.0f;
+#else
+    constexpr static const float Epsilon = FloatEpsilon * 3.0f;
+#endif
 
     // No initialization is done.
     _XOINL Vector3();

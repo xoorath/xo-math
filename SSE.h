@@ -73,7 +73,7 @@ namespace SSE {
         };
 
     }
-    
+
     volatile _XOTLS unsigned LastKnownControlWord = 0;
 
     void UpdateControlWord() {
@@ -332,4 +332,4 @@ namespace SSE {
 
 XOMATH_END_XO_NS
 
-#endif
+#endif // XOMATH_INTERNAL

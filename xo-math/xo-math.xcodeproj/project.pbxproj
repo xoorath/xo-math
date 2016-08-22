@@ -41,6 +41,7 @@
 		816C25921D68A87300DC319A /* QuaternionOperators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QuaternionOperators.h; path = ../QuaternionOperators.h; sourceTree = "<group>"; };
 		816C25931D68A87300DC319A /* xo-math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xo-math.h"; path = "../xo-math.h"; sourceTree = "<group>"; };
 		816C25941D6A5C2700DC319A /* SSE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SSE.h; path = ../SSE.h; sourceTree = "<group>"; };
+		816C25951D6A819000DC319A /* DetectSIMD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DetectSIMD.h; path = ../DetectSIMD.h; sourceTree = "<group>"; };
 		81BB800A1D4E9FC40064AFE7 /* Test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Test.h; sourceTree = "<group>"; };
 		81BB800B1D50BCF80064AFE7 /* Vector4.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Vector4.h; path = ../Vector4.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -59,6 +60,7 @@
 		812D15C11D49669A00195264 = {
 			isa = PBXGroup;
 			children = (
+				816C25951D6A819000DC319A /* DetectSIMD.h */,
 				816C25941D6A5C2700DC319A /* SSE.h */,
 				816C25901D68A87300DC319A /* Quaternion.h */,
 				816C25911D68A87300DC319A /* QuaternionMethods.h */,

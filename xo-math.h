@@ -5,146 +5,6 @@
 #ifndef XO_MATH_H
 #define XO_MATH_H
 
-////////////////////////////////////////////////////////////////////////// auto SSE detection based on compiler settings
-// First check that the user isn't overriding our SSE settings. If they are, it's up to them to define all of it.
-#if !defined(XO_SSE) && !defined(XO_SSE2) && !defined(XO_SSE3) && !defined(XO_SSSE3) && !defined(XO_SSE4) && !defined(XO_AVX) && !defined(XO_AVX2) && !defined(XO_AVX512)
-#   if defined(_MSC_VER)
-#       if defined(_M_IX86_FP)
-#           if _M_IX86_FP == 1
-#               define XO_SSE 1
-#           elif _M_IX86_FP == 2
-#               define XO_SSE 1
-#               define XO_SSE2 1
-#           endif
-#       endif
-#       if defined(__AVX__)
-#           define XO_SSE 1
-#           define XO_SSE2 1
-#           define XO_SSE3 1
-#           define XO_SSSE3 1
-#           define XO_SSE4 1 // Todo: specify 4_1 and 4_2
-#           define XO_AVX 1
-#       endif
-#       if defined(__AVX2__)
-#           define XO_SSE 1
-#           define XO_SSE2 1
-#           define XO_SSE3 1
-#           define XO_SSSE3 1
-#           define XO_SSE4 1 // Todo: specify 4_1 and 4_2
-#           define XO_AVX 1
-#           define XO_AVX2 1
-#       endif
-// TODO: add AVX512 for msvc when it exists.
-#   elif defined(__clang__) || defined (__gcc__) // Todo: verify the gcc pre-proc, I'm just guessing here.
-#       if defined(__SSE__)
-#           define XO_SSE 1
-#       endif
-#       if defined(__SSE2__)
-#           define XO_SSE2 1
-#       endif
-#       if defined(__SSE3__)
-#           define XO_SSE3 1
-#       endif
-#       if defined(__SSSE3__)
-#           define XO_SSSE3 1
-#       endif
-#       if defined(__SSE4_1__)
-#           define XO_SSE4 1 // Todo: specify 4_1 and 4_2 like gcc does
-#       endif
-#       if defined(__AVX__)
-#           define XO_AVX 1
-#       endif
-#       if defined(__AVX2__) // Todo: verify this pre-proc
-#           define XO_AVX2 1
-#       endif
-#       if defined(__AVX512__) // Todo: verify this pre-proc
-#           define XO_AVX512 1
-#       endif
-#   endif
-// If the user really knows what they're doing, they should be able to override seriously any of these defines they want.
-// If XO_NO_VECTOR_DETECT_WARNING is not defined then we'll tell them about the lack of support on their platform 
-#elif !defined(XO_NO_VECTOR_DETECT_WARNING)
-#   if defined(_MSC_VER)
-#       if !(defined(__AVX__) || defined(__AVX2__) || defined(_M_IX86_FP) || _M_IX86_FP < 1) && defined(XO_SSE)
-#           undef XO_SSE
-#           warning "xo-math detected that XO_SSE is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
-#       endif
-#       if !(defined(__AVX__) || defined(__AVX2__) || defined(_M_IX86_FP) || _M_IX86_FP < 2) && defined(XO_SSE2)
-#           undef XO_SSE2
-#           warning "xo-math detected that XO_SSE2 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
-#       endif
-#       if !(defined(__AVX__) || defined(__AVX2__)) && defined(XO_SSE3)
-#           undef XO_SSE3
-#           warning "xo-math detected that XO_SSE3 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
-#       endif
-#       if !(defined(__AVX__) || defined(__AVX2__)) && defined(XO_SSSE3)
-#           undef XO_SSSE3
-#           warning "xo-math detected that XO_SSSE3 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
-#       endif
-#       if !(defined(__AVX__) || defined(__AVX2__)) && defined(XO_SSE4)
-#           undef XO_SSE4
-#           warning "xo-math detected that XO_SSE4 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
-#       endif
-#       if !(defined(__AVX__) || defined(__AVX2__)) && defined(XO_AVX)
-#           undef XO_AVX
-#           warning "xo-math detected that XO_AVX is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
-#       endif
-#       if !defined(__AVX2__) && defined(XO_AVX2)
-#           undef XO_AVX2
-#           warning "xo-math detected that XO_AVX2 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
-#       endif
-        // Hey, if you know for a fact that AVX512 is supported on your version of msvc
-        // could you please find out if there's a macro to detect it? (such as __AVX512__?)
-        // At the time of writing, there is no such macro documented.
-        // If there is I'd appreciate a quick email or pull request. I can be reached at jared@xoorath.com
-        
-        // Assuming __AVX512__ is the macro for example, you can substitute:
-
-//#     if defined(XO_AVX512)
-        // for
-//#     !defined(__AVX512__) && defined(XO_AVX512)
-
-        // to get your code to stop throwing this warning.
-#       if defined(XO_AVX512)
-#           undef XO_AVX512
-#           warning "xo-math detected that XO_AVX512 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
-#       endif
-#   elif defined(__clang__) || defined (__gcc__) // Todo: verify the gcc pre-proc, I'm just guessing here.
-#       if !defined(__SSE__) && defined(XO_SSE)
-#           undef XO_SSE
-#           warning "xo-math detected that XO_SSE is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
-#       endif
-#       if !defined(__SSE2__) && defined(XO_SSE2)
-#           undef XO_SSE2
-#           warning "xo-math detected that XO_SSE2 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
-#       endif
-#       if !defined(__SSE3__) && defined(XO_SSE3)
-#           undef XO_SSE3
-#           warning "xo-math detected that XO_SSE3 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
-#       endif
-#       if !defined(__SSSE3__) && defined(XO_SSSE3)
-#           undef XO_SSSE3
-#           warning "xo-math detected that XO_SSSE3 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
-#       endif
-#       if !defined(__SSE4_1__) && defined(XO_SSE4)
-#           undef XO_SSE4
-#           warning "xo-math detected that XO_SSE4 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
-#       endif
-#       if !defined(__AVX__) && defined(XO_AVX)
-#           undef XO_AVX
-#           warning "xo-math detected that XO_AVX is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
-#       endif
-#       if !defined(__AVX2__) && defined(XO_AVX2)
-#           undef XO_AVX2
-#           warning "xo-math detected that XO_AVX2 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
-#       endif
-#       if !defined(__AVX512__) && defined(XO_AVX512)
-#           undef XO_AVX512
-#           warning "xo-math detected that XO_AVX512 is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."
-#       endif
-#   endif
-#endif
-
 ////////////////////////////////////////////////////////////////////////// XOMATH_BEGIN_XO_NS, XOMATH_END_XO_NS
 #ifdef XO_CUSTOM_NS
 #   define XOMATH_BEGIN_XO_NS  namespace XO_CUSTOM_NS {
@@ -164,7 +24,6 @@
 #endif
 
 ////////////////////////////////////////////////////////////////////////// Dependencies for xo-math headers
-
 #include <math.h>
 #include <ostream>
 #include <random>
@@ -180,13 +39,19 @@
 #   define _MM_ALIGN16 __attribute__((aligned(16)))
 #endif
 
-#if defined(_XOMATH_INTERNAL_MACRO_WARNING) || defined(XOMATH_INTERNAL)
+#if defined(_XOMATH_INTERNAL_MACRO_WARNING)
 static_assert(false, "xo-math found an internal macro where it shouldn't have.");
 #else
-#define _XOMATH_INTERNAL_MACRO_WARNING static_assert(false, "xo-math found an internal macro where it shouldn't have.");
+#   define _XOMATH_INTERNAL_MACRO_WARNING static_assert(false, "xo-math found an internal macro where it shouldn't have.");
 #endif
 
-#define XOMATH_INTERNAL 1
+#if defined(XOMATH_INTERNAL)
+_XOMATH_INTERNAL_MACRO_WARNING
+#else
+#   define XOMATH_INTERNAL 1
+#endif
+
+#include "DetectSIMD.h"
 
 #if defined(_XOINL)
 _XOMATH_INTERNAL_MACRO_WARNING
@@ -256,7 +121,6 @@ _XOINL float ATan(float f)              { return atanf(f); }
 _XOINL float ATan2(float y, float x)    { return atan2f(y, x); }
 _XOINL bool CloseEnough(float x, float y, float tolerance = FloatEpsilon) { return fabs(y - x) < tolerance; }
 
-
 constexpr _XOINL float Square(float t)      { return t*t; }
 constexpr _XOINL double Square(double t)    { return t*t; }
 constexpr _XOINL int Square(int t)          { return t*t; }
@@ -298,11 +162,10 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #define _XO_ASSIGN_QUAT_Q(Q, W, X, Y, Z) Q.m = _mm_set_ps(W, Z, Y, X);
 #else
 #define _XO_ASSIGN_QUAT(W, X, Y, Z) this->w = W; this->x = X; this->y = Y; this->z = Z;
-#define _XO_ASSIGN_QUAT_Q(Q, W, X, Y, Z) q.w = W; q.x = X; q.y = Y; q.z = Z;
+#define _XO_ASSIGN_QUAT_Q(Q, W, X, Y, Z) Q.w = W; Q.x = X; Q.y = Y; Q.z = Z;
 #endif
 
 ////////////////////////////////////////////////////////////////////////// Module Includes
-
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
@@ -341,5 +204,42 @@ _XOMATH_INTERNAL_MACRO_WARNING
 
 #undef XOMATH_INTERNAL
 
+////////////////////////////////////////////////////////////////////////// Add external macros
+
+#if !defined(_XO_MATH_STRINGIFY_HELPER)
+#   define _XO_MATH_STRINGIFY_HELPER(x) #x
+#endif
+
+#if !defined(_XO_MATH_STRINGIFY)
+#   define _XO_MATH_STRINGIFY(x) _XO_MATH_STRINGIFY_HELPER(x)
+#endif
+
+// version kinds:
+// x: experimental, do not use for production.
+// a: alpha, for specific feature testing. Contains untested features not in the last major revision.
+// b: beta, for broad user testing.
+// r: release, all features broadly tested in various applications.
+// p: patch release, contains fixes for a release version.
+
+#define XO_MATH_VERSION_DATE "Summer 2016"
+#define XO_MATH_VERSION_MAJOR 1
+#define XO_MATH_VERSION_KIND "x"
+#define XO_MATH_VERSION_MINOR 0
+#define XO_MATH_VERSION_SUB 0
+#define XO_MATH_VERSION_STR _XO_MATH_STRINGIFY(XO_MATH_VERSION_MAJOR) "." _XO_MATH_STRINGIFY(XO_MATH_VERSION_MINOR) "." XO_MATH_VERSION_KIND _XO_MATH_STRINGIFY(XO_MATH_VERSION_SUB)
+#define XO_MATH_VERSION (XO_MATH_VERSION_MAJOR*10000) + (XO_MATH_VERSION_MINOR*1000) + (XO_MATH_VERSION_SUB*100)
+
+
+#define XO_MATH_VERSION_TXT "xo-math version " XO_MATH_VERSION_STR " " XO_MATH_VERSION_DATE "."
+
+#if defined(_MSC_VER)
+#   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with msvc " _XO_MATH_STRINGIFY(_MSC_VER) ", supporting simd: " _XO_MATH_STRINGIFY(XO_MATH_HIGHEST_SIMD) "."
+#elif defined(__clang__)
+#   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with clang " _XO_MATH_STRINGIFY(__clang_major__) "." _XO_MATH_STRINGIFY(__clang_minor__) "." _XO_MATH_STRINGIFY(__clang_patchlevel__) ", supporting simd: " _XO_MATH_STRINGIFY(XO_MATH_HIGHEST_SIMD) "."
+#elif defined(__GNUC__)
+#   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with gcc " _XO_MATH_STRINGIFY(__GNUC__) "." _XO_MATH_STRINGIFY(__GNUC_MINOR__) "." _XO_MATH_STRINGIFY(__GNUC_PATCHLEVEL__) ", supporting simd: " _XO_MATH_STRINGIFY(XO_MATH_HIGHEST_SIMD) "."
+#else
+#   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with an unknown compiler, supporting simd: " _XO_MATH_STRINGIFY(XO_MATH_HIGHEST_SIMD) "."
+#endif
 
 #endif // XO_MATH_H

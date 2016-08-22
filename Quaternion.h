@@ -12,7 +12,11 @@ class _MM_ALIGN16 Quaternion {
     static const unsigned IDX_W = 3;
 #endif
 public:
+#if XO_SSE
+    constexpr static const float Epsilon = SSE::SSEFloatEpsilon * 4.0f;
+#else
     constexpr static const float Epsilon = FloatEpsilon * 4.0f;
+#endif
 
     _XOINL Quaternion();
     _XOINL Quaternion(const Matrix4x4& m);

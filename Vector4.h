@@ -13,7 +13,11 @@ class _MM_ALIGN16 Vector4 {
 #endif
 
 public:
+#if XO_SSE
+    constexpr static const float Epsilon = SSE::SSEFloatEpsilon * 4.0f;
+#else
     constexpr static const float Epsilon = FloatEpsilon * 4.0f;
+#endif
 
     // No initialization is done.
     _XOINL Vector4();
@@ -181,7 +185,8 @@ public:
     }
 
     static const Vector4
-        One, Zero;
+        One, Zero,
+        UnitX, UnitY, UnitZ, UnitW;
 
     union {
         struct {
@@ -196,6 +201,11 @@ public:
 
 const Vector4 Vector4::One = {1.0f, 1.0f, 1.0f, 1.0f};
 const Vector4 Vector4::Zero = {0.0f, 0.0f, 0.0f, 0.0f};
+
+const Vector4 Vector4::UnitX = {1.0f, 0.0f, 0.0f, 0.0f};
+const Vector4 Vector4::UnitY = {0.0f, 1.0f, 0.0f, 0.0f};
+const Vector4 Vector4::UnitZ = {0.0f, 0.0f, 1.0f, 0.0f};
+const Vector4 Vector4::UnitW = {0.0f, 0.0f, 0.0f, 1.0f};
 
 XOMATH_END_XO_NS
 

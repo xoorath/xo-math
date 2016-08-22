@@ -28,13 +28,13 @@ void Vector2::Set(float x, float y) {
 }
 
 void Vector2::Set(float v) {
-    this->x = v;
-    this->y = v;
+    x = v;
+    y = v;
 }
 
 void Vector2::Set(const Vector2& v) {
-    this->x = v[0];
-    this->y = v[1];
+    x = v.x;
+    y = v.y;
 }
 
 float Vector2::Magnitude() const {
@@ -69,17 +69,6 @@ bool Vector2::IsNormalized() const {
     return CloseEnough(MagnitudeSquared(), 1.0f, Epsilon);
 }
 
-Vector2 Vector2::Max(const Vector2& a, const Vector2& b) {
-    if (a.MagnitudeSquared() >= b.MagnitudeSquared())
-        return a;
-    return b;
-}
-
-Vector2 Vector2::Min(const Vector2& a, const Vector2& b) {
-    if (a.MagnitudeSquared() <= b.MagnitudeSquared())
-        return a;
-    return b;
-}
 
 float Vector2::Dot(const Vector2& a, const Vector2& b) {
     return (a.x * b.x) + (a.y * b.y);
@@ -89,15 +78,6 @@ float Vector2::Cross(const Vector2& a, const Vector2& b) {
     return (a.x * b.y) - (a.y * b.x);
 }
 
-// input vector rotated 90 degrees
-Vector2 Vector2::OrthogonalCCW(const Vector2& v) {
-    return Vector2(-v.y, v.x);
-}
-
-// input vector rotated -90 degrees
-Vector2 Vector2::OrthogonalCW(const Vector2& v) {
-    return Vector2(v.y, -v.x);
-}
 
 float Vector2::AngleRadians(const Vector2& a, const Vector2& b) {
 #ifdef XOMATH_VEC2_CW
@@ -111,10 +91,68 @@ float Vector2::AngleDegrees(const Vector2& a, const Vector2& b) {
     return AngleRadians(a, b) * Rad2Deg;
 }
 
-Vector2 Vector2::Lerp(const Vector2& a, const Vector2& b, float t) {
-    return a + ((b - a) * t);
+void Vector2::Max(const Vector2& a, const Vector2& b, Vector2& outVec) {
+    outVec.Set(a.MagnitudeSquared() >= b.MagnitudeSquared() ? a : b);
 }
 
+void Vector2::Min(const Vector2& a, const Vector2& b, Vector2& outVec) {
+    outVec.Set(a.MagnitudeSquared() < b.MagnitudeSquared() ? a : b);
+}
+
+void Vector2::OrthogonalCCW(const Vector2& v, Vector2& outVec) {
+    outVec.Set(-v.y, v.x);
+}
+
+void Vector2::OrthogonalCW(const Vector2& v, Vector2& outVec) {
+    outVec.Set(v.y, -v.x);
+}
+
+void Vector2::Lerp(const Vector2& a, const Vector2& b, float t, Vector2& outVec) {
+    if(CloseEnough(t, 0.0f, Epsilon)) {
+        outVec.Set(a);
+    }
+    else if(CloseEnough(t, 1.0f, Epsilon)) {
+        outVec.Set(b);
+    }
+    else {
+        outVec.Set(a + ((b - a) * t));
+    }
+}
+
+Vector2 Vector2::Max(const Vector2& a, const Vector2& b) {
+    Vector2 tempVec;
+    Max(a, b, tempVec);
+    return tempVec;
+
+}
+
+Vector2 Vector2::Min(const Vector2& a, const Vector2& b) {
+    Vector2 tempVec;
+    Min(a, b, tempVec);
+    return tempVec;
+
+}
+
+Vector2 Vector2::OrthogonalCCW(const Vector2& v) {
+    Vector2 tempVec;
+    OrthogonalCCW(v, tempVec);
+    return tempVec;
+
+}
+
+Vector2 Vector2::OrthogonalCW(const Vector2& v) {
+    Vector2 tempVec;
+    OrthogonalCW(v, tempVec);
+    return tempVec;
+
+}
+
+Vector2 Vector2::Lerp(const Vector2& a, const Vector2& b, float t) {
+    Vector2 tempVec;
+    Lerp(a, b, t, tempVec);
+    return tempVec;
+
+}
 
 float Vector2::Dot(const Vector2& v) const              { return Dot(*this, v); }
 Vector2 Vector2::Cross(const Vector2& v) const          { return Cross(*this, v); }

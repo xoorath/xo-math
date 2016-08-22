@@ -5,7 +5,7 @@ static_assert(false, "Don't include Vector2.h directly. Include GameMath.h, whic
 XOMATH_BEGIN_XO_NS
 class _MM_ALIGN16 Vector2 {
 public:
-    constexpr static const float Epsilon = FloatEpsilon+FloatEpsilon;
+    constexpr static const float Epsilon = FloatEpsilon * 2.0f;
 
     // No initialization is done.
     _XOINL Vector2();
@@ -131,21 +131,27 @@ public:
     _XOINL bool IsZero() const;
     _XOINL bool IsNormalized() const;
 
-    _XOINL static Vector2 Max(const Vector2& a, const Vector2& b);
-    _XOINL static Vector2 Min(const Vector2& a, const Vector2& b);
     _XOINL static float Dot(const Vector2& a, const Vector2& b);
     _XOINL static float Cross(const Vector2& a, const Vector2& b);
-
-    // input vector rotated 90 degrees
-    _XOINL static Vector2 OrthogonalCCW(const Vector2& v);
-
-    // input vector rotated -90 degrees
-    _XOINL static Vector2 OrthogonalCW(const Vector2& v);
     _XOINL static float AngleRadians(const Vector2& a, const Vector2& b);
     _XOINL static float AngleDegrees(const Vector2& a, const Vector2& b);
+
+    _XOINL static void Max(const Vector2& a, const Vector2& b, Vector2& outVec);
+    _XOINL static void Min(const Vector2& a, const Vector2& b, Vector2& outVec);
+
+    // input vector rotated 90 degrees
+    _XOINL static void OrthogonalCCW(const Vector2& v, Vector2& outVec);
+
+    // input vector rotated -90 degrees
+    _XOINL static void OrthogonalCW(const Vector2& v, Vector2& outVec);
+    _XOINL static void Lerp(const Vector2& a, const Vector2& b, float t, Vector2& outVec);
+
+    _XOINL static Vector2 Max(const Vector2& a, const Vector2& b);
+    _XOINL static Vector2 Min(const Vector2& a, const Vector2& b);
+    _XOINL static Vector2 OrthogonalCCW(const Vector2& v);
+    _XOINL static Vector2 OrthogonalCW(const Vector2& v);
     _XOINL static Vector2 Lerp(const Vector2& a, const Vector2& b, float t);
 
-    
     _XOINL float Dot(const Vector2& v) const;
     _XOINL Vector2 Cross(const Vector2& v) const;
     _XOINL Vector2 OrthogonalCCW() const;
@@ -155,7 +161,7 @@ public:
     _XOINL Vector2 Lerp(const Vector2& v, float t) const;
 
     friend std::ostream& operator <<(std::ostream& os, const Vector2& v) {
-        os << "(x:" << v[0] << ", y:" << v[1] << ", mag:" << v.Magnitude() << ")";
+        os << "(x:" << v.x << ", y:" << v.y << ", mag:" << v.Magnitude() << ")";
         return os;
     }
 

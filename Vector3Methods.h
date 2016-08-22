@@ -174,7 +174,7 @@ bool Vector3::IsNormalized() const {
 }
  
 float Vector3::Dot(const Vector3& a, const Vector3& b) {
-#if XO_SSE4
+#if XO_SSE4_1
     return _mm_cvtss_f32(_mm_dp_ps(a, b, 0x7f));
 #elif XO_SSE3
     auto d = _mm_and_ps(_mm_mul_ps(a.m, b.m), MASK);
@@ -205,22 +205,22 @@ void Vector3::Cross(const Vector3& a, const Vector3& b, Vector3& outVec) {
 }
 
 void Vector3::Max(const Vector3& a, const Vector3& b, Vector3& outVec) {
-    outVec = a >= b ? a : b;
+    outVec.Set(a >= b ? a : b);
 }
  
 void Vector3::Min(const Vector3& a, const Vector3& b, Vector3& outVec) {
-    outVec = a <= b ? a : b;
+    outVec.Set(a <= b ? a : b);
 }
 
 void Vector3::Lerp(const Vector3& a, const Vector3& b, float t, Vector3& outVec) {
     if(CloseEnough(t, 0.0f)) {
-        outVec = a;
+        outVec.Set(a);
     }
     else if(CloseEnough(t, 1.0f)) {
-        outVec = b;
+        outVec.Set(b);
     } 
     else {
-        outVec = a + ((b - a) * t);
+        outVec.Set(a + ((b - a) * t));
     }
 }
 
@@ -232,7 +232,7 @@ void Vector3::RotateRadians(const Vector3& v, const Vector3& axis, float angle, 
     float cosAng = Cos(angle);
     Vector3::Cross(axis, v, axv);
     Vector3::Cross(axis, v, adv);
-    outVec = v * cosAng + axv * sinAng + axis * adv * (1.0f - cosAng);
+    outVec.Set(v * cosAng + axv * sinAng + axis * adv * (1.0f - cosAng));
 }
 
 void Vector3::RotateDegrees(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec) {
@@ -267,9 +267,7 @@ void Vector3::RandomInConeDegrees(const Vector3& forward, float angle, Vector3& 
 void Vector3::RandomOnSphere(Vector3& outVec) {
     // TODO: find a better method to do this.
     // In the off chance we randomly pick 0,0,0 this method will break.
-    outVec.x = RandomRange(-1.0f, 1.0f);
-    outVec.y = RandomRange(-1.0f, 1.0f);
-    outVec.z = RandomRange(-1.0f, 1.0f);
+    outVec.Set(RandomRange(-1.0f, 1.0f), RandomRange(-1.0f, 1.0f), RandomRange(-1.0f, 1.0f));
     outVec.Normalize();
 }
 

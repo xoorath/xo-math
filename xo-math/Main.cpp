@@ -10,36 +10,37 @@
 #define XO_SSE 1 // Allow SSE (1999) Intel Katmai, (2001) AMD Palomino
 #define XO_SSE2 1 // Allow SSE2 (2001) Intel Willamette, (2003) AMD Opteron
 #define XO_SSE3 1 // Allow SSE3 (2004) Intel Prescott, (2005) AMD Venice/San Diego
-#define XO_SSE4 1 // Allow SSE4 (2008) Intel Nehalem, (2011) AMD Bulldozer, Playstation 4, Xbox One
+#define XO_SSE4_1 1 // Allow SSE4.1 (2008) Intel Nehalem, (2011) AMD Bulldozer, Playstation 4, Xbox One
 //////////////////////////////////////////////////////////// Not yet used
+//#define XO_SSE4_2 1 // Allow SSE4.2
 //#define XO_SSSE3 1 // Allow SSSE3 (2006) Intel Woodcrest, (2011) AMD Bobcat
 //#define XO_AVX 1 // Allow AVX (2011) Intel Sandy Bridge, (2011) AMD Bulldozer
 //#define XO_AVX2 1 // Allow AVX2 (2013) Intel Haswell, (2015) AMD Excavator, Playstation 4, Xbox One
 //#define XO_AVX512 1 // Allow AVX512 (2016) Intel Knights Landing
 
-#define XO_REDEFINABLE 1
+//#define XO_REDEFINABLE 1
 #define XO_CUSTOM_NS xo_sse4
 #include "../xo-math.h"
 
-#undef XO_SSE4
-#undef XO_CUSTOM_NS
-#define XO_CUSTOM_NS xo_sse3
-#include "../xo-math.h"
+// #undef XO_SSE4_1
+// #undef XO_CUSTOM_NS
+// #define XO_CUSTOM_NS xo_sse3
+// #include "../xo-math.h"
 
-#undef XO_SSE3
-#undef XO_CUSTOM_NS
-#define XO_CUSTOM_NS xo_sse2
-#include "../xo-math.h"
+// #undef XO_SSE3
+// #undef XO_CUSTOM_NS
+// #define XO_CUSTOM_NS xo_sse2
+// #include "../xo-math.h"
 
-#undef XO_SSE2
-#undef XO_CUSTOM_NS
-#define XO_CUSTOM_NS xo_sse1
-#include "../xo-math.h"
+// #undef XO_SSE2
+// #undef XO_CUSTOM_NS
+// #define XO_CUSTOM_NS xo_sse1
+// #include "../xo-math.h"
 
-#undef XO_SSE
-#undef XO_CUSTOM_NS
-#define XO_CUSTOM_NS xo_sse0
-#include "../xo-math.h"
+// #undef XO_SSE
+// #undef XO_CUSTOM_NS
+// #define XO_CUSTOM_NS xo_sse0
+// #include "../xo-math.h"
 
 #define XO_TEST_CLOSE 1
 #include "Test.h"
@@ -233,15 +234,16 @@ void TestMatrix4x4(Test& t) {
 int main() {
  
     Test t;
-    xo_sse1::SSE::UpdateControlWord();       // updates the thread-local state.
-    xo_sse1::SSE::SetDenormalsAreZero(true); // force all denormal values to 0
-    xo_sse1::SSE::SetFlushToZero(true);      // underflowing operations produce 0
+    T_NS::SSE::UpdateControlWord();       // updates the thread-local state.
+    T_NS::SSE::SetDenormalsAreZero(true); // force all denormal values to 0
+    T_NS::SSE::SetFlushToZero(true);      // underflowing operations produce 0
 
     //xo_sse1::SSE::ThrowAllExceptions();
-    xo_sse1::SSE::ThrowNoExceptions();
+    T_NS::SSE::ThrowNoExceptions();
 
-    xo_sse1::SSE::GetAllMXCSRInfo(std::cout);
-    std::cout << std::endl;
+    T_NS::SSE::GetAllMXCSRInfo(std::cout);
+    std::cout << XO_MATH_VERSION_TXT << std::endl;
+    std::cout << XO_MATH_COMPILER_INFO << std::endl;
 
     TestVector2(t);
     TestVector3(t);
