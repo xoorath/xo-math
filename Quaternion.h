@@ -22,6 +22,8 @@ public:
     _XOINL Quaternion(const Matrix4x4& m);
     _XOINL Quaternion(float x, float y, float z, float w);
 
+    _XO_OVERLOAD_NEW_DELETE
+
     _XOINL float& operator [](int i);
     _XOINL const float& operator [](int i) const;
 

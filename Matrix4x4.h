@@ -46,6 +46,8 @@ public:
     // See: https://en.wikipedia.org/wiki/Transpose
     _XOINL Matrix4x4 Transpose() const;
 
+    _XO_OVERLOAD_NEW_DELETE
+
     // Get a constant reference to a row in the matrix
     _XOINL const Vector4& operator [](int i) const;
 

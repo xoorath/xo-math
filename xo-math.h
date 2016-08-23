@@ -149,6 +149,22 @@ namespace SSE {
 #   if  !defined(XO_16ALIGNED_FREE)
 #       define XO_16ALIGNED_FREE(ptr) _mm_free(ptr)
 #   endif
+
+#   if defined(_XO_OVERLOAD_NEW_DELETE)
+_XOMATH_INTERNAL_MACRO_WARNING
+#   else
+#   define _XO_OVERLOAD_NEW_DELETE \
+        _XOINL static void* operator new (std::size_t size)     { return XO_16ALIGNED_MALLOC(size); } \
+        _XOINL static void* operator new[] (std::size_t size)   { return XO_16ALIGNED_MALLOC(size); } \
+        _XOINL static void operator delete (void* ptr)          { XO_16ALIGNED_FREE(ptr); } \
+        _XOINL static void operator delete[] (void* ptr)        { XO_16ALIGNED_FREE(ptr); }
+#   endif
+
+#else
+    // we don't need to overload new and delete unless memory alignment is required.
+#   if defined(_XO_OVERLOAD_NEW_DELETE)
+_XOMATH_INTERNAL_MACRO_WARNING
+#   endif
 #endif
 
 // wrap for now, so we have the option to make a faster version later.
@@ -243,6 +259,8 @@ _XOMATH_INTERNAL_MACRO_WARNING
 
 #undef _XO_TLS_ENGINE
 #undef _XO_TLS_DISTRIBUTION
+
+#undef _XO_OVERLOAD_NEW_DELETE
 
 #undef _XO_ASSIGN_QUAT
 #undef _XO_ASSIGN_QUAT_Q

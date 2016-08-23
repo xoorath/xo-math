@@ -36,6 +36,8 @@ public:
     _XOINL void Get(float& x, float& y, float& z, float& w) const;
     _XOINL void Get(float* f) const;
 
+    _XO_OVERLOAD_NEW_DELETE
+
 #if XO_SSE
     // type cast operator
     _XOINL operator const __m128&() const;
@@ -44,11 +46,6 @@ public:
     _XOINL float& operator [](int i);
     _XOINL const float& operator [](int i) const;
     _XOINL Vector4 operator -() const;
-
-    _XOINL static void* operator new (std::size_t size)     { return XO_16ALIGNED_MALLOC(size); }
-    _XOINL static void* operator new[] (std::size_t size)   { return XO_16ALIGNED_MALLOC(size); }
-    _XOINL static void operator delete (void* ptr)          { XO_16ALIGNED_FREE(ptr); }
-    _XOINL static void operator delete[] (void* ptr)        { XO_16ALIGNED_FREE(ptr); }
 
     _XOINL const Vector4& operator += (const Vector4& v);
     _XOINL const Vector4& operator += (float v);

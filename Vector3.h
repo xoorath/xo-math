@@ -40,6 +40,8 @@ public:
     _XOINL void Get(float& x, float& y, float &z) const;
     _XOINL void Get(float* f) const;
 
+    _XO_OVERLOAD_NEW_DELETE
+
 #if XO_SSE
     // type cast operator
     _XOINL operator __m128() const;
