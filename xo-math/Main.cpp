@@ -12,7 +12,7 @@ using namespace xo::math;
 
 void TestVector2(Test& t) {
     t("Vector2 AngleDegrees", [&t] {
-    #ifdef XOMATH_VEC2_CW
+    #ifdef XO_MATH_VEC2_CW
         REPORT_SUCCESS_IF(t, Vector2::Up.AngleDegrees(Vector2::Right), 90.0f);
         REPORT_SUCCESS_IF(t, Vector2::Right.AngleDegrees(Vector2::Down), 90.0f);
         REPORT_SUCCESS_IF(t, Vector2::Up.AngleDegrees(Vector2::Down), 180.0f);

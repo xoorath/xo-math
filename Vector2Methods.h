@@ -80,11 +80,7 @@ float Vector2::Cross(const Vector2& a, const Vector2& b) {
 
 
 float Vector2::AngleRadians(const Vector2& a, const Vector2& b) {
-#ifdef XOMATH_VEC2_CW
     return -ATan2(Cross(a, b), Dot(a, b));
-#else
-    return ATan2(Cross(a, b), Dot(a, b));
-#endif
 }
 
 float Vector2::AngleDegrees(const Vector2& a, const Vector2& b) {
