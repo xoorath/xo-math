@@ -1,203 +1,124 @@
 #include <iostream>
-
+#include <cmath>
 using namespace std;
 
 #include "../xo-math.h"
+using namespace xo::math;
 
 #define XO_TEST_CLOSE 1
 #include "Test.h"
 #undef XO_TEST_CLOSE
 
-using namespace xo::math;
+#include "Reference/bullet3-master/src/LinearMath/btVector3.h"
 
-void TestVector2(Test& t) {
-    t("Vector2 AngleDegrees", [&t] {
-    #ifdef XO_MATH_VEC2_CW
-        REPORT_SUCCESS_IF(t, Vector2::Up.AngleDegrees(Vector2::Right), 90.0f);
-        REPORT_SUCCESS_IF(t, Vector2::Right.AngleDegrees(Vector2::Down), 90.0f);
-        REPORT_SUCCESS_IF(t, Vector2::Up.AngleDegrees(Vector2::Down), 180.0f);
-    #else
-        REPORT_SUCCESS_IF(t, Vector2::Up.AngleDegrees(Vector2::Right), -90.0f);
-        REPORT_SUCCESS_IF(t, Vector2::Right.AngleDegrees(Vector2::Down), -90.0f);
-        REPORT_SUCCESS_IF(t, Vector2::Up.AngleDegrees(Vector2::Down), -180.0f);
-    #endif
-    });
+Test test;
 
-    t("Vector2 Dot", [&t] {
-        REPORT_SUCCESS_IF(t, Vector2::Up.Dot(Vector2::Up), 1.0f);
-        REPORT_SUCCESS_IF(t, Vector2::Up.Dot(Vector2::Right), 0.0f);
-        REPORT_SUCCESS_IF(t, Vector2::Up.Dot(Vector2::Down), -1.0f);
-        REPORT_SUCCESS_IF(t, Vector2::Up.Dot(Vector2::Up * 2), 2.0f);
-    });
-
-    t("Vector2 Orthogonal", [&t] {
-        REPORT_SUCCESS_IF(t, Vector2::Up.OrthogonalCW(), Vector2::Right);
-        REPORT_SUCCESS_IF(t, Vector2::Up.OrthogonalCCW(), Vector2::Left);
-    });
-
-    t("Vector2 Lerp", [&t] {
-        REPORT_SUCCESS_IF(t, Vector2::Up.Lerp(Vector2::Up*2.0f, -0.5f), Vector2(0.0f, 0.5f));
-        REPORT_SUCCESS_IF(t, Vector2::Up.Lerp(Vector2::Up*2.0f, 0.0f), Vector2(0.0f, 1.0f));
-        REPORT_SUCCESS_IF(t, Vector2::Up.Lerp(Vector2::Up*2.0f, 0.5f), Vector2(0.0f, 1.5f));
-        REPORT_SUCCESS_IF(t, Vector2::Up.Lerp(Vector2::Up*2.0f, 1.0f), Vector2(0.0f, 2.0f));
-        REPORT_SUCCESS_IF(t, Vector2::Up.Lerp(Vector2::Up*2.0f, 1.5f), Vector2(0.0f, 2.5f));
-    });
-
-    t("Vector2 Operators", [&t] {
-        const Vector2 v2a = { 1.1f, 2.2f };
-        const Vector2 v2b = { 3.3f, 4.4f };
-        const float fa = 5.5f;
-        REPORT_SUCCESS_IF(t, v2a / v2b, Vector2(v2a.x / v2b.x, v2a.y / v2b.y));
-        REPORT_SUCCESS_IF(t, v2a + v2b, Vector2(v2a.x + v2b.x, v2a.y + v2b.y));
-        REPORT_SUCCESS_IF(t, v2a * v2b, Vector2(v2a.x * v2b.x, v2a.y * v2b.y));
-        REPORT_SUCCESS_IF(t, v2a - v2b, Vector2(v2a.x - v2b.x, v2a.y - v2b.y));
-        REPORT_SUCCESS_IF(t, v2a / fa, Vector2(v2a.x / fa, v2a.y / fa));
-        REPORT_SUCCESS_IF(t, v2a + fa, Vector2(v2a.x + fa, v2a.y + fa));
-        REPORT_SUCCESS_IF(t, v2a * fa, Vector2(v2a.x * fa, v2a.y * fa));
-        REPORT_SUCCESS_IF(t, v2a - fa, Vector2(v2a.x - fa, v2a.y - fa));
-
-        Vector2 v2c;
-        v2c = v2a;  // reset
-        v2c /= v2b; // perform operation
-        REPORT_SUCCESS_IF(t, v2c, Vector2(v2a.x / v2b.x, v2a.y / v2b.y));
-        v2c = v2a;  // reset
-        v2c += v2b; // perform operation
-        REPORT_SUCCESS_IF(t, v2c, Vector2(v2a.x + v2b.x, v2a.y + v2b.y));
-        v2c = v2a;  // reset
-        v2c *= v2b; // perform operation
-        REPORT_SUCCESS_IF(t, v2c, Vector2(v2a.x * v2b.x, v2a.y * v2b.y));
-        v2c = v2a;  // reset
-        v2c -= v2b; // perform operation
-        REPORT_SUCCESS_IF(t, v2c, Vector2(v2a.x - v2b.x, v2a.y - v2b.y));
-
-
-        REPORT_SUCCESS_IF(t, ~v2a, Vector2(v2a.y, v2a.x));
-        REPORT_SUCCESS_IF(t, -v2a, Vector2(-v2a.x, -v2a.y));
-
-        REPORT_SUCCESS_IF(t, v2a < v2b, true);
-        REPORT_SUCCESS_IF(t, v2a <= v2b, true);
-        REPORT_SUCCESS_IF(t, v2b > v2a, true);
-        REPORT_SUCCESS_IF(t, v2b >= v2a, true);
-
-        REPORT_SUCCESS_IF(t, v2a > 1, true);
-        REPORT_SUCCESS_IF(t, v2a < 4, true);
-        REPORT_SUCCESS_IF(t, v2a < -4, true); // when checking magnitude, sign is ignored
-    });
-
-    t("Vector2 Conversions", [&t] {
-        REPORT_SUCCESS_IF(t, Vector2::Zero == Vector3::Zero, true);
-        REPORT_SUCCESS_IF(t, Vector2::One == Vector3::One, true);
-        REPORT_SUCCESS_IF(t, Vector2::One + Vector3::One, Vector2(2.0f, 2.0f));
-
-    });
+void ShouldEqual(const Vector3& xov, const btVector3& btv, const char* name, float epsilon) {
+    float diffx = Abs(xov.x - btv.getX());
+    float diffy = Abs(xov.y - btv.getY());
+    float diffz = Abs(xov.z - btv.getZ());
+    float worst = diffx > diffy ? (diffx > diffz ? diffx : diffz) : (diffy > diffz ? diffy : diffz);
+    test.ReportSuccessIf(worst <= epsilon, name);
 }
 
-void TestVector3(Test& t) {
-    t("Vector3 AngleDegrees", [&t] {
-        REPORT_SUCCESS_IF(t, Vector3::Up.AngleDegrees(Vector3::Right), 90.0f);
-        REPORT_SUCCESS_IF(t, Vector3::Right.AngleDegrees(Vector3::Down), 90.0f);
-        REPORT_SUCCESS_IF(t, Vector3::Up.AngleDegrees(Vector3::Down), 180.0f);
-    });
-
-    t("Vector3 Dot", [&t] {
-        REPORT_SUCCESS_IF(t, Vector3::Up.Dot(Vector3::Up), 1.0f);
-        REPORT_SUCCESS_IF(t, Vector3::Up.Dot(Vector3::Right), 0.0f);
-        REPORT_SUCCESS_IF(t, Vector3::Up.Dot(Vector3::Down), -1.0f);
-        REPORT_SUCCESS_IF(t, Vector3::Up.Dot(Vector3::Up * 2), 2.0f);
-    });
-
-    t("Vector3 Cross", [&t] {
-        REPORT_SUCCESS_IF(t, Vector3::Up.Cross(Vector3::Forward), Vector3::Right);
-        REPORT_SUCCESS_IF(t, Vector3::Forward.Cross(Vector3::Up), Vector3::Left);
-    });
-
-    t("Vector3 Lerp", [&t] {
-        REPORT_SUCCESS_IF(t, Vector3::Up.Lerp(Vector3::Up*2.0f, -0.5f), Vector3(0.0f, 0.5f, 0.0f));
-        REPORT_SUCCESS_IF(t, Vector3::Up.Lerp(Vector3::Up*2.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
-        REPORT_SUCCESS_IF(t, Vector3::Up.Lerp(Vector3::Up*2.0f, 0.5f), Vector3(0.0f, 1.5f, 0.0f));
-        REPORT_SUCCESS_IF(t, Vector3::Up.Lerp(Vector3::Up*2.0f, 1.0f), Vector3(0.0f, 2.0f, 0.0f));
-        REPORT_SUCCESS_IF(t, Vector3::Up.Lerp(Vector3::Up*2.0f, 1.5f), Vector3(0.0f, 2.5f, 0.0f));
-    });
-
-    t("Vector3 Operators", [&t] {
-        const Vector3 v3a = { 1.1f, 2.2f, 3.3f };
-        const Vector3 v3b = { 4.4f, 5.5f, 6.6f };
-        const float fa = 7.7f;
-        REPORT_SUCCESS_IF(t, v3a / v3b, Vector3(v3a.x / v3b.x, v3a.y / v3b.y, v3a.z / v3b.z));
-        REPORT_SUCCESS_IF(t, v3a + v3b, Vector3(v3a.x + v3b.x, v3a.y + v3b.y, v3a.z + v3b.z));
-        REPORT_SUCCESS_IF(t, v3a * v3b, Vector3(v3a.x * v3b.x, v3a.y * v3b.y, v3a.z * v3b.z));
-        REPORT_SUCCESS_IF(t, v3a - v3b, Vector3(v3a.x - v3b.x, v3a.y - v3b.y, v3a.z - v3b.z));
-        REPORT_SUCCESS_IF(t, v3a / fa, Vector3(v3a.x / fa, v3a.y / fa, v3a.z / fa));
-        REPORT_SUCCESS_IF(t, v3a + fa, Vector3(v3a.x + fa, v3a.y + fa, v3a.z + fa));
-        REPORT_SUCCESS_IF(t, v3a * fa, Vector3(v3a.x * fa, v3a.y * fa, v3a.z * fa));
-        REPORT_SUCCESS_IF(t, v3a - fa, Vector3(v3a.x - fa, v3a.y - fa, v3a.z - fa));
-
-        Vector3 v2c;
-        v2c = v3a;  // reset
-        v2c /= v3b; // perform operation
-        REPORT_SUCCESS_IF(t, v2c, Vector3(v3a.x / v3b.x, v3a.y / v3b.y, v3a.z / v3b.z));
-        v2c = v3a;  // reset
-        v2c += v3b; // perform operation
-        REPORT_SUCCESS_IF(t, v2c, Vector3(v3a.x + v3b.x, v3a.y + v3b.y, v3a.z + v3b.z));
-        v2c = v3a;  // reset
-        v2c *= v3b; // perform operation
-        REPORT_SUCCESS_IF(t, v2c, Vector3(v3a.x * v3b.x, v3a.y * v3b.y, v3a.z * v3b.z));
-        v2c = v3a;  // reset
-        v2c -= v3b; // perform operation
-        REPORT_SUCCESS_IF(t, v2c, Vector3(v3a.x - v3b.x, v3a.y - v3b.y, v3a.z - v3b.z));
-
-
-        REPORT_SUCCESS_IF(t, ~v3a, Vector3(v3a.z, v3a.y, v3a.x));
-        REPORT_SUCCESS_IF(t, -v3a, Vector3(-v3a.x, -v3a.y, -v3a.z));
-
-        REPORT_SUCCESS_IF(t, v3a < v3b, true);
-        REPORT_SUCCESS_IF(t, v3a <= v3b, true);
-        REPORT_SUCCESS_IF(t, v3b > v3a, true);
-        REPORT_SUCCESS_IF(t, v3b >= v3a, true);
-
-        REPORT_SUCCESS_IF(t, v3a > 1, true);
-        REPORT_SUCCESS_IF(t, v3a < 8, true);
-        REPORT_SUCCESS_IF(t, v3a < -8, true); // when checking magnitude, sign is ignored
-    });
-
-    t("Vector3 Conversions", [&t] {
-        REPORT_SUCCESS_IF(t, Vector3::Zero == Vector2::Zero, true);
-        REPORT_SUCCESS_IF(t, Vector3::One == Vector2::One, true);
-        REPORT_SUCCESS_IF(t, Vector3::One + Vector2::One, Vector3(2.0f, 2.0f, 1.0f));
-    });
+void ShouldEqual(bool xob, bool btv, const char* name) {
+    test.ReportSuccessIf(xob == btv, name);
 }
 
-void TestMatrix4x4(Test& t) {
-    t("Matrix4x4 Multiplication", [&t] {
-        REPORT_SUCCESS_IF(t, Vector3::One * Matrix4x4::Identity, Vector3::One);
-        REPORT_SUCCESS_IF(t, (Vector3::One*2.0f) * Matrix4x4::Identity, (Vector3::One*2.0f));
-        REPORT_SUCCESS_IF(t, Vector3::One * (Matrix4x4::Scale(2.0f)), (Vector3::One*2.0f));
+void CompareBullet3() {
+    test("Vecotr3 basic math operations", [] {
+        for (int i = 0; i < 100; i++) {
+            float x1 = RandomRange(-10000.0f, 10000.0f);
+            float y1 = RandomRange(-10000.0f, 10000.0f);
+            float z1 = RandomRange(-10000.0f, 10000.0f);
+
+            float x2 = RandomRange(-10000.0f, 10000.0f);
+            float y2 = RandomRange(-10000.0f, 10000.0f);
+            float z2 = RandomRange(-10000.0f, 10000.0f);
+            Vector3 xov1    = { x1, y1, z1 };
+            btVector3 btv1  = { x1, y1, z1 };
+            Vector3 xov2    = { x2, y2, z2 };
+            btVector3 btv2  = { x2, y2, z2 };
+
+            ShouldEqual(xov1 + xov2, btv1 + btv2, "addition", FloatEpsilon);
+            ShouldEqual(xov1 - xov2, btv1 - btv2, "subtraction", FloatEpsilon);
+            ShouldEqual(xov1 * xov2, btv1 * btv2, "multiplication", FloatEpsilon);
+            ShouldEqual(xov1 / xov2, btv1 / btv2, "division", SSE::SSEFloatEpsilon); // failing with an error level too far from acceptable.
+        }
     });
 
-    t("Matrix4x4 Rotation", [&t] {
-        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationXRadians(HalfPI), Vector3::Forward);
-        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationZRadians(HalfPI), Vector3::Left);
-        REPORT_SUCCESS_IF(t, Vector3::Right * Matrix4x4::RotationYRadians(HalfPI), Vector3::Forward);
+    test("Vecotr3 addative math operations", [] {
+        for (int i = 0; i < 100; i++) {
+            float x1 = RandomRange(-10000.0f, 10000.0f);
+            float y1 = RandomRange(-10000.0f, 10000.0f);
+            float z1 = RandomRange(-10000.0f, 10000.0f);
 
-        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationXDegrees(90), Vector3::Forward);
-        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationZDegrees(90), Vector3::Left);
-        REPORT_SUCCESS_IF(t, Vector3::Right * Matrix4x4::RotationYDegrees(90), Vector3::Forward);
+            float x2 = RandomRange(-10000.0f, 10000.0f);
+            float y2 = RandomRange(-10000.0f, 10000.0f);
+            float z2 = RandomRange(-10000.0f, 10000.0f);
+            Vector3 xov1 = { x1, y1, z1 };
+            btVector3 btv1 = { x1, y1, z1 };
+            Vector3 xov2 = { x2, y2, z2 };
+            btVector3 btv2 = { x2, y2, z2 };
+
+            Vector3 xov0 = xov1;
+            btVector3 btv0 = btv1;
+
+            ShouldEqual(xov1 += xov2, btv1 += btv2, "addition", FloatEpsilon);
+            xov1 = xov0;
+            btv1 = btv0;
+            ShouldEqual(xov1 -= xov2, btv1 -= btv2, "subtraction", FloatEpsilon);
+            xov1 = xov0;
+            btv1 = btv0;
+            ShouldEqual(xov1 *= xov2, btv1 *= btv2, "multiplication", FloatEpsilon);
+            
+            xov1 = xov0;
+            btv1 = btv0;
+            // Note: Bullet lacks vec3/=vec3. 
+            // Let's just compare vec3/vec3 for accuracy.
+            ShouldEqual(xov1 /= xov2, btv1 / btv2, "division", SSE::SSEFloatEpsilon);
+        }
+    });
+
+    test("Vecotr3 comparison operations", [] {
+        for (int i = 0; i < 100; i++) {
+            float x1 = RandomRange(-10000.0f, 10000.0f);
+            float y1 = RandomRange(-10000.0f, 10000.0f);
+            float z1 = RandomRange(-10000.0f, 10000.0f);
+
+            float x2 = RandomRange(-10000.0f, 10000.0f);
+            float y2 = RandomRange(-10000.0f, 10000.0f);
+            float z2 = RandomRange(-10000.0f, 10000.0f);
+            Vector3 xov1 = { x1, y1, z1 };
+            btVector3 btv1 = { x1, y1, z1 };
+            Vector3 xov2 = { x2, y2, z2 };
+            btVector3 btv2 = { x2, y2, z2 };
+
+            // Huge fail, bullet lets you check <, >, <= and >=, but all of them compare pointers?! 
+            // I get that comparing magnitude is subjectively useful, but at least it's sensible.
+            //ShouldEqual(xov1 < xov2, btv1 < btv2, "less than");
+            //ShouldEqual(xov1 <= xov2, btv1 <= btv2, "less than or equal");
+            //ShouldEqual(xov1 > xov2, btv1 > btv2, "greater than");
+            //ShouldEqual(xov1 >= xov2, btv1 >= btv2, "greater than or equal");
+
+            ShouldEqual(xov1 == xov2, btv1 == btv2, "equal (other vec)");
+            ShouldEqual(xov1 != xov2, btv1 != btv2, "not equal (other vec)");
+
+            ShouldEqual(xov1 == xov1, btv1 == btv1, "equal (same vec)");
+            ShouldEqual(xov1 != xov1, btv1 != btv1, "not equal (same vec)");
+        }
     });
 }
 
 int main() {
- 
-    Test t;
     SSE::UpdateControlWord();       // updates the thread-local state.
     SSE::SetDenormalsAreZero(true); // force all denormal values to 0
     SSE::SetFlushToZero(true);      // underflowing operations produce 0
 
     //xo_sse1::SSE::ThrowAllExceptions();
-    //SSE::ThrowNoExceptions();
+    SSE::ThrowNoExceptions();
 
-    TestVector2(t);
-    TestVector3(t);
-    TestMatrix4x4(t);
+    CompareBullet3();
 
     SSE::GetAllMXCSRInfo(cout);
     cout << "\n" << XO_MATH_VERSION_TXT << "\n" << XO_MATH_COMPILER_INFO << endl;
@@ -206,6 +127,5 @@ int main() {
     system("pause");
 #endif
 
-    return t.GetTotalFailures();
-    return 0;
+    return test.GetTotalFailures();
 }

@@ -75,6 +75,7 @@ public:
 
   void ReportSuccess();
   void ReportFailure(const char* reason);
+  void ReportFailure();
 
   double operator ()(const char* testName, TTestFunc func);
   int GetTotalFailures() const;
@@ -122,6 +123,11 @@ void Test::ReportFailure(const char* reason) {
   m_CurrentFailure++;
   m_TotalFailure++;
   std::cout << "[FAIL] " << reason << std::endl;
+}
+
+void Test::ReportFailure() {
+    m_CurrentFailure++;
+    m_TotalFailure++;
 }
 
 double Test::operator ()(const char* testName, TTestFunc func) {
