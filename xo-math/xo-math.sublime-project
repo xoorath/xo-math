@@ -8,6 +8,8 @@
 				"cmd":
 				[
 					"clang++",
+					"-include",
+					"$project_path/../xo-math.h",
 					"-std=c++11",
 					"-O0",
 					"-msse4.2",
@@ -48,6 +50,16 @@
 		},
 		{
 			"name": "g++",
+			"variants":
+			[
+				{
+					"name": "Run",
+					"windows":
+					{
+						"shell_cmd": "$project_path/build/a.exe"
+					}
+				}
+			],
 			"windows":
 			{
 				"cmd":
@@ -62,23 +74,13 @@
 					"$project_path/build/a.exe",
 					"$project_path/main.cpp"
 				]
-			},
-			"variants":
-			[
-				{
-					"name": "Run",
-					"windows":
-					{
-						"shell_cmd": "$project_path/build/a.exe"
-					}
-				}
-			]
+			}
 		}
 	],
 	"folders":
 	[
 		{
-			"path": "C:\\Projects\\Github\\xo-math"
+			"path": "/Users/xoorath/xo-math"
 		}
 	]
 }

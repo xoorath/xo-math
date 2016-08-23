@@ -32,7 +32,7 @@ static_assert(false, "Don't include DetectSIMD.h directly. Include GameMath.h.")
 #           define XO_AVX2 1
 #       endif
 // TODO: add AVX512 for msvc when it exists.
-#   elif defined(__clang__) || defined (__gcc__) // Todo: verify the gcc pre-proc, I'm just guessing here.
+#   elif defined(__clang__) || defined (__GNUC__)
 #       if defined(__SSE__)
 #           define XO_SSE 1
 #       endif
@@ -54,10 +54,10 @@ static_assert(false, "Don't include DetectSIMD.h directly. Include GameMath.h.")
 #       if defined(__AVX__)
 #           define XO_AVX 1
 #       endif
-#       if defined(__AVX2__) // Todo: verify this pre-proc
+#       if defined(__AVX2__)
 #           define XO_AVX2 1
 #       endif
-#       if defined(__AVX512__) // Todo: verify this pre-proc
+#       if defined(__AVX512__) || defined(__AVX512F__)
 #           define XO_AVX512 1
 #       endif
 #   endif
@@ -127,7 +127,7 @@ _XOMATH_INTERNAL_MACRO_WARNING
 
 #   undef _XO_MATH_MSC_PRAGMALINK
 #   undef _XO_MATH_WARN
-#   elif defined(__clang__) || defined (__gcc__) // Todo: verify the gcc pre-proc, I'm just guessing here.
+#   elif defined(__clang__) || defined (__GNUC__)
 #       if !defined(__SSE__) && defined(XO_SSE)
 #           undef XO_SSE
 #           warning "xo-math detected that XO_SSE is defined when the compiler doesn't have this feature enabled. We're going to undefine it for you to prevent compilation failure. Please see your compiler documentation to enable various SIMD features."

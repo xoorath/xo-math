@@ -1,62 +1,14 @@
 #include <iostream>
-#include <chrono>
-#include <ctime>
 
 using namespace std;
 
-//#define XOMATH_VEC2_CW 1            // All 2d math using relative angles will assume positive to be clockwise, and that rotations start at (0, 1)
-//#define XO_NO_NS 1                  // Turn off all namespace options for xomath
-//#define XO_NO_INLINE 1            // Turn off __forceinline
-//#define XO_NO_INVERSE_DIVISION 1  // Turn off (1/x)*Vec in place of (x,x,x)/Vec
-//////////////////////////////////////////////////////////// In use
-#define XO_SSE 1 // Allow SSE (1999) Intel Katmai, (2001) AMD Palomino
-#define XO_SSE2 1 // Allow SSE2 (2001) Intel Willamette, (2003) AMD Opteron
-#define XO_SSE3 1 // Allow SSE3 (2004) Intel Prescott, (2005) AMD Venice/San Diego
-#define XO_SSE4_1 1 // Allow SSE4.1 (2008) Intel Nehalem, (2011) AMD Bulldozer, Playstation 4, Xbox One
-//////////////////////////////////////////////////////////// Not yet used
-//#define XO_SSE4_2 1 // Allow SSE4.2
-//#define XO_SSSE3 1 // Allow SSSE3 (2006) Intel Woodcrest, (2011) AMD Bobcat
-//#define XO_AVX 1 // Allow AVX (2011) Intel Sandy Bridge, (2011) AMD Bulldozer
-//#define XO_AVX2 1 // Allow AVX2 (2013) Intel Haswell, (2015) AMD Excavator, Playstation 4, Xbox One
-//#define XO_AVX512 1 // Allow AVX512 (2016) Intel Knights Landing
-
-//#define XO_REDEFINABLE 1
-#define XO_CUSTOM_NS xo_sse4
 #include "../xo-math.h"
-
-// #undef XO_SSE4_1
-// #undef XO_CUSTOM_NS
-// #define XO_CUSTOM_NS xo_sse3
-// #include "../xo-math.h"
-
-// #undef XO_SSE3
-// #undef XO_CUSTOM_NS
-// #define XO_CUSTOM_NS xo_sse2
-// #include "../xo-math.h"
-
-// #undef XO_SSE2
-// #undef XO_CUSTOM_NS
-// #define XO_CUSTOM_NS xo_sse1
-// #include "../xo-math.h"
-
-// #undef XO_SSE
-// #undef XO_CUSTOM_NS
-// #define XO_CUSTOM_NS xo_sse0
-// #include "../xo-math.h"
 
 #define XO_TEST_CLOSE 1
 #include "Test.h"
 #undef XO_TEST_CLOSE
 
-
-#define T_NS xo_sse4
-
-typedef T_NS::Matrix4x4 Matrix4x4;
-typedef T_NS::Quaternion Quaternion;
-typedef T_NS::Vector2 Vector2;
-typedef T_NS::Vector3 Vector3;
-typedef T_NS::Vector4 Vector4;
-
+using namespace xo::math;
 
 void TestVector2(Test& t) {
     t("Vector2 AngleDegrees", [&t] {
@@ -223,9 +175,9 @@ void TestMatrix4x4(Test& t) {
     });
 
     t("Matrix4x4 Rotation", [&t] {
-        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationXRadians(T_NS::HalfPI), Vector3::Forward);
-        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationZRadians(T_NS::HalfPI), Vector3::Left);
-        REPORT_SUCCESS_IF(t, Vector3::Right * Matrix4x4::RotationYRadians(T_NS::HalfPI), Vector3::Forward);
+        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationXRadians(HalfPI), Vector3::Forward);
+        REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationZRadians(HalfPI), Vector3::Left);
+        REPORT_SUCCESS_IF(t, Vector3::Right * Matrix4x4::RotationYRadians(HalfPI), Vector3::Forward);
 
         REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationXDegrees(90), Vector3::Forward);
         REPORT_SUCCESS_IF(t, Vector3::Up * Matrix4x4::RotationZDegrees(90), Vector3::Left);
@@ -236,21 +188,19 @@ void TestMatrix4x4(Test& t) {
 int main() {
  
     Test t;
-    T_NS::SSE::UpdateControlWord();       // updates the thread-local state.
-    T_NS::SSE::SetDenormalsAreZero(true); // force all denormal values to 0
-    T_NS::SSE::SetFlushToZero(true);      // underflowing operations produce 0
+    SSE::UpdateControlWord();       // updates the thread-local state.
+    SSE::SetDenormalsAreZero(true); // force all denormal values to 0
+    SSE::SetFlushToZero(true);      // underflowing operations produce 0
 
     //xo_sse1::SSE::ThrowAllExceptions();
-    //T_NS::SSE::ThrowNoExceptions();
+    //SSE::ThrowNoExceptions();
 
     TestVector2(t);
     TestVector3(t);
     TestMatrix4x4(t);
 
-    T_NS::SSE::GetAllMXCSRInfo(cout);
+    SSE::GetAllMXCSRInfo(cout);
     cout << "\n" << XO_MATH_VERSION_TXT << "\n" << XO_MATH_COMPILER_INFO << endl;
-
-
 
 #if defined(_MSC_VER)
     system("pause");

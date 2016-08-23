@@ -1,7 +1,4 @@
 // For testing it's helpful to change settings and re-include xo-math with another XO_CUSTOM_NS defined as well.
-#if !defined(XO_REDEFINABLE)
-#   pragma once
-#endif
 #ifndef XO_MATH_H
 #define XO_MATH_H
 
@@ -79,11 +76,37 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #if defined(_XOTLS)
 _XOMATH_INTERNAL_MACRO_WARNING
 #else
-#   ifdef __clang__
-        // todo: find a way to get thread local storage out of clang which allows for non const-expr initialization
-#       define _XOTLS
+#   if defined(__clang__) && defined(__APPLE__)
+#       define _XOTLS __thread
 #   else
 #       define _XOTLS thread_local
+#   endif
+#endif
+
+#if defined(_XO_TLS_ENGINE)
+_XOMATH_INTERNAL_MACRO_WARNING
+#else
+    // apple clang doesn't give us thread_local until xcode 8.
+#   if defined(__clang__) && (__APPLE__)
+#       define _XO_TLS_ENGINE \
+            static _XOTLS std::mt19937* tls_engline; \
+            static _XOTLS char mem[sizeof(std::mt19937)];\
+            if(!tls_engline) { \
+                tls_engline = new(mem) std::mt19937((unsigned)clock()); \
+            }
+#   else
+#       define _XO_TLS_ENGINE \
+            static _XOTLS std::mt19937 tls_engline((unsigned)clock());
+#   endif
+#endif
+
+#if defined(_XO_TLS_DISTRIBUTION)
+_XOMATH_INTERNAL_MACRO_WARNING
+#else
+#   if defined(__clang__) && (__APPLE__)
+#       define _XO_TLS_DISTRIBUTION dist(*tls_engline)
+#   else
+#       define _XO_TLS_DISTRIBUTION dist(tls_engline)
 #   endif
 #endif
 
@@ -117,6 +140,15 @@ namespace SSE {
     static const __m128 NegativeOne = _mm_set1_ps(-1.0f);
     static const __m128 Epsilon = _mm_set_ps1(SSEFloatEpsilon);
 }
+
+// We wont warn about pre-defining XO_16ALIGNED_MALLOC or XO_16ALIGNED_FREE.
+// If a user wants to create their own allocator, we wont get in the way of that.
+#   if !defined(XO_16ALIGNED_MALLOC)
+#       define XO_16ALIGNED_MALLOC(size) _mm_malloc(size, 16)
+#   endif
+#   if  !defined(XO_16ALIGNED_FREE)
+#       define XO_16ALIGNED_FREE(ptr) _mm_free(ptr)
+#   endif
 #endif
 
 // wrap for now, so we have the option to make a faster version later.
@@ -137,23 +169,23 @@ constexpr _XOINL int Square(int t)          { return t*t; }
 
 _XOINL 
 bool RandomBool() {
-    static _XOTLS std::mt19937 engine((unsigned)time(nullptr));
+    _XO_TLS_ENGINE
     std::uniform_int_distribution<int> dist(0, 1);
-    return dist(engine) == 1;
+    return _XO_TLS_DISTRIBUTION == 1;
 }
 
 _XOINL 
 int RandomRange(int low, int high) {
-    static _XOTLS std::mt19937 engine((unsigned)time(nullptr));
+    _XO_TLS_ENGINE
     std::uniform_int_distribution<int> dist(low, high);
-    return dist(engine);
+    return _XO_TLS_DISTRIBUTION;
 }
 
 _XOINL 
 float RandomRange(float low, float high) {
-    static _XOTLS std::mt19937 engine((unsigned)time(nullptr));
+    _XO_TLS_ENGINE
     std::uniform_real_distribution<float> dist(low, high);
-    return dist(engine);
+    return _XO_TLS_DISTRIBUTION;
 }
 
 XOMATH_END_XO_NS
@@ -208,6 +240,9 @@ _XOMATH_INTERNAL_MACRO_WARNING
 
 #undef _XOINL
 #undef _XOTLS
+
+#undef _XO_TLS_ENGINE
+#undef _XO_TLS_DISTRIBUTION
 
 #undef _XO_ASSIGN_QUAT
 #undef _XO_ASSIGN_QUAT_Q

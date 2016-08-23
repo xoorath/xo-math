@@ -7,9 +7,13 @@ XOMATH_BEGIN_XO_NS
 Matrix4x4::Matrix4x4() {
 }
 
-// TODO: Is there a fast way to initialize just one vector4, and copy it to the other 3?
-Matrix4x4::Matrix4x4(float m) :
-    r {
+Matrix4x4::Matrix4x4(float m)
+#if XO_SSE
+{ 
+    r[0].m = r[1].m = r[2].m = r[3].m = _mm_set_ps1(m);
+}
+#else
+    : r {
         Vector4(m),
         Vector4(m),
         Vector4(m),
@@ -17,6 +21,7 @@ Matrix4x4::Matrix4x4(float m) :
     }
 {
 }
+#endif
 
 Matrix4x4::Matrix4x4(float a0, float b0, float c0, float d0, float a1, float b1, float c1, float d1, float a2, float b2, float c2, float d2, float a3, float b3, float c3, float d3) :
     r {

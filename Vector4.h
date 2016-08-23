@@ -11,7 +11,6 @@ public:
 #else
     constexpr static const float Epsilon = FloatEpsilon * 4.0f;
 #endif
-
     // No initialization is done.
     _XOINL Vector4();
     
@@ -45,6 +44,11 @@ public:
     _XOINL float& operator [](int i);
     _XOINL const float& operator [](int i) const;
     _XOINL Vector4 operator -() const;
+
+    _XOINL static void* operator new (std::size_t size)     { return XO_16ALIGNED_MALLOC(size); }
+    _XOINL static void* operator new[] (std::size_t size)   { return XO_16ALIGNED_MALLOC(size); }
+    _XOINL static void operator delete (void* ptr)          { XO_16ALIGNED_FREE(ptr); }
+    _XOINL static void operator delete[] (void* ptr)        { XO_16ALIGNED_FREE(ptr); }
 
     _XOINL const Vector4& operator += (const Vector4& v);
     _XOINL const Vector4& operator += (float v);
