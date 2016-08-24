@@ -8,8 +8,6 @@
 				"cmd":
 				[
 					"clang++",
-					"-include",
-					"$project_path/../xo-math.h",
 					"-std=c++11",
 					"-O0",
 					"-msse4.2",

@@ -115,7 +115,7 @@ const Vector3& Vector3::operator *= (int v)             { return (*this) *= floa
 const Vector3& Vector3::operator *= (const Vector2& v)  { return (*this) *= Vector3(v); }
 const Vector3& Vector3::operator *= (const Vector4& v)  { return (*this) *= Vector3(v); }
 
-#if XO_NO_INVERSE_DIVISION
+#if defined(XO_NO_INVERSE_DIVISION)
 const Vector3& Vector3::operator /= (const Vector3& v) {
 #if XO_SSE
     // see: https://software.intel.com/sites/landingpage/IntrinsicsGuide

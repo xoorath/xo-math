@@ -39,7 +39,7 @@ Quaternion::Quaternion(const Matrix4x4& mat) {
     }
 
 #if XO_SSE
-#   if XO_NO_INVERSE_DIVISION
+#   if defined(XO_NO_INVERSE_DIVISION)
     Vector3 recipScale = Vector3(_mm_div_ps(Vector4::One.m, scale.m));
 #   else
     Vector3 recipScale = Vector3(_mm_rcp_ps(scale.m));

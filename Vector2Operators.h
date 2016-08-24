@@ -61,7 +61,7 @@ const Vector2& Vector2::operator /= (const Vector2& v) {
     return *this;
 }
 const Vector2& Vector2::operator /= (float v) {
-#if XO_NO_INVERSE_DIVISION
+#if defined(XO_NO_INVERSE_DIVISION)
     x /= v;
     y /= v;
     return *this;
