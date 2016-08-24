@@ -192,7 +192,6 @@
     <ClInclude Include="Reference\vectorclass\vectormath_hyp.h" />
     <ClInclude Include="Reference\vectorclass\vectormath_lib.h" />
     <ClInclude Include="Reference\vectorclass\vectormath_trig.h" />
-    <ClInclude Include="Test.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />

@@ -53,7 +53,6 @@
     <ClInclude Include="..\Vector4Methods.h" />
     <ClInclude Include="..\Vector4Operators.h" />
     <ClInclude Include="..\xo-math.h" />
-    <ClInclude Include="Test.h" />
     <ClInclude Include="Reference\bullet3-master\src\LinearMath\btHashMap.h">
       <Filter>bullet3-master\src\LinearMath</Filter>
     </ClInclude>
