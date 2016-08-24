@@ -1,0 +1,276 @@
+//
+// Comparison file for generating feature-accuracy tests.
+// Rather than defining a test suite that compares known results
+// this instead compares the results of a set of known libraries
+// and finds the differences in their outputs
+//
+
+#xomath
+	xo-math by Jared Thomson
+	xomath
+	xo::math::Vector3
+	.x
+	.y
+	.z
+	.x
+	.y
+	.z
+
+#bullet
+	Bullet Linear Math by Bullet Physics
+	bullet
+	btVector3
+	[0]
+	[1]
+	[2]
+	[0]
+	[1]
+	[2]
+
+#vectorclasses
+	Vector Classes by Agner Fog
+	vectorclasses
+	Vec3f
+	[0]
+	[1]
+	[2]
+	[0]
+	[1]
+	[2]
+
+////////////////////////////////////////////////// vec op vec
+addition
+	xomath<fvv>
+		v0 + v1
+	bullet<fvv>
+		v0 + v1
+	vectorclasses<fvv>
+		v0 + v1
+
+subtraction
+	xomath<fvv>
+		v0 - v1
+	bullet<fvv>
+		v0 - v1
+	vectorclasses
+		v0 - v1
+
+multiplication
+	xomath<fvv>
+		v0 * v1
+	bullet<fvv>
+		v0 * v1
+	vectorclasses<fvv>
+		v0 * v1
+
+division
+	xomath<fvv>
+		v0 / v1
+	bullet<fvv>
+		v0 / v1
+	vectorclasses<fvv>
+		v0 / v1
+
+////////////////////////////////////////////////// vec op eq vec
+
+addition equals
+	xomath<fvv>
+		v0 += v1
+	bullet<fvv>
+		v0 += v1
+	vectorclasses<fvv>
+		v0 += v1
+
+subtraction equals
+	xomath<fvv>
+		v0 -= v1
+	bullet<fvv>
+		v0 -= v1
+	vectorclasses<fvv>
+		v0 -= v1
+
+multiplication equals
+	xomath<fvv>
+		v0 *= v1
+	bullet<fvv>
+		v0 *= v1
+	vectorclasses<fvv>
+		v0 *= v1
+
+division equals
+	xomath<fvv>
+		v0 /= v1
+!!	bullet
+	vectorclasses<fvv>
+		v0 /= v1
+
+////////////////////////////////////////////////// vec op float
+
+addition scalar
+	xomath<fvf>
+		v0 + t
+	bullet<fvf>
+		v0 + t
+	vectorclasses<fvf>
+		v0 + t
+
+subtraction scalar
+	xomath<fvf>
+		v0 - t
+	bullet<fvf>
+		v0 - t
+	vectorclasses
+		v0 - v1
+
+multiplication scalar
+	xomath<fvf>
+		v0 * t
+	bullet<fvf>
+		v0 * t
+	vectorclasses<fvf>
+		v0 * t
+
+division scalar
+	xomath<fvf>
+		v0 / t
+	bullet<fvf>
+		v0 / t
+	vectorclasses<fvf>
+		v0 / t
+
+////////////////////////////////////////////////// vec op eq float
+
+addition equals scalar
+	xomath<fvf>
+		v0 += f
+	bullet<fvf>
+		v0 += f
+	vectorclasses<fvf>
+		v0 += f
+
+subtraction equals scalar
+	xomath<fvf>
+		v0 -= f
+	bullet<fvf>
+		v0 -= f
+	vectorclasses<fvf>
+		v0 -= f
+
+multiplication equals scalar
+	xomath<fvf>
+		v0 *= f
+	bullet<fvf>
+		v0 *= f
+	vectorclasses<fvf>
+		v0 *= f
+
+division equals scalar
+	xomath<fvf>
+		v0 /= f
+	bullet<fvf>
+		v0 /= f
+	vectorclasses<fvf>
+		v0 /= f
+
+////////////////////////////////////////////////// vec compare vec
+
+length less than
+	xomath<bvv>
+		v0 < v1
+!!	bullet
+		Note: Bullet will compare two vectors, but it will just be comparing the addresses of the vectors.
+!!	vectorclasses
+		Vector Classes compares vectors against each element, not by magnitude.
+
+length greater than 
+	xomath<bvv>
+		v0 > v1
+!!	bullet
+!!	vectorclasses
+
+length less than or equal to
+	xomath<bvv>
+		v0 <= v1
+!!	bullet
+		Note: Bullet will compare two vectors, but it will just be comparing the addresses of the vectors.
+!!	vectorclasses
+		Vector Classes compares vectors against each element, not by magnitude.
+
+length greater than or equal to
+	xomath<bvv>
+		v0 >= v1
+!!	bullet
+		Note: Bullet will compare two vectors, but it will just be comparing the addresses of the vectors.
+!!	vectorclasses
+		Vector Classes compares vectors against each element, not by magnitude.
+		
+length equal to
+	xomath<bvv>
+		v0 == v1
+	bullet<bvv>
+		v0 == v1
+!!	vectorclasses
+		Vector Classes compares vectors for equality across all elements, not together or by length.
+
+length not equal to
+	xomath<bvv>
+		v0 != v1
+	bullet<bvv>
+		v0 != v1
+!!	vectorclasses
+		Vector Classes compares vectors for equality across all elements, not together or by length.
+
+////////////////////////////////////////////////// product
+
+dot product
+	xomath<fvv>
+		v0.Dot(v1)
+	bullet<fvv>
+		v0.dot(v1)
+	vectorclasses<fvv>
+		dot_product(a, v1)
+
+cross product
+	xomath<vvv>
+		v0.Cross(v1)
+	bullet<vvv>
+		v0.cross(v1)
+	vectorclasses<vvv>
+		cross_product(a, v1)
+
+////////////////////////////////////////////////// utilities
+
+Angle between
+	xomath<fvv>
+		v0.Angle(v1)
+	bullet<fvv>
+		v0.angle(v1)
+!!	vectorclasses<fvv>
+
+Distance
+	xomath<fvv>
+		v0.Distance(v1)
+	bullet<fvv>
+		v0.distance(v1)
+!!	vectorclasses
+
+DistanceSquared
+	xomath<fvv>
+		v0.DistanceSquared(v1)
+	bullet<fvv>
+		v0.distance2(v1)
+!!	vectorclasses
+
+Lerp
+	xomath<fvvf>
+		v0.Lerp(v1, f)
+	bullet<fvvf>
+		v0.lerp(v1, f)
+!!	vectorclasses
+
+Rotate
+	xomath<fvvf>
+		v0.RotateRadians(v1, f)
+	bullet<fvvf>
+		v0.rotate(v1, f)
+!!	vectorclasses
