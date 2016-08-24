@@ -251,11 +251,11 @@ void Vector3::Lerp(const Vector3& a, const Vector3& b, float t, Vector3& outVec)
 void Vector3::RotateRadians(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec) {
     // Rodrigues' rotation formula
     // https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
-    Vector3 axv, adv;
+    Vector3 axv;
     float sinAng = Sin(angle);
     float cosAng = Cos(angle);
     Vector3::Cross(axis, v, axv);
-    Vector3::Cross(axis, v, adv);
+    float adv = Vector3::Dot(axis, v);
     outVec.Set(v * cosAng + axv * sinAng + axis * adv * (1.0f - cosAng));
 }
 

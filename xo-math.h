@@ -164,6 +164,8 @@ _XOMATH_INTERNAL_MACRO_WARNING
     // we don't need to overload new and delete unless memory alignment is required.
 #   if defined(_XO_OVERLOAD_NEW_DELETE)
 _XOMATH_INTERNAL_MACRO_WARNING
+#   else
+#   define _XO_OVERLOAD_NEW_DELETE
 #   endif
 #endif
 

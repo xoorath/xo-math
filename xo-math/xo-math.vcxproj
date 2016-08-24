@@ -116,6 +116,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AssemblerOutput>AssemblyCode</AssemblerOutput>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -169,6 +170,28 @@
     <ClInclude Include="Reference\bullet3-master\src\LinearMath\btTransform.h" />
     <ClInclude Include="Reference\bullet3-master\src\LinearMath\btTransformUtil.h" />
     <ClInclude Include="Reference\bullet3-master\src\LinearMath\btVector3.h" />
+    <ClInclude Include="Reference\vectorclass\instrset.h" />
+    <ClInclude Include="Reference\vectorclass\special\complexvec.h" />
+    <ClInclude Include="Reference\vectorclass\special\decimal.h" />
+    <ClInclude Include="Reference\vectorclass\special\quaternion.h" />
+    <ClInclude Include="Reference\vectorclass\special\ranvec1.h" />
+    <ClInclude Include="Reference\vectorclass\special\vector3d.h" />
+    <ClInclude Include="Reference\vectorclass\vectorclass.h" />
+    <ClInclude Include="Reference\vectorclass\vectorf128.h" />
+    <ClInclude Include="Reference\vectorclass\vectorf256.h" />
+    <ClInclude Include="Reference\vectorclass\vectorf256e.h" />
+    <ClInclude Include="Reference\vectorclass\vectorf512.h" />
+    <ClInclude Include="Reference\vectorclass\vectorf512e.h" />
+    <ClInclude Include="Reference\vectorclass\vectori128.h" />
+    <ClInclude Include="Reference\vectorclass\vectori256.h" />
+    <ClInclude Include="Reference\vectorclass\vectori256e.h" />
+    <ClInclude Include="Reference\vectorclass\vectori512.h" />
+    <ClInclude Include="Reference\vectorclass\vectori512e.h" />
+    <ClInclude Include="Reference\vectorclass\vectormath_common.h" />
+    <ClInclude Include="Reference\vectorclass\vectormath_exp.h" />
+    <ClInclude Include="Reference\vectorclass\vectormath_hyp.h" />
+    <ClInclude Include="Reference\vectorclass\vectormath_lib.h" />
+    <ClInclude Include="Reference\vectorclass\vectormath_trig.h" />
     <ClInclude Include="Test.h" />
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +204,9 @@
     <ClCompile Include="Reference\bullet3-master\src\LinearMath\btQuickprof.cpp" />
     <ClCompile Include="Reference\bullet3-master\src\LinearMath\btSerializer.cpp" />
     <ClCompile Include="Reference\bullet3-master\src\LinearMath\btVector3.cpp" />
+    <ClCompile Include="Reference\vectorclass\dispatch_example.cpp" />
+    <ClCompile Include="Reference\vectorclass\instrset_detect.cpp" />
+    <ClCompile Include="Reference\vectorclass\special\ranvec1.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Reference\bullet3-master\src\LinearMath\CMakeLists.txt" />

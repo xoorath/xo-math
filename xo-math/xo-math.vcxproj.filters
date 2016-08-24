@@ -26,6 +26,15 @@
     <ClCompile Include="Reference\bullet3-master\src\LinearMath\btGeometryUtil.cpp">
       <Filter>bullet3-master\src\LinearMath</Filter>
     </ClCompile>
+    <ClCompile Include="Reference\vectorclass\dispatch_example.cpp">
+      <Filter>vectorclass</Filter>
+    </ClCompile>
+    <ClCompile Include="Reference\vectorclass\instrset_detect.cpp">
+      <Filter>vectorclass</Filter>
+    </ClCompile>
+    <ClCompile Include="Reference\vectorclass\special\ranvec1.cpp">
+      <Filter>vectorclass\special</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Matrix4x4.h" />
@@ -132,6 +141,72 @@
     <ClInclude Include="Reference\bullet3-master\src\LinearMath\btGrahamScan2dConvexHull.h">
       <Filter>bullet3-master\src\LinearMath</Filter>
     </ClInclude>
+    <ClInclude Include="Reference\vectorclass\instrset.h">
+      <Filter>vectorclass</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\vectorclass.h">
+      <Filter>vectorclass</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\vectorf128.h">
+      <Filter>vectorclass</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\vectorf256.h">
+      <Filter>vectorclass</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\vectorf256e.h">
+      <Filter>vectorclass</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\vectorf512.h">
+      <Filter>vectorclass</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\vectorf512e.h">
+      <Filter>vectorclass</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\vectori128.h">
+      <Filter>vectorclass</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\vectori256.h">
+      <Filter>vectorclass</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\vectori256e.h">
+      <Filter>vectorclass</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\vectori512.h">
+      <Filter>vectorclass</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\vectori512e.h">
+      <Filter>vectorclass</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\vectormath_common.h">
+      <Filter>vectorclass</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\vectormath_exp.h">
+      <Filter>vectorclass</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\vectormath_hyp.h">
+      <Filter>vectorclass</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\vectormath_lib.h">
+      <Filter>vectorclass</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\vectormath_trig.h">
+      <Filter>vectorclass</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\special\ranvec1.h">
+      <Filter>vectorclass\special</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\special\vector3d.h">
+      <Filter>vectorclass\special</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\special\complexvec.h">
+      <Filter>vectorclass\special</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\special\decimal.h">
+      <Filter>vectorclass\special</Filter>
+    </ClInclude>
+    <ClInclude Include="Reference\vectorclass\special\quaternion.h">
+      <Filter>vectorclass\special</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="bullet3-master">
@@ -142,6 +217,12 @@
     </Filter>
     <Filter Include="bullet3-master\src\LinearMath">
       <UniqueIdentifier>{9b3c66ff-9121-4be5-8dcc-5410230596d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vectorclass">
+      <UniqueIdentifier>{722dbf0d-e499-4325-bdd9-0e9b446411e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vectorclass\special">
+      <UniqueIdentifier>{959524b0-e4e4-476b-bf7a-35507f4a8b41}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -73,7 +73,7 @@ public:
     _XOINL const Vector3& operator *= (int v);
     _XOINL const Vector3& operator *= (const class Vector2& v);
     _XOINL const Vector3& operator *= (const class Vector4& v);
-    // Converts to Vector4 and back for the mutliplication.
+    // Converts to Vector4 and back for the multiplication.
     _XOINL const Vector3& operator *= (const class Matrix4x4& v);
 
     _XOINL const Vector3& operator /= (const Vector3& v);
@@ -103,7 +103,7 @@ public:
     _XOINL Vector3 operator * (int v) const;
     _XOINL Vector3 operator * (const class Vector2& v) const;
     _XOINL Vector3 operator * (const class Vector4& v) const;
-    // Converts to Vector4 and back for the mutliplication.
+    // Converts to Vector4 and back for the multiplication.
     _XOINL Vector3 operator * (const class Matrix4x4& v) const;
 
     _XOINL Vector3 operator / (const Vector3& v) const;
