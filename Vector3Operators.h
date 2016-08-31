@@ -270,9 +270,9 @@ bool Vector3::operator == (const Vector3& v) const {
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon) && CloseEnough(z, v.z, Epsilon);
 #   endif
 }
-bool Vector3::operator == (float v) const                   { return CloseEnough(MagnitudeSquared(), v*v);}
-bool Vector3::operator == (double v) const                  { return CloseEnough(MagnitudeSquared(), (float)(v*v));}
-bool Vector3::operator == (int v) const                     { return CloseEnough(MagnitudeSquared(), (float)(v*v));}
+bool Vector3::operator == (float v) const                   { return CloseEnough(MagnitudeSquared(), v*v, Epsilon);}
+bool Vector3::operator == (double v) const                  { return CloseEnough(MagnitudeSquared(), (float)(v*v), Epsilon);}
+bool Vector3::operator == (int v) const                     { return CloseEnough(MagnitudeSquared(), (float)(v*v), Epsilon);}
 bool Vector3::operator == (const Vector2& v) const {
 #   if XO_SSE2
     // Todo: check that this is actually faster.
