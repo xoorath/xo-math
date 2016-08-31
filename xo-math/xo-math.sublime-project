@@ -62,10 +62,8 @@
 			{
 				"cmd":
 				[
-					"gcc++",
+					"g++",
 					"-std=c++11",
-					"-target",
-					"x86_64-pc-windows-gnu",
 					"-O0",
 					"-msse4.2",
 					"-o",

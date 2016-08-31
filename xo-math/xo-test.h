@@ -67,6 +67,10 @@ public:
   template<typename T>
   void ReportSuccessIfNot(T got, T expected, const char* reason);
 
+  
+  void ReportSuccessIf(float got, float expected, const char* reason);
+  void ReportSuccessIfNot(float got, float expected, const char* reason);
+
   void ReportSuccess();
   void ReportFailure(const char* reason);
 
@@ -109,6 +113,33 @@ void Test::ReportSuccessIfNot(T got, T expected, const char* reason) {
     std::cout << "mismatch expected: " << expected << " got: " << got << std::endl;
   }
 }
+
+#define _XO_TEST_ABS(f) (f >= 0.0f ? f : -f)
+#define _XO_TEST_EPSILON 0.000001f
+
+void Test::ReportSuccessIf(float got, float expected, const char* reason) {
+  if(_XO_TEST_ABS(got-expected) <= _XO_TEST_EPSILON) {
+    ReportSuccess();
+  }
+  else {
+    ReportFailure(reason);
+    std::cout << "expected: " << expected << " got: " << got << std::endl;
+  }
+}
+
+
+void Test::ReportSuccessIfNot(float got, float expected, const char* reason) {
+  if(_XO_TEST_ABS(got-expected) > _XO_TEST_EPSILON) {
+    ReportSuccess();
+  }
+  else {
+    ReportFailure(reason);
+    std::cout << "mismatch expected: " << expected << " got: " << got << std::endl;
+  }
+}
+
+#undef _XO_TEST_ABS
+#undef _XO_TEST_EPSILON
 
 void Test::ReportSuccess() {
   m_CurrentSuccess++;
