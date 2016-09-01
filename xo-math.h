@@ -170,6 +170,8 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #endif
 
 // wrap for now, so we have the option to make a faster version later.
+_XOINL float Min(float x, float y)      { return x < y ? x : y; }
+_XOINL float Max(float x, float y)      { return x > y ? x : y; }
 _XOINL float Abs(float f)               { return f > 0.0f ? f : -f; }
 _XOINL float Sqrt(float f)              { return sqrtf(f); }
 _XOINL float Sin(float f)               { return sinf(f); }
@@ -179,7 +181,11 @@ _XOINL float ASin(float f)              { return asinf(f); }
 _XOINL float ACos(float f)              { return acosf(f); }
 _XOINL float ATan(float f)              { return atanf(f); }
 _XOINL float ATan2(float y, float x)    { return atan2f(y, x); }
-_XOINL bool CloseEnough(float x, float y, float tolerance = FloatEpsilon) { return fabs(y - x) < tolerance; }
+_XOINL float Difference(float x, float y) { return Abs(x-y); }
+_XOINL
+bool CloseEnough(float x, float y, float tolerance = FloatEpsilon) {
+    return Difference(x, y) * (1.0f/tolerance) <= Min(Abs(x), Abs(y));
+}
 
 constexpr _XOINL float Square(float t)      { return t*t; }
 constexpr _XOINL double Square(double t)    { return t*t; }

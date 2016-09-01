@@ -164,8 +164,45 @@ void TestVector3Methods() {
         test.ReportSuccessIfNot(temp.IsZero(), TEST_MSG("Temp was decided to be zero when it isn't zero."));
         temp.Set(0.0f);
         test.ReportSuccessIf(temp.IsZero(), TEST_MSG("Temp was decided to be non zero when it is zero."));
+        test.ReportSuccessIfNot(temp.IsNormalized(), TEST_MSG("IsNormalized returned true for a zero vector."));
+
+        Vector3 temp2;
+        temp.Set(1.1f, 2.2f, 3.3f);
+        temp2.Set(4.4f, 5.5f, 6.6f);
+
+        test.ReportSuccessIf(Vector3::Dot(temp, temp2), 38.72f, TEST_MSG("dot product of (1.1,2.2,3.3) dot (4.4,5.5,6.6) expecetd to match known result."));
+        test.ReportSuccessIf(Vector3::Dot(temp2, temp), 38.72f, TEST_MSG("dot product of (4.4,5.5,6.6) dot (1.1,2.2,3.3) expecetd to match known result."));
+
+        test.ReportSuccessIf(temp.Dot(temp2), 38.72f, TEST_MSG("dot product of (1.1,2.2,3.3) dot (4.4,5.5,6.6) expecetd to match known result."));
+        test.ReportSuccessIf(temp2.Dot(temp), 38.72f, TEST_MSG("dot product of (4.4,5.5,6.6) dot (1.1,2.2,3.3) expecetd to match known result."));
+
+        test.ReportSuccessIf(temp.Dot(temp), temp.MagnitudeSquared(), TEST_MSG("dot product of a given vector by itself is expected to be its own magnitude squared."));
+        test.ReportSuccessIf(temp2.Dot(temp2), temp2.MagnitudeSquared(), TEST_MSG("dot product of a given vector by itself is expected to be its own magnitude squared."));
+
+        temp2 = -temp2;
+        test.ReportSuccessIf(Vector3::Dot(temp, temp2), -38.72f, TEST_MSG("dot product of (1.1,2.2,3.3) dot (-4.4,-5.5,-6.6) expecetd to match known result."));
+        test.ReportSuccessIf(Vector3::Dot(temp2, temp), -38.72f, TEST_MSG("dot product of (-4.4,-5.5,-6.6) dot (1.1,2.2,3.3) expecetd to match known result."));
+
+        test.ReportSuccessIf(temp.Dot(temp2), -38.72f, TEST_MSG("dot product of (1.1,2.2,3.3) dot (-4.4,-5.5,-6.6) expecetd to match known result."));
+        test.ReportSuccessIf(temp2.Dot(temp), -38.72f, TEST_MSG("dot product of (-4.4,-5.5,-6.6) dot (1.1,2.2,3.3) expecetd to match known result."));
+
+        temp2.Set(4.4f, 5.5f, 6.6f);
+
+        test.ReportSuccessIf(Vector3::Cross(temp, temp2), Vector3(-3.63f, 7.26f, -3.63f), TEST_MSG("dot product of (1.1,2.2,3.3) and (4.4,5.5,6.6) expected to match a known result."));
+        Vector3 temp3;
+        Vector3::Cross(temp, temp2, temp3);
+        test.ReportSuccessIf(temp3, Vector3(-3.63f, 7.26f, -3.63f), TEST_MSG("dot product of (1.1,2.2,3.3) and (4.4,5.5,6.6) expected to match a known result."));
+        test.ReportSuccessIf(temp.Cross(temp2), Vector3(-3.63f, 7.26f, -3.63f), TEST_MSG("dot product of (1.1,2.2,3.3) and (4.4,5.5,6.6) expected to match a known result."));
+
+        test.ReportSuccessIf(Vector3::Cross(temp2, temp), Vector3(3.63f, -7.26f, 3.63f), TEST_MSG("dot product of (4.4,5.5,6.6) and (1.1,2.2,3.3) expected to match a known result."));
+        Vector3::Cross(temp2, temp, temp3);
+        test.ReportSuccessIf(temp3, Vector3(3.63f, -7.26f, 3.63f), TEST_MSG("dot product of (4.4,5.5,6.6) and (1.1,2.2,3.3) expected to match a known result."));
+        test.ReportSuccessIf(temp2.Cross(temp), Vector3(3.63f, -7.26f, 3.63f), TEST_MSG("dot product of (4.4,5.5,6.6) and (1.1,2.2,3.3) expected to match a known result."));
         
-        test.ReportSuccessIfNot(norm.IsNormalized(), TEST_MSG("IsNormalized returned true for a zero vector."));
+        temp2.Set(4.4f, -5.5f, 6.6f);
+
+        test.ReportSuccessIf(Vector3::Max(temp, temp2), Vector3(4.4f, 2.2f, 6.6f), TEST_MSG("Max of two vectors is not as expected."));
+        test.ReportSuccessIf(Vector3::Min(temp, temp2), Vector3(1.1f, -5.5f, 3.3f), TEST_MSG("Min of two vectors is not as expected."));
 
     });
 }
@@ -178,7 +215,7 @@ int main() {
     cout << XO_MATH_COMPILER_INFO << endl;
 
 #if defined(XO_SSE)
-    SSE::GetAllMXCSRInfo(cout);
+    //SSE::GetAllMXCSRInfo(cout);
 #endif
 
     TestVector3Operators();

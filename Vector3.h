@@ -189,7 +189,7 @@ public:
     // See: https://en.wikipedia.org/wiki/Cross_product
     _XOINL static void Cross(const Vector3& a, const Vector3& b, Vector3& outVec);
 
-        // Return a vector with each element equal to the max of that element in and b.
+    // Return a vector with each element equal to the max of that element in and b.
     // Example: Max({1.0f, -1.0f, -1.0f}, {-1.0f, 1.0f, -1.0f}) == {1.0f, 1.0f, -1.0f}
     _XOINL static void Max(const Vector3& a, const Vector3& b, Vector3& outVec);
 
