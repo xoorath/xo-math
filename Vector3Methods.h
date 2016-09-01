@@ -229,11 +229,11 @@ void Vector3::Cross(const Vector3& a, const Vector3& b, Vector3& outVec) {
 }
 
 void Vector3::Max(const Vector3& a, const Vector3& b, Vector3& outVec) {
-    outVec.Set(a >= b ? a : b);
+    outVec.Set(a > b ? a : b);
 }
  
 void Vector3::Min(const Vector3& a, const Vector3& b, Vector3& outVec) {
-    outVec.Set(a <= b ? a : b);
+    outVec.Set(a < b ? a : b);
 }
 
 void Vector3::Lerp(const Vector3& a, const Vector3& b, float t, Vector3& outVec) {

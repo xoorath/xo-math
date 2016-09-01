@@ -199,10 +199,31 @@ void TestVector3Methods() {
         test.ReportSuccessIf(temp3, Vector3(3.63f, -7.26f, 3.63f), TEST_MSG("dot product of (4.4,5.5,6.6) and (1.1,2.2,3.3) expected to match a known result."));
         test.ReportSuccessIf(temp2.Cross(temp), Vector3(3.63f, -7.26f, 3.63f), TEST_MSG("dot product of (4.4,5.5,6.6) and (1.1,2.2,3.3) expected to match a known result."));
         
-        temp2.Set(4.4f, -5.5f, 6.6f);
 
-        test.ReportSuccessIf(Vector3::Max(temp, temp2), Vector3(4.4f, 2.2f, 6.6f), TEST_MSG("Max of two vectors is not as expected."));
-        test.ReportSuccessIf(Vector3::Min(temp, temp2), Vector3(1.1f, -5.5f, 3.3f), TEST_MSG("Min of two vectors is not as expected."));
+        test.ReportSuccessIf(Vector3::Max(temp, temp2), temp2, TEST_MSG("Max of two vectors is not as expected."));
+        test.ReportSuccessIf(Vector3::Min(temp, temp2), temp, TEST_MSG("Min of two vectors is not as expected."));
+        test.ReportSuccessIf(Vector3::Max(temp2, temp), temp2, TEST_MSG("Max of two vectors is not as expected."));
+        test.ReportSuccessIf(Vector3::Min(temp2, temp), temp, TEST_MSG("Min of two vectors is not as expected."));
+
+        Vector3::Max(temp, temp2, temp3);
+        test.ReportSuccessIf(temp3, temp2, TEST_MSG("Max of two vectors is not as expected."));
+        Vector3::Min(temp, temp2, temp3);
+        test.ReportSuccessIf(temp3, temp, TEST_MSG("Max of two vectors is not as expected."));
+
+#define _XO_LERP(t, expected, msg) \
+            test.ReportSuccessIf(Vector3::Lerp(temp, temp2, t), expected, TEST_MSG(msg)); \
+            Vector3::Lerp(temp, temp2, t, temp3); \
+            test.ReportSuccessIf(temp3, expected, TEST_MSG(msg)); \
+            test.ReportSuccessIf(temp.Lerp(temp2, t), expected, TEST_MSG(msg));
+
+        _XO_LERP(1.0f, temp2, "Lerp of 1.0 didnt return the right param.");
+        _XO_LERP(0.0f, temp, "Lerp of 0.0 didnt return the left param.");
+        _XO_LERP(0.5f, Vector3(2.75f, 3.85f, 4.95f), "Lerp of 0.5 didnt return the half way between left and right params.");
+
+#undef _XO_LERP
+
+        
+
 
     });
 }
