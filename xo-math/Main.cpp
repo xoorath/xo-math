@@ -133,7 +133,7 @@ void TestVector3Methods() {
         test.ReportSuccessIf(y, 2.2f, TEST_MSG("Get(x, y, z) did not extract a correct y value."));
         test.ReportSuccessIf(z, 3.3f, TEST_MSG("Get(x, y, z) did not extract a correct z value."));
 
-        float f[3];
+        _MM_ALIGN16 float f[3];
         temp.Get(f);
         test.ReportSuccessIf(f[0], 1.1f, TEST_MSG("Get(f) did not extract a correct x value."));
         test.ReportSuccessIf(f[1], 2.2f, TEST_MSG("Get(f) did not extract a correct y value."));
@@ -171,9 +171,13 @@ void TestVector3Methods() {
 }
 
 int main() {
+
+#if defined(XO_SSE)
+    SSE::ThrowNoExceptions();
+#endif
     cout << XO_MATH_COMPILER_INFO << endl;
 
-#if XO_SSE
+#if defined(XO_SSE)
     SSE::GetAllMXCSRInfo(cout);
 #endif
 
