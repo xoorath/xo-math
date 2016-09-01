@@ -264,6 +264,12 @@ void TestVector3Methods() {
             test.ReportSuccessIf(temp <= radius, TEST_MSG( #method " should return a sphere with a smaller than given radius.")); \
             test.ReportSuccessIf(temp2 <= radius, TEST_MSG( #method " should return a sphere with a smaller than given radius."));
 
+#define _XO_TEST_RANDOM_SPHERE_LT_GT(method, low, high) \
+            test.ReportSuccessIf(temp <= high, TEST_MSG( #method " should return a sphere with a smaller than given radius.")); \
+            test.ReportSuccessIf(temp2 <= high, TEST_MSG( #method " should return a sphere with a smaller than given radius.")); \
+            test.ReportSuccessIf(temp >= low, TEST_MSG( #method " should return a sphere with a greater than given radius.")); \
+            test.ReportSuccessIf(temp2 >= low, TEST_MSG( #method " should return a sphere with a greater than given radius."));
+
 #define _XO_TEST_RANDOM_CONE(method) \
             test.ReportSuccessIfNot(temp, Vector3::Up, TEST_MSG( #method " should return random results. we got the same vector back that we put in, which is unlikely to be correct.")); \
             test.ReportSuccessIfNot(temp2, Vector3::Up, TEST_MSG( #method " should return random results. we got the same vector back that we put in, which is unlikely to be correct.")); \
@@ -378,6 +384,37 @@ void TestVector3Methods() {
         Vector3::RandomInDistance(10.0f, temp2);
         _XO_TEST_RANDOM_SPHERE(RandomInDistance);
         _XO_TEST_RANDOM_SPHERE_LT(RandomInDistance, 10.0f);
+
+        temp = Vector3::RandomInRange(5.0f, 10.0f);
+        temp2 = Vector3::RandomInRange(5.0f, 10.0f);
+        _XO_TEST_RANDOM_SPHERE(RandomInRange);
+        _XO_TEST_RANDOM_SPHERE_LT_GT(RandomInRange, 5.0f, 10.0f);
+
+        Vector3::RandomInRange(5.0f, 10.0f, temp);
+        Vector3::RandomInRange(5.0f, 10.0f, temp2);
+        _XO_TEST_RANDOM_SPHERE(RandomInRange);
+        _XO_TEST_RANDOM_SPHERE_LT_GT(RandomInRange, 5.0f, 10.0f);
+
+#undef _XO_TEST_RANDOM_SPHERE
+#undef _XO_TEST_RANDOM_SPHERE_EQ
+#undef _XO_TEST_RANDOM_SPHERE_LT
+#undef _XO_TEST_RANDOM_SPHERE_LT_GT
+#undef _XO_TEST_RANDOM_CONE
+#undef _XO_TEST_CONE_LT
+
+        test.ReportSuccessIf(Vector3::Up.AngleRadians(Vector3::Right), HalfPI, TEST_MSG("Up and right should be pi/2 appart"));
+        test.ReportSuccessIf(Vector3::Up.AngleRadians(Vector3::Left), HalfPI, TEST_MSG("Up and left should be pi/2 appart"));
+        test.ReportSuccessIf(Vector3::AngleRadians(Vector3::Up, Vector3::Right), HalfPI, TEST_MSG("Up and right should be pi/2 appart"));
+        test.ReportSuccessIf(Vector3::Up.AngleRadians(Vector3::Down), PI, TEST_MSG("Up and down should be pi appart"));
+        test.ReportSuccessIf(Vector3::AngleRadians(Vector3::Up, Vector3::Down), PI, TEST_MSG("Up and down should be pi appart"));
+
+        test.ReportSuccessIf(Vector3::Up.AngleDegrees(Vector3::Right), 90.0f, TEST_MSG("Up and right should be 90 degrees appart"));
+        test.ReportSuccessIf(Vector3::Up.AngleDegrees(Vector3::Left), 90.0f, TEST_MSG("Up and left should be 90 degrees appart"));
+        test.ReportSuccessIf(Vector3::AngleDegrees(Vector3::Up, Vector3::Right), 90.0f, TEST_MSG("Up and right should be 90 degrees appart"));
+        test.ReportSuccessIf(Vector3::Up.AngleDegrees(Vector3::Down), 180.0f, TEST_MSG("Up and down should be 180 degrees appart"));
+        test.ReportSuccessIf(Vector3::AngleDegrees(Vector3::Up, Vector3::Down), 180.0f, TEST_MSG("Up and down should be 180 degrees appart"));
+
+        test.ReportSuccessIf(Vector3::DistanceSquared(Vector3::One, -Vector3::One), 3.464102f*3.464102f, TEST_MSG("(1,1,1) and (-1,-1,-1) should be 3.464102^2 units apart."));
 
     });
 }
