@@ -199,7 +199,7 @@ void TestVector3Methods() {
         test.ReportSuccessIf(temp3, Vector3(3.63f, -7.26f, 3.63f), TEST_MSG("dot product of (4.4,5.5,6.6) and (1.1,2.2,3.3) expected to match a known result."));
         test.ReportSuccessIf(temp2.Cross(temp), Vector3(3.63f, -7.26f, 3.63f), TEST_MSG("dot product of (4.4,5.5,6.6) and (1.1,2.2,3.3) expected to match a known result."));
         
-
+        // todo: change behaviour and test to reflect the min/max we get from hlsl/glsl
         test.ReportSuccessIf(Vector3::Max(temp, temp2), temp2, TEST_MSG("Max of two vectors is not as expected."));
         test.ReportSuccessIf(Vector3::Min(temp, temp2), temp, TEST_MSG("Min of two vectors is not as expected."));
         test.ReportSuccessIf(Vector3::Max(temp2, temp), temp2, TEST_MSG("Max of two vectors is not as expected."));
@@ -224,6 +224,160 @@ void TestVector3Methods() {
 
         
 
+#define _XO_ROTATE_RADIANS(input, axis, angle, expected, msg) \
+            temp = input; \
+            test.ReportSuccessIf(Vector3::RotateRadians(temp, axis, angle), expected, TEST_MSG(msg)); \
+            Vector3::RotateRadians(temp, axis, angle, temp3); \
+            test.ReportSuccessIf(temp3, expected, TEST_MSG(msg)); \
+            test.ReportSuccessIf(temp.RotateRadians(axis, angle), expected, TEST_MSG(msg)); \
+
+        _XO_ROTATE_RADIANS(Vector3::Up, Vector3::Right, HalfPI, Vector3::Forward, "Up rotated pi/2 radians by the right axis should face forward.");
+        _XO_ROTATE_RADIANS(Vector3::Up, Vector3::Right, -HalfPI, Vector3::Backward, "Up rotated -pi/2 radians by the right axis should face backward.");
+        _XO_ROTATE_RADIANS(Vector3::Up*2.0f, Vector3::Right, HalfPI, Vector3::Forward*2.0f, "Up rotated pi/2 radians by the right axis should face forward.");
+        _XO_ROTATE_RADIANS(Vector3::Up*2.0f, Vector3::Right, -HalfPI, Vector3::Backward*2.0f, "Up rotated -pi/2 radians by the right axis should face backward.");
+
+#undef _XO_ROTATE_RADIANS
+
+#define _XO_ROTATE_DEGREES(input, axis, angle, expected, msg) \
+            temp = input; \
+            test.ReportSuccessIf(Vector3::RotateDegrees(temp, axis, angle), expected, TEST_MSG(msg)); \
+            Vector3::RotateDegrees(temp, axis, angle, temp3); \
+            test.ReportSuccessIf(temp3, expected, TEST_MSG(msg)); \
+            test.ReportSuccessIf(temp.RotateDegrees(axis, angle), expected, TEST_MSG(msg)); \
+
+        _XO_ROTATE_DEGREES(Vector3::Up, Vector3::Right, 90.0f, Vector3::Forward, "Up rotated 90 degrees radians by the right axis should face forward.");
+        _XO_ROTATE_DEGREES(Vector3::Up, Vector3::Right, -90.0f, Vector3::Backward, "Up rotated -90 degrees radians by the right axis should face backward.");
+        _XO_ROTATE_DEGREES(Vector3::Up*2.0f, Vector3::Right, 90.0f, Vector3::Forward*2.0f, "Up rotated 90 degrees radians by the right axis should face forward.");
+        _XO_ROTATE_DEGREES(Vector3::Up*2.0f, Vector3::Right, -90.0f, Vector3::Backward*2.0f, "Up rotated -90 degrees radians by the right axis should face backward.");
+#undef _XO_ROTATE_DEGREES
+
+
+    float tempAngle;
+#define _XO_TEST_RANDOM_SPHERE(method) \
+            test.ReportSuccessIfNot(temp, temp2, TEST_MSG( #method " should return random results. We got the same vector twice, which is unlikely to be correct.")); \
+
+#define _XO_TEST_RANDOM_SPHERE_EQ(method, radius) \
+            test.ReportSuccessIf(temp == radius, TEST_MSG( #method " should return a sphere matching a known radius.")); \
+            test.ReportSuccessIf(temp2 == radius, TEST_MSG( #method " should return a sphere matching a known radius."));
+
+#define _XO_TEST_RANDOM_SPHERE_LT(method, radius) \
+            test.ReportSuccessIf(temp <= radius, TEST_MSG( #method " should return a sphere with a smaller than given radius.")); \
+            test.ReportSuccessIf(temp2 <= radius, TEST_MSG( #method " should return a sphere with a smaller than given radius."));
+
+#define _XO_TEST_RANDOM_CONE(method) \
+            test.ReportSuccessIfNot(temp, Vector3::Up, TEST_MSG( #method " should return random results. we got the same vector back that we put in, which is unlikely to be correct.")); \
+            test.ReportSuccessIfNot(temp2, Vector3::Up, TEST_MSG( #method " should return random results. we got the same vector back that we put in, which is unlikely to be correct.")); \
+            test.ReportSuccessIfNot(temp, temp2, TEST_MSG( #method " should return random results. We got the same vector twice, which is unlikely to be correct.")); \
+            test.ReportSuccessIf(temp.MagnitudeSquared(), Vector3::Up.MagnitudeSquared(), TEST_MSG( #method " gave us a vector with a different length than the input.")); \
+            test.ReportSuccessIf(temp2.MagnitudeSquared(), Vector3::Up.MagnitudeSquared(), TEST_MSG( #method " gave us a vector with a different length than the input."));
+
+#define _XO_TEST_CONE_EQ(method, angle) \
+            test.ReportSuccessIf(temp.AngleRadians(Vector3::Up), angle, TEST_MSG( #method " did not respect the provided angle requested for a given cone.")); \
+            test.ReportSuccessIf(temp2.AngleRadians(Vector3::Up), angle, TEST_MSG( #method " did not respect the provided angle requested for a given cone."));
+
+#define _XO_TEST_CONE_LT(method, angle) \
+            test.ReportSuccessIf(temp.AngleRadians(Vector3::Up) <= angle+FloatEpsilon, TEST_MSG( #method " did not respect the provided angle requested for a given cone.")); \
+            test.ReportSuccessIf(temp2.AngleRadians(Vector3::Up) <= angle+FloatEpsilon, TEST_MSG( #method " did not respect the provided angle requested for a given cone."));
+
+        temp = Vector3::RandomOnConeRadians(Vector3::Up, HalfPI/2);
+        temp2 = Vector3::RandomOnConeRadians(Vector3::Up, HalfPI/2);
+        _XO_TEST_RANDOM_CONE(RandomOnConeRadians);
+        _XO_TEST_CONE_EQ(RandomOnConeRadians, HalfPI/2.0f);
+
+        Vector3::RandomOnConeRadians(Vector3::Up, HalfPI/2, temp);
+        Vector3::RandomOnConeRadians(Vector3::Up, HalfPI/2, temp2);
+        _XO_TEST_RANDOM_CONE(RandomOnConeRadians);
+        _XO_TEST_CONE_EQ(RandomOnConeRadians, HalfPI/2.0f);
+
+        temp = Vector3::Up.RandomOnConeRadians(HalfPI/2.0f);
+        temp2 = Vector3::Up.RandomOnConeRadians(HalfPI/2.0f);
+        _XO_TEST_RANDOM_CONE(RandomOnConeRadians);
+        _XO_TEST_CONE_EQ(RandomOnConeRadians, HalfPI/2.0f);
+
+        temp = Vector3::RandomInConeRadians(Vector3::Up, HalfPI/2.0f);
+        temp2 = Vector3::RandomInConeRadians(Vector3::Up, HalfPI/2.0f);
+        _XO_TEST_RANDOM_CONE(RandomInConeRadians);
+        _XO_TEST_CONE_LT(RandomInConeRadians, HalfPI/2.0f);
+
+        Vector3::RandomInConeRadians(Vector3::Up, HalfPI/2.0f, temp);
+        Vector3::RandomInConeRadians(Vector3::Up, HalfPI/2.0f, temp2);
+        _XO_TEST_RANDOM_CONE(RandomInConeRadians);
+        _XO_TEST_CONE_LT(RandomInConeRadians, HalfPI/2.0f);
+
+        temp = Vector3::Up.RandomInConeRadians(HalfPI/2.0f);
+        temp2 = Vector3::Up.RandomInConeRadians(HalfPI/2.0f);
+        _XO_TEST_RANDOM_CONE(RandomInConeRadians);
+        _XO_TEST_CONE_LT(RandomInConeRadians, HalfPI/2.0f);
+
+        temp = Vector3::RandomOnConeDegrees(Vector3::Up, 45.0f);
+        temp2 = Vector3::RandomOnConeDegrees(Vector3::Up, 45.0f);
+        _XO_TEST_RANDOM_CONE(RandomOnConeDegrees);
+        _XO_TEST_CONE_EQ(RandomOnConeDegrees, 45.0f);
+
+        Vector3::RandomOnConeDegrees(Vector3::Up, 45.0f, temp);
+        Vector3::RandomOnConeDegrees(Vector3::Up, 45.0f, temp2);
+        _XO_TEST_RANDOM_CONE(RandomOnConeDegrees);
+        _XO_TEST_CONE_EQ(RandomOnConeDegrees, 45.0f);
+
+        temp = Vector3::Up.RandomOnConeDegrees(45.0f);
+        temp2 = Vector3::Up.RandomOnConeDegrees(45.0f);
+        _XO_TEST_RANDOM_CONE(RandomOnConeDegrees);
+        _XO_TEST_CONE_EQ(RandomOnConeDegrees, 45.0f);
+
+        temp = Vector3::RandomInConeDegrees(Vector3::Up, 45.0f);
+        temp2 = Vector3::RandomInConeDegrees(Vector3::Up, 45.0f);
+        _XO_TEST_RANDOM_CONE(RandomInConeDegrees);
+        _XO_TEST_CONE_LT(RandomInConeDegrees, 45.0f);
+
+        Vector3::RandomInConeDegrees(Vector3::Up, 45.0f, temp);
+        Vector3::RandomInConeDegrees(Vector3::Up, 45.0f, temp2);
+        _XO_TEST_RANDOM_CONE(RandomInConeDegrees);
+        _XO_TEST_CONE_LT(RandomInConeDegrees, 45.0f);
+
+        temp = Vector3::Up.RandomInConeDegrees(45.0f);
+        temp2 = Vector3::Up.RandomInConeDegrees(45.0f);
+        _XO_TEST_RANDOM_CONE(RandomInConeDegrees);
+        _XO_TEST_CONE_LT(RandomInConeDegrees, 45.0f);
+
+        temp = Vector3::RandomOnSphere();
+        temp2 = Vector3::RandomOnSphere();
+        _XO_TEST_RANDOM_SPHERE(RandomOnSphere);
+        _XO_TEST_RANDOM_SPHERE_EQ(RandomOnSphere, 1.0f);
+
+        Vector3::RandomOnSphere(temp);
+        Vector3::RandomOnSphere(temp2);
+        _XO_TEST_RANDOM_SPHERE(RandomOnSphere);
+        _XO_TEST_RANDOM_SPHERE_EQ(RandomOnSphere, 1.0f);
+
+        temp = Vector3::RandomInSphere();
+        temp2 = Vector3::RandomInSphere();
+        _XO_TEST_RANDOM_SPHERE(RandomInSphere);
+        _XO_TEST_RANDOM_SPHERE_LT(RandomInSphere, 1.0f);
+
+        Vector3::RandomInSphere(temp);
+        Vector3::RandomInSphere(temp2);
+        _XO_TEST_RANDOM_SPHERE(RandomInSphere);
+        _XO_TEST_RANDOM_SPHERE_LT(RandomInSphere, 1.0f);
+
+        temp = Vector3::RandomAtDistance(10.0f);
+        temp2 = Vector3::RandomAtDistance(10.0f);
+        _XO_TEST_RANDOM_SPHERE(RandomAtDistance);
+        _XO_TEST_RANDOM_SPHERE_EQ(RandomAtDistance, 10.0f);
+
+        Vector3::RandomAtDistance(10.0f, temp);
+        Vector3::RandomAtDistance(10.0f, temp2);
+        _XO_TEST_RANDOM_SPHERE(RandomAtDistance);
+        _XO_TEST_RANDOM_SPHERE_EQ(RandomAtDistance, 10.0f);
+
+        temp = Vector3::RandomInDistance(10.0f);
+        temp2 = Vector3::RandomInDistance(10.0f);
+        _XO_TEST_RANDOM_SPHERE(RandomInDistance);
+        _XO_TEST_RANDOM_SPHERE_LT(RandomInDistance, 10.0f);
+
+        Vector3::RandomInDistance(10.0f, temp);
+        Vector3::RandomInDistance(10.0f, temp2);
+        _XO_TEST_RANDOM_SPHERE(RandomInDistance);
+        _XO_TEST_RANDOM_SPHERE_LT(RandomInDistance, 10.0f);
 
     });
 }
