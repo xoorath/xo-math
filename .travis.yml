@@ -24,3 +24,5 @@ matrix:
 
 script:
   - cmake -DCMAKE_CXX_COMPILER=$COMPILER
+  - ls xo-math
+  - xo-math/a.out
