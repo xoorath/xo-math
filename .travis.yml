@@ -13,7 +13,8 @@ matrix:
             - clang-3.7
       env: COMPILER=clang++-3.7
       script:
-        - clang++ -std=c++11 -O0 -msse4.2 -o $TRAVIS_BUILD_DIR/xo-math/build/a.out $TRAVIS_BUILD_DIR/xo-math/main.cpp
+        - ls /home/travis/build/xoorath/xo-math/xo-math/
+        - clang++ -std=c++11 -O0 -msse4.2 -o $TRAVIS_BUILD_DIR/xo-math/build/a.out $TRAVIS_BUILD_DIR/xo-math/Main.cpp
         - $TRAVIS_BUILD_DIR/xo-math/build/a.out
     # - compiler: gcc
     #   addons:
