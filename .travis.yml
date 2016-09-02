@@ -15,7 +15,6 @@ addons:
 language: cpp
 
 script:
-  - ls $TRAVIS_BUILD_DIR
-  - ls $TRAVIS_BUILD_DIR/xo-math
+  - cd $TRAVIS_BUILD_DIR
   - clang++ -std=c++11 -O0 -msse4.2 -o $TRAVIS_BUILD_DIR/xo-math/build/a.out $TRAVIS_BUILD_DIR/xo-math/Main.cpp
   - g++ -std=c++11 -O0 -msse4.2 -o $TRAVIS_BUILD_DIR/xo-math/build/a.out $TRAVIS_BUILD_DIR/xo-math/Main.cpp
