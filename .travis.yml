@@ -2,9 +2,6 @@ sudo: required
 dist: trusty
 language: cpp
 
-services:
-  - docker
-
 matrix:
   include:
     - compiler: clang
@@ -16,15 +13,18 @@ matrix:
           packages:
             - clang-3.7
       env: COMPILER=clang++-3.7
-      script:
-        - ls /home/travis/build/xoorath/xo-math/xo-math/
-        - docker run clang++ -std=c++11 -O0 -msse4.2 -o $TRAVIS_BUILD_DIR/xo-math/build/a.out $TRAVIS_BUILD_DIR/xo-math/Main.cpp
-        - $TRAVIS_BUILD_DIR/xo-math/build/a.out
-    # - compiler: gcc
-    #   addons:
-    #     apt:
-    #       sources:
-    #         - ubuntu-toolchain-r-test
-    #       packages:
-    #         - g++-5
-    #   env: COMPILER=g++-5
+
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env: COMPILER=g++-5
+
+script:
+  - cmake -DCMAKE_CXX_COMPILER=$COMPILER
+  - make
+  - ls xo-math
+  - xo-math/a.out
