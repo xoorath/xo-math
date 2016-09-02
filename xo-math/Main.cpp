@@ -533,15 +533,16 @@ int main() {
     cout << XO_MATH_COMPILER_INFO << endl;
 
 #if defined(XO_SSE)
-    //SSE::GetAllMXCSRInfo(cout);
+    SSE::GetAllMXCSRInfo(cout);
 #endif
 
-    //TestVector3Operators();
-    //TestVector3Methods();
+    TestVector3Operators();
+    TestVector3Methods();
     TestVector4Operators();
 
 #if defined(_MSC_VER)
     system("pause");
 #endif
-    return 0;
+
+    return test.GetTotalFailures();
 }
