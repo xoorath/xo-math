@@ -23,5 +23,4 @@ matrix:
       env: COMPILER=clang++-3.7
 
 script:
-  - cmake
-  - make
+  - cmake -DCMAKE_CXX_COMPILER=$COMPILER
