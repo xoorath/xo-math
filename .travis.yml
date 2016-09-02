@@ -21,3 +21,7 @@ matrix:
           packages:
             - clang-3.7
       env: COMPILER=clang++-3.7
+
+script:
+  - cmake
+  - make
