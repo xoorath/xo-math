@@ -133,7 +133,7 @@ void TestVector3Methods() {
         test.ReportSuccessIf(y, 2.2f, TEST_MSG("Get(x, y, z) did not extract a correct y value."));
         test.ReportSuccessIf(z, 3.3f, TEST_MSG("Get(x, y, z) did not extract a correct z value."));
 
-        _MM_ALIGN16 float f[3];
+        _MM_ALIGN16 float f[4];
         temp.Get(f);
         test.ReportSuccessIf(f[0], 1.1f, TEST_MSG("Get(f) did not extract a correct x value."));
         test.ReportSuccessIf(f[1], 2.2f, TEST_MSG("Get(f) did not extract a correct y value."));
@@ -148,7 +148,7 @@ void TestVector3Methods() {
         test.ReportSuccessIf(temp.MagnitudeSquared(), knownMagSq, TEST_MSG("Magnitude squared did not match the knownMagSq"));
         test.ReportSuccessIf(temp.Magnitude(), knownMag, TEST_MSG("Magnitude did not match the knownMag"));
 
-        float knownNormalization[3] = {0.267261, 0.534523, 0.801784};
+        float knownNormalization[3] = {0.267261f, 0.534523f, 0.801784f};
         auto norm = temp.Normalized();
         test.ReportSuccessIfNot(norm, temp, TEST_MSG("temp.Normalized should not modify temp in any way."));
         test.ReportSuccessIf(norm.x, knownNormalization[0], TEST_MSG("Normalized didn't produce a known x value for its normalized input."));
@@ -252,7 +252,6 @@ void TestVector3Methods() {
 #undef _XO_ROTATE_DEGREES
 
 
-    float tempAngle;
 #define _XO_TEST_RANDOM_SPHERE(method) \
             test.ReportSuccessIfNot(temp, temp2, TEST_MSG( #method " should return random results. We got the same vector twice, which is unlikely to be correct.")); \
 

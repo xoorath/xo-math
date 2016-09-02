@@ -141,77 +141,9 @@
     <ClInclude Include="..\Vector4Methods.h" />
     <ClInclude Include="..\Vector4Operators.h" />
     <ClInclude Include="..\xo-math.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btAabbUtil2.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btAlignedAllocator.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btAlignedObjectArray.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btConvexHull.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btConvexHullComputer.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btCpuFeatureUtility.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btDefaultMotionState.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btGeometryUtil.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btGrahamScan2dConvexHull.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btHashMap.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btIDebugDraw.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btList.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btMatrix3x3.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btMatrixX.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btMinMax.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btMotionState.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btPolarDecomposition.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btPoolAllocator.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btQuadWord.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btQuaternion.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btQuickprof.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btRandom.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btScalar.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btSerializer.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btSpatialAlgebra.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btStackAlloc.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btTransform.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btTransformUtil.h" />
-    <ClInclude Include="Reference\bullet3-master\src\LinearMath\btVector3.h" />
-    <ClInclude Include="Reference\vectorclass\instrset.h" />
-    <ClInclude Include="Reference\vectorclass\special\complexvec.h" />
-    <ClInclude Include="Reference\vectorclass\special\decimal.h" />
-    <ClInclude Include="Reference\vectorclass\special\quaternion.h" />
-    <ClInclude Include="Reference\vectorclass\special\ranvec1.h" />
-    <ClInclude Include="Reference\vectorclass\special\vector3d.h" />
-    <ClInclude Include="Reference\vectorclass\vectorclass.h" />
-    <ClInclude Include="Reference\vectorclass\vectorf128.h" />
-    <ClInclude Include="Reference\vectorclass\vectorf256.h" />
-    <ClInclude Include="Reference\vectorclass\vectorf256e.h" />
-    <ClInclude Include="Reference\vectorclass\vectorf512.h" />
-    <ClInclude Include="Reference\vectorclass\vectorf512e.h" />
-    <ClInclude Include="Reference\vectorclass\vectori128.h" />
-    <ClInclude Include="Reference\vectorclass\vectori256.h" />
-    <ClInclude Include="Reference\vectorclass\vectori256e.h" />
-    <ClInclude Include="Reference\vectorclass\vectori512.h" />
-    <ClInclude Include="Reference\vectorclass\vectori512e.h" />
-    <ClInclude Include="Reference\vectorclass\vectormath_common.h" />
-    <ClInclude Include="Reference\vectorclass\vectormath_exp.h" />
-    <ClInclude Include="Reference\vectorclass\vectormath_hyp.h" />
-    <ClInclude Include="Reference\vectorclass\vectormath_lib.h" />
-    <ClInclude Include="Reference\vectorclass\vectormath_trig.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Reference\bullet3-master\src\LinearMath\btAlignedAllocator.cpp" />
-    <ClCompile Include="Reference\bullet3-master\src\LinearMath\btConvexHull.cpp" />
-    <ClCompile Include="Reference\bullet3-master\src\LinearMath\btConvexHullComputer.cpp" />
-    <ClCompile Include="Reference\bullet3-master\src\LinearMath\btGeometryUtil.cpp" />
-    <ClCompile Include="Reference\bullet3-master\src\LinearMath\btPolarDecomposition.cpp" />
-    <ClCompile Include="Reference\bullet3-master\src\LinearMath\btQuickprof.cpp" />
-    <ClCompile Include="Reference\bullet3-master\src\LinearMath\btSerializer.cpp" />
-    <ClCompile Include="Reference\bullet3-master\src\LinearMath\btVector3.cpp" />
-    <ClCompile Include="Reference\vectorclass\dispatch_example.cpp" />
-    <ClCompile Include="Reference\vectorclass\instrset_detect.cpp" />
-    <ClCompile Include="Reference\vectorclass\special\ranvec1.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Reference\bullet3-master\src\LinearMath\CMakeLists.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Reference\bullet3-master\src\LinearMath\premake4.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
