@@ -5,5 +5,5 @@ compiler:
   - gcc
 
 script: 
-  - clang++ -std=c++11 -O0 -msse4.2 -o xo-math/build/a.out xo-math/main.cpp
-  - g++ -std=c++11 -O0 -msse4.2 -o xo-math/build/a.out xo-math/main.cpp
+  - clang++ -std=c++11 -O0 -msse4.2 -o ./xo-math/build/a.out ./xo-math/main.cpp
+  - g++ -std=c++11 -O0 -msse4.2 -o ./xo-math/build/a.out ./xo-math/main.cpp
