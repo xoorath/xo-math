@@ -414,6 +414,11 @@ void TestVector3Methods() {
         test.ReportSuccessIf(Vector3::AngleDegrees(Vector3::Up, Vector3::Down), 180.0f, TEST_MSG("Up and down should be 180 degrees appart"));
 
         test.ReportSuccessIf(Vector3::DistanceSquared(Vector3::One, -Vector3::One), 3.464102f*3.464102f, TEST_MSG("(1,1,1) and (-1,-1,-1) should be 3.464102^2 units apart."));
+        test.ReportSuccessIf(Vector3::DistanceSquared(-Vector3::One, Vector3::One), 3.464102f*3.464102f, TEST_MSG("(-1,-1,-1) and (1,1,1) should be 3.464102^2 units apart."));
+        test.ReportSuccessIf(Vector3::DistanceSquared(Vector3::One, Vector3::One), 0, TEST_MSG("(1,1,1) and (1,1,1) should be 0 units apart."));
+        test.ReportSuccessIf(Vector3::Distance(Vector3::One, -Vector3::One), 3.464102f, TEST_MSG("(1,1,1) and (-1,-1,-1) should be 3.464102 units apart."));
+        test.ReportSuccessIf(Vector3::Distance(-Vector3::One, Vector3::One), 3.464102f, TEST_MSG("(-1,-1,-1) and (1,1,1) should be 3.464102 units apart."));
+        test.ReportSuccessIf(Vector3::Distance(Vector3::One, Vector3::One), 0, TEST_MSG("(1,1,1) and (1,1,1) should be 0 units apart."));
 
     });
 }
