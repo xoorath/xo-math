@@ -5,7 +5,10 @@
 using std::cout;
 using std::endl;
 #include "../xo-math.h"
-using namespace xo::math;
+using xo::math::Sqrt;
+using xo::math::FloatEpsilon;
+using xo::math::HalfPI;
+using xo::math::PI;
 
 #include "xo-test.h"
 
@@ -15,6 +18,8 @@ Test test;
 
 void TestVector3Operators() {
     test("Vector3 Operators", []{
+        using xo::math::Vector3;
+
         Vector3 left    = Vector3(-1.1f, 2.2f, 0.33f); // mag: 2.481713056564
         Vector3 right   = Vector3(11.1f, -0.2f, -3.33f); // mag: 11.5905
         Vector3 tempL(left);
@@ -108,6 +113,7 @@ void TestVector3Operators() {
 
 void TestVector3Methods() {
     test("Vector3 Methods", []{
+        using xo::math::Vector3;
         test.ReportSuccessIf(Vector3(1.1f), Vector3(1.1f, 1.1f, 1.1f), TEST_MSG("Constructor (float) did not set all elements."));
         test.ReportSuccessIf(Vector3(1.0f, 1.0f, 1.0f), Vector3::One, TEST_MSG("Constructor (x, y, z) did not set all elements."));
         test.ReportSuccessIf(Vector3(Vector3(1.0f, 1.0f, 1.0f)), Vector3::One, TEST_MSG("Copy constructor (Vector3) did not copy as expected."));
@@ -115,8 +121,8 @@ void TestVector3Methods() {
         __m128 m = _mm_set_ps1(1.1f);
         test.ReportSuccessIf(Vector3(m), Vector3(1.1f, 1.1f, 1.1f), TEST_MSG("Constructor (__m128) did not set all elements."));
 #endif
-        test.ReportSuccessIf(Vector3(Vector4(1.1f, 2.2f, 3.3f, 4.4f)), Vector3(1.1f, 2.2f, 3.3f), TEST_MSG("Constructor(Vector4) didn't set all elements as expected"));
-        test.ReportSuccessIf(Vector3(Vector2(1.1f, 2.2f)), Vector3(1.1f, 2.2f, 0.0f), TEST_MSG("Constructor(Vector2) didn't set all elements as expected"));
+        test.ReportSuccessIf(Vector3(xo::math::Vector4(1.1f, 2.2f, 3.3f, 4.4f)), Vector3(1.1f, 2.2f, 3.3f), TEST_MSG("Constructor(Vector4) didn't set all elements as expected"));
+        test.ReportSuccessIf(Vector3(xo::math::Vector2(1.1f, 2.2f)), Vector3(1.1f, 2.2f, 0.0f), TEST_MSG("Constructor(Vector2) didn't set all elements as expected"));
 
         Vector3 temp;
         test.ReportSuccessIf(temp.Set(1.1f, 2.2f, 3.3f), Vector3(1.1f, 2.2f, 3.3f), TEST_MSG("Set(x, y, z) did not set all elements."));
@@ -199,7 +205,7 @@ void TestVector3Methods() {
         test.ReportSuccessIf(temp3, Vector3(3.63f, -7.26f, 3.63f), TEST_MSG("dot product of (4.4,5.5,6.6) and (1.1,2.2,3.3) expected to match a known result."));
         test.ReportSuccessIf(temp2.Cross(temp), Vector3(3.63f, -7.26f, 3.63f), TEST_MSG("dot product of (4.4,5.5,6.6) and (1.1,2.2,3.3) expected to match a known result."));
         
-        // todo: change behaviour and test to reflect the min/max we get from hlsl/glsl
+        // todo: change behavior and test to reflect the min/max we get from hlsl/glsl
         test.ReportSuccessIf(Vector3::Max(temp, temp2), temp2, TEST_MSG("Max of two vectors is not as expected."));
         test.ReportSuccessIf(Vector3::Min(temp, temp2), temp, TEST_MSG("Min of two vectors is not as expected."));
         test.ReportSuccessIf(Vector3::Max(temp2, temp), temp2, TEST_MSG("Max of two vectors is not as expected."));
@@ -423,10 +429,106 @@ void TestVector3Methods() {
     });
 }
 
+void TestVector4Operators() {
+    test("Vector4 Operators", [] {
+        using xo::math::Vector4;
+
+        Vector4 temp = Vector4(-1.1f, 2.2f, 0.33f, 44.0f); // mag: 44.0699
+        Vector4 temp2 = Vector4(11.1f, -0.2f, -3.33f, -0.04f); // mag: 11.5905
+        Vector4 temp3(temp);
+
+        test.ReportSuccessIf(temp[0], -1.1f, TEST_MSG("extracting the x value from a vector did not produce what we expected."));
+        test.ReportSuccessIf(temp[1], 2.2f, TEST_MSG("extracting the y value from a vector did not produce what we expected."));
+        test.ReportSuccessIf(temp[2], 0.33f, TEST_MSG("extracting the z value from a vector did not produce what we expected."));
+        test.ReportSuccessIf(temp[3], 44.0f, TEST_MSG("extracting the z value from a vector did not produce what we expected."));
+
+        temp3[0] = 1.0f;
+        temp3[1] = 2.0f;
+        temp3[2] = 3.0f;
+        temp3[3] = 4.0f;
+
+        test.ReportSuccessIf(temp3[0], 1.0f, TEST_MSG("operator [] failed to set an element."));
+        test.ReportSuccessIf(temp3[1], 2.0f, TEST_MSG("operator [] failed to set an element."));
+        test.ReportSuccessIf(temp3[2], 3.0f, TEST_MSG("operator [] failed to set an element."));
+        test.ReportSuccessIf(temp3[3], 4.0f, TEST_MSG("operator [] failed to set an element."));
+
+        const float leftKnownMag = Sqrt(temp[0] * temp[0] + temp[1] * temp[1] + temp[2] * temp[2] + temp[3] * temp[3]);
+
+    #define _XO_BASIC_OP(op, ...) \
+            test.ReportSuccessIf(   temp op temp2, Vector4(__VA_ARGS__), TEST_MSG("We expected this vec" #op "vec to be equal to the expected input param."));\
+            test.ReportSuccessIfNot(temp op temp2, Vector4(1.0f, 2.0f, 3.0f, 4.0f), TEST_MSG("We expected this vec" #op "vec to be not equal to the expected input param."));
+
+        _XO_BASIC_OP(+, 10.0f, 2.0f, -3.0f, 43.96f);
+        _XO_BASIC_OP(-, -12.2f, 2.4f, 3.66f, 44.04f);
+        _XO_BASIC_OP(*, -12.21f, -0.44f, -1.0989f, -1.76f);
+        _XO_BASIC_OP(/ , -0.0990990991f, -11.0f, -0.0990990991f, -1100.0f);
+    #undef _XO_BASIC_OP
+
+    #define _XO_BASIC_OPEQ(op, ...) \
+            temp3 = temp; \
+            temp3 op temp2;\
+            test.ReportSuccessIf(   temp3, Vector4(__VA_ARGS__), TEST_MSG("We expected this vec" #op "vec to be equal to the expected input param.")); \
+            test.ReportSuccessIfNot(temp3, Vector4(1.0f, 2.0f, 3.0f, 4.0f), TEST_MSG("We expected this vec" #op "vec to be not equal to the expected input param."));
+
+        _XO_BASIC_OPEQ(+=, 10.0f, 2.0f, -3.0f, 43.96f);
+        _XO_BASIC_OPEQ(-=, -12.2f, 2.4f, 3.66f, 44.04f);
+        _XO_BASIC_OPEQ(*=, -12.21f, -0.44f, -1.0989f, -1.76f);
+        _XO_BASIC_OPEQ(/=, -0.0990990991f, -11.0f, -0.0990990991f, -1100.0f);
+    #undef _XO_BASIC_OPEQ
+
+        test.ReportSuccessIf(-temp, Vector4(1.1f, -2.2f, -0.33f, -44.0f), TEST_MSG("We expected -vec to be equal to the expected input param"));
+        test.ReportSuccessIf(~temp, Vector4(44.0f, 0.33f, 2.2f, -1.1f), TEST_MSG("We expected ~vec to be equal to the expected input param"));
+
+    #define _XO_BASIC_COMPARE_OP(op, expected) \
+            test.ReportSuccessIf(temp op temp2, expected, TEST_MSG("We expected this vec" #op "vec to be equal to the expected input param"));
+
+        _XO_BASIC_COMPARE_OP(< , false);
+        _XO_BASIC_COMPARE_OP(> , true);
+        _XO_BASIC_COMPARE_OP(<= , false);
+        _XO_BASIC_COMPARE_OP(>= , true);
+        _XO_BASIC_COMPARE_OP(== , false);
+        _XO_BASIC_COMPARE_OP(!= , true);
+
+        test.ReportSuccessIf(temp >= temp, true, TEST_MSG(">= failed. Left is equal to left."));
+        test.ReportSuccessIf(temp <= temp, true, TEST_MSG("<= failed. Left is equal to left."));
+        test.ReportSuccessIf(temp2 <= temp, true, TEST_MSG("<= failed. Right should have a larger magnitude than left."));
+        test.ReportSuccessIf(temp >= temp2, true, TEST_MSG("<= failed. Right should have a larger magnitude than left."));
+        test.ReportSuccessIf(temp == temp, true, TEST_MSG("== failed. Left should be equal to left."));
+        test.ReportSuccessIf(temp2 == temp2, true, TEST_MSG("== failed. Right should be equal to right."));
+        test.ReportSuccessIf(temp != temp, false, TEST_MSG("!= failed. Left should be equal to left."));
+        test.ReportSuccessIf(temp2 != temp2, false, TEST_MSG("!= failed. Right should be equal to right."));
+    #undef _XO_BASIC_COMPARE_OP
+
+        const float rightKnownMag = 11.5905f;
+
+        test.ReportSuccessIf(temp < leftKnownMag, false, TEST_MSG("Vector3<float failed. Left should be equal to the known magnitude."));
+        test.ReportSuccessIf(temp > leftKnownMag+FloatEpsilon, false, TEST_MSG("Vector3>float failed. Left should be equal to the known magnitude."));
+        test.ReportSuccessIf(temp <= leftKnownMag, true, TEST_MSG("Vector3<=float failed. Left should be equal to the known magnitude."));
+        test.ReportSuccessIf(temp >= leftKnownMag, true, TEST_MSG("Vector3>=float failed. Left should be equal to the known magnitude."));
+        test.ReportSuccessIf(temp < rightKnownMag, true, TEST_MSG("Vector3<float failed. Left should be smaller than the right magnitude"));
+        test.ReportSuccessIf(temp > rightKnownMag, false, TEST_MSG("Vector3>float failed. Left should be smaller than the right magnitude"));
+
+        test.ReportSuccessIf(temp == leftKnownMag, true, TEST_MSG("Vector3==float failed. Left should be equal to the known magnitude."));
+        test.ReportSuccessIf(temp != leftKnownMag, false, TEST_MSG("Vector3!=float failed. Left should be equal to the known magnitude."));
+
+        test.ReportSuccessIf(temp == rightKnownMag, false, TEST_MSG("Vector3==float failed. Left should not be equal to the right magnitude."));
+        test.ReportSuccessIf(temp != rightKnownMag, true, TEST_MSG("Vector3!=float failed. Left should not be equal to the right magnitude."));
+
+    #if XO_SSE
+        __m128 m = temp; // will generate a compiler error if the __m128 cast operator doesn't exist.
+
+                         // failure in the following could indicate a problem with the Vector3 constructor, the cast or the comparison.
+                         // some debugging by hand would be needed if these fail.
+        test.ReportSuccessIf(Vector4(m), temp, TEST_MSG("The implicitly casted __m128 was not assigned to correctly."));
+        test.ReportSuccessIfNot(Vector4(m), temp2, TEST_MSG("The implicitly casted __m128 wasn't compared to correctly."));
+    #endif
+    });
+}
+
 int main() {
 
 #if defined(XO_SSE)
-    SSE::ThrowNoExceptions();
+    xo::math::SSE::ThrowNoExceptions();
 #endif
     cout << XO_MATH_COMPILER_INFO << endl;
 
@@ -434,8 +536,9 @@ int main() {
     //SSE::GetAllMXCSRInfo(cout);
 #endif
 
-    TestVector3Operators();
-    TestVector3Methods();
+    //TestVector3Operators();
+    //TestVector3Methods();
+    TestVector4Operators();
 
 #if defined(_MSC_VER)
     system("pause");

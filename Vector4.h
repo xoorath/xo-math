@@ -46,6 +46,7 @@ public:
     _XOINL float& operator [](int i);
     _XOINL const float& operator [](int i) const;
     _XOINL Vector4 operator -() const;
+    _XOINL Vector4 operator ~() const;
 
     _XOINL const Vector4& operator += (const Vector4& v);
     _XOINL const Vector4& operator += (float v);

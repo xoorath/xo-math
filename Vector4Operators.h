@@ -5,6 +5,31 @@ static_assert(false, "Don't include Vector4Operators.h directly. Include GameMat
 XOMATH_BEGIN_XO_NS
 
 #if XO_SSE
+
+#if defined IDX_X
+_XOMATH_INTERNAL_MACRO_WARNING
+#   else
+#       define IDX_X 0
+#   endif
+#if defined IDX_Y
+_XOMATH_INTERNAL_MACRO_WARNING
+#   else
+#       define IDX_Y 1
+#   endif
+#if defined IDX_Z
+_XOMATH_INTERNAL_MACRO_WARNING
+#   else
+#       define IDX_Z 2
+#   endif
+#if defined IDX_W
+_XOMATH_INTERNAL_MACRO_WARNING
+#   else
+#       define IDX_W 3
+#   endif
+
+#endif
+
+#if XO_SSE
 // type cast operator
 Vector4::operator const __m128&() const {
     return m;
@@ -24,6 +49,14 @@ Vector4 Vector4::operator -() const {
     return Vector4(_mm_mul_ps(m, SSE::NegativeOne));
 #else
     return Vector4(-x, -y, -z, -w);
+#endif
+}
+
+Vector4 Vector4::operator ~() const {
+#if XO_SSE
+    return Vector3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(IDX_X, IDX_Y, IDX_Z, IDX_W)));
+#else
+    return Vector4(w, z, y, x);
 #endif
 }
 
@@ -319,6 +352,11 @@ bool Vector4::operator != (double v) const          { return !((*this) == v); }
 bool Vector4::operator != (int v) const             { return !((*this) == v); }
 bool Vector4::operator != (const Vector2& v) const  { return !((*this) == v); }
 bool Vector4::operator != (const Vector3& v) const  { return !((*this) == v); }
+
+#undef IDX_X
+#undef IDX_Y
+#undef IDX_Z
+#undef IDX_W
 
 XOMATH_END_XO_NS
 
