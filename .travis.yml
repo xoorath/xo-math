@@ -24,8 +24,5 @@ matrix:
       env: COMPILER=g++-5
 
 script:
-  - cmake -DCMAKE_CXX_COMPILER=$COMPILER
-  - make
-  - ls xo-math
-  - ls
+  - cmake -DCMAKE_CXX_COMPILER=$COMPILER && make
   - ./a.out
