@@ -27,4 +27,4 @@ script:
   - cmake -DCMAKE_CXX_COMPILER=$COMPILER
   - make
   - ls xo-math
-  - xo-math/a.out
+  - a.out
