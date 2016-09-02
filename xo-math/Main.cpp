@@ -533,7 +533,7 @@ int main() {
     cout << XO_MATH_COMPILER_INFO << endl;
 
 #if defined(XO_SSE)
-    SSE::GetAllMXCSRInfo(cout);
+    xo::math::SSE::GetAllMXCSRInfo(cout);
 #endif
 
     TestVector3Operators();
