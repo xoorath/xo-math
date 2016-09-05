@@ -9,7 +9,7 @@
 				[
 					"clang++",
 					"-std=c++11",
-					"-O0",
+					"-O3",
 					"-msse4.2",
 					"-o",
 					"$project_path/build/a.out",
@@ -38,7 +38,7 @@
 					"-std=c++11",
 					"-target",
 					"x86_64-pc-windows-gnu",
-					"-O0",
+					"-O3",
 					"-msse4.2",
 					"-o",
 					"$project_path/build/a.exe",
@@ -64,7 +64,7 @@
 				[
 					"g++",
 					"-std=c++11",
-					"-O0",
+					"-O3",
 					"-msse4.2",
 					"-o",
 					"$project_path/build/a.exe",

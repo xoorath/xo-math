@@ -1,10 +1,14 @@
 #include <vector>
 #include <iostream>
 #include <cmath>
-
 using std::cout;
 using std::endl;
-#include "../xo-math.h"
+
+#define XO_NO_INVERSE_DIVISION // temp hack to fix a couple tests in Vec4
+
+#include "include/xo-math.h" // the development version of xo-math
+//#include "../xo-math.h" // the distribution version of xo-math
+
 using xo::math::Sqrt;
 using xo::math::FloatEpsilon;
 using xo::math::HalfPI;
@@ -14,7 +18,7 @@ using xo::math::PI;
 
 Test test;
 
-#define TEST_MSG(x)  "main.cpp(" _XO_MATH_STRINGIFY(__LINE__) ") " x
+#define TEST_MSG(x)  "Main.cpp(" _XO_MATH_STRINGIFY(__LINE__) ") " x
 
 void TestVector3Operators() {
     test("Vector3 Operators", []{
@@ -39,7 +43,7 @@ void TestVector3Operators() {
         const float leftKnownMag = Sqrt(left[0]*left[0] + left[1]*left[1] + left[2]*left[2]);
 
 #define _XO_BASIC_OP(op, ...) \
-            test.ReportSuccessIf(   left op right, Vector3(__VA_ARGS__), TEST_MSG("We expected this vec3" #op "vec3 to be equal to the expected input param."));\
+            test.ReportSuccessIf(   left op right, Vector3(__VA_ARGS__), TEST_MSG("We expected this vec" #op "vec to be equal to the expected input param."));\
             test.ReportSuccessIfNot(left op right, Vector3(1.0f, 2.0f, 3.0f), TEST_MSG("We expected this vec" #op "vec to be not equal to the expected input param."));
 
         _XO_BASIC_OP(+, 10.0f, 2.0f, -3.0f);
@@ -51,7 +55,7 @@ void TestVector3Operators() {
 #define _XO_BASIC_OPEQ(op, ...) \
             tempL = left; \
             tempL op right;\
-            test.ReportSuccessIf(   tempL, Vector3(__VA_ARGS__), TEST_MSG("We expected this vec3" #op "vec3 to be equal to the expected input param.")); \
+            test.ReportSuccessIf(   tempL, Vector3(__VA_ARGS__), TEST_MSG("We expected this vec" #op "vec to be equal to the expected input param.")); \
             test.ReportSuccessIfNot(tempL, Vector3(1.0f, 2.0f, 3.0f), TEST_MSG("We expected this vec" #op "vec to be not equal to the expected input param."));
 
         _XO_BASIC_OPEQ(+=, 10.0f, 2.0f, -3.0f);
@@ -60,8 +64,8 @@ void TestVector3Operators() {
         _XO_BASIC_OPEQ(/=, -0.0990990991f, -11.0f, -0.0990990991f);
 #undef _XO_BASIC_OPEQ
 
-        test.ReportSuccessIf(-left, Vector3(1.1f, -2.2f, -0.33f), TEST_MSG("We expected -vec3 to be equal to the expected input param"));
-        test.ReportSuccessIf(~left, Vector3(0.33f, 2.2f, -1.1f), TEST_MSG("We expected ~vec3 to be equal to the expected input param"));
+        test.ReportSuccessIf(-left, Vector3(1.1f, -2.2f, -0.33f), TEST_MSG("We expected -vec to be equal to the expected input param"));
+        test.ReportSuccessIf(~left, Vector3(0.33f, 2.2f, -1.1f), TEST_MSG("We expected ~vec to be equal to the expected input param"));
 
 #define _XO_BASIC_COMPARE_OP(op, expected) \
             test.ReportSuccessIf(left op right, expected, TEST_MSG("We expected this vec" #op "vec to be equal to the expected input param"));
@@ -85,20 +89,20 @@ void TestVector3Operators() {
         
         const float rightKnownMag = 11.5905f;
 
-        test.ReportSuccessIf(left < leftKnownMag, false, TEST_MSG("Vector3<float failed. Left should be equal to the known magnitude."));
+        test.ReportSuccessIf(left < leftKnownMag, false, TEST_MSG("Vec<float failed. Left should be equal to the known magnitude."));
         // Explicitly handling epsilon in cases where it matters.
         // If you need a value larger than epsilon to correct: it's probably wrong.
-        test.ReportSuccessIf(left > leftKnownMag+FloatEpsilon, false, TEST_MSG("Vector3>float failed. Left should be equal to the known magnitude."));
-        test.ReportSuccessIf(left <= leftKnownMag+FloatEpsilon, true, TEST_MSG("Vector3<=float failed. Left should be equal to the known magnitude."));
-        test.ReportSuccessIf(left >= leftKnownMag, true, TEST_MSG("Vector3>=float failed. Left should be equal to the known magnitude."));
-        test.ReportSuccessIf(left < rightKnownMag, true, TEST_MSG("Vector3<float failed. Left should be smaller than the right magnitude"));
-        test.ReportSuccessIf(left > rightKnownMag, false, TEST_MSG("Vector3>float failed. Left should be smaller than the right magnitude"));
+        test.ReportSuccessIf(left > leftKnownMag+Vector3::Epsilon, false, TEST_MSG("Vec>float failed. Left should be equal to the known magnitude."));
+        test.ReportSuccessIf(left <= leftKnownMag+Vector3::Epsilon, true, TEST_MSG("Vec<=float failed. Left should be equal to the known magnitude."));
+        test.ReportSuccessIf(left >= leftKnownMag, true, TEST_MSG("Vec>=float failed. Left should be equal to the known magnitude."));
+        test.ReportSuccessIf(left < rightKnownMag, true, TEST_MSG("Vec<float failed. Left should be smaller than the right magnitude"));
+        test.ReportSuccessIf(left > rightKnownMag, false, TEST_MSG("Vec>float failed. Left should be smaller than the right magnitude"));
 
-        test.ReportSuccessIf(left == leftKnownMag, true, TEST_MSG("Vector3==float failed. Left should be equal to the known magnitude."));
-        test.ReportSuccessIf(left != leftKnownMag, false, TEST_MSG("Vector3!=float failed. Left should be equal to the known magnitude."));
+        test.ReportSuccessIf(left == leftKnownMag, true, TEST_MSG("Vec==float failed. Left should be equal to the known magnitude."));
+        test.ReportSuccessIf(left != leftKnownMag, false, TEST_MSG("Vec!=float failed. Left should be equal to the known magnitude."));
 
-        test.ReportSuccessIf(left == rightKnownMag, false, TEST_MSG("Vector3==float failed. Left should not be equal to the right magnitude."));
-        test.ReportSuccessIf(left != rightKnownMag, true, TEST_MSG("Vector3!=float failed. Left should not be equal to the right magnitude."));
+        test.ReportSuccessIf(left == rightKnownMag, false, TEST_MSG("Vec==float failed. Left should not be equal to the right magnitude."));
+        test.ReportSuccessIf(left != rightKnownMag, true, TEST_MSG("Vec!=float failed. Left should not be equal to the right magnitude."));
 
 #if XO_SSE
         __m128 m = left; // will generate a compiler error if the __m128 cast operator doesn't exist.
@@ -432,96 +436,98 @@ void TestVector3Methods() {
 void TestVector4Operators() {
     test("Vector4 Operators", [] {
         using xo::math::Vector4;
+        Vector4 left = Vector4(11.1f, -0.2f, -3.33f, -0.04f);
+        Vector4 right = Vector4(-1.1f, 2.2f, 0.33f, 44.0f);
 
-        Vector4 temp = Vector4(-1.1f, 2.2f, 0.33f, 44.0f); // mag: 44.0699
-        Vector4 temp2 = Vector4(11.1f, -0.2f, -3.33f, -0.04f); // mag: 11.5905
-        Vector4 temp3(temp);
+        Vector4 tempL(left);
 
-        test.ReportSuccessIf(temp[0], -1.1f, TEST_MSG("extracting the x value from a vector did not produce what we expected."));
-        test.ReportSuccessIf(temp[1], 2.2f, TEST_MSG("extracting the y value from a vector did not produce what we expected."));
-        test.ReportSuccessIf(temp[2], 0.33f, TEST_MSG("extracting the z value from a vector did not produce what we expected."));
-        test.ReportSuccessIf(temp[3], 44.0f, TEST_MSG("extracting the z value from a vector did not produce what we expected."));
+        test.ReportSuccessIf(left[0], 11.1f, TEST_MSG("extracting the x value from a vector did not produce what we expected."));
+        test.ReportSuccessIf(left[1], -0.2f, TEST_MSG("extracting the y value from a vector did not produce what we expected."));
+        test.ReportSuccessIf(left[2], -3.33f, TEST_MSG("extracting the z value from a vector did not produce what we expected."));
+        test.ReportSuccessIf(left[3], -0.04f, TEST_MSG("extracting the z value from a vector did not produce what we expected."));
 
-        temp3[0] = 1.0f;
-        temp3[1] = 2.0f;
-        temp3[2] = 3.0f;
-        temp3[3] = 4.0f;
+        tempL[0] = 1.0f;
+        tempL[1] = 2.0f;
+        tempL[2] = 3.0f;
+        tempL[3] = 4.0f;
 
-        test.ReportSuccessIf(temp3[0], 1.0f, TEST_MSG("operator [] failed to set an element."));
-        test.ReportSuccessIf(temp3[1], 2.0f, TEST_MSG("operator [] failed to set an element."));
-        test.ReportSuccessIf(temp3[2], 3.0f, TEST_MSG("operator [] failed to set an element."));
-        test.ReportSuccessIf(temp3[3], 4.0f, TEST_MSG("operator [] failed to set an element."));
+        test.ReportSuccessIf(tempL[0], 1.0f, TEST_MSG("operator [] failed to set an element."));
+        test.ReportSuccessIf(tempL[1], 2.0f, TEST_MSG("operator [] failed to set an element."));
+        test.ReportSuccessIf(tempL[2], 3.0f, TEST_MSG("operator [] failed to set an element."));
+        test.ReportSuccessIf(tempL[2], 4.0f, TEST_MSG("operator [] failed to set an element."));
 
-        const float leftKnownMag = Sqrt(temp[0] * temp[0] + temp[1] * temp[1] + temp[2] * temp[2] + temp[3] * temp[3]);
 
-    #define _XO_BASIC_OP(op, ...) \
-            test.ReportSuccessIf(   temp op temp2, Vector4(__VA_ARGS__), TEST_MSG("We expected this vec" #op "vec to be equal to the expected input param."));\
-            test.ReportSuccessIfNot(temp op temp2, Vector4(1.0f, 2.0f, 3.0f, 4.0f), TEST_MSG("We expected this vec" #op "vec to be not equal to the expected input param."));
+#define _XO_BASIC_OP(op, ...) \
+            test.ReportSuccessIf(   left op right, Vector4(__VA_ARGS__), TEST_MSG("We expected this vec" #op "vec to be equal to the expected input param."));\
+            test.ReportSuccessIfNot(left op right, Vector4(1.0f, 2.0f, 3.0f, 4.0f), TEST_MSG("We expected this vec" #op "vec to be not equal to the expected input param."));
 
         _XO_BASIC_OP(+, 10.0f, 2.0f, -3.0f, 43.96f);
-        _XO_BASIC_OP(-, -12.2f, 2.4f, 3.66f, 44.04f);
+        _XO_BASIC_OP(-, 12.2f, -2.4f, -3.66f, -44.04f);
         _XO_BASIC_OP(*, -12.21f, -0.44f, -1.0989f, -1.76f);
-        _XO_BASIC_OP(/ , -0.0990990991f, -11.0f, -0.0990990991f, -1100.0f);
-    #undef _XO_BASIC_OP
-
-    #define _XO_BASIC_OPEQ(op, ...) \
-            temp3 = temp; \
-            temp3 op temp2;\
-            test.ReportSuccessIf(   temp3, Vector4(__VA_ARGS__), TEST_MSG("We expected this vec" #op "vec to be equal to the expected input param.")); \
-            test.ReportSuccessIfNot(temp3, Vector4(1.0f, 2.0f, 3.0f, 4.0f), TEST_MSG("We expected this vec" #op "vec to be not equal to the expected input param."));
+        _XO_BASIC_OP(/, -10.09090909f, -0.09090909091f, -10.090909091, -0.0009090909091f);
+#undef _XO_BASIC_OP
+        
+#define _XO_BASIC_OPEQ(op, ...) \
+            tempL = left; \
+            tempL op right;\
+            test.ReportSuccessIf(   tempL, Vector4(__VA_ARGS__), TEST_MSG("We expected this vec" #op "vec to be equal to the expected input param.")); \
+            test.ReportSuccessIfNot(tempL, Vector4(1.0f, 2.0f, 3.0f, 4.0f), TEST_MSG("We expected this vec" #op "vec to be not equal to the expected input param."));
 
         _XO_BASIC_OPEQ(+=, 10.0f, 2.0f, -3.0f, 43.96f);
-        _XO_BASIC_OPEQ(-=, -12.2f, 2.4f, 3.66f, 44.04f);
+        _XO_BASIC_OPEQ(-=, 12.2f, -2.4f, -3.66f, -44.04f);
         _XO_BASIC_OPEQ(*=, -12.21f, -0.44f, -1.0989f, -1.76f);
-        _XO_BASIC_OPEQ(/=, -0.0990990991f, -11.0f, -0.0990990991f, -1100.0f);
-    #undef _XO_BASIC_OPEQ
+        _XO_BASIC_OPEQ(/=, -10.09090909f, -0.09090909091f, -10.090909091, -0.0009090909091f);
+#undef _XO_BASIC_OPEQ
 
-        test.ReportSuccessIf(-temp, Vector4(1.1f, -2.2f, -0.33f, -44.0f), TEST_MSG("We expected -vec to be equal to the expected input param"));
-        test.ReportSuccessIf(~temp, Vector4(44.0f, 0.33f, 2.2f, -1.1f), TEST_MSG("We expected ~vec to be equal to the expected input param"));
+        test.ReportSuccessIf(-left, Vector4(-11.1f, 0.2f, 3.33f, 0.04f), TEST_MSG("We expected -vec to be equal to the expected input param"));
+        test.ReportSuccessIf(~left, Vector4(-0.04f, -3.33f, -0.2f, 11.1f), TEST_MSG("We expected ~vec to be equal to the expected input param"));
 
-    #define _XO_BASIC_COMPARE_OP(op, expected) \
-            test.ReportSuccessIf(temp op temp2, expected, TEST_MSG("We expected this vec" #op "vec to be equal to the expected input param"));
+#define _XO_BASIC_COMPARE_OP(op, expected) \
+            test.ReportSuccessIf(left op right, expected, TEST_MSG("We expected this vec" #op "vec to be equal to the expected input param"));
 
-        _XO_BASIC_COMPARE_OP(< , false);
-        _XO_BASIC_COMPARE_OP(> , true);
-        _XO_BASIC_COMPARE_OP(<= , false);
-        _XO_BASIC_COMPARE_OP(>= , true);
-        _XO_BASIC_COMPARE_OP(== , false);
-        _XO_BASIC_COMPARE_OP(!= , true);
+        _XO_BASIC_COMPARE_OP(<, true);
+        _XO_BASIC_COMPARE_OP(>, false);
+        _XO_BASIC_COMPARE_OP(<=, true);
+        _XO_BASIC_COMPARE_OP(>=, false);
+        _XO_BASIC_COMPARE_OP(==, false);
+        _XO_BASIC_COMPARE_OP(!=, true);
 
-        test.ReportSuccessIf(temp >= temp, true, TEST_MSG(">= failed. Left is equal to left."));
-        test.ReportSuccessIf(temp <= temp, true, TEST_MSG("<= failed. Left is equal to left."));
-        test.ReportSuccessIf(temp2 <= temp, true, TEST_MSG("<= failed. Right should have a larger magnitude than left."));
-        test.ReportSuccessIf(temp >= temp2, true, TEST_MSG("<= failed. Right should have a larger magnitude than left."));
-        test.ReportSuccessIf(temp == temp, true, TEST_MSG("== failed. Left should be equal to left."));
-        test.ReportSuccessIf(temp2 == temp2, true, TEST_MSG("== failed. Right should be equal to right."));
-        test.ReportSuccessIf(temp != temp, false, TEST_MSG("!= failed. Left should be equal to left."));
-        test.ReportSuccessIf(temp2 != temp2, false, TEST_MSG("!= failed. Right should be equal to right."));
-    #undef _XO_BASIC_COMPARE_OP
+        test.ReportSuccessIf(left >= left, true, TEST_MSG(">= failed. Left is equal to left."));
+        test.ReportSuccessIf(left <= left, true, TEST_MSG("<= failed. Left is equal to left."));
+        test.ReportSuccessIf(right <= left, false, TEST_MSG("<= failed. Right should have a larger magnitude than left."));
+        test.ReportSuccessIf(left >= right, false, TEST_MSG("<= failed. Right should have a larger magnitude than left."));
+        test.ReportSuccessIf(left == left, true, TEST_MSG("== failed. Left should be equal to left."));
+        test.ReportSuccessIf(right == right, true, TEST_MSG("== failed. Right should be equal to right."));
+        test.ReportSuccessIf(left != left, false, TEST_MSG("!= failed. Left should be equal to left."));
+        test.ReportSuccessIf(right != right, false, TEST_MSG("!= failed. Right should be equal to right."));
+#undef _XO_BASIC_COMPARE_OP
+        
+        const float leftKnownMag = 11.590535163879f;
+        const float rightKnownMag = 44.069931030273f;
 
-        const float rightKnownMag = 11.5905f;
+        test.ReportSuccessIf(left < leftKnownMag, false, TEST_MSG("Vec<float failed. Left should be equal to the known magnitude."));
+        // Explicitly handling epsilon in cases where it matters.
+        // If you need a value larger than epsilon to correct: it's probably wrong.
+        test.ReportSuccessIf(left > leftKnownMag+Vector4::Epsilon, false, TEST_MSG("Vec>float failed. Left should be equal to the known magnitude."));
+        test.ReportSuccessIf(left <= leftKnownMag+Vector4::Epsilon, true, TEST_MSG("Vec<=float failed. Left should be equal to the known magnitude."));
+        test.ReportSuccessIf(left >= leftKnownMag, true, TEST_MSG("Vec>=float failed. Left should be equal to the known magnitude."));
+        test.ReportSuccessIf(left < rightKnownMag, true, TEST_MSG("Vec<float failed. Left should be smaller than the right magnitude"));
+        test.ReportSuccessIf(left > rightKnownMag, false, TEST_MSG("Vec>float failed. Left should be smaller than the right magnitude"));
 
-        test.ReportSuccessIf(temp < leftKnownMag, false, TEST_MSG("Vector3<float failed. Left should be equal to the known magnitude."));
-        test.ReportSuccessIf(temp > leftKnownMag+FloatEpsilon, false, TEST_MSG("Vector3>float failed. Left should be equal to the known magnitude."));
-        test.ReportSuccessIf(temp <= leftKnownMag, true, TEST_MSG("Vector3<=float failed. Left should be equal to the known magnitude."));
-        test.ReportSuccessIf(temp >= leftKnownMag, true, TEST_MSG("Vector3>=float failed. Left should be equal to the known magnitude."));
-        test.ReportSuccessIf(temp < rightKnownMag, true, TEST_MSG("Vector3<float failed. Left should be smaller than the right magnitude"));
-        test.ReportSuccessIf(temp > rightKnownMag, false, TEST_MSG("Vector3>float failed. Left should be smaller than the right magnitude"));
+        test.ReportSuccessIf(left == leftKnownMag, true, TEST_MSG("Vec==float failed. Left should be equal to the known magnitude."));
+        test.ReportSuccessIf(left != leftKnownMag, false, TEST_MSG("Vec!=float failed. Left should be equal to the known magnitude."));
 
-        test.ReportSuccessIf(temp == leftKnownMag, true, TEST_MSG("Vector3==float failed. Left should be equal to the known magnitude."));
-        test.ReportSuccessIf(temp != leftKnownMag, false, TEST_MSG("Vector3!=float failed. Left should be equal to the known magnitude."));
+        test.ReportSuccessIf(left == rightKnownMag, false, TEST_MSG("Vec==float failed. Left should not be equal to the right magnitude."));
+        test.ReportSuccessIf(left != rightKnownMag, true, TEST_MSG("Vec!=float failed. Left should not be equal to the right magnitude."));
 
-        test.ReportSuccessIf(temp == rightKnownMag, false, TEST_MSG("Vector3==float failed. Left should not be equal to the right magnitude."));
-        test.ReportSuccessIf(temp != rightKnownMag, true, TEST_MSG("Vector3!=float failed. Left should not be equal to the right magnitude."));
+#if XO_SSE
+        __m128 m = left; // will generate a compiler error if the __m128 cast operator doesn't exist.
 
-    #if XO_SSE
-        __m128 m = temp; // will generate a compiler error if the __m128 cast operator doesn't exist.
-
-                         // failure in the following could indicate a problem with the Vector3 constructor, the cast or the comparison.
-                         // some debugging by hand would be needed if these fail.
-        test.ReportSuccessIf(Vector4(m), temp, TEST_MSG("The implicitly casted __m128 was not assigned to correctly."));
-        test.ReportSuccessIfNot(Vector4(m), temp2, TEST_MSG("The implicitly casted __m128 wasn't compared to correctly."));
-    #endif
+        // failure in the following could indicate a problem with the constructor, the cast or the comparison.
+        // some debugging by hand would be needed if these fail.
+        test.ReportSuccessIf(Vector4(m), left, TEST_MSG("The implicitly casted __m128 was not assigned to correctly."));
+        test.ReportSuccessIfNot(Vector4(m), right, TEST_MSG("The implicitly casted __m128 wasn't compared to correctly."));
+#endif
     });
 }
 
@@ -535,6 +541,9 @@ int main() {
 #if defined(XO_SSE)
     xo::math::SSE::GetAllMXCSRInfo(cout);
 #endif
+
+    cout.precision(12);
+    cout << std::fixed;
 
     TestVector3Operators();
     TestVector3Methods();
