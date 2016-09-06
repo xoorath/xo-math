@@ -29,19 +29,13 @@ script:
 
 after_success:
   - git checkout master
-  - git status
   - cd ./xo-math
-  - ls
   - node build_dist.js
   - cd ../
-  - ls
-  - git status
   - git config --global push.default matching
   - git config user.name "travis"
   - git config user.email "travis@xoorath.com"
   - git remote add upstream "https://$GITHUB_API_KEY@github.com/xoorath/xo-math.git"
   - git add ./xo-math.h
-  - git status
   - git commit -m 'generating xo-math from sources [ci skip]'
-  - git status
   - git push -f -q https://xoorath:$GITHUB_API_KEY@github.com/xoorath/xo-math
