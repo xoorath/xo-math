@@ -24,6 +24,7 @@
 #include <ostream>
 #include <random>
 #include <thread>
+#include <limits>
 #if defined(_MSC_VER)
 #   include <xmmintrin.h>
 #else
@@ -311,16 +312,22 @@ constexpr const float FloatEpsilon = 0.0000001192092896f;
 constexpr const float Rad2Deg = 360.0f / TAU;
 constexpr const float Deg2Rad = TAU / 360.0f;
 
+float HexFloat(unsigned u) {
+    union {
+        unsigned u;
+        float f;
+    } Converter;
+    Converter.u = u;
+    return Converter.f;
+}
+
 #if XO_SSE
-namespace SSE {
-#   if XO_SSE2
-    // TODO: check if this still requires SSE2 or not. Unsure if removing the shift will do it for us.
-    static const __m128 AbsMask = _mm_castsi128_ps(_mm_set1_epi32(0x7FFFFFFF));
+namespace sse {
+    static const __m128 AbsMask = _mm_set1_ps(HexFloat(0x7fffffff));
 
     __m128 Abs(__m128 v) {
         return _mm_and_ps(AbsMask, v);
     }
-#   endif
 
     // the quoted error on _mm_rcp_ps documentation
     constexpr const float SSEFloatEpsilon = 0.000366210938f;
@@ -625,7 +632,7 @@ class _MM_ALIGN16 Vector3 {
 
 public:
 #if XO_SSE
-    constexpr static const float Epsilon = SSE::SSEFloatEpsilon * 3.0f;
+    constexpr static const float Epsilon = sse::SSEFloatEpsilon * 3.0f;
 #else
     constexpr static const float Epsilon = FloatEpsilon * 3.0f;
 #endif
@@ -1021,7 +1028,7 @@ XOMATH_BEGIN_XO_NS
 class _MM_ALIGN16 Vector4 {
 public:
 #if XO_SSE
-    constexpr static const float Epsilon = SSE::SSEFloatEpsilon * 4.0f;
+    constexpr static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
 #else
     constexpr static const float Epsilon = FloatEpsilon * 4.0f;
 #endif
@@ -1407,7 +1414,7 @@ class _MM_ALIGN16 Quaternion {
 #endif
 public:
 #if XO_SSE
-    constexpr static const float Epsilon = SSE::SSEFloatEpsilon * 4.0f;
+    constexpr static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
 #else
     constexpr static const float Epsilon = FloatEpsilon * 4.0f;
 #endif
@@ -1624,26 +1631,14 @@ bool Vector2::operator == (double v) const                  { return *this == (f
 bool Vector2::operator == (int v) const                     { return *this == (float)(v*v); }
 bool Vector2::operator == (const class Vector3& v) const {
 #   if XO_SSE2
-    // Todo: check that this is actually faster.
-    return (_mm_movemask_ps(_mm_cmplt_ps(SSE::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, y, x), v.m)), SSE::Epsilon)) & 0b0011) == 0b0011;
-#   elif XO_SSE
-    // TODO: find a faster way with SSE to do a 'close enough' check.
-    // I'm not sure if there's a way to do the sign bit masking like we have in SSE::Abs to acomplish
-    // what we're doing in SSE2
-    return CloseEnough(x, v.x, SSE::SSEFloatEpsilon) && CloseEnough(y, v.y, SSE::SSEFloatEpsilon);
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, y, x), v.m)), sse::Epsilon)) & 0b0011) == 0b0011;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
 #   endif
 }
 bool Vector2::operator == (const class Vector4& v) const {
-#   if XO_SSE2
-    // Todo: check that this is actually faster.
-    return (_mm_movemask_ps(_mm_cmplt_ps(SSE::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, y, x), v.m)), SSE::Epsilon)) & 0b0011) == 0b0011;
-#   elif XO_SSE
-    // TODO: find a faster way with SSE to do a 'close enough' check.
-    // I'm not sure if there's a way to do the sign bit masking like we have in SSE::Abs to acomplish
-    // what we're doing in SSE2
-    return CloseEnough(x, v.x, SSE::SSEFloatEpsilon) && CloseEnough(y, v.y, SSE::SSEFloatEpsilon);
+#   if XO_SSE
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, y, x), v.m)), sse::Epsilon)) & 0b0011) == 0b0011;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
 #   endif
@@ -1726,6 +1721,7 @@ bool Vector2::IsZero() const {
 }
 
 bool Vector2::IsNormalized() const {
+  // todo: check closeness
     return CloseEnough(MagnitudeSquared(), 1.0f, Epsilon);
 }
 
@@ -1843,7 +1839,7 @@ const float& Vector3::operator [](int i) const {
 
 Vector3 Vector3::operator -() const {
 #if XO_SSE
-    return Vector3(_mm_mul_ps(m, SSE::NegativeOne));
+    return Vector3(_mm_mul_ps(m, sse::NegativeOne));
 #else
     return Vector3(-x, -y, -z);
 #endif
@@ -2083,12 +2079,12 @@ bool Vector3::operator >= (const Vector4& v) const  { return MagnitudeSquared() 
 
 bool Vector3::operator == (const Vector3& v) const {
 #   if XO_SSE2
-    return (_mm_movemask_ps(_mm_cmplt_ps(SSE::Abs(_mm_sub_ps(v, m)), SSE::Epsilon)) & 0b0111) == 0b0111;
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v, m)), sse::Epsilon)) & 0b0111) == 0b0111;
 #   elif XO_SSE
     // TODO: find a faster way with SSE to do a 'close enough' check.
-    // I'm not sure if there's a way to do the sign bit masking like we have in SSE::Abs to acomplish
+    // I'm not sure if there's a way to do the sign bit masking like we have in sse::Abs to acomplish
     // what we're doing in SSE2
-    return CloseEnough(x, v.x, SSE::SSEFloatEpsilon) && CloseEnough(y, v.y, SSE::SSEFloatEpsilon) && CloseEnough(z, v.z, SSE::SSEFloatEpsilon);
+    return CloseEnough(x, v.x, sse::SSEFloatEpsilon) && CloseEnough(y, v.y, sse::SSEFloatEpsilon) && CloseEnough(z, v.z, sse::SSEFloatEpsilon);
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon) && CloseEnough(z, v.z, Epsilon);
 #   endif
@@ -2097,26 +2093,15 @@ bool Vector3::operator == (float v) const                   { return CloseEnough
 bool Vector3::operator == (double v) const                  { return CloseEnough(MagnitudeSquared(), (float)(v*v), Epsilon);}
 bool Vector3::operator == (int v) const                     { return CloseEnough(MagnitudeSquared(), (float)(v*v), Epsilon);}
 bool Vector3::operator == (const Vector2& v) const {
-#   if XO_SSE2
-    // Todo: check that this is actually faster.
-    return (_mm_movemask_ps(_mm_cmplt_ps(SSE::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, v.y, v.x), m)), SSE::Epsilon)) & 0b0011) == 0b0011;
-#   elif XO_SSE
-    // TODO: find a faster way with SSE to do a 'close enough' check.
-    // I'm not sure if there's a way to do the sign bit masking like we have in SSE::Abs to acomplish
-    // what we're doing in SSE2
-    return CloseEnough(x, v.x, SSE::SSEFloatEpsilon) && CloseEnough(y, v.y, SSE::SSEFloatEpsilon);
+#   if XO_SSE
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, v.y, v.x), m)), sse::Epsilon)) & 0b0011) == 0b0011;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
 #   endif
 }
 bool Vector3::operator == (const Vector4& v) const {
-#   if XO_SSE2
-    return (_mm_movemask_ps(_mm_cmplt_ps(SSE::Abs(_mm_sub_ps(v.m, m)), SSE::Epsilon)) & 0b0111) == 0b0111;
-#   elif XO_SSE
-    // TODO: find a faster way with SSE to do a 'close enough' check.
-    // I'm not sure if there's a way to do the sign bit masking like we have in SSE::Abs to acomplish
-    // what we're doing in SSE2
-    return CloseEnough(x, v.x, SSE::SSEFloatEpsilon) && CloseEnough(y, v.y, SSE::SSEFloatEpsilon) && CloseEnough(z, v.z, SSE::SSEFloatEpsilon);
+#   if XO_SSE
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 0b0111) == 0b0111;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon) && CloseEnough(z, v.z, Epsilon);
 #   endif
@@ -2396,21 +2381,24 @@ void Vector3::RotateDegrees(const Vector3& v, const Vector3& axis, float angle, 
     RotateRadians(v, axis, angle * Deg2Rad, outVec);
 }
 
-// TODO: test results with non-normalized forward. Do this for all random cone methods.
 void Vector3::RandomOnConeRadians(const Vector3& forward, float angle, Vector3& outVec) {
+    Vector3 forwardNorm = forward.Normalized();
     Vector3 crossed, tilted;
-    Vector3 other = forward == Up ? Left : Up; // anything unit length but the forward vector
-    Vector3::Cross(forward, other, crossed);
-    Vector3::RotateRadians(forward, crossed, angle, tilted);
-    Vector3::RotateRadians(tilted, forward, RandomRange(-PI, PI), outVec);
+    Vector3 other = forwardNorm == Up ? Left : Up; // anything unit length but the forwardNorm vector
+    Vector3::Cross(forwardNorm, other, crossed);
+    Vector3::RotateRadians(forwardNorm, crossed, angle, tilted);
+    Vector3::RotateRadians(tilted, forwardNorm, RandomRange(-PI, PI), outVec);
+    outVec *= forward.Magnitude();
 }
 
 void Vector3::RandomInConeRadians(const Vector3& forward, float angle, Vector3& outVec) {
+    Vector3 forwardNorm = forward.Normalized();
     Vector3 crossed, tilted;
-    Vector3 other = forward == Up ? Left : Up; // anything unit length but the forward vector
-    Vector3::Cross(forward, other, crossed);
-    Vector3::RotateRadians(forward, crossed, RandomRange(0.0f, angle), tilted);
-    Vector3::RotateRadians(tilted, forward, RandomRange(-PI, PI), outVec);
+    Vector3 other = forwardNorm == Up ? Left : Up; // anything unit length but the forwardNorm vector
+    Vector3::Cross(forwardNorm, other, crossed);
+    Vector3::RotateRadians(forwardNorm, crossed, RandomRange(0.0f, angle), tilted);
+    Vector3::RotateRadians(tilted, forwardNorm, RandomRange(-PI, PI), outVec);
+    outVec *= forward.Magnitude();
 }
 
 void Vector3::RandomOnConeDegrees(const Vector3& forward, float angle, Vector3& outVec) {
@@ -2623,7 +2611,6 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #endif
 
 #if XO_SSE
-// type cast operator
 Vector4::operator const __m128&() const {
     return m;
 }
@@ -2639,7 +2626,7 @@ const float& Vector4::operator [](int i) const {
 
 Vector4 Vector4::operator -() const {
 #if XO_SSE
-    return Vector4(_mm_mul_ps(m, SSE::NegativeOne));
+    return Vector4(_mm_mul_ps(m, sse::NegativeOne));
 #else
     return Vector4(-x, -y, -z, -w);
 #endif
@@ -2890,16 +2877,16 @@ bool Vector4::operator >= (const Vector3& v) const      { return MagnitudeSquare
 
 bool Vector4::operator == (const Vector4& v) const {
 #   if XO_SSE2
-    return (_mm_movemask_ps(_mm_cmplt_ps(SSE::Abs(_mm_sub_ps(v.m, m)), SSE::Epsilon)) & 0b1111) == 0b1111;
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 0b1111) == 0b1111;
 #   elif XO_SSE
     // TODO: find a faster way with SSE to do a 'close enough' check.
-    // I'm not sure if there's a way to do the sign bit masking like we have in SSE::Abs to acomplish
+    // I'm not sure if there's a way to do the sign bit masking like we have in sse::Abs to acomplish
     // what we're doing in SSE2
     return 
-        CloseEnough(x, v.x, SSE::SSEFloatEpsilon) && 
-        CloseEnough(y, v.y, SSE::SSEFloatEpsilon) && 
-        CloseEnough(z, v.z, SSE::SSEFloatEpsilon) &&
-        CloseEnough(w, v.w, SSE::SSEFloatEpsilon);
+        CloseEnough(x, v.x, sse::SSEFloatEpsilon) && 
+        CloseEnough(y, v.y, sse::SSEFloatEpsilon) && 
+        CloseEnough(z, v.z, sse::SSEFloatEpsilon) &&
+        CloseEnough(w, v.w, sse::SSEFloatEpsilon);
 #   else
     return 
         CloseEnough(x, v.x, Epsilon) && 
@@ -2913,27 +2900,17 @@ bool Vector4::operator == (double v) const          { return CloseEnough(Magnitu
 bool Vector4::operator == (int v) const             { return CloseEnough(MagnitudeSquared(), (float)(v * v), Epsilon); }
 
 bool Vector4::operator == (const Vector2& v) const {
-#   if XO_SSE2
+#   if XO_SSE
     // Todo: check that this is actually faster.
-    return (_mm_movemask_ps(_mm_cmplt_ps(SSE::Abs(_mm_sub_ps(m, _mm_set_ps(0.0f, 0.0f, v.y, v.x))), SSE::Epsilon)) & 0b0011) == 0b0011;
-#   elif XO_SSE
-    // TODO: find a faster way with SSE to do a 'close enough' check.
-    // I'm not sure if there's a way to do the sign bit masking like we have in SSE::Abs to acomplish
-    // what we're doing in SSE2
-    return CloseEnough(x, v.x, SSE::SSEFloatEpsilon) && CloseEnough(y, v.y, SSE::SSEFloatEpsilon);
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(m, _mm_set_ps(0.0f, 0.0f, v.y, v.x))), sse::Epsilon)) & 0b0011) == 0b0011;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
 #   endif
 }
 
 bool Vector4::operator == (const Vector3& v) const {
-#   if XO_SSE2
-    return (_mm_movemask_ps(_mm_cmplt_ps(SSE::Abs(_mm_sub_ps(v.m, m)), SSE::Epsilon)) & 0b0111) == 0b0111;
-#   elif XO_SSE
-    // TODO: find a faster way with SSE to do a 'close enough' check.
-    // I'm not sure if there's a way to do the sign bit masking like we have in SSE::Abs to acomplish
-    // what we're doing in SSE2
-    return CloseEnough(x, v.x, SSE::SSEFloatEpsilon) && CloseEnough(y, v.y, SSE::SSEFloatEpsilon) && CloseEnough(z, v.z, SSE::SSEFloatEpsilon);
+#   if XO_SSE
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 0b0111) == 0b0111;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon) && CloseEnough(z, v.z, Epsilon);
 #   endif
@@ -3762,17 +3739,8 @@ Quaternion Quaternion::operator * (const Quaternion& q) const {
 }
 
 bool Quaternion::operator == (const Quaternion& q) const {
-#   if XO_SSE2
-    return (_mm_movemask_ps(_mm_cmplt_ps(SSE::Abs(_mm_sub_ps(q.m, m)), SSE::Epsilon)) & 0b1111) == 0b1111;
-#   elif XO_SSE
-    // TODO: find a faster way with SSE to do a 'close enough' check.
-    // I'm not sure if there's a way to do the sign bit masking like we have in SSE::Abs to acomplish
-    // what we're doing in SSE2
-    return 
-        CloseEnough(x, q.x, SSE::SSEFloatEpsilon) && 
-        CloseEnough(y, q.y, SSE::SSEFloatEpsilon) && 
-        CloseEnough(z, q.z, SSE::SSEFloatEpsilon) &&
-        CloseEnough(w, q.w, SSE::SSEFloatEpsilon);
+#   if XO_SSE
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(q.m, m)), sse::Epsilon)) & 0b1111) == 0b1111;
 #   else
     return 
         CloseEnough(x, q.x, Epsilon) && 
@@ -4169,28 +4137,28 @@ Vector2 Abs(const Vector2& v) {
 #if XO_SSE2 // TODO: check if SSE2 is required
 _XOINL
 Vector3 Abs(const Vector3& v) {
-    return (SSE::Abs(v.m));
+    return (sse::Abs(v.m));
 }
 
 _XOINL
 Vector4 Abs(const Vector4& v) {
-    return Vector4(SSE::Abs(v.m));
+    return Vector4(sse::Abs(v.m));
 }
 #endif
 
 #if XO_SSE
 
-namespace SSE {
+namespace sse {
 
     // The control of MXCSR usage is inspired by Agner Fog's use of them in vectormath.
     // vectormath uses them to optionally speed up subnormal operations.
     // To achieve this in xomath, call the following once per thread where xo-math is used:
-    //      SSE::UpdateControlWord();       // updates the thread-local state.
-    //      SSE::SetDenormalsAreZero(true); // force all denormal values to 0
-    //      SSE::SetFlushToZero(true);      // underflowing operations produce 0
+    //      sse::UpdateControlWord();       // updates the thread-local state.
+    //      sse::SetDenormalsAreZero(true); // force all denormal values to 0
+    //      sse::SetFlushToZero(true);      // underflowing operations produce 0
     // Note: this will only produce speed gains where subnormal values are likely to occur.
     // See http://wm.ite.pl/articles/sse-penalties-of-errors.html for more details.
-    namespace MXCSR {
+    namespace mxcsr {
         // Flags that are set on the CPU if an exception had occured.
         // They will remain set until manually unset.
         enum class Flags {
@@ -4262,32 +4230,32 @@ namespace SSE {
         return false;
     }
 
-    bool HasControlFlagBeenSet(MXCSR::Flags flags, bool withUpdate = false, bool thenFlush = false) {
+    bool HasControlFlagBeenSet(mxcsr::Flags flags, bool withUpdate = false, bool thenFlush = false) {
         return HasControlFlagBeenSet((unsigned)flags, withUpdate, thenFlush);
     }
 
     bool HasInvalidOperationExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(MXCSR::Flags::InvalidOperation, withUpdate, thenFlush);
+        return HasControlFlagBeenSet(mxcsr::Flags::InvalidOperation, withUpdate, thenFlush);
     }
 
     bool HasDenormalExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(MXCSR::Flags::Denormal, withUpdate, thenFlush);
+        return HasControlFlagBeenSet(mxcsr::Flags::Denormal, withUpdate, thenFlush);
     }
 
     bool HasDivideByZeroExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(MXCSR::Flags::DivideByZero, withUpdate, thenFlush);
+        return HasControlFlagBeenSet(mxcsr::Flags::DivideByZero, withUpdate, thenFlush);
     }
 
     bool HasOverflowExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(MXCSR::Flags::Overflow, withUpdate, thenFlush);
+        return HasControlFlagBeenSet(mxcsr::Flags::Overflow, withUpdate, thenFlush);
     }
 
     bool HasUnderflowExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(MXCSR::Flags::Underflow, withUpdate, thenFlush);
+        return HasControlFlagBeenSet(mxcsr::Flags::Underflow, withUpdate, thenFlush);
     }
 
     bool HasPrecisionExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(MXCSR::Flags::Precision, withUpdate, thenFlush);
+        return HasControlFlagBeenSet(mxcsr::Flags::Precision, withUpdate, thenFlush);
     }
 
     void SetControlMask(unsigned mask, bool value, bool withUpdate = false) {
@@ -4302,7 +4270,7 @@ namespace SSE {
         }
     }
 
-    void SetControlMask(MXCSR::Masks mask, bool value, bool withUpdate = false) {
+    void SetControlMask(mxcsr::Masks mask, bool value, bool withUpdate = false) {
         SetControlMask((unsigned)mask, value, withUpdate);
     }
 
@@ -4313,32 +4281,32 @@ namespace SSE {
         return (LastKnownControlWord & mask) == mask;
     }
 
-    bool GetControlMask(MXCSR::Masks mask, bool withUpdate = false) {
+    bool GetControlMask(mxcsr::Masks mask, bool withUpdate = false) {
         return GetControlMask((unsigned)mask, withUpdate);
     }
 
     void SetInvalidOperationExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(MXCSR::Masks::InvalidOperation, value, withUpdate);
+        SetControlMask(mxcsr::Masks::InvalidOperation, value, withUpdate);
     }
 
     void SetDenormalExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(MXCSR::Masks::Denormal, value, withUpdate);
+        SetControlMask(mxcsr::Masks::Denormal, value, withUpdate);
     }
 
     void SetDivideByZeroExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(MXCSR::Masks::DivideByZero, value, withUpdate);
+        SetControlMask(mxcsr::Masks::DivideByZero, value, withUpdate);
     }
 
     void SetOverflowExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(MXCSR::Masks::Overflow, value, withUpdate);
+        SetControlMask(mxcsr::Masks::Overflow, value, withUpdate);
     }
 
     void SetUnderflowExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(MXCSR::Masks::Underflow, value, withUpdate);
+        SetControlMask(mxcsr::Masks::Underflow, value, withUpdate);
     }
 
     void SetPrecisionExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(MXCSR::Masks::Precision, value, withUpdate);
+        SetControlMask(mxcsr::Masks::Precision, value, withUpdate);
     }
 
     void ThrowAllExceptions(bool withUpdate = false) {
@@ -4366,45 +4334,45 @@ namespace SSE {
     }
 
     bool GetInvalidOperationExceptionMask(bool withUpdate = false) {
-        return GetControlMask(MXCSR::Masks::InvalidOperation, withUpdate);
+        return GetControlMask(mxcsr::Masks::InvalidOperation, withUpdate);
     }
 
     bool GetDenormalExceptionMask(bool withUpdate = false) {
-        return GetControlMask(MXCSR::Masks::Denormal, withUpdate);
+        return GetControlMask(mxcsr::Masks::Denormal, withUpdate);
     }
 
     bool GetDivideByZeroExceptionMask(bool withUpdate = false) {
-        return GetControlMask(MXCSR::Masks::DivideByZero, withUpdate);
+        return GetControlMask(mxcsr::Masks::DivideByZero, withUpdate);
     }
 
     bool GetOverflowExceptionMask(bool withUpdate = false) {
-        return GetControlMask(MXCSR::Masks::Overflow, withUpdate);
+        return GetControlMask(mxcsr::Masks::Overflow, withUpdate);
     }
 
     bool GetUnderflowExceptionMask(bool withUpdate = false) {
-        return GetControlMask(MXCSR::Masks::Underflow, withUpdate);
+        return GetControlMask(mxcsr::Masks::Underflow, withUpdate);
     }
 
     bool GetPrecisionExceptionMask(bool withUpdate = false) {
-        return GetControlMask(MXCSR::Masks::Precision, withUpdate);
+        return GetControlMask(mxcsr::Masks::Precision, withUpdate);
     }
 
-    MXCSR::Rounding GetRoundingMode(bool withUpdate = false) {
+    mxcsr::Rounding GetRoundingMode(bool withUpdate = false) {
         if(withUpdate) {
             UpdateControlWord();
         }
-        return (MXCSR::Rounding)(LastKnownControlWord & (unsigned)MXCSR::Rounding::Bits);
+        return (mxcsr::Rounding)(LastKnownControlWord & (unsigned)mxcsr::Rounding::Bits);
     }
 
     void SetRoundingMode(unsigned mode, bool withUpdate = false) {
-        mode &= (unsigned)MXCSR::Rounding::Bits;
+        mode &= (unsigned)mxcsr::Rounding::Bits;
         if(withUpdate) {
             UpdateControlWord();
         }
         SetControlWordAddative(mode);
     }
 
-    void SetRoundingMode(MXCSR::Rounding mode, bool withUpdate = false) {
+    void SetRoundingMode(mxcsr::Rounding mode, bool withUpdate = false) {
         SetRoundingMode((unsigned)mode, withUpdate);
     }
 
@@ -4412,7 +4380,7 @@ namespace SSE {
         if(withUpdate) {
             UpdateControlWord();
         }
-        return (LastKnownControlWord & (unsigned)MXCSR::DAZ::DenormalsAreZero) == (unsigned)MXCSR::DAZ::DenormalsAreZero;
+        return (LastKnownControlWord & (unsigned)mxcsr::DAZ::DenormalsAreZero) == (unsigned)mxcsr::DAZ::DenormalsAreZero;
     }
 
     void SetDenormalsAreZero(bool value, bool withUpdate = false) {
@@ -4420,10 +4388,10 @@ namespace SSE {
             UpdateControlWord();
         }
         if(value) {
-            SetControlWordAddative((unsigned)MXCSR::DAZ::DenormalsAreZero);
+            SetControlWordAddative((unsigned)mxcsr::DAZ::DenormalsAreZero);
         }
         else {
-            RemoveControlWord((unsigned)MXCSR::DAZ::DenormalsAreZero);
+            RemoveControlWord((unsigned)mxcsr::DAZ::DenormalsAreZero);
         }
     }
 
@@ -4431,7 +4399,7 @@ namespace SSE {
         if(withUpdate) {
             UpdateControlWord();
         }
-        return (LastKnownControlWord & (unsigned)MXCSR::FZ::FlushToZero) == (unsigned)MXCSR::FZ::FlushToZero;
+        return (LastKnownControlWord & (unsigned)mxcsr::FZ::FlushToZero) == (unsigned)mxcsr::FZ::FlushToZero;
     }
 
     void SetFlushToZero(bool value, bool withUpdate = false) {
@@ -4439,10 +4407,10 @@ namespace SSE {
             UpdateControlWord();
         }
         if(value) {
-            SetControlWordAddative((unsigned)MXCSR::FZ::FlushToZero);
+            SetControlWordAddative((unsigned)mxcsr::FZ::FlushToZero);
         }
         else {
-            RemoveControlWord((unsigned)MXCSR::FZ::FlushToZero);
+            RemoveControlWord((unsigned)mxcsr::FZ::FlushToZero);
         }
     }
 
@@ -4453,16 +4421,16 @@ namespace SSE {
         os << "MXCSR rounding:\n";
         os << "\t";
         switch(GetRoundingMode()) {
-            case MXCSR::Rounding::Nearest:
+            case mxcsr::Rounding::Nearest:
                 os << "Nearest";
                 break;
-            case MXCSR::Rounding::Positive:
+            case mxcsr::Rounding::Positive:
                 os << "Positive";
                 break;
-            case MXCSR::Rounding::Negative:
+            case mxcsr::Rounding::Negative:
                 os << "Negative";
                 break;
-            case MXCSR::Rounding::Zero:
+            case mxcsr::Rounding::Zero:
                 os << "Zero";
                 break;
         }
