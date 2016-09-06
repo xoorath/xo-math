@@ -534,12 +534,12 @@ void TestVector4Operators() {
 int main() {
 
 #if defined(XO_SSE)
-    xo::math::SSE::ThrowNoExceptions();
+    xo::math::sse::ThrowNoExceptions();
 #endif
     cout << XO_MATH_COMPILER_INFO << endl;
 
 #if defined(XO_SSE)
-    xo::math::SSE::GetAllMXCSRInfo(cout);
+    xo::math::sse::GetAllMXCSRInfo(cout);
 #endif
 
     cout.precision(12);

@@ -122,7 +122,7 @@ constexpr const float Rad2Deg = 360.0f / TAU;
 constexpr const float Deg2Rad = TAU / 360.0f;
 
 #if XO_SSE
-namespace SSE {
+namespace sse {
 #   if XO_SSE2
     // TODO: check if this still requires SSE2 or not. Unsure if removing the shift will do it for us.
     static const __m128 AbsMask = _mm_castsi128_ps(_mm_set1_epi32(0x7FFFFFFF));

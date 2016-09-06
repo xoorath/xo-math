@@ -7,7 +7,7 @@ XOMATH_BEGIN_XO_NS
 class _MM_ALIGN16 Vector4 {
 public:
 #if XO_SSE
-    constexpr static const float Epsilon = SSE::SSEFloatEpsilon * 4.0f;
+    constexpr static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
 #else
     constexpr static const float Epsilon = FloatEpsilon * 4.0f;
 #endif

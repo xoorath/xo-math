@@ -46,7 +46,7 @@ const float& Vector4::operator [](int i) const {
 
 Vector4 Vector4::operator -() const {
 #if XO_SSE
-    return Vector4(_mm_mul_ps(m, SSE::NegativeOne));
+    return Vector4(_mm_mul_ps(m, sse::NegativeOne));
 #else
     return Vector4(-x, -y, -z, -w);
 #endif
@@ -297,16 +297,16 @@ bool Vector4::operator >= (const Vector3& v) const      { return MagnitudeSquare
 
 bool Vector4::operator == (const Vector4& v) const {
 #   if XO_SSE2
-    return (_mm_movemask_ps(_mm_cmplt_ps(SSE::Abs(_mm_sub_ps(v.m, m)), SSE::Epsilon)) & 0b1111) == 0b1111;
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 0b1111) == 0b1111;
 #   elif XO_SSE
     // TODO: find a faster way with SSE to do a 'close enough' check.
-    // I'm not sure if there's a way to do the sign bit masking like we have in SSE::Abs to acomplish
+    // I'm not sure if there's a way to do the sign bit masking like we have in sse::Abs to acomplish
     // what we're doing in SSE2
     return 
-        CloseEnough(x, v.x, SSE::SSEFloatEpsilon) && 
-        CloseEnough(y, v.y, SSE::SSEFloatEpsilon) && 
-        CloseEnough(z, v.z, SSE::SSEFloatEpsilon) &&
-        CloseEnough(w, v.w, SSE::SSEFloatEpsilon);
+        CloseEnough(x, v.x, sse::SSEFloatEpsilon) && 
+        CloseEnough(y, v.y, sse::SSEFloatEpsilon) && 
+        CloseEnough(z, v.z, sse::SSEFloatEpsilon) &&
+        CloseEnough(w, v.w, sse::SSEFloatEpsilon);
 #   else
     return 
         CloseEnough(x, v.x, Epsilon) && 
@@ -322,12 +322,12 @@ bool Vector4::operator == (int v) const             { return CloseEnough(Magnitu
 bool Vector4::operator == (const Vector2& v) const {
 #   if XO_SSE2
     // Todo: check that this is actually faster.
-    return (_mm_movemask_ps(_mm_cmplt_ps(SSE::Abs(_mm_sub_ps(m, _mm_set_ps(0.0f, 0.0f, v.y, v.x))), SSE::Epsilon)) & 0b0011) == 0b0011;
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(m, _mm_set_ps(0.0f, 0.0f, v.y, v.x))), sse::Epsilon)) & 0b0011) == 0b0011;
 #   elif XO_SSE
     // TODO: find a faster way with SSE to do a 'close enough' check.
-    // I'm not sure if there's a way to do the sign bit masking like we have in SSE::Abs to acomplish
+    // I'm not sure if there's a way to do the sign bit masking like we have in sse::Abs to acomplish
     // what we're doing in SSE2
-    return CloseEnough(x, v.x, SSE::SSEFloatEpsilon) && CloseEnough(y, v.y, SSE::SSEFloatEpsilon);
+    return CloseEnough(x, v.x, sse::SSEFloatEpsilon) && CloseEnough(y, v.y, sse::SSEFloatEpsilon);
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
 #   endif
@@ -335,12 +335,12 @@ bool Vector4::operator == (const Vector2& v) const {
 
 bool Vector4::operator == (const Vector3& v) const {
 #   if XO_SSE2
-    return (_mm_movemask_ps(_mm_cmplt_ps(SSE::Abs(_mm_sub_ps(v.m, m)), SSE::Epsilon)) & 0b0111) == 0b0111;
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 0b0111) == 0b0111;
 #   elif XO_SSE
     // TODO: find a faster way with SSE to do a 'close enough' check.
-    // I'm not sure if there's a way to do the sign bit masking like we have in SSE::Abs to acomplish
+    // I'm not sure if there's a way to do the sign bit masking like we have in sse::Abs to acomplish
     // what we're doing in SSE2
-    return CloseEnough(x, v.x, SSE::SSEFloatEpsilon) && CloseEnough(y, v.y, SSE::SSEFloatEpsilon) && CloseEnough(z, v.z, SSE::SSEFloatEpsilon);
+    return CloseEnough(x, v.x, sse::SSEFloatEpsilon) && CloseEnough(y, v.y, sse::SSEFloatEpsilon) && CloseEnough(z, v.z, sse::SSEFloatEpsilon);
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon) && CloseEnough(z, v.z, Epsilon);
 #   endif

@@ -12,28 +12,28 @@ Vector2 Abs(const Vector2& v) {
 #if XO_SSE2 // TODO: check if SSE2 is required
 _XOINL
 Vector3 Abs(const Vector3& v) {
-    return (SSE::Abs(v.m));
+    return (sse::Abs(v.m));
 }
 
 _XOINL
 Vector4 Abs(const Vector4& v) {
-    return Vector4(SSE::Abs(v.m));
+    return Vector4(sse::Abs(v.m));
 }
 #endif
 
 #if XO_SSE
 
-namespace SSE {
+namespace sse {
 
     // The control of MXCSR usage is inspired by Agner Fog's use of them in vectormath.
     // vectormath uses them to optionally speed up subnormal operations.
     // To achieve this in xomath, call the following once per thread where xo-math is used:
-    //      SSE::UpdateControlWord();       // updates the thread-local state.
-    //      SSE::SetDenormalsAreZero(true); // force all denormal values to 0
-    //      SSE::SetFlushToZero(true);      // underflowing operations produce 0
+    //      sse::UpdateControlWord();       // updates the thread-local state.
+    //      sse::SetDenormalsAreZero(true); // force all denormal values to 0
+    //      sse::SetFlushToZero(true);      // underflowing operations produce 0
     // Note: this will only produce speed gains where subnormal values are likely to occur.
     // See http://wm.ite.pl/articles/sse-penalties-of-errors.html for more details.
-    namespace MXCSR {
+    namespace mxcsr {
         // Flags that are set on the CPU if an exception had occured.
         // They will remain set until manually unset.
         enum class Flags {
@@ -105,32 +105,32 @@ namespace SSE {
         return false;
     }
 
-    bool HasControlFlagBeenSet(MXCSR::Flags flags, bool withUpdate = false, bool thenFlush = false) {
+    bool HasControlFlagBeenSet(mxcsr::Flags flags, bool withUpdate = false, bool thenFlush = false) {
         return HasControlFlagBeenSet((unsigned)flags, withUpdate, thenFlush);
     }
 
     bool HasInvalidOperationExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(MXCSR::Flags::InvalidOperation, withUpdate, thenFlush);
+        return HasControlFlagBeenSet(mxcsr::Flags::InvalidOperation, withUpdate, thenFlush);
     }
 
     bool HasDenormalExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(MXCSR::Flags::Denormal, withUpdate, thenFlush);
+        return HasControlFlagBeenSet(mxcsr::Flags::Denormal, withUpdate, thenFlush);
     }
 
     bool HasDivideByZeroExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(MXCSR::Flags::DivideByZero, withUpdate, thenFlush);
+        return HasControlFlagBeenSet(mxcsr::Flags::DivideByZero, withUpdate, thenFlush);
     }
 
     bool HasOverflowExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(MXCSR::Flags::Overflow, withUpdate, thenFlush);
+        return HasControlFlagBeenSet(mxcsr::Flags::Overflow, withUpdate, thenFlush);
     }
 
     bool HasUnderflowExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(MXCSR::Flags::Underflow, withUpdate, thenFlush);
+        return HasControlFlagBeenSet(mxcsr::Flags::Underflow, withUpdate, thenFlush);
     }
 
     bool HasPrecisionExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(MXCSR::Flags::Precision, withUpdate, thenFlush);
+        return HasControlFlagBeenSet(mxcsr::Flags::Precision, withUpdate, thenFlush);
     }
 
     void SetControlMask(unsigned mask, bool value, bool withUpdate = false) {
@@ -145,7 +145,7 @@ namespace SSE {
         }
     }
 
-    void SetControlMask(MXCSR::Masks mask, bool value, bool withUpdate = false) {
+    void SetControlMask(mxcsr::Masks mask, bool value, bool withUpdate = false) {
         SetControlMask((unsigned)mask, value, withUpdate);
     }
 
@@ -156,32 +156,32 @@ namespace SSE {
         return (LastKnownControlWord & mask) == mask;
     }
 
-    bool GetControlMask(MXCSR::Masks mask, bool withUpdate = false) {
+    bool GetControlMask(mxcsr::Masks mask, bool withUpdate = false) {
         return GetControlMask((unsigned)mask, withUpdate);
     }
 
     void SetInvalidOperationExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(MXCSR::Masks::InvalidOperation, value, withUpdate);
+        SetControlMask(mxcsr::Masks::InvalidOperation, value, withUpdate);
     }
 
     void SetDenormalExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(MXCSR::Masks::Denormal, value, withUpdate);
+        SetControlMask(mxcsr::Masks::Denormal, value, withUpdate);
     }
 
     void SetDivideByZeroExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(MXCSR::Masks::DivideByZero, value, withUpdate);
+        SetControlMask(mxcsr::Masks::DivideByZero, value, withUpdate);
     }
 
     void SetOverflowExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(MXCSR::Masks::Overflow, value, withUpdate);
+        SetControlMask(mxcsr::Masks::Overflow, value, withUpdate);
     }
 
     void SetUnderflowExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(MXCSR::Masks::Underflow, value, withUpdate);
+        SetControlMask(mxcsr::Masks::Underflow, value, withUpdate);
     }
 
     void SetPrecisionExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(MXCSR::Masks::Precision, value, withUpdate);
+        SetControlMask(mxcsr::Masks::Precision, value, withUpdate);
     }
 
     void ThrowAllExceptions(bool withUpdate = false) {
@@ -209,45 +209,45 @@ namespace SSE {
     }
 
     bool GetInvalidOperationExceptionMask(bool withUpdate = false) {
-        return GetControlMask(MXCSR::Masks::InvalidOperation, withUpdate);
+        return GetControlMask(mxcsr::Masks::InvalidOperation, withUpdate);
     }
 
     bool GetDenormalExceptionMask(bool withUpdate = false) {
-        return GetControlMask(MXCSR::Masks::Denormal, withUpdate);
+        return GetControlMask(mxcsr::Masks::Denormal, withUpdate);
     }
 
     bool GetDivideByZeroExceptionMask(bool withUpdate = false) {
-        return GetControlMask(MXCSR::Masks::DivideByZero, withUpdate);
+        return GetControlMask(mxcsr::Masks::DivideByZero, withUpdate);
     }
 
     bool GetOverflowExceptionMask(bool withUpdate = false) {
-        return GetControlMask(MXCSR::Masks::Overflow, withUpdate);
+        return GetControlMask(mxcsr::Masks::Overflow, withUpdate);
     }
 
     bool GetUnderflowExceptionMask(bool withUpdate = false) {
-        return GetControlMask(MXCSR::Masks::Underflow, withUpdate);
+        return GetControlMask(mxcsr::Masks::Underflow, withUpdate);
     }
 
     bool GetPrecisionExceptionMask(bool withUpdate = false) {
-        return GetControlMask(MXCSR::Masks::Precision, withUpdate);
+        return GetControlMask(mxcsr::Masks::Precision, withUpdate);
     }
 
-    MXCSR::Rounding GetRoundingMode(bool withUpdate = false) {
+    mxcsr::Rounding GetRoundingMode(bool withUpdate = false) {
         if(withUpdate) {
             UpdateControlWord();
         }
-        return (MXCSR::Rounding)(LastKnownControlWord & (unsigned)MXCSR::Rounding::Bits);
+        return (mxcsr::Rounding)(LastKnownControlWord & (unsigned)mxcsr::Rounding::Bits);
     }
 
     void SetRoundingMode(unsigned mode, bool withUpdate = false) {
-        mode &= (unsigned)MXCSR::Rounding::Bits;
+        mode &= (unsigned)mxcsr::Rounding::Bits;
         if(withUpdate) {
             UpdateControlWord();
         }
         SetControlWordAddative(mode);
     }
 
-    void SetRoundingMode(MXCSR::Rounding mode, bool withUpdate = false) {
+    void SetRoundingMode(mxcsr::Rounding mode, bool withUpdate = false) {
         SetRoundingMode((unsigned)mode, withUpdate);
     }
 
@@ -255,7 +255,7 @@ namespace SSE {
         if(withUpdate) {
             UpdateControlWord();
         }
-        return (LastKnownControlWord & (unsigned)MXCSR::DAZ::DenormalsAreZero) == (unsigned)MXCSR::DAZ::DenormalsAreZero;
+        return (LastKnownControlWord & (unsigned)mxcsr::DAZ::DenormalsAreZero) == (unsigned)mxcsr::DAZ::DenormalsAreZero;
     }
 
     void SetDenormalsAreZero(bool value, bool withUpdate = false) {
@@ -263,10 +263,10 @@ namespace SSE {
             UpdateControlWord();
         }
         if(value) {
-            SetControlWordAddative((unsigned)MXCSR::DAZ::DenormalsAreZero);
+            SetControlWordAddative((unsigned)mxcsr::DAZ::DenormalsAreZero);
         }
         else {
-            RemoveControlWord((unsigned)MXCSR::DAZ::DenormalsAreZero);
+            RemoveControlWord((unsigned)mxcsr::DAZ::DenormalsAreZero);
         }
     }
 
@@ -274,7 +274,7 @@ namespace SSE {
         if(withUpdate) {
             UpdateControlWord();
         }
-        return (LastKnownControlWord & (unsigned)MXCSR::FZ::FlushToZero) == (unsigned)MXCSR::FZ::FlushToZero;
+        return (LastKnownControlWord & (unsigned)mxcsr::FZ::FlushToZero) == (unsigned)mxcsr::FZ::FlushToZero;
     }
 
     void SetFlushToZero(bool value, bool withUpdate = false) {
@@ -282,10 +282,10 @@ namespace SSE {
             UpdateControlWord();
         }
         if(value) {
-            SetControlWordAddative((unsigned)MXCSR::FZ::FlushToZero);
+            SetControlWordAddative((unsigned)mxcsr::FZ::FlushToZero);
         }
         else {
-            RemoveControlWord((unsigned)MXCSR::FZ::FlushToZero);
+            RemoveControlWord((unsigned)mxcsr::FZ::FlushToZero);
         }
     }
 
@@ -296,16 +296,16 @@ namespace SSE {
         os << "MXCSR rounding:\n";
         os << "\t";
         switch(GetRoundingMode()) {
-            case MXCSR::Rounding::Nearest:
+            case mxcsr::Rounding::Nearest:
                 os << "Nearest";
                 break;
-            case MXCSR::Rounding::Positive:
+            case mxcsr::Rounding::Positive:
                 os << "Positive";
                 break;
-            case MXCSR::Rounding::Negative:
+            case mxcsr::Rounding::Negative:
                 os << "Negative";
                 break;
-            case MXCSR::Rounding::Zero:
+            case mxcsr::Rounding::Zero:
                 os << "Zero";
                 break;
         }
