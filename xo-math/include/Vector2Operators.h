@@ -139,26 +139,14 @@ bool Vector2::operator == (double v) const                  { return *this == (f
 bool Vector2::operator == (int v) const                     { return *this == (float)(v*v); }
 bool Vector2::operator == (const class Vector3& v) const {
 #   if XO_SSE2
-    // Todo: check that this is actually faster.
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, y, x), v.m)), sse::Epsilon)) & 0b0011) == 0b0011;
-#   elif XO_SSE
-    // TODO: find a faster way with SSE to do a 'close enough' check.
-    // I'm not sure if there's a way to do the sign bit masking like we have in sse::Abs to acomplish
-    // what we're doing in SSE2
-    return CloseEnough(x, v.x, sse::SSEFloatEpsilon) && CloseEnough(y, v.y, sse::SSEFloatEpsilon);
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
 #   endif
 }
 bool Vector2::operator == (const class Vector4& v) const {
-#   if XO_SSE2
-    // Todo: check that this is actually faster.
+#   if XO_SSE
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, y, x), v.m)), sse::Epsilon)) & 0b0011) == 0b0011;
-#   elif XO_SSE
-    // TODO: find a faster way with SSE to do a 'close enough' check.
-    // I'm not sure if there's a way to do the sign bit masking like we have in sse::Abs to acomplish
-    // what we're doing in SSE2
-    return CloseEnough(x, v.x, sse::SSEFloatEpsilon) && CloseEnough(y, v.y, sse::SSEFloatEpsilon);
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
 #   endif

@@ -115,7 +115,7 @@ void Test::ReportSuccessIfNot(T got, T expected, const char* reason) {
 }
 
 #define _XO_TEST_ABS(f) (f >= 0.0f ? f : -f)
-#define _XO_TEST_EPSILON 0.000001f
+#define _XO_TEST_EPSILON 0.00001f
 
 void Test::ReportSuccessIf(float got, float expected, const char* reason) {
   if(_XO_TEST_ABS(got-expected) <= _XO_TEST_EPSILON) {

@@ -3,7 +3,6 @@ static_assert(false, "Don't include Vector4.h directly. Include GameMath.h, whic
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS
-// TODO: align new/delete
 class _MM_ALIGN16 Vector4 {
 public:
 #if XO_SSE

@@ -27,17 +27,8 @@ Quaternion Quaternion::operator * (const Quaternion& q) const {
 }
 
 bool Quaternion::operator == (const Quaternion& q) const {
-#   if XO_SSE2
+#   if XO_SSE
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(q.m, m)), sse::Epsilon)) & 0b1111) == 0b1111;
-#   elif XO_SSE
-    // TODO: find a faster way with SSE to do a 'close enough' check.
-    // I'm not sure if there's a way to do the sign bit masking like we have in sse::Abs to acomplish
-    // what we're doing in SSE2
-    return 
-        CloseEnough(x, q.x, sse::SSEFloatEpsilon) && 
-        CloseEnough(y, q.y, sse::SSEFloatEpsilon) && 
-        CloseEnough(z, q.z, sse::SSEFloatEpsilon) &&
-        CloseEnough(w, q.w, sse::SSEFloatEpsilon);
 #   else
     return 
         CloseEnough(x, q.x, Epsilon) && 

@@ -25,6 +25,7 @@
 #include <ostream>
 #include <random>
 #include <thread>
+#include <limits>
 #if defined(_MSC_VER)
 #   include <xmmintrin.h>
 #else
@@ -121,16 +122,22 @@ constexpr const float FloatEpsilon = 0.0000001192092896f;
 constexpr const float Rad2Deg = 360.0f / TAU;
 constexpr const float Deg2Rad = TAU / 360.0f;
 
+float HexFloat(unsigned u) {
+    union {
+        unsigned u;
+        float f;
+    } Converter;
+    Converter.u = u;
+    return Converter.f;
+}
+
 #if XO_SSE
 namespace sse {
-#   if XO_SSE2
-    // TODO: check if this still requires SSE2 or not. Unsure if removing the shift will do it for us.
-    static const __m128 AbsMask = _mm_castsi128_ps(_mm_set1_epi32(0x7FFFFFFF));
+    static const __m128 AbsMask = _mm_set1_ps(HexFloat(0x7fffffff));
 
     __m128 Abs(__m128 v) {
         return _mm_and_ps(AbsMask, v);
     }
-#   endif
 
     // the quoted error on _mm_rcp_ps documentation
     constexpr const float SSEFloatEpsilon = 0.000366210938f;
