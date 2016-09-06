@@ -31,7 +31,12 @@ after_success:
   - cd xo-math
   - node build_dist.js
   - cd ../
-  - git add ./xo-math.h
-  - git commit user.name='travis' -c user.email='travis@xoorath.com' -m 'generating xo-math from sources [ci skip]'
+  - git checkout master
+  - git config user.name "travis"
+  - git config user.email "travis@xoorath.com"
+  - git remote add upstream "https://$GITHUB_API_KEY@github.com/xoorath/xo-math.git"
   - git status
-  - git push -f -q https://xoorath:$GITHUB_API_KEY@github.com/xoorath/xo-math &2>/dev/null
+  - git add ./xo-math.h
+  - git commit -m 'generating xo-math from sources [ci skip]'
+  - git status
+  - git push -f -q https://xoorath:$GITHUB_API_KEY@github.com/xoorath/xo-math
