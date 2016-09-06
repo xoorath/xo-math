@@ -28,10 +28,10 @@ script:
   - ./a.out
 
 after_success:
+  - git checkout master
   - cd xo-math
   - node build_dist.js
   - cd ../
-  - git checkout master
   - git config user.name "travis"
   - git config user.email "travis@xoorath.com"
   - git remote add upstream "https://$GITHUB_API_KEY@github.com/xoorath/xo-math.git"
