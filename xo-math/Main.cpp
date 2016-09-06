@@ -279,12 +279,12 @@ void TestVector3Methods() {
             test.ReportSuccessIf(temp >= low, TEST_MSG( #method " should return a sphere with a greater than given radius.")); \
             test.ReportSuccessIf(temp2 >= low, TEST_MSG( #method " should return a sphere with a greater than given radius."));
 
-#define _XO_TEST_RANDOM_CONE(method) \
+#define _XO_TEST_RANDOM_CONE(method, expectedOutMagSquared) \
             test.ReportSuccessIfNot(temp, Vector3::Up, TEST_MSG( #method " should return random results. we got the same vector back that we put in, which is unlikely to be correct.")); \
             test.ReportSuccessIfNot(temp2, Vector3::Up, TEST_MSG( #method " should return random results. we got the same vector back that we put in, which is unlikely to be correct.")); \
             test.ReportSuccessIfNot(temp, temp2, TEST_MSG( #method " should return random results. We got the same vector twice, which is unlikely to be correct.")); \
-            test.ReportSuccessIf(temp.MagnitudeSquared(), Vector3::Up.MagnitudeSquared(), TEST_MSG( #method " gave us a vector with a different length than the input.")); \
-            test.ReportSuccessIf(temp2.MagnitudeSquared(), Vector3::Up.MagnitudeSquared(), TEST_MSG( #method " gave us a vector with a different length than the input."));
+            test.ReportSuccessIf(temp.MagnitudeSquared(), expectedOutMagSquared, TEST_MSG( #method " gave us a vector with a different length than the input.")); \
+            test.ReportSuccessIf(temp2.MagnitudeSquared(), expectedOutMagSquared, TEST_MSG( #method " gave us a vector with a different length than the input."));
 
 #define _XO_TEST_CONE_EQ(method, angle) \
             test.ReportSuccessIf(temp.AngleRadians(Vector3::Up), angle, TEST_MSG( #method " did not respect the provided angle requested for a given cone.")); \
@@ -296,62 +296,117 @@ void TestVector3Methods() {
 
         temp = Vector3::RandomOnConeRadians(Vector3::Up, HalfPI/2);
         temp2 = Vector3::RandomOnConeRadians(Vector3::Up, HalfPI/2);
-        _XO_TEST_RANDOM_CONE(RandomOnConeRadians);
+        _XO_TEST_RANDOM_CONE(RandomOnConeRadians, 1.0f);
+        _XO_TEST_CONE_EQ(RandomOnConeRadians, HalfPI/2.0f);
+
+        temp = Vector3::RandomOnConeRadians(Vector3::Up * 2.2f, HalfPI/2);
+        temp2 = Vector3::RandomOnConeRadians(Vector3::Up * 2.2f, HalfPI/2);
+        _XO_TEST_RANDOM_CONE(RandomOnConeRadians, 2.2f*2.2f);
         _XO_TEST_CONE_EQ(RandomOnConeRadians, HalfPI/2.0f);
 
         Vector3::RandomOnConeRadians(Vector3::Up, HalfPI/2, temp);
         Vector3::RandomOnConeRadians(Vector3::Up, HalfPI/2, temp2);
-        _XO_TEST_RANDOM_CONE(RandomOnConeRadians);
+        _XO_TEST_RANDOM_CONE(RandomOnConeRadians, 1.0f);
+        _XO_TEST_CONE_EQ(RandomOnConeRadians, HalfPI/2.0f);
+
+        Vector3::RandomOnConeRadians(Vector3::Up * 2.2f, HalfPI/2, temp);
+        Vector3::RandomOnConeRadians(Vector3::Up * 2.2f, HalfPI/2, temp2);
+        _XO_TEST_RANDOM_CONE(RandomOnConeRadians, 2.2f * 2.2f);
         _XO_TEST_CONE_EQ(RandomOnConeRadians, HalfPI/2.0f);
 
         temp = Vector3::Up.RandomOnConeRadians(HalfPI/2.0f);
         temp2 = Vector3::Up.RandomOnConeRadians(HalfPI/2.0f);
-        _XO_TEST_RANDOM_CONE(RandomOnConeRadians);
+        _XO_TEST_RANDOM_CONE(RandomOnConeRadians, 1.0f);
+        _XO_TEST_CONE_EQ(RandomOnConeRadians, HalfPI/2.0f);
+
+        temp = (Vector3::Up * 2.2f).RandomOnConeRadians(HalfPI/2.0f);
+        temp2 = (Vector3::Up * 2.2f).RandomOnConeRadians(HalfPI/2.0f);
+        _XO_TEST_RANDOM_CONE(RandomOnConeRadians, 2.2f * 2.2f);
         _XO_TEST_CONE_EQ(RandomOnConeRadians, HalfPI/2.0f);
 
         temp = Vector3::RandomInConeRadians(Vector3::Up, HalfPI/2.0f);
         temp2 = Vector3::RandomInConeRadians(Vector3::Up, HalfPI/2.0f);
-        _XO_TEST_RANDOM_CONE(RandomInConeRadians);
+        _XO_TEST_RANDOM_CONE(RandomInConeRadians, 1.0f);
+        _XO_TEST_CONE_LT(RandomInConeRadians, HalfPI/2.0f);
+
+        temp = Vector3::RandomInConeRadians(Vector3::Up * 2.2f, HalfPI/2.0f);
+        temp2 = Vector3::RandomInConeRadians(Vector3::Up * 2.2f, HalfPI/2.0f);
+        _XO_TEST_RANDOM_CONE(RandomInConeRadians, 2.2f*2.2f);
         _XO_TEST_CONE_LT(RandomInConeRadians, HalfPI/2.0f);
 
         Vector3::RandomInConeRadians(Vector3::Up, HalfPI/2.0f, temp);
         Vector3::RandomInConeRadians(Vector3::Up, HalfPI/2.0f, temp2);
-        _XO_TEST_RANDOM_CONE(RandomInConeRadians);
+        _XO_TEST_RANDOM_CONE(RandomInConeRadians, 1.0f);
+        _XO_TEST_CONE_LT(RandomInConeRadians, HalfPI/2.0f);
+
+        Vector3::RandomInConeRadians(Vector3::Up * 2.2f, HalfPI/2.0f, temp);
+        Vector3::RandomInConeRadians(Vector3::Up * 2.2f, HalfPI/2.0f, temp2);
+        _XO_TEST_RANDOM_CONE(RandomInConeRadians, 2.2f*2.2f);
         _XO_TEST_CONE_LT(RandomInConeRadians, HalfPI/2.0f);
 
         temp = Vector3::Up.RandomInConeRadians(HalfPI/2.0f);
         temp2 = Vector3::Up.RandomInConeRadians(HalfPI/2.0f);
-        _XO_TEST_RANDOM_CONE(RandomInConeRadians);
+        _XO_TEST_RANDOM_CONE(RandomInConeRadians, 1.0f);
         _XO_TEST_CONE_LT(RandomInConeRadians, HalfPI/2.0f);
 
-        temp = Vector3::RandomOnConeDegrees(Vector3::Up, 45.0f);
-        temp2 = Vector3::RandomOnConeDegrees(Vector3::Up, 45.0f);
-        _XO_TEST_RANDOM_CONE(RandomOnConeDegrees);
+        temp = (Vector3::Up * 2.2f).RandomInConeRadians(HalfPI/2.0f);
+        temp2 = (Vector3::Up * 2.2f).RandomInConeRadians(HalfPI/2.0f);
+        _XO_TEST_RANDOM_CONE(RandomInConeRadians, 2.2f*2.2f);
+        _XO_TEST_CONE_LT(RandomInConeRadians, HalfPI/2.0f);
+
+        temp = Vector3::RandomOnConeDegrees(Vector3::Up*2.2f, 45.0f);
+        temp2 = Vector3::RandomOnConeDegrees(Vector3::Up*2.2f, 45.0f);
+        _XO_TEST_RANDOM_CONE(RandomOnConeDegrees, 2.2f * 2.2f);
         _XO_TEST_CONE_EQ(RandomOnConeDegrees, 45.0f);
 
         Vector3::RandomOnConeDegrees(Vector3::Up, 45.0f, temp);
         Vector3::RandomOnConeDegrees(Vector3::Up, 45.0f, temp2);
-        _XO_TEST_RANDOM_CONE(RandomOnConeDegrees);
+        _XO_TEST_RANDOM_CONE(RandomOnConeDegrees, 1.0f);
+        _XO_TEST_CONE_EQ(RandomOnConeDegrees, 45.0f);
+
+        Vector3::RandomOnConeDegrees(Vector3::Up * 2.2f, 45.0f, temp);
+        Vector3::RandomOnConeDegrees(Vector3::Up * 2.2f, 45.0f, temp2);
+        _XO_TEST_RANDOM_CONE(RandomOnConeDegrees, 2.2f * 2.2f);
         _XO_TEST_CONE_EQ(RandomOnConeDegrees, 45.0f);
 
         temp = Vector3::Up.RandomOnConeDegrees(45.0f);
         temp2 = Vector3::Up.RandomOnConeDegrees(45.0f);
-        _XO_TEST_RANDOM_CONE(RandomOnConeDegrees);
+        _XO_TEST_RANDOM_CONE(RandomOnConeDegrees, 1.0f);
+        _XO_TEST_CONE_EQ(RandomOnConeDegrees, 45.0f);
+
+        temp = (Vector3::Up * 2.2f).RandomOnConeDegrees(45.0f);
+        temp2 = (Vector3::Up * 2.2f).RandomOnConeDegrees(45.0f);
+        _XO_TEST_RANDOM_CONE(RandomOnConeDegrees, 2.2f * 2.2f);
         _XO_TEST_CONE_EQ(RandomOnConeDegrees, 45.0f);
 
         temp = Vector3::RandomInConeDegrees(Vector3::Up, 45.0f);
         temp2 = Vector3::RandomInConeDegrees(Vector3::Up, 45.0f);
-        _XO_TEST_RANDOM_CONE(RandomInConeDegrees);
+        _XO_TEST_RANDOM_CONE(RandomInConeDegrees, 1.0f);
+        _XO_TEST_CONE_LT(RandomInConeDegrees, 45.0f);
+
+        temp = Vector3::RandomInConeDegrees(Vector3::Up * 2.2f, 45.0f);
+        temp2 = Vector3::RandomInConeDegrees(Vector3::Up * 2.2f, 45.0f);
+        _XO_TEST_RANDOM_CONE(RandomInConeDegrees, 2.2f*2.2f);
         _XO_TEST_CONE_LT(RandomInConeDegrees, 45.0f);
 
         Vector3::RandomInConeDegrees(Vector3::Up, 45.0f, temp);
         Vector3::RandomInConeDegrees(Vector3::Up, 45.0f, temp2);
-        _XO_TEST_RANDOM_CONE(RandomInConeDegrees);
+        _XO_TEST_RANDOM_CONE(RandomInConeDegrees, 1.0f);
+        _XO_TEST_CONE_LT(RandomInConeDegrees, 45.0f);
+
+        Vector3::RandomInConeDegrees(Vector3::Up*2.2f, 45.0f, temp);
+        Vector3::RandomInConeDegrees(Vector3::Up*2.2f, 45.0f, temp2);
+        _XO_TEST_RANDOM_CONE(RandomInConeDegrees, 2.2f*2.2f);
         _XO_TEST_CONE_LT(RandomInConeDegrees, 45.0f);
 
         temp = Vector3::Up.RandomInConeDegrees(45.0f);
         temp2 = Vector3::Up.RandomInConeDegrees(45.0f);
-        _XO_TEST_RANDOM_CONE(RandomInConeDegrees);
+        _XO_TEST_RANDOM_CONE(RandomInConeDegrees, 1.0f);
+        _XO_TEST_CONE_LT(RandomInConeDegrees, 45.0f);
+
+        temp = (Vector3::Up*2.2f).RandomInConeDegrees(45.0f);
+        temp2 = (Vector3::Up*2.2f).RandomInConeDegrees(45.0f);
+        _XO_TEST_RANDOM_CONE(RandomInConeDegrees, 2.2f * 2.2f);
         _XO_TEST_CONE_LT(RandomInConeDegrees, 45.0f);
 
         temp = Vector3::RandomOnSphere();

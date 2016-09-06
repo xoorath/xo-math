@@ -263,21 +263,24 @@ void Vector3::RotateDegrees(const Vector3& v, const Vector3& axis, float angle, 
     RotateRadians(v, axis, angle * Deg2Rad, outVec);
 }
 
-// TODO: test results with non-normalized forward. Do this for all random cone methods.
 void Vector3::RandomOnConeRadians(const Vector3& forward, float angle, Vector3& outVec) {
+    Vector3 forwardNorm = forward.Normalized();
     Vector3 crossed, tilted;
-    Vector3 other = forward == Up ? Left : Up; // anything unit length but the forward vector
-    Vector3::Cross(forward, other, crossed);
-    Vector3::RotateRadians(forward, crossed, angle, tilted);
-    Vector3::RotateRadians(tilted, forward, RandomRange(-PI, PI), outVec);
+    Vector3 other = forwardNorm == Up ? Left : Up; // anything unit length but the forwardNorm vector
+    Vector3::Cross(forwardNorm, other, crossed);
+    Vector3::RotateRadians(forwardNorm, crossed, angle, tilted);
+    Vector3::RotateRadians(tilted, forwardNorm, RandomRange(-PI, PI), outVec);
+    outVec *= forward.Magnitude();
 }
 
 void Vector3::RandomInConeRadians(const Vector3& forward, float angle, Vector3& outVec) {
+    Vector3 forwardNorm = forward.Normalized();
     Vector3 crossed, tilted;
-    Vector3 other = forward == Up ? Left : Up; // anything unit length but the forward vector
-    Vector3::Cross(forward, other, crossed);
-    Vector3::RotateRadians(forward, crossed, RandomRange(0.0f, angle), tilted);
-    Vector3::RotateRadians(tilted, forward, RandomRange(-PI, PI), outVec);
+    Vector3 other = forwardNorm == Up ? Left : Up; // anything unit length but the forwardNorm vector
+    Vector3::Cross(forwardNorm, other, crossed);
+    Vector3::RotateRadians(forwardNorm, crossed, RandomRange(0.0f, angle), tilted);
+    Vector3::RotateRadians(tilted, forwardNorm, RandomRange(-PI, PI), outVec);
+    outVec *= forward.Magnitude();
 }
 
 void Vector3::RandomOnConeDegrees(const Vector3& forward, float angle, Vector3& outVec) {
