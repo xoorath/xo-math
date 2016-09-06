@@ -1,4 +1,3 @@
-// For testing it's helpful to change settings and re-include xo-math with another XO_CUSTOM_NS defined as well.
 #ifndef XO_MATH_H
 #define XO_MATH_H
 
@@ -261,6 +260,7 @@ _XOMATH_INTERNAL_MACRO_WARNING
 ////////////////////////////////////////////////////////////////////////// Remove internal macros
 
 #if defined(XO_REDEFINABLE)
+// For testing it's helpful to change settings and re-include xo-math with another XO_CUSTOM_NS defined as well.
 #   undef XO_MATH_H
 #endif
 
