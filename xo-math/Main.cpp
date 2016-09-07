@@ -519,7 +519,7 @@ void TestVector4Operators() {
         _XO_BASIC_OP(+, 10.0f, 2.0f, -3.0f, 43.96f);
         _XO_BASIC_OP(-, 12.2f, -2.4f, -3.66f, -44.04f);
         _XO_BASIC_OP(*, -12.21f, -0.44f, -1.0989f, -1.76f);
-        _XO_BASIC_OP(/, -10.09090909f, -0.09090909091f, -10.090909091, -0.0009090909091f);
+        _XO_BASIC_OP(/, -10.09090909f, -0.09090909091f, -10.090909091f, -0.0009090909091f);
 #undef _XO_BASIC_OP
         
 #define _XO_BASIC_OPEQ(op, ...) \
@@ -531,7 +531,7 @@ void TestVector4Operators() {
         _XO_BASIC_OPEQ(+=, 10.0f, 2.0f, -3.0f, 43.96f);
         _XO_BASIC_OPEQ(-=, 12.2f, -2.4f, -3.66f, -44.04f);
         _XO_BASIC_OPEQ(*=, -12.21f, -0.44f, -1.0989f, -1.76f);
-        _XO_BASIC_OPEQ(/=, -10.09090909f, -0.09090909091f, -10.090909091, -0.0009090909091f);
+        _XO_BASIC_OPEQ(/=, -10.09090909f, -0.09090909091f, -10.090909091f, -0.0009090909091f);
 #undef _XO_BASIC_OPEQ
 
         test.ReportSuccessIf(-left, Vector4(-11.1f, 0.2f, 3.33f, 0.04f), TEST_MSG("We expected -vec to be equal to the expected input param"));

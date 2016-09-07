@@ -4,21 +4,65 @@
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Matrix4x4.h" />
-    <ClInclude Include="..\Matrix4x4Methods.h" />
-    <ClInclude Include="..\Matrix4x4Operators.h" />
-    <ClInclude Include="..\Quaternion.h" />
-    <ClInclude Include="..\QuaternionMethods.h" />
-    <ClInclude Include="..\QuaternionOperators.h" />
-    <ClInclude Include="..\Vector2.h" />
-    <ClInclude Include="..\Vector2Methods.h" />
-    <ClInclude Include="..\Vector2Operators.h" />
-    <ClInclude Include="..\Vector3.h" />
-    <ClInclude Include="..\Vector3Methods.h" />
-    <ClInclude Include="..\Vector3Operators.h" />
-    <ClInclude Include="..\Vector4.h" />
-    <ClInclude Include="..\Vector4Methods.h" />
-    <ClInclude Include="..\Vector4Operators.h" />
-    <ClInclude Include="..\xo-math.h" />
+    <ClInclude Include="xo-test.h" />
+    <ClInclude Include="include\Matrix4x4.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Matrix4x4Methods.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Matrix4x4Operators.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Quaternion.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\QuaternionMethods.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\QuaternionOperators.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SSE.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Vector2.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Vector2Methods.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Vector2Operators.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Vector3.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Vector3Methods.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Vector3Operators.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Vector4.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Vector4Methods.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Vector4Operators.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xo-math.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DetectSIMD.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{4e1655c3-1a2d-4766-b233-071e54e24f4a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
