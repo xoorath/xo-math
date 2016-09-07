@@ -1,10 +1,5 @@
 sudo: required
-dist: trusty
 language: cpp
-
-os:
-  - linux
-  - osx
 
 matrix:
   include:
@@ -13,10 +8,12 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.7
+            - llvm-toolchain-precise-3.9
           packages:
-            - clang-3.7
-      env: COMPILER=clang++-3.7
+            - clang-3.9
+      os: linux
+      name: clang++ 3.9
+      env: COMPILER=clang++-3.9
 
     - compiler: gcc
       addons:
@@ -25,13 +22,16 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-5
+      name: g++ 5
+      os: linux
+      name: g++ 5
       env: COMPILER=g++-5
 
 script:
   - cmake -DCMAKE_CXX_COMPILER=$COMPILER && make
   - ./a.out
 
-after_success:
+deploy:
   - git checkout master
   - cd ./xo-math
   - node build_dist.js
