@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(dkm)
+project(xo-math)
 
 set(DEBUG_FLAGS "-std=c++11 -O1 -msse4.2")
 set(RELEASE_FLAGS "-std=c++11 -O3 -msse4.2")
