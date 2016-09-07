@@ -1,5 +1,5 @@
 ### Status
-[![Build Status](https://travis-ci.org/xoorath/xo-math.png)](https://travis-ci.org/xoorath/xo-math)
+[![Build Status](https://semaphoreci.com/api/v1/xoorath/xo-math/branches/master/shields_badge.svg)](https://semaphoreci.com/xoorath/xo-math)
 
 xo-math is currently in progress and not ready for production use.
 
