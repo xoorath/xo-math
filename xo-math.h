@@ -1177,6 +1177,7 @@ public:
     _XOINL bool IsZero() const;
     _XOINL bool IsNormalized() const;
 
+    // todo: reflect glsl behaviour on max and min.
     _XOINL static void Max(const Vector4& a, const Vector4& b, Vector4& outVec);
     _XOINL static void Min(const Vector4& a, const Vector4& b, Vector4& outVec);
     _XOINL static void Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec);
