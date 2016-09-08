@@ -251,6 +251,13 @@ _XOMATH_INTERNAL_MACRO_WARNING
 
 #endif // XOMATH_INTERNAL
 
+#if defined(_XOCONSTEXPR)
+_XOMATH_INTERNAL_MACRO_WARNING
+#else
+// todo: remove constexpr in visual studio 2013 and re-test for support
+#   define _XOCONSTEXPR constexpr
+#endif
+
 #if defined(_XOINL)
 _XOMATH_INTERNAL_MACRO_WARNING
 #else
@@ -302,15 +309,15 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #endif
 
 XOMATH_BEGIN_XO_NS
-constexpr const float PI = 3.141592653589793238462643383279502884197169399375105820f;
-constexpr const float PIx2 = 2.0f * PI;
-constexpr const float TAU = PIx2;
-constexpr const float HalfPI = PI / 2.0f;
+_XOCONSTEXPR const float PI = 3.141592653589793238462643383279502884197169399375105820f;
+_XOCONSTEXPR const float PIx2 = 2.0f * PI;
+_XOCONSTEXPR const float TAU = PIx2;
+_XOCONSTEXPR const float HalfPI = PI / 2.0f;
 
-constexpr const float FloatEpsilon = 0.0000001192092896f;
+_XOCONSTEXPR const float FloatEpsilon = 0.0000001192092896f;
 
-constexpr const float Rad2Deg = 360.0f / TAU;
-constexpr const float Deg2Rad = TAU / 360.0f;
+_XOCONSTEXPR const float Rad2Deg = 360.0f / TAU;
+_XOCONSTEXPR const float Deg2Rad = TAU / 360.0f;
 
 float HexFloat(unsigned u) {
     union {
@@ -330,7 +337,7 @@ namespace sse {
     }
 
     // the quoted error on _mm_rcp_ps documentation
-    constexpr const float SSEFloatEpsilon = 0.000366210938f;
+    _XOCONSTEXPR const float SSEFloatEpsilon = 0.000366210938f;
 
     static const __m128 Zero = _mm_setzero_ps();
     static const __m128 One = _mm_set1_ps(1.0f);
@@ -358,17 +365,29 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #   endif
 
 #else
-    // we don't need to overload new and delete unless memory alignment is required.
-#   if defined(_XO_OVERLOAD_NEW_DELETE)
+// we don't need to overload new and delete unless memory alignment is required.
+#if defined(_XO_OVERLOAD_NEW_DELETE)
 _XOMATH_INTERNAL_MACRO_WARNING
 #   else
-#   define _XO_OVERLOAD_NEW_DELETE
+#       define _XO_OVERLOAD_NEW_DELETE
 #   endif
 #endif
 
+#if defined(_XO_MIN)
+_XOMATH_INTERNAL_MACRO_WARNING
+#else
+#   define _XO_MIN(a, b) (a < b ? a : b)
+#endif
+
+#if defined(_XO_MAX)
+_XOMATH_INTERNAL_MACRO_WARNING
+#else
+#   define _XO_MAX(a, b) (a > b ? a : b)
+#endif
+
 // wrap for now, so we have the option to make a faster version later.
-_XOINL float Min(float x, float y)      { return x < y ? x : y; }
-_XOINL float Max(float x, float y)      { return x > y ? x : y; }
+_XOINL float Min(float x, float y)      { return _XO_MIN(x, y); }
+_XOINL float Max(float x, float y)      { return _XO_MAX(x, y); }
 _XOINL float Abs(float f)               { return f > 0.0f ? f : -f; }
 _XOINL float Sqrt(float f)              { return sqrtf(f); }
 _XOINL float Sin(float f)               { return sinf(f); }
@@ -384,9 +403,9 @@ bool CloseEnough(float x, float y, float tolerance = FloatEpsilon) {
     return Difference(x, y) * (1.0f/tolerance) <= Min(Abs(x), Abs(y));
 }
 
-constexpr _XOINL float Square(float t)      { return t*t; }
-constexpr _XOINL double Square(double t)    { return t*t; }
-constexpr _XOINL int Square(int t)          { return t*t; }
+_XOCONSTEXPR _XOINL float Square(float t)      { return t*t; }
+_XOCONSTEXPR _XOINL double Square(double t)    { return t*t; }
+_XOCONSTEXPR _XOINL int Square(int t)          { return t*t; }
 
 _XOINL 
 bool RandomBool() {
@@ -436,7 +455,7 @@ static_assert(false, "Don't include Vector2.h directly. Include GameMath.h, whic
 XOMATH_BEGIN_XO_NS
 class _MM_ALIGN16 Vector2 {
 public:
-    constexpr static const float Epsilon = FloatEpsilon * 2.0f;
+    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 2.0f;
 
     // No initialization is done.
     _XOINL Vector2();
@@ -571,6 +590,8 @@ public:
     _XOINL static float Cross(const Vector2& a, const Vector2& b);
     _XOINL static float AngleRadians(const Vector2& a, const Vector2& b);
     _XOINL static float AngleDegrees(const Vector2& a, const Vector2& b);
+    _XOINL static float Distance(const Vector2& a, const Vector2& b);
+    _XOINL static float DistanceSquared(const Vector2& a, const Vector2& b);
 
     _XOINL static void Max(const Vector2& a, const Vector2& b, Vector2& outVec);
     _XOINL static void Min(const Vector2& a, const Vector2& b, Vector2& outVec);
@@ -581,12 +602,14 @@ public:
     // input vector rotated -90 degrees
     _XOINL static void OrthogonalCW(const Vector2& v, Vector2& outVec);
     _XOINL static void Lerp(const Vector2& a, const Vector2& b, float t, Vector2& outVec);
+    _XOINL static void Midpoint(const Vector2& a, const Vector2& b, Vector2& outVec);
 
     _XOINL static Vector2 Max(const Vector2& a, const Vector2& b);
     _XOINL static Vector2 Min(const Vector2& a, const Vector2& b);
     _XOINL static Vector2 OrthogonalCCW(const Vector2& v);
     _XOINL static Vector2 OrthogonalCW(const Vector2& v);
     _XOINL static Vector2 Lerp(const Vector2& a, const Vector2& b, float t);
+    _XOINL static Vector2 Midpoint(const Vector2& a, const Vector2& b);
 
     _XOINL float Dot(const Vector2& v) const;
     _XOINL float Cross(const Vector2& v) const;
@@ -594,7 +617,10 @@ public:
     _XOINL Vector2 OrthogonalCW() const;
     _XOINL float AngleRadians(const Vector2& v) const;
     _XOINL float AngleDegrees(const Vector2& v) const;
+    _XOINL float Distance(const Vector2& v) const;
+    _XOINL float DistanceSquared(const Vector2& v) const;
     _XOINL Vector2 Lerp(const Vector2& v, float t) const;
+    _XOINL Vector2 Midpoint(const Vector2& v) const;
 
     friend std::ostream& operator <<(std::ostream& os, const Vector2& v) {
         os << "(x:" << v.x << ", y:" << v.y << ", mag:" << v.Magnitude() << ")";
@@ -637,9 +663,9 @@ class _MM_ALIGN16 Vector3 {
 
 public:
 #if XO_SSE
-    constexpr static const float Epsilon = sse::SSEFloatEpsilon * 3.0f;
+    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 3.0f;
 #else
-    constexpr static const float Epsilon = FloatEpsilon * 3.0f;
+    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 3.0f;
 #endif
 
     // No initialization is done.
@@ -1033,9 +1059,9 @@ XOMATH_BEGIN_XO_NS
 class _MM_ALIGN16 Vector4 {
 public:
 #if XO_SSE
-    constexpr static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
+    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
 #else
-    constexpr static const float Epsilon = FloatEpsilon * 4.0f;
+    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
 #endif
     // No initialization is done.
     _XOINL Vector4();
@@ -1420,9 +1446,9 @@ class _MM_ALIGN16 Quaternion {
 #endif
 public:
 #if XO_SSE
-    constexpr static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
+    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
 #else
-    constexpr static const float Epsilon = FloatEpsilon * 4.0f;
+    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
 #endif
 
     _XOINL Quaternion();
@@ -1765,12 +1791,20 @@ float Vector2::AngleDegrees(const Vector2& a, const Vector2& b) {
     return AngleRadians(a, b) * Rad2Deg;
 }
 
+float Vector2::Distance(const Vector2& a, const Vector2& b) {
+    return (b-a).Magnitude();
+}
+
+float Vector2::DistanceSquared(const Vector2& a, const Vector2& b) {
+    return (b-a).MagnitudeSquared();
+}
+
 void Vector2::Max(const Vector2& a, const Vector2& b, Vector2& outVec) {
-    outVec.Set(a.MagnitudeSquared() >= b.MagnitudeSquared() ? a : b);
+    outVec.Set(_XO_MAX(a.x, b.x), _XO_MAX(a.y, b.y));
 }
 
 void Vector2::Min(const Vector2& a, const Vector2& b, Vector2& outVec) {
-    outVec.Set(a.MagnitudeSquared() < b.MagnitudeSquared() ? a : b);
+    outVec.Set(_XO_MIN(a.x, b.x), _XO_MIN(a.y, b.y));
 }
 
 void Vector2::OrthogonalCCW(const Vector2& v, Vector2& outVec) {
@@ -1793,48 +1827,56 @@ void Vector2::Lerp(const Vector2& a, const Vector2& b, float t, Vector2& outVec)
     }
 }
 
+void Vector2::Midpoint(const Vector2& a, const Vector2& b, Vector2& outVec) {
+    Vector2::Lerp(a, b, 0.5f, outVec);
+}
+
 Vector2 Vector2::Max(const Vector2& a, const Vector2& b) {
     Vector2 tempVec;
     Max(a, b, tempVec);
     return tempVec;
-
 }
 
 Vector2 Vector2::Min(const Vector2& a, const Vector2& b) {
     Vector2 tempVec;
     Min(a, b, tempVec);
     return tempVec;
-
 }
 
 Vector2 Vector2::OrthogonalCCW(const Vector2& v) {
     Vector2 tempVec;
     OrthogonalCCW(v, tempVec);
     return tempVec;
-
 }
 
 Vector2 Vector2::OrthogonalCW(const Vector2& v) {
     Vector2 tempVec;
     OrthogonalCW(v, tempVec);
     return tempVec;
-
 }
 
 Vector2 Vector2::Lerp(const Vector2& a, const Vector2& b, float t) {
     Vector2 tempVec;
     Lerp(a, b, t, tempVec);
     return tempVec;
-
 }
 
-float Vector2::Dot(const Vector2& v) const              { return Dot(*this, v); }
-float Vector2::Cross(const Vector2& v) const            { return Cross(*this, v); }
-Vector2 Vector2::OrthogonalCCW() const                  { return OrthogonalCCW(*this); }
-Vector2 Vector2::OrthogonalCW() const                   { return OrthogonalCW(*this); }
-float Vector2::AngleRadians(const Vector2& v) const     { return AngleRadians(*this, v); }
-float Vector2::AngleDegrees(const Vector2& v) const     { return AngleDegrees(*this, v); }
-Vector2 Vector2::Lerp(const Vector2& v, float t) const  { return Lerp(*this, v, t); }
+Vector2 Vector2::Midpoint(const Vector2& a, const Vector2& b) {
+    Vector2 tempVec;
+    Midpoint(a, b, tempVec);
+    return tempVec;
+}
+
+float Vector2::Dot(const Vector2& v) const                  { return Dot(*this, v); }
+float Vector2::Cross(const Vector2& v) const                { return Cross(*this, v); }
+Vector2 Vector2::OrthogonalCCW() const                      { return OrthogonalCCW(*this); }
+Vector2 Vector2::OrthogonalCW() const                       { return OrthogonalCW(*this); }
+float Vector2::AngleRadians(const Vector2& v) const         { return AngleRadians(*this, v); }
+float Vector2::AngleDegrees(const Vector2& v) const         { return AngleDegrees(*this, v); }
+float Vector2::Distance(const Vector2& v) const             { return Distance(*this, v); }
+float Vector2::DistanceSquared(const Vector2& v) const      { return DistanceSquared(*this, v); }
+Vector2 Vector2::Lerp(const Vector2& v, float t) const      { return Lerp(*this, v, t); }
+Vector2 Vector2::Midpoint(const Vector2& v) const           { return Midpoint(*this, v); }
 
 XOMATH_END_XO_NS
 
@@ -2369,11 +2411,11 @@ void Vector3::Cross(const Vector3& a, const Vector3& b, Vector3& outVec) {
 }
 
 void Vector3::Max(const Vector3& a, const Vector3& b, Vector3& outVec) {
-    outVec.Set(a > b ? a : b);
+    outVec.Set(_XO_MAX(a.x, b.x), _XO_MAX(a.y, b.y), _XO_MAX(a.z, b.z));
 }
  
 void Vector3::Min(const Vector3& a, const Vector3& b, Vector3& outVec) {
-    outVec.Set(a < b ? a : b);
+    outVec.Set(_XO_MIN(a.x, b.x), _XO_MIN(a.y, b.y), _XO_MIN(a.z, b.z));
 }
 
 void Vector3::Lerp(const Vector3& a, const Vector3& b, float t, Vector3& outVec) {
@@ -3158,11 +3200,11 @@ bool Vector4::IsNormalized() const {
 }
  
 void Vector4::Max(const Vector4& a, const Vector4& b, Vector4& outVec) {
-    outVec = a >= b ? a : b;
+    outVec.Set(_XO_MAX(a.x, b.x), _XO_MAX(a.y, b.y), _XO_MAX(a.z, b.z), _XO_MAX(a.w, b.w));
 }
 
 void Vector4::Min(const Vector4& a, const Vector4& b, Vector4& outVec) {
-    outVec = a <= b ? a : b;
+    outVec.Set(_XO_MIN(a.x, b.x), _XO_MIN(a.y, b.y), _XO_MIN(a.z, b.z), _XO_MIN(a.w, b.w));
 }
 
 void Vector4::Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec) {
@@ -3952,9 +3994,15 @@ void Quaternion::RotationRadians(float x, float y, float z, Quaternion& outQuat)
 
 void Quaternion::RotationRadians(const Vector3& v, Quaternion& outQuat) {
     Vector3 hv = v * 0.5f;
-    // TODO: use intrinsics for sin/cos here
+
+#if XO_SSE && defined(__INTEL_COMPILER)
+    Vector3 vs(_mm_sin_ps(hv));
+    Vector3 vc(_mm_cos_ps(hv));
+#else
+    // agner fog has a portable vector trig.... see if the licence is usable.
     Vector3 vs(Sin(hv.x), Sin(hv.y), Sin(hv.z));
     Vector3 vc(Cos(hv.x), Cos(hv.y), Cos(hv.z));
+#endif
     _XO_ASSIGN_QUAT_Q(outQuat,
         vc.x * vc.y * vc.z + vs.x * vs.y * vs.z,
         vs.x * vc.y * vc.z - vc.x * vs.y * vs.z,
@@ -3968,7 +4016,6 @@ void Quaternion::AxisAngleRadians(const Vector3& axis, float radians, Quaternion
 
     Vector3 n = axis.Normalized();
     n *= sr;
-    // TODO: Assign with intrinsics here. We already have n.m equal to three quarters of the m128 we want.
     _XO_ASSIGN_QUAT_Q(outQuat, Cos(radians), n.x, n.y, n.z);
 }
 
@@ -4512,6 +4559,7 @@ XOMATH_END_XO_NS
 
 #undef _XOMATH_INTERNAL_MACRO_WARNING
 
+#undef _XOCONSTEXPR
 #undef _XOINL
 #undef _XOTLS
 
@@ -4519,6 +4567,9 @@ XOMATH_END_XO_NS
 #undef _XO_TLS_DISTRIBUTION
 
 #undef _XO_OVERLOAD_NEW_DELETE
+
+#undef _XO_MIN
+#undef _XO_MAX
 
 #undef _XO_ASSIGN_QUAT
 #undef _XO_ASSIGN_QUAT_Q
