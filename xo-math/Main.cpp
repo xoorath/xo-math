@@ -371,16 +371,18 @@ void TestVector3Methods() {
         test.ReportSuccessIf(temp3, Vector3(3.63f, -7.26f, 3.63f), TEST_MSG("dot product of (4.4,5.5,6.6) and (1.1,2.2,3.3) expected to match a known result."));
         test.ReportSuccessIf(temp2.Cross(temp), Vector3(3.63f, -7.26f, 3.63f), TEST_MSG("dot product of (4.4,5.5,6.6) and (1.1,2.2,3.3) expected to match a known result."));
         
-        // todo: change behavior and test to reflect the min/max we get from hlsl/glsl
-        test.ReportSuccessIf(Vector3::Max(temp, temp2), temp2, TEST_MSG("Max of two vectors is not as expected."));
-        test.ReportSuccessIf(Vector3::Min(temp, temp2), temp, TEST_MSG("Min of two vectors is not as expected."));
-        test.ReportSuccessIf(Vector3::Max(temp2, temp), temp2, TEST_MSG("Max of two vectors is not as expected."));
-        test.ReportSuccessIf(Vector3::Min(temp2, temp), temp, TEST_MSG("Min of two vectors is not as expected."));
+        temp2.Set(4.4f, -5.5f, 6.6f);
+        test.ReportSuccessIf(Vector3::Max(temp, temp2), Vector3(4.4f, 2.2f, 6.6f), TEST_MSG("Max of two vectors is not as expected."));
+        test.ReportSuccessIf(Vector3::Min(temp, temp2), Vector3(1.1f, -5.5f, 3.3f), TEST_MSG("Min of two vectors is not as expected."));
+        test.ReportSuccessIf(Vector3::Max(temp2, temp), Vector3(4.4f, 2.2f, 6.6f), TEST_MSG("Max of two vectors is not as expected."));
+        test.ReportSuccessIf(Vector3::Min(temp2, temp), Vector3(1.1f, -5.5f, 3.3f), TEST_MSG("Min of two vectors is not as expected."));
 
         Vector3::Max(temp, temp2, temp3);
-        test.ReportSuccessIf(temp3, temp2, TEST_MSG("Max of two vectors is not as expected."));
+        test.ReportSuccessIf(temp3, Vector3(4.4f, 2.2f, 6.6f), TEST_MSG("Max of two vectors is not as expected."));
         Vector3::Min(temp, temp2, temp3);
-        test.ReportSuccessIf(temp3, temp, TEST_MSG("Max of two vectors is not as expected."));
+        test.ReportSuccessIf(temp3, Vector3(1.1f, -5.5f, 3.3f), TEST_MSG("Max of two vectors is not as expected."));
+
+        temp2.Set(4.4f, 5.5f, 6.6f);
 
 #define _XO_LERP(t, expected, msg) \
             test.ReportSuccessIf(Vector3::Lerp(temp, temp2, t), expected, TEST_MSG(msg)); \
@@ -833,12 +835,12 @@ int main() {
     cout.precision(12);
     cout << std::fixed;
 
-    //TestVector2Operators();
+    TestVector2Operators();
     TestVector2Methods();
-    // TestVector3Operators();
-    // TestVector3Methods();
-    // TestVector4Operators();
-    // TestVector4Methods();
+    TestVector3Operators();
+    TestVector3Methods();
+    TestVector4Operators();
+    TestVector4Methods();
 
 #if defined(_MSC_VER)
     system("pause");

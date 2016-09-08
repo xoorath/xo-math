@@ -1,10 +1,11 @@
 [![Build Status](https://semaphoreci.com/api/v1/xoorath/xo-math/branches/master/badge.svg)](https://semaphoreci.com/xoorath/xo-math)
+[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.png?v=103)](https://tldrlegal.com/license/mit-license) 
 
 :warning: **xo-math is currently in progress and not ready for production use.**
 
 # What is xo-math
 
-xo-math is a public domain single header file module for optimized game math. C++11 or newer required.
+xo-math is an open source single header file module for optimized game math. C++11 or newer required.
 
 ## Mission
 

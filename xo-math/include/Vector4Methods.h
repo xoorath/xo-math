@@ -203,11 +203,11 @@ bool Vector4::IsNormalized() const {
 }
  
 void Vector4::Max(const Vector4& a, const Vector4& b, Vector4& outVec) {
-    outVec = a >= b ? a : b;
+    outVec.Set(_XO_MAX(a.x, b.x), _XO_MAX(a.y, b.y), _XO_MAX(a.z, b.z), _XO_MAX(a.w, b.w));
 }
 
 void Vector4::Min(const Vector4& a, const Vector4& b, Vector4& outVec) {
-    outVec = a <= b ? a : b;
+    outVec.Set(_XO_MIN(a.x, b.x), _XO_MIN(a.y, b.y), _XO_MIN(a.z, b.z), _XO_MIN(a.w, b.w));
 }
 
 void Vector4::Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec) {

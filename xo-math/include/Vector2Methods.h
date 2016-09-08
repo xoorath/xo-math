@@ -112,11 +112,11 @@ float Vector2::DistanceSquared(const Vector2& a, const Vector2& b) {
 }
 
 void Vector2::Max(const Vector2& a, const Vector2& b, Vector2& outVec) {
-    outVec.Set(a.MagnitudeSquared() >= b.MagnitudeSquared() ? a : b);
+    outVec.Set(_XO_MAX(a.x, b.x), _XO_MAX(a.y, b.y));
 }
 
 void Vector2::Min(const Vector2& a, const Vector2& b, Vector2& outVec) {
-    outVec.Set(a.MagnitudeSquared() < b.MagnitudeSquared() ? a : b);
+    outVec.Set(_XO_MIN(a.x, b.x), _XO_MIN(a.y, b.y));
 }
 
 void Vector2::OrthogonalCCW(const Vector2& v, Vector2& outVec) {

@@ -174,17 +174,29 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #   endif
 
 #else
-    // we don't need to overload new and delete unless memory alignment is required.
-#   if defined(_XO_OVERLOAD_NEW_DELETE)
+// we don't need to overload new and delete unless memory alignment is required.
+#if defined(_XO_OVERLOAD_NEW_DELETE)
 _XOMATH_INTERNAL_MACRO_WARNING
 #   else
-#   define _XO_OVERLOAD_NEW_DELETE
+#       define _XO_OVERLOAD_NEW_DELETE
 #   endif
 #endif
 
+#if defined(_XO_MIN)
+_XOMATH_INTERNAL_MACRO_WARNING
+#else
+#   define _XO_MIN(a, b) (a < b ? a : b)
+#endif
+
+#if defined(_XO_MAX)
+_XOMATH_INTERNAL_MACRO_WARNING
+#else
+#   define _XO_MAX(a, b) (a > b ? a : b)
+#endif
+
 // wrap for now, so we have the option to make a faster version later.
-_XOINL float Min(float x, float y)      { return x < y ? x : y; }
-_XOINL float Max(float x, float y)      { return x > y ? x : y; }
+_XOINL float Min(float x, float y)      { return _XO_MIN(x, y); }
+_XOINL float Max(float x, float y)      { return _XO_MAX(x, y); }
 _XOINL float Abs(float f)               { return f > 0.0f ? f : -f; }
 _XOINL float Sqrt(float f)              { return sqrtf(f); }
 _XOINL float Sin(float f)               { return sinf(f); }
@@ -284,6 +296,9 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #undef _XO_TLS_DISTRIBUTION
 
 #undef _XO_OVERLOAD_NEW_DELETE
+
+#undef _XO_MIN
+#undef _XO_MAX
 
 #undef _XO_ASSIGN_QUAT
 #undef _XO_ASSIGN_QUAT_Q

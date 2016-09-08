@@ -171,9 +171,15 @@ void Quaternion::RotationRadians(float x, float y, float z, Quaternion& outQuat)
 
 void Quaternion::RotationRadians(const Vector3& v, Quaternion& outQuat) {
     Vector3 hv = v * 0.5f;
-    // TODO: use intrinsics for sin/cos here
+
+#if XO_SSE && defined(__INTEL_COMPILER)
+    Vector3 vs(_mm_sin_ps(hv));
+    Vector3 vc(_mm_cos_ps(hv));
+#else
+    // agner fog has a portable vector trig.... see if the licence is usable.
     Vector3 vs(Sin(hv.x), Sin(hv.y), Sin(hv.z));
     Vector3 vc(Cos(hv.x), Cos(hv.y), Cos(hv.z));
+#endif
     _XO_ASSIGN_QUAT_Q(outQuat,
         vc.x * vc.y * vc.z + vs.x * vs.y * vs.z,
         vs.x * vc.y * vc.z - vc.x * vs.y * vs.z,
@@ -187,7 +193,6 @@ void Quaternion::AxisAngleRadians(const Vector3& axis, float radians, Quaternion
 
     Vector3 n = axis.Normalized();
     n *= sr;
-    // TODO: Assign with intrinsics here. We already have n.m equal to three quarters of the m128 we want.
     _XO_ASSIGN_QUAT_Q(outQuat, Cos(radians), n.x, n.y, n.z);
 }
 
