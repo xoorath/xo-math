@@ -1,6 +1,6 @@
 [![Build Status](https://semaphoreci.com/api/v1/xoorath/xo-math/branches/master/badge.svg)](https://semaphoreci.com/xoorath/xo-math)
 
-xo-math is currently in progress and not ready for production use.
+:warning: **xo-math is currently in progress and not ready for production use.**
 
 # What is xo-math
 
@@ -25,16 +25,16 @@ xo-math supports a variety of compilers with C++11 support. The [SIMD](https://e
 | Building OS -> Running OS | Compiler         | Supported          |
 |---------------------------|------------------|--------------------|
 | Windows -> Windows        | msvc 14          | :white_check_mark: |
-| Windows -> PS4            | msvc 14          | :x: untested       |
-| Windows -> Xbox One       | msvc 14          | :x: untested       |
+| Windows -> PS4            | msvc 14          | :warning: untested |
+| Windows -> Xbox One       | msvc 14          | :warning: untested |
 | Windows -> Windows        | gcc 4.8+         | :white_check_mark: |
 | Windows -> Windows        | clang 3.3+       | :white_check_mark: |
-| Windows -> Windows        | icc              | :x: untested       |
+| Windows -> Windows        | icc              | :warning: untested |
 | linux -> linux            | gcc 4.8+         | :white_check_mark: |
 | linux -> linux            | clang 3.3+       | :white_check_mark: |
-| osx -> osx                | apple clang 5.x  | :x: untested       |
+| osx -> osx                | apple clang 5.x  | :warning: untested |
 | osx -> osx                | apple clang 6.x  | :white_check_mark: |
-| osx -> osx                | apple clang 7.x  | :x: untested       |
+| osx -> osx                | apple clang 7.x  | :warning: untested |
 
 **Note:**
 Just because your target OS/compiler isn't listed above, or is listed as untested that doesn't mean xo-math won't work. It just means I don't develop for that platform/compiler specifically, or haven't configured CI to support that platform *yet*.
