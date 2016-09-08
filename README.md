@@ -6,7 +6,7 @@
 
 xo-math is a public domain single header file module for optimized game math. C++11 or newer required.
 
-# Mission
+## Mission
 
 xo-math is designed to be *fast*, as fast as possible on your target platform.
 
@@ -25,19 +25,18 @@ xo-math supports a variety of compilers with C++11 support. The [SIMD](https://e
 | Building OS -> Running OS | Compiler         | Supported          |
 |---------------------------|------------------|--------------------|
 | Windows -> Windows        | msvc 14          | :white_check_mark: |
-| Windows -> PS4            | msvc 14          | :warning: untested |
-| Windows -> Xbox One       | msvc 14          | :warning: untested |
+| Windows -> PS4            | msvc 14          | :warning: |
+| Windows -> Xbox One       | msvc 14          | :warning: |
 | Windows -> Windows        | gcc 4.8+         | :white_check_mark: |
 | Windows -> Windows        | clang 3.3+       | :white_check_mark: |
-| Windows -> Windows        | icc              | :warning: untested |
+| Windows -> Windows        | icc              | :warning: |
 | linux -> linux            | gcc 4.8+         | :white_check_mark: |
 | linux -> linux            | clang 3.3+       | :white_check_mark: |
-| osx -> osx                | apple clang 5.x  | :warning: untested |
+| osx -> osx                | apple clang 5.x  | :warning: |
 | osx -> osx                | apple clang 6.x  | :white_check_mark: |
-| osx -> osx                | apple clang 7.x  | :warning: untested |
+| osx -> osx                | apple clang 7.x  | :warning: |
 
-**Note:**
-Just because your target OS/compiler isn't listed above, or is listed as untested that doesn't mean xo-math won't work. It just means I don't develop for that platform/compiler specifically, or haven't configured CI to support that platform *yet*.
+:warning:: This configuration is planned to work, but currently untested. If you've have experience running xo-math under one of these configurations, [please let me know](http://twitter.com/xoorath).
 
 # Quick start guide
 
