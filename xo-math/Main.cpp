@@ -156,6 +156,29 @@ void TestVector2Methods() {
         test.ReportSuccessIf(Vector2(1.1f, 2.2f).Cross(Vector2(-0.1f, -22.0f)), -23.980001449585f, TEST_MSG("Cross did not match known Cross"));
         test.ReportSuccessIf(Vector2::Cross(Vector2(1.1f, 2.2f), Vector2(-0.1f, -22.0f)), -23.980001449585f, TEST_MSG("Cross did not match known cross"));
 
+        test.ReportSuccessIf(Vector2::AngleRadians(Vector2::Up, Vector2::Right), HalfPI, TEST_MSG("up to right should be a rotation of halfpi"));
+        test.ReportSuccessIf(Vector2::AngleRadians(Vector2::Up*2.0f, Vector2::Right), HalfPI, TEST_MSG("up to right should be a rotation of halfpi"));
+        test.ReportSuccessIf(Vector2::AngleRadians(Vector2::Up, Vector2::Right*2.0f), HalfPI, TEST_MSG("up to right should be a rotation of halfpi"));
+
+        test.ReportSuccessIf(Vector2::Up.AngleRadians(Vector2::Right), HalfPI, TEST_MSG("up to right should be a rotation of halfpi"));
+        test.ReportSuccessIf(Vector2::Up.AngleRadians(Vector2::Right), HalfPI, TEST_MSG("up to right should be a rotation of halfpi"));
+        test.ReportSuccessIf((Vector2::Up*2.0f).AngleRadians(Vector2::Right*2.0f), HalfPI, TEST_MSG("up to right should be a rotation of halfpi"));
+
+        test.ReportSuccessIf(Vector2::AngleDegrees(Vector2::Up, Vector2::Right), 90.0f, TEST_MSG("up to right should be a rotation of 90.0f"));
+        test.ReportSuccessIf(Vector2::AngleDegrees(Vector2::Up*2.0f, Vector2::Right), 90.0f, TEST_MSG("up to right should be a rotation of 90.0f"));
+        test.ReportSuccessIf(Vector2::AngleDegrees(Vector2::Up, Vector2::Right*2.0f), 90.0f, TEST_MSG("up to right should be a rotation of 90.0f"));
+
+        test.ReportSuccessIf(Vector2::Up.AngleDegrees(Vector2::Right), 90.0f, TEST_MSG("up to right should be a rotation of 90.0f"));
+        test.ReportSuccessIf(Vector2::Up.AngleDegrees(Vector2::Right), 90.0f, TEST_MSG("up to right should be a rotation of 90.0f"));
+        test.ReportSuccessIf((Vector2::Up*2.0f).AngleDegrees(Vector2::Right*2.0f), 90.0f, TEST_MSG("up to right should be a rotation of 90.0f"));
+
+        test.ReportSuccessIf(Vector2::OrthogonalCW(Vector2::Up), Vector2::Right, TEST_MSG("right should be 90 degrees cw to up"));
+        test.ReportSuccessIf(Vector2::OrthogonalCCW(Vector2::Up), Vector2::Left, TEST_MSG("left should be 90 degrees ccw to up"));
+
+        test.ReportSuccessIf(Vector2::Lerp(Vector2::Zero, Vector2::One*10.0f, 0.0f), Vector2::Zero, TEST_MSG("lerp of 0 should be the left param"));
+        test.ReportSuccessIf(Vector2::Lerp(Vector2::Zero, Vector2::One*10.0f, 1.0f), Vector2::One*10.0f, TEST_MSG("lerp of 1 should be the right param"));
+        test.ReportSuccessIf(Vector2::Lerp(Vector2::Zero, Vector2::One*10.0f, 0.5f), Vector2::One*5.0f, TEST_MSG("lerp of 0.5 should be the midpoint"));
+
     });
 }
 
