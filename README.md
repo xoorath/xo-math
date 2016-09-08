@@ -1,4 +1,3 @@
-### Status
 [![Build Status](https://semaphoreci.com/api/v1/xoorath/xo-math/branches/master/badge.svg)](https://semaphoreci.com/xoorath/xo-math)
 
 xo-math is currently in progress and not ready for production use.
@@ -47,10 +46,11 @@ project/xo-math/xo-math.h           | contains configurations and includes xo-ma
 xo-math supports [SIMD](https://en.wikipedia.org/wiki/SIMD). If you've configured your compiler explicitly for x86 simd instructions then xo-math should detect that automatically.
 
 See the [/arch option for visual studio](https://msdn.microsoft.com/en-us/library/7t5yh4fd.aspx).
+
 See the [extended instruction switches for gcc](https://gcc.gnu.org/onlinedocs/gcc-4.5.3/gcc/i386-and-x86_002d64-Options.html). Search the page for `-msse4.2` and similar. 
 These flags also work with supported clang versions.
 
-If you know what you're doing, you can also explicitly define simd support manually. *If you do define any of these, xo-math expects you to define all the simd defines you want, not just the highest version.*
+If you know what you're doing, you can also explicitly define simd support manually. **If you do define any of these, xo-math expects you to define all the simd defines you want, not just the highest version.**
 
 ```c++
 #define XO_SSE 1
