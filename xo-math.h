@@ -1,3 +1,24 @@
+// The MIT License (MIT)
+//
+// Copyright (c) 2016 Jared Thomson
+//
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// The above copyright notice and this permission notice shall be included 
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT 
+// OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
+// THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 #ifndef XO_MATH_H
 #define XO_MATH_H
 
@@ -250,6 +271,7 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #endif
 
 #endif // XOMATH_INTERNAL
+
 
 #if defined(_XOCONSTEXPR)
 _XOMATH_INTERNAL_MACRO_WARNING
@@ -651,6 +673,7 @@ const Vector2 Vector2::Zero(0.0f, 0.0f);
 XOMATH_END_XO_NS
 
 #endif // XOMATH_INTERNAL
+
 #ifndef XOMATH_INTERNAL
 static_assert(false, "Don't include Vector3.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
@@ -1051,6 +1074,7 @@ const Vector3 Vector3::Zero(0.0f, 0.0f, 0.0f);
 XOMATH_END_XO_NS
 
 #endif // XOMATH_INTERNAL
+
 #ifndef XOMATH_INTERNAL
 static_assert(false, "Don't include Vector4.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
@@ -1258,6 +1282,7 @@ const Vector4 Vector4::UnitW = {0.0f, 0.0f, 0.0f, 1.0f};
 XOMATH_END_XO_NS
 
 #endif // XOMATH_INTERNAL
+
 #ifndef XOMATH_INTERNAL
 static_assert(false, "Don't include Matrix4x4.h directly. Include GameMath.h, which fully implements this type.");
 #elif defined(_XOMATH_INIT_MATRIX4X4) || defined(_XO_TRANSPOSE_SWAP)
@@ -1431,6 +1456,7 @@ XOMATH_END_XO_NS
 #undef _XOMATH_INIT_MATRIX4X4
 
 #endif // XOMATH_INTERNAL
+
 #ifndef XOMATH_INTERNAL
 static_assert(false, "Don't include Quaternion.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
@@ -1521,6 +1547,7 @@ const Quaternion Quaternion::Zero = { 0.0f, 0.0f, 0.0f, 0.0f };
 XOMATH_END_XO_NS
 
 #endif // XOMATH_INTERNAL
+
 
 #ifndef XOMATH_INTERNAL
 static_assert(false, "Don't include Vector2Operators.h directly. Include GameMath.h, which fully implements this type.");
@@ -1686,6 +1713,7 @@ bool Vector2::operator != (const class Vector4& v) const    { return !((*this) =
 XOMATH_END_XO_NS
 
 #endif
+
 #ifndef XOMATH_INTERNAL
 static_assert(false, "Don't include Vector2Methods.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
@@ -1881,6 +1909,7 @@ Vector2 Vector2::Midpoint(const Vector2& v) const           { return Midpoint(*t
 XOMATH_END_XO_NS
 
 #endif
+
 #ifndef XOMATH_INTERNAL
 static_assert(false, "Don't include Vector3Operators.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
@@ -2180,6 +2209,7 @@ bool Vector3::operator != (const Vector4& v) const    { return !((*this) == v); 
 XOMATH_END_XO_NS
 
 #endif // XOMATH_INTERNAL
+
 #ifndef XOMATH_INTERNAL
 static_assert(false, "Don't include Vector3Methods.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
@@ -2643,6 +2673,7 @@ Vector3 Vector3::RandomInConeDegrees(float angle) const                   { retu
 XOMATH_END_XO_NS
 
 #endif
+
 #ifndef XOMATH_INTERNAL
 static_assert(false, "Don't include Vector4Operators.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
@@ -2995,6 +3026,7 @@ bool Vector4::operator != (const Vector3& v) const  { return !((*this) == v); }
 XOMATH_END_XO_NS
 
 #endif
+
 #ifndef XOMATH_INTERNAL
 static_assert(false, "Don't include Vector4Methods.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
@@ -3283,6 +3315,7 @@ Vector4 Vector4::Lerp(const Vector4& v, float t) const {
 XOMATH_END_XO_NS
 
 #endif
+
 #ifndef XOMATH_INTERNAL
 static_assert(false, "Don't include Matrix4x4Operators.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
@@ -3351,6 +3384,7 @@ Matrix4x4 Matrix4x4::operator * (const Matrix4x4& m) const { return Matrix4x4(*t
 XOMATH_END_XO_NS
 
 #endif
+
 #ifndef XOMATH_INTERNAL
 static_assert(false, "Don't include Matrix4x4Methods.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
@@ -3774,6 +3808,7 @@ Matrix4x4 Matrix4x4::LookAtFromDirection(const Vector3& direction) {
 XOMATH_END_XO_NS
 
 #endif
+
 #ifndef XOMATH_INTERNAL
 static_assert(false, "Don't include QuaternionOperators.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
@@ -3821,6 +3856,7 @@ bool Quaternion::operator != (const Quaternion& q) const {
 XOMATH_END_XO_NS
 
 #endif
+
 #ifndef XOMATH_INTERNAL
 static_assert(false, "Don't include QuaternionMethods.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
@@ -4211,6 +4247,7 @@ XOMATH_END_XO_NS
 
 #endif
 
+
 #ifndef XOMATH_INTERNAL
 static_assert(false, "Don't include SSE.h directly. Include GameMath.h.");
 #else // XOMATH_INTERNAL
@@ -4546,6 +4583,7 @@ namespace sse {
 XOMATH_END_XO_NS
 
 #endif // XOMATH_INTERNAL
+
 
 ////////////////////////////////////////////////////////////////////////// Remove internal macros
 
