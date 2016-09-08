@@ -2,6 +2,20 @@
 
 xo-math is currently in progress and not ready for production use.
 
+# What is xo-math
+
+xo-math is a public domain single header file module for optimized game math. C++11 or newer required.
+
+# Mission
+
+xo-math is designed to be *fast*, as fast as possible on your target platform.
+
+xo-math is designed to be *future-looking*. We push simd math past what currently adopted platforms support and build solutions for the up and coming.
+
+xo-math is designed to be *friendly*. Easy to use and easy to understand, xo-math has built it's licence and source code for mere mortals to comprehend. You should be able to understand what we're all about in *10 minutes or less*, drag and drop xo-math.h into your project and start coding in just minutes more.
+
+If you feel I've failed my mission here, [please let me know](https://github.com/xoorath/xo-math/issues)
+
 # Platform Support
 
 xo-math supports a variety of compilers with C++11 support. The [SIMD](https://en.wikipedia.org/wiki/SIMD) support is currently limited to x86, but ARM is planned soon.
@@ -24,16 +38,6 @@ xo-math supports a variety of compilers with C++11 support. The [SIMD](https://e
 
 **Note:**
 Just because your target OS/compiler isn't listed above, or is listed as untested that doesn't mean xo-math won't work. It just means I don't develop for that platform/compiler specifically, or haven't configured CI to support that platform *yet*.
-
-# Mission
-
-xo-math is designed to be *fast*, as fast as possible on your target platform.
-
-xo-math is designed to be *future-looking*. We push simd math past what currently adopted platforms support and build solutions for the up and coming.
-
-xo-math is designed to be *friendly*. Easy to use and easy to understand, xo-math has built it's licence and source code for mere mortals to comprehend. You should be able to understand what we're all about in *10 minutes or less*, drag and drop xo-math.h into your project and start coding in just minutes more.
-
-If you feel I've failed my mission here, [please let me know](https://github.com/xoorath/xo-math/issues)
 
 # Quick start guide
 
