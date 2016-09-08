@@ -60,6 +60,13 @@ _XOMATH_INTERNAL_MACRO_WARNING
 
 #include "DetectSIMD.h"
 
+#if defined(_XOCONSTEXPR)
+_XOMATH_INTERNAL_MACRO_WARNING
+#else
+// todo: remove constexpr in visual studio 2013 and re-test for support
+#   define _XOCONSTEXPR constexpr
+#endif
+
 #if defined(_XOINL)
 _XOMATH_INTERNAL_MACRO_WARNING
 #else
@@ -111,15 +118,15 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #endif
 
 XOMATH_BEGIN_XO_NS
-constexpr const float PI = 3.141592653589793238462643383279502884197169399375105820f;
-constexpr const float PIx2 = 2.0f * PI;
-constexpr const float TAU = PIx2;
-constexpr const float HalfPI = PI / 2.0f;
+_XOCONSTEXPR const float PI = 3.141592653589793238462643383279502884197169399375105820f;
+_XOCONSTEXPR const float PIx2 = 2.0f * PI;
+_XOCONSTEXPR const float TAU = PIx2;
+_XOCONSTEXPR const float HalfPI = PI / 2.0f;
 
-constexpr const float FloatEpsilon = 0.0000001192092896f;
+_XOCONSTEXPR const float FloatEpsilon = 0.0000001192092896f;
 
-constexpr const float Rad2Deg = 360.0f / TAU;
-constexpr const float Deg2Rad = TAU / 360.0f;
+_XOCONSTEXPR const float Rad2Deg = 360.0f / TAU;
+_XOCONSTEXPR const float Deg2Rad = TAU / 360.0f;
 
 float HexFloat(unsigned u) {
     union {
@@ -139,7 +146,7 @@ namespace sse {
     }
 
     // the quoted error on _mm_rcp_ps documentation
-    constexpr const float SSEFloatEpsilon = 0.000366210938f;
+    _XOCONSTEXPR const float SSEFloatEpsilon = 0.000366210938f;
 
     static const __m128 Zero = _mm_setzero_ps();
     static const __m128 One = _mm_set1_ps(1.0f);
@@ -193,9 +200,9 @@ bool CloseEnough(float x, float y, float tolerance = FloatEpsilon) {
     return Difference(x, y) * (1.0f/tolerance) <= Min(Abs(x), Abs(y));
 }
 
-constexpr _XOINL float Square(float t)      { return t*t; }
-constexpr _XOINL double Square(double t)    { return t*t; }
-constexpr _XOINL int Square(int t)          { return t*t; }
+_XOCONSTEXPR _XOINL float Square(float t)      { return t*t; }
+_XOCONSTEXPR _XOINL double Square(double t)    { return t*t; }
+_XOCONSTEXPR _XOINL int Square(int t)          { return t*t; }
 
 _XOINL 
 bool RandomBool() {
@@ -269,6 +276,7 @@ _XOMATH_INTERNAL_MACRO_WARNING
 
 #undef _XOMATH_INTERNAL_MACRO_WARNING
 
+#undef _XOCONSTEXPR
 #undef _XOINL
 #undef _XOTLS
 
