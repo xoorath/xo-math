@@ -103,6 +103,62 @@ void TestVector2Operators() {
     });
 }
 
+void TestVector2Methods() {
+    test("Vector2 Methods", []{
+        using xo::math::Vector2;
+
+        test.ReportSuccessIf(Vector2(1.1f), Vector2(1.1f, 1.1f), TEST_MSG("Constructor (float) did not set all elements."));
+        test.ReportSuccessIf(Vector2(1.0f, 1.0f), Vector2::One, TEST_MSG("Constructor (x, y) did not set all elements."));
+        test.ReportSuccessIf(Vector2(Vector2(1.0f, 1.0f)), Vector2::One, TEST_MSG("Copy constructor (Vector3) did not copy as expected."));
+
+        test.ReportSuccessIf(Vector2(xo::math::Vector4(1.1f, 2.2f, 3.3f, 4.4f)), Vector2(1.1f, 2.2f), TEST_MSG("Constructor(Vector4) didn't set all elements as expected"));
+        test.ReportSuccessIf(Vector2(xo::math::Vector3(1.1f, 2.2f, 3.3f)), Vector2(1.1f, 2.2f), TEST_MSG("Constructor(Vector3) didn't set all elements as expected"));
+
+        Vector2 temp;
+        test.ReportSuccessIf(temp.Set(1.1f, 2.2f), Vector2(1.1f, 2.2f), TEST_MSG("Set(x, y, z) did not set all elements."));
+        test.ReportSuccessIf(temp.Set(1.1f), Vector2(1.1f, 1.1f), TEST_MSG("Set(float) did not set all elements."));
+        test.ReportSuccessIf(temp.Set(Vector2::One), Vector2::One, TEST_MSG("Set(Vector2) did not set all elements."));
+
+        temp.Set(1.1f, 2.2f);
+        float x, y;
+        temp.Get(x, y);
+        test.ReportSuccessIf(x, 1.1f, TEST_MSG("Get(x, y, z) did not extract a correct x value."));
+        test.ReportSuccessIf(y, 2.2f, TEST_MSG("Get(x, y, z) did not extract a correct y value."));
+
+        _MM_ALIGN16 float f[4];
+        temp.Get(f);
+        test.ReportSuccessIf(f[0], 1.1f, TEST_MSG("Get(f) did not extract a correct x value."));
+        test.ReportSuccessIf(f[1], 2.2f, TEST_MSG("Get(f) did not extract a correct y value."));
+
+        test.ReportSuccessIf(temp.Sum(), 3.3f, TEST_MSG("Sum() did not accumulate correctly."));
+
+        test.ReportSuccessIf(temp.MagnitudeSquared(), 6.05f, TEST_MSG("did not match known magnitude squared"));
+        test.ReportSuccessIf(temp.Magnitude(), 2.45967f, TEST_MSG("did not match known magnitude"));
+
+        test.ReportSuccessIf(temp.Normalize().Magnitude(), 1.0f, TEST_MSG("vector is not normal after normalize"));
+        test.ReportSuccessIf(temp.Magnitude(), 1.0f, TEST_MSG("vector is not normal after normalize"));
+
+        temp.Set(1.1f, 2.2f);
+        test.ReportSuccessIf(temp.Normalized().Magnitude(), 1.0f, TEST_MSG("vector is not normal returning from normalized"));
+        test.ReportSuccessIfNot(temp.Magnitude(), 1.0f, TEST_MSG("vector is normal after normalized"));
+
+        test.ReportSuccessIfNot(temp.IsZero(), TEST_MSG("vector is zero when it shouldn't be."));
+        temp = Vector2::Zero;
+        test.ReportSuccessIf(temp.IsZero(), TEST_MSG("vector isn't zero when it shouldn be."));
+
+        test.ReportSuccessIfNot(temp.IsNormalized(), TEST_MSG("vector is normal when it shouldn't be."));
+        temp = Vector2::UnitX;
+        test.ReportSuccessIf(temp.IsNormalized(), TEST_MSG("vector is not normal when it shouldn be."));
+
+        test.ReportSuccessIf(Vector2(1.1f, 2.2f).Dot(Vector2(-0.1f, -22.0f)), -48.510002136230f, TEST_MSG("Dot did not match known dot"));
+        test.ReportSuccessIf(Vector2::Dot(Vector2(1.1f, 2.2f), Vector2(-0.1f, -22.0f)), -48.510002136230f, TEST_MSG("Dot did not match known dot"));
+
+        test.ReportSuccessIf(Vector2(1.1f, 2.2f).Cross(Vector2(-0.1f, -22.0f)), -23.980001449585f, TEST_MSG("Cross did not match known Cross"));
+        test.ReportSuccessIf(Vector2::Cross(Vector2(1.1f, 2.2f), Vector2(-0.1f, -22.0f)), -23.980001449585f, TEST_MSG("Cross did not match known cross"));
+
+    });
+}
+
 void TestVector3Operators() {
     test("Vector3 Operators", []{
         using xo::math::Vector3;
@@ -754,11 +810,12 @@ int main() {
     cout.precision(12);
     cout << std::fixed;
 
-    TestVector2Operators();
-    TestVector3Operators();
-    TestVector3Methods();
-    TestVector4Operators();
-    TestVector4Methods();
+    //TestVector2Operators();
+    TestVector2Methods();
+    // TestVector3Operators();
+    // TestVector3Methods();
+    // TestVector4Operators();
+    // TestVector4Methods();
 
 #if defined(_MSC_VER)
     system("pause");

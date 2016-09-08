@@ -22,19 +22,35 @@ Vector2::Vector2(const class Vector3& v) : x(v.x), y(v.y) {
 Vector2::Vector2(const class Vector4& v) : x(v.x), y(v.y) {
 }
 
-void Vector2::Set(float x, float y) {
+const Vector2& Vector2::Set(float x, float y) {
     this->x = x;
     this->y = y;
+    return *this;
 }
 
-void Vector2::Set(float v) {
+const Vector2& Vector2::Set(float v) {
     x = v;
     y = v;
+    return *this;
 }
 
-void Vector2::Set(const Vector2& v) {
+const Vector2& Vector2::Set(const Vector2& v) {
     x = v.x;
     y = v.y;
+    return *this;
+}
+
+void Vector2::Get(float& x, float& y) const {
+    x = this->x;
+    y = this->y;
+}
+void Vector2::Get(float* f) const {
+    f[0] = this->x;
+    f[1] = this->y;
+}
+
+float Vector2::Sum() const {
+    return x+y;
 }
 
 float Vector2::Magnitude() const {
@@ -151,7 +167,7 @@ Vector2 Vector2::Lerp(const Vector2& a, const Vector2& b, float t) {
 }
 
 float Vector2::Dot(const Vector2& v) const              { return Dot(*this, v); }
-Vector2 Vector2::Cross(const Vector2& v) const          { return Cross(*this, v); }
+float Vector2::Cross(const Vector2& v) const            { return Cross(*this, v); }
 Vector2 Vector2::OrthogonalCCW() const                  { return OrthogonalCCW(*this); }
 Vector2 Vector2::OrthogonalCW() const                   { return OrthogonalCW(*this); }
 float Vector2::AngleRadians(const Vector2& v) const     { return AngleRadians(*this, v); }

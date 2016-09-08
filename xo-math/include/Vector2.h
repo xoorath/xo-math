@@ -16,9 +16,12 @@ public:
     _XOINL Vector2(const class Vector3& v);
     _XOINL Vector2(const class Vector4& v);
 
-    _XOINL void Set(float x, float y);
-    _XOINL void Set(float v);
-    _XOINL void Set(const Vector2& v);
+    _XOINL const Vector2& Set(float x, float y);
+    _XOINL const Vector2& Set(float v);
+    _XOINL const Vector2& Set(const Vector2& v);
+
+    _XOINL void Get(float& x, float& y) const;
+    _XOINL void Get(float* f) const;
 
     _XOINL float& operator [](int i);
     _XOINL const float& operator [](int i) const;
@@ -123,6 +126,8 @@ public:
     _XOINL bool operator != (int v) const;
     _XOINL bool operator != (const class Vector3& v) const;
     _XOINL bool operator != (const class Vector4& v) const;
+
+    _XOINL float Sum() const;
     
     _XOINL float Magnitude() const;
     _XOINL float MagnitudeSquared() const;
@@ -153,7 +158,7 @@ public:
     _XOINL static Vector2 Lerp(const Vector2& a, const Vector2& b, float t);
 
     _XOINL float Dot(const Vector2& v) const;
-    _XOINL Vector2 Cross(const Vector2& v) const;
+    _XOINL float Cross(const Vector2& v) const;
     _XOINL Vector2 OrthogonalCCW() const;
     _XOINL Vector2 OrthogonalCW() const;
     _XOINL float AngleRadians(const Vector2& v) const;
