@@ -1,8 +1,9 @@
 ### Status
 [![Build Status](https://semaphoreci.com/api/v1/xoorath/xo-math/branches/master/badge.svg)](https://semaphoreci.com/xoorath/xo-math)
+
 xo-math is currently in progress and not ready for production use.
 
-# quick start guide
+# Quick start guide
 
 Download and include `xo-math.h` from the head revision of the repo. No other files are required to use xo-math.
 
@@ -29,25 +30,99 @@ int main() {
 
 ```
 
-# contributing
+_note:_ The only header to ever be included for xo-math is `xo-math.h`, even when using the sources from the `xo-math/include/` directory.
 
-The `xo-math.h` header in the root of the repo is just a distribution file. For contributors we have a much more split-up version of the library inside the `xo-math` directory.
 
-## Project Layout
+# Configuration
 
-We keep various project files in `xo-math/`. We actively support xcode7, sublime text 3 and visual studio 2015 builds. If you find one particular IDE is not compiling (out of date included files, for example) please take a moment to update them and submit the fix alone in its own pull request. It can help un-block other developers quickly and is easy to verify.
+All configuration can be done with defines before including `xo-math.h`. It's suggested that you wrap xo-math.h in another header that does the config for you if you have configuration to be done. Something along the lines of:
 
-`xo-math.h` contains any project-wide includes, small utility functions and project-wide information such as `XO_MATH_VERSION_TXT`.
+```
+project/xo-math/include/xo-math.h   | the real xo-math
+project/xo-math/xo-math.h           | contains configurations and includes xo-math
+```
 
-## Macros
+## SIMD configuration
 
-We use macros in two flavours in this project:
+xo-math supports [SIMD](https://en.wikipedia.org/wiki/SIMD). If you've configured your compiler explicitly for x86 simd instructions then xo-math should detect that automatically.
 
-- `_XO_MACRONAME` indicates a macro that is internal to xo-math. It should be undefined before it leaves file scope.
-- `XO_MACRONAME` indicates a macro that is intended for use by xo-math users. It can be a macro to configure xo-math with, or a macro provided by xo-math for the user to use. These will not be undefined from within xo-math.
+See the [/arch option for visual studio](https://msdn.microsoft.com/en-us/library/7t5yh4fd.aspx).
+See the [extended instruction switches for gcc](https://gcc.gnu.org/onlinedocs/gcc-4.5.3/gcc/i386-and-x86_002d64-Options.html). Search the page for `-msse4.2` and similar. 
+These flags also work with supported clang versions.
 
-## Unit tests
+If you know what you're doing, you can also explicitly define simd support manually. *If you do define any of these, xo-math expects you to define all the simd defines you want, not just the highest version.*
 
-In xo-math we use `xo-math/xo-test.h` to perform unit tests in `xo-math/Main.cpp`. There's no guarantee that xo-test is or ever will be unmodified from the original xo-test project. If there are testing features specific to xo-math, it's perfectly acceptable to modify xo-test.h for our needs here.
+```
+#define XO_SSE 1
+#define XO_SSE2 1
+#define XO_SSE3 1
+#define XO_SSSE3 1
+#define XO_SSE4_1 1
+#define XO_SSE4_2 1
+#define XO_AVX 1
+#define XO_AVX2 1
+```
 
-Adding unit tests to Main.cpp is encouraged. There is no need to have a super-clean and idealistic pattern to the unit tests in Main.cpp. The purpose is simply to catch human error and ensure reliability of xo-math to its users. If the error messages or names are inconsistent but extra throughput is tested, then it's accomplishing its goals none the less. That said: whenever possible deterministic tests are preferred. Any failing test should fail every time if at all possible.
+If you do define any of the above, but our detection of your compiler settings disagrees with your defined configuration - we will warn you about it at compile time unless you define the following:
+
+```
+#define XO_NO_VECTOR_DETECT_WARNING 1
+```
+
+## Namespace configuration
+
+### Custom namespace
+
+```
+#define XO_CUSTOM_NS my_namespace
+#include "xo-math.h"
+...
+my_namespace::Vector3 v;
+```
+
+### Single namespace
+
+```
+#define XO_SINGLE_NS
+#include "xo-math.h"
+...
+xo::Vector3 v;
+```
+
+### Simple namespace
+
+```
+#define XO_SIMPLE_NS
+#include "xo-math.h"
+...
+xomath::Vector3 v;
+```
+
+### No namespace
+
+```
+#define XO_NO_NS
+#include "xo-math.h"
+...
+Vector3 v;
+```
+
+### Without configuration
+```
+#include "xo-math.h"
+...
+xo::math::Vector3 v;
+```
+
+## No inverse division
+
+*Note:* This option only has an effect when SSE is enabled. The documentation following in this section is only true when SSE is enabled.
+
+To speed up vector division, we do an approximation. It's fairly inaccurate (somewhere on the order of a `0.00036` error), but is between 1.3x and 3.3x faster.
+
+This optimization can be disabled with the following define:
+
+```
+#define XO_NO_INVERSE_DIVISION
+#include "xo-math.h"
+```
