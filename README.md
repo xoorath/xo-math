@@ -8,13 +8,13 @@ xo-math is a public domain single header file module for optimized game math. C+
 
 ## Mission
 
-xo-math is designed to be *fast*, as fast as possible on your target platform.
+xo-math is designed to be as **fast** as possible on your target platform, and thoroughly tested for performance against other alternatives.
 
-xo-math is designed to be *future-looking*. We push simd math past what currently adopted platforms support and build solutions for the up and coming.
+xo-math is designed to be **future-looking**. We push simd math past what currently adopted platforms support and build solutions for the up and coming.
 
-xo-math is designed to be *friendly*. Easy to use and easy to understand, xo-math has built it's licence and source code for mere mortals to comprehend. You should be able to understand what we're all about in *10 minutes or less*, drag and drop xo-math.h into your project and start coding in just minutes more.
+xo-math is designed to be **friendly**. Easy to use and easy to understand, xo-math has built it's license and API for mere mortals to comprehend. You should be able to understand what we're all about in *10 minutes or less*, drag and drop xo-math.h into your project and start coding in just minutes more.
 
-If you feel I've failed my mission here, [please let me know](https://github.com/xoorath/xo-math/issues)
+If you feel I've failed my mission here, [please let me know](https://github.com/xoorath/xo-math/issues).
 
 # Platform Support
 
