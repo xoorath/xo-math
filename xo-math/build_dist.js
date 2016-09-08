@@ -81,7 +81,24 @@ function ReadInclude(name) {
     if (err) {
       throw err;
     }
-    IncludeLoaded(name, data.toString());
+
+    var split = data.toString().split('\n');
+    var txt = '';
+
+    var reading = false;
+    for(var i = 0; i < split.length; ++i) {
+      if(reading) {
+        txt += split[i] + '\n';
+      }
+      else {
+        if(split[i].indexOf('XOMATH_INTERNAL') > 0) {
+          reading = true;
+          txt += split[i] + '\n';
+          console.log('started reading', i);
+        }
+      }
+    }
+    IncludeLoaded(name, txt);
   });
 }
 
