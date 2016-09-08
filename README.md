@@ -115,6 +115,31 @@ Vector3 v;
 xo::math::Vector3 v;
 ```
 
+### Advanced: re-definable
+
+For testing it can be useful to define multiple configurations of xo-math and re-include it inside different namespaces.
+
+For this we provide `XO_REDEFINABLE` and can be used like so:
+
+```c++
+#define XO_REDEFINABLE 1
+
+#define XO_CUSTOM_NS xo_sse1
+#define XO_SSE 1
+#include "xo-math.h"
+
+#undef XO_CUSTOM_NS
+#define XO_CUSTOM_NS xo_sse2
+#define XO_SSE2 1
+#include "xo-math.h"
+// ...
+
+xo_sse1::Vector3 GoodVec3;
+xo_sse2::Vector3 BetterVec3;
+```
+
+If you're using this feature, you of course must be careful not to re-include `xo-math.h` twice with the same namespace. Wrap it in another file configured as you need be, and use proper include guards or pragma once practices within that file.
+
 ## No inverse division
 
 *Note:* This option only has an effect when SSE is enabled. The documentation following in this section is only true when SSE is enabled.
