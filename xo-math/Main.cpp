@@ -586,6 +586,77 @@ void TestVector4Operators() {
     });
 }
 
+void TestVector4Methods() {
+    test("Vector4 Methods", []{
+        using xo::math::Vector4;
+        test.ReportSuccessIf(Vector4(1.1f), Vector4(1.1f, 1.1f, 1.1f, 1.1f), TEST_MSG("Constructor (float) did not set all elements."));
+        test.ReportSuccessIf(Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector4::One, TEST_MSG("Constructor (x, y, z, w) did not set all elements."));
+        test.ReportSuccessIf(Vector4(Vector4(1.0f, 1.0f, 1.0f, 1.0f)), Vector4::One, TEST_MSG("Copy constructor (Vector3) did not copy as expected."));
+#if XO_SSE
+        __m128 m = _mm_set_ps1(1.1f);
+        test.ReportSuccessIf(Vector4(m), Vector4(1.1f, 1.1f, 1.1f, 1.1f), TEST_MSG("Constructor (__m128) did not set all elements."));
+#endif
+        test.ReportSuccessIf(Vector4(xo::math::Vector3(1.1f, 2.2f, 3.3f)), Vector4(1.1f, 2.2f, 3.3f, 0.0f), TEST_MSG("Constructor(Vector3) didn't set all elements as expected"));
+        test.ReportSuccessIf(Vector4(xo::math::Vector2(1.1f, 2.2f)), Vector4(1.1f, 2.2f, 0.0f, 0.0f), TEST_MSG("Constructor(Vector2) didn't set all elements as expected"));
+
+        Vector4 temp;
+        test.ReportSuccessIf(temp.Set(1.1f, 2.2f, 3.3f, 4.4f), Vector4(1.1f, 2.2f, 3.3f, 4.4f), TEST_MSG("Set(x, y, z, w) did not set all elements."));
+        test.ReportSuccessIf(temp.Set(1.1f), Vector4(1.1f, 1.1f, 1.1f, 1.1f), TEST_MSG("Set(float) did not set all elements."));
+        test.ReportSuccessIf(temp.Set(Vector4::One), Vector4::One, TEST_MSG("Set(Vector3) did not set all elements."));
+
+#if XO_SSE
+        test.ReportSuccessIf(temp.Set(_mm_set_ps1(1.1f)), Vector4(1.1f, 1.1f, 1.1f, 1.1f), TEST_MSG("Set(__m128) did not set all elements."));
+#endif
+        temp.Set(1.1f, 2.2f, 3.3f, 4.4f);
+        float x, y, z, w;
+        temp.Get(x, y, z, w);
+        test.ReportSuccessIf(x, 1.1f, TEST_MSG("Get(x, y, z, w) did not extract a correct x value."));
+        test.ReportSuccessIf(y, 2.2f, TEST_MSG("Get(x, y, z, w) did not extract a correct y value."));
+        test.ReportSuccessIf(z, 3.3f, TEST_MSG("Get(x, y, z, w) did not extract a correct z value."));
+        test.ReportSuccessIf(w, 4.4f, TEST_MSG("Get(x, y, z, w) did not extract a correct w value."));
+
+        _MM_ALIGN16 float f[4];
+        temp.Get(f);
+        test.ReportSuccessIf(f[0], 1.1f, TEST_MSG("Get(f) did not extract a correct x value."));
+        test.ReportSuccessIf(f[1], 2.2f, TEST_MSG("Get(f) did not extract a correct y value."));
+        test.ReportSuccessIf(f[2], 3.3f, TEST_MSG("Get(f) did not extract a correct z value."));
+        test.ReportSuccessIf(f[3], 4.4f, TEST_MSG("Get(f) did not extract a correct w value."));
+
+        test.ReportSuccessIf(temp.Sum(), 11.0f, TEST_MSG("Sum() did not accumulate correctly."));
+        
+        constexpr auto knownMagSq = 1.1f*1.1f + 2.2f*2.2f + 3.3f*3.3f + 4.4f*4.4f;
+        const auto knownMag = Sqrt(knownMagSq);
+
+        test.ReportSuccessIf(temp.MagnitudeSquared(), knownMagSq, TEST_MSG("Magnitude squared did not match the knownMagSq"));
+        test.ReportSuccessIf(temp.Magnitude(), knownMag, TEST_MSG("Magnitude did not match the knownMag"));
+        test.ReportSuccessIf(temp.Normalize().Magnitude(), 1.0f, TEST_MSG("Magnitude of vector was not 1 after normalize."));
+        test.ReportSuccessIf(temp.Magnitude(), 1.0f, TEST_MSG("Magnitude of vector was not 1 after normalize."));
+
+        temp.Set(1.1f, 2.2f, 3.3f, 4.4f);
+        test.ReportSuccessIf(temp.Normalized().Magnitude(), 1.0f, TEST_MSG("Magnitude of vector was not 1 after normalized."));
+        test.ReportSuccessIfNot(temp.Magnitude(), 1.0f, TEST_MSG("Magnitude of vector was 1 after normalized."));
+
+        test.ReportSuccessIfNot(temp.IsZero(), TEST_MSG("non zero vector was reported as being zero."));
+        test.ReportSuccessIf(Vector4::Zero.IsZero(), TEST_MSG("zero vector was reported as being non zero."));
+
+        test.ReportSuccessIfNot(temp.IsNormalized(), TEST_MSG("non normal vector was reported as being normal."));
+        test.ReportSuccessIf(Vector4::UnitX.IsNormalized(), TEST_MSG("normal vector was reported as being not normal."));
+
+        test.ReportSuccessIf(Vector4::Zero.Lerp(Vector4::One*10.0f, 0.0f), Vector4::Zero, TEST_MSG("lerp of 0 should return the left hand."));
+        test.ReportSuccessIf(Vector4::Zero.Lerp(Vector4::One*10.0f, 1.0f), Vector4::One*10.0f, TEST_MSG("lerp of 1 should return the right hand."));
+        test.ReportSuccessIf(Vector4::Zero.Lerp(Vector4::One*10.0f, 0.5f), Vector4::One*5.0f, TEST_MSG("lerp of 0.5 should return the midpoint."));
+
+        test.ReportSuccessIf(Vector4(1.1f, 2.2f, 3.3f, 4.4f).Dot(Vector4(-1.1f, 2.2f, -3.3f, -4.4f)), -26.62f, TEST_MSG("failed known dot product"));
+        test.ReportSuccessIf(Vector4::Dot(Vector4(1.1f, 2.2f, 3.3f, 4.4f), Vector4(-1.1f, 2.2f, -3.3f, -4.4f)), -26.62f, TEST_MSG("failed known dot product"));
+
+        test.ReportSuccessIf(Vector4::DistanceSquared(Vector4::Zero, Vector4::UnitX*10.0f), 10.0f*10.0f, TEST_MSG("failed known distance squared"));
+        test.ReportSuccessIf(Vector4::Distance(Vector4::Zero, Vector4::UnitX*10.0f), 10.0f, TEST_MSG("failed known distance"));
+
+        test.ReportSuccessIf(Vector4::Zero.DistanceSquared(Vector4::UnitX*10.0f), 10.0f*10.0f, TEST_MSG("failed known distance squared"));
+        test.ReportSuccessIf(Vector4::Zero.Distance(Vector4::UnitX*10.0f), 10.0f, TEST_MSG("failed known distance"));
+    });  
+}
+
 int main() {
 
 #if defined(XO_SSE)
@@ -603,6 +674,7 @@ int main() {
     TestVector3Operators();
     TestVector3Methods();
     TestVector4Operators();
+    TestVector4Methods();
 
 #if defined(_MSC_VER)
     system("pause");
