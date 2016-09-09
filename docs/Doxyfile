@@ -8,7 +8,7 @@ PROJECT_NAME           = xo-math
 PROJECT_NUMBER         = 
 PROJECT_BRIEF          = "xo-math is an open source single header file module for optimized game math. C++11 or newer required."
 PROJECT_LOGO           = 
-OUTPUT_DIRECTORY       = D:\Projects\GitHub\xo-math\docs
+OUTPUT_DIRECTORY       = ./
 CREATE_SUBDIRS         = NO
 ALLOW_UNICODE_NAMES    = NO
 OUTPUT_LANGUAGE        = English
@@ -45,7 +45,6 @@ OPTIMIZE_FOR_FORTRAN   = NO
 OPTIMIZE_OUTPUT_VHDL   = NO
 EXTENSION_MAPPING      = 
 MARKDOWN_SUPPORT       = YES
-TOC_INCLUDE_HEADINGS   = 0
 AUTOLINK_SUPPORT       = YES
 BUILTIN_STL_SUPPORT    = NO
 CPP_CLI_SUPPORT        = NO
@@ -112,7 +111,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = D:\Projects\GitHub\xo-math\xo-math
+INPUT                  = ../xo-math/include
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c \
                          *.cc \
@@ -162,7 +161,7 @@ RECURSIVE              = YES
 EXCLUDE                = 
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = 
-EXCLUDE_SYMBOLS        = 
+EXCLUDE_SYMBOLS        = xo_internal
 EXAMPLE_PATH           = 
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = YES
@@ -184,8 +183,6 @@ REFERENCES_LINK_SOURCE = YES
 SOURCE_TOOLTIPS        = YES
 USE_HTAGS              = NO
 VERBATIM_HEADERS       = YES
-CLANG_ASSISTED_PARSING = NO
-CLANG_OPTIONS          = 
 #---------------------------------------------------------------------------
 # Configuration options related to the alphabetical class index
 #---------------------------------------------------------------------------
@@ -321,7 +318,7 @@ EXPAND_ONLY_PREDEF     = NO
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = 
 INCLUDE_FILE_PATTERNS  = 
-PREDEFINED             = XOMATH_INTERNAL
+PREDEFINED             = XOMATH_INTERNAL XO_NO_NS
 EXPAND_AS_DEFINED      = 
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------
