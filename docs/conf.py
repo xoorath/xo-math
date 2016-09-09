@@ -28,7 +28,7 @@ read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
 
 if read_the_docs_build:
     try:
-        subprocess.call('doxygen', shell=True)
+        retcode = subprocess.call('doxygen', shell=True)
         if retcode < 0:
             sys.stderr.write("doxygen terminated by signal %s" % (-retcode))
     except OSError as e:
