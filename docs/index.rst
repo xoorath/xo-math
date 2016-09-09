@@ -1,22 +1,20 @@
-.. xo-math documentation master file, created by
-   sphinx-quickstart on Thu Sep 08 20:51:33 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+xo-math
+========
 
-Welcome to xo-math's documentation!
-===================================
+docs here
 
-Contents:
-
+Types
+:::::::::::::::::::::
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
+   classes/vector2.rst
+   classes/vector3.rst
+   classes/vector4.rst
+   classes/matrix4x4.rst
+   classes/quaternion.rst
 
+License
+-------
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+The project is licensed under the MIT license.
