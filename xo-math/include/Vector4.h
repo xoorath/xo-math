@@ -108,7 +108,7 @@ public:
     //! i==anything else: undefined behaviour
     _XOINL const float& operator [](int i) const;
 
-    //! negate operator. Returns a vector with all elements with a flipped sign: \f$\begin{pmatrix}-x&-y&-z&-w\end{pmatrix}\f$
+    //! negate operator. Returns a vector with all elements with a flipped sign: \f$ \begin{pmatrix}-x&-y&-z&-w\end{pmatrix} \f$
     _XOINL Vector4 operator -() const;
 
     //! swizzle operator. Returns a vector with all elements in reverse order: \f$\begin{pmatrix}w&z&y&x\end{pmatrix}\f$
@@ -210,33 +210,31 @@ public:
     // The following is latex, renders nicely in the docs.
     // See this online editor to preview equations: http://www.hostmath.com/
     /*!
-      \f[
-        \begin{equation*}
-            \overrightarrow{this}
-          \begin{pmatrix}
+    \f[
+        \overrightarrow{this}
+        \begin{pmatrix}
             x\\
             y\\
             z\\
             w\\
-          \end{pmatrix}
-          *=
-          M
-          \begin{pmatrix}
+        \end{pmatrix}
+        *=
+        M
+        \begin{pmatrix}
             m&m&m&m\\
             m&m&m&m\\
             m&m&m&m\\
             m&m&m&m\\
-          \end{pmatrix}
-          =
-          \overrightarrow{this} 
-          \begin{pmatrix}
+        \end{pmatrix}
+        =
+        \overrightarrow{this} 
+        \begin{pmatrix}
             x\\
             y\\
             z\\
             w\\
-          \end{pmatrix}
-        \end{equation*}
-      \f]
+        \end{pmatrix}
+    \f]
     */
     //!
     //! @returns const reference to this vector.
