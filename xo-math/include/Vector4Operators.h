@@ -162,7 +162,7 @@ const Vector4& Vector4::operator *= (float v) {
     return *this;
 }
 
-const Vector4& Vector4::operator *= (const Matrix4x4& m) {
+const Vector4& Vector4::operator *= (const Matrix4x4& M) {
     return Set(((*this) * m.r[0]).Sum(), ((*this) * m.r[1]).Sum(), ((*this) * m.r[2]).Sum(), ((*this) * m.r[3]).Sum());
 }
 

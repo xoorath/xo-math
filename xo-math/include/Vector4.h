@@ -24,6 +24,11 @@ static_assert(false, "Don't include Vector4.h directly. Include GameMath.h, whic
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS
+
+//! @brief A four dimensional euclidean vector, optimized for use in games.
+//!
+//!  Most useful for three dimensional rotations. See Matrix4x4::Transform and Vector4::operator*=.
+//! @sa https://en.wikipedia.org/wiki/Euclidean_vector
 class _MM_ALIGN16 Vector4 {
 public:
 #if XO_SSE
@@ -31,64 +36,211 @@ public:
 #else
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
 #endif
-    // No initialization is done.
+    //! Trivial constructor. No initialization is done.
     _XOINL Vector4();
-    
+
+    //! set all constrctor, x, y, z, and w will assigned to f.
     _XOINL Vector4(float f);
+
+    //! set each constructor. x, y, z, and w will be assigned to the input params.
     _XOINL Vector4(float x, float y, float z, float w);
+
+    //! trivial copy constructor.
     _XOINL Vector4(const Vector4& vec);
 
 #if XO_SSE
+    //! converting constructor for sse.
     _XOINL Vector4(const __m128& vec);
 #endif
 
+    //! converting constructor. x and y will be assigned to v.x and v.y; z and w will be assigned to 0.
     _XOINL Vector4(const class Vector2& v);
+
+    //! converting constructor. x, y and z will be assigned to v.x, v.y and v.z. w will be assigned to 0
     _XOINL Vector4(const class Vector3& v);
 
+    //! set all. x, y, z and w will be assigned to the input params.
     _XOINL const Vector4& Set(float x, float y, float z, float w);
+
+    //! set each. x, y, z and w will be assigned to f.
     _XOINL const Vector4& Set(float f);
+
+    //! trivial copy setter. x, y, z and w will be assigned to those values of vec.
     _XOINL const Vector4& Set(const Vector4& vec);
 
 #if XO_SSE
+    //! trivial copy setter. m will be assigned to vec.
     _XOINL const Vector4& Set(const __m128& vec);
 #endif
 
+    //! extract all getter. x, y, z and w will be assigned to those values of this vector.
     _XOINL void Get(float& x, float& y, float& z, float& w) const;
+
+    //! extract all getter. f[0], f[1], f[2] and f[3] will be assigned to x, y, z and w respectively. 
     _XOINL void Get(float* f) const;
 
-    _XO_OVERLOAD_NEW_DELETE
+    //! overloads the new and delete operators for vector4 when memory alignment is required (such as with SSE).
+    //!
+    //! @sa XO_16ALIGNED_MALLOC
+    //! @sa XO_16ALIGNED_FREE
+    _XO_OVERLOAD_NEW_DELETE();
 
 #if XO_SSE
-    // type cast operator
+    //! type cast operator. Allows Vector4 to be used implicitly where ever __m128 can be.
     _XOINL operator const __m128&() const;
 #endif
 
+    //! extract reference operator, useful for setting w,x,y or z by index.
+    //!
+    //! i==0: x will be extracted for setting
+    //! i==1: y will be extracted for setting
+    //! i==2: z will be extracted for setting
+    //! i==3: w will be extracted for setting
+    //! i==anything else: undefined behaviour
     _XOINL float& operator [](int i);
+
+    //! extract const reference operator, useful for getting w,x,y or z by index.
+    //!
+    //! i==0: x will be extracted for setting
+    //! i==1: y will be extracted for setting
+    //! i==2: z will be extracted for setting
+    //! i==3: w will be extracted for setting
+    //! i==anything else: undefined behaviour
     _XOINL const float& operator [](int i) const;
+
+    //! negate operator. Returns a vector with all elements with a flipped sign: \f$\begin{pmatrix}-x&-y&-z&-w\end{pmatrix}\f$
     _XOINL Vector4 operator -() const;
+
+    //! swizzle operator. Returns a vector with all elements in reverse order: \f$\begin{pmatrix}w&z&y&x\end{pmatrix}\f$
     _XOINL Vector4 operator ~() const;
 
+    //! Trivial add equal operator. Modifies this vector to be equal to \f$\begin{pmatrix}x+v.x&y+v.y&z+v.z&w+v.w\end{pmatrix}\f$
+    //!
+    //! @returns const reference to this vector.
     _XOINL const Vector4& operator += (const Vector4& v);
+
+    //! Trivial add equal operator. Modifies this vector to be equal to \f$\begin{pmatrix}x+v&y+v&z+v&w+v\end{pmatrix}\f$
+    //!
+    //! @returns const reference to this vector.
     _XOINL const Vector4& operator += (float v);
+
+    //! Trivial add equal operator. Modifies this vector to be equal to \f$\begin{pmatrix}x+v&y+v&z+v&w+v\end{pmatrix}\f$
+    //!
+    //! @returns const reference to this vector.
     _XOINL const Vector4& operator += (double v);
+
+    //! Trivial add equal operator. Modifies this vector to be equal to \f$\begin{pmatrix}x+v&y+v&z+v&w+v\end{pmatrix}\f$
+    //!
+    //! @returns const reference to this vector.
     _XOINL const Vector4& operator += (int v);
+
+    //! Trivial add equal operator. Modifies this vector to be equal to \f$\begin{pmatrix}x+v.x&y+v.y&z&w\end{pmatrix}\f$
+    //!
+    //! @returns const reference to this vector.
     _XOINL const Vector4& operator += (const class Vector2& v);
+
+    //! Trivial add equal operator. Modifies this vector to be equal to \f$\begin{pmatrix}x+v.x&y+v.y&z+v.z&w\end{pmatrix}\f$
+    //!
+    //! @returns const reference to this vector.
     _XOINL const Vector4& operator += (const class Vector3& v);
 
+    //! Trivial subtract equal operator. Modifies this vector to be equal to (x-v.x, y-v.y, z-v.z, w-v.w).
+    //!
+    //! @returns const reference to this vector.
     _XOINL const Vector4& operator -= (const Vector4& v);
+
+    //! Trivial subtract equal operator. Modifies this vector to be equal to (x-v, y-v, z-v, w-v).
+    //!
+    //! @returns const reference to this vector.
     _XOINL const Vector4& operator -= (float v);
+
+    //! Trivial subtract equal operator. Modifies this vector to be equal to (x-v, y-v, z-v, w-v).
+    //!
+    //! @returns const reference to this vector.
     _XOINL const Vector4& operator -= (double v);
+
+    //! Trivial subtract equal operator. Modifies this vector to be equal to (x-v, y-v, z-v, w-v).
+    //!
+    //! @returns const reference to this vector.
     _XOINL const Vector4& operator -= (int v);
+
+    //! Trivial subtract equal operator. Modifies this vector to be equal to (x-v.x, y-v.y, z, w).
+    //!
+    //! @returns const reference to this vector.
     _XOINL const Vector4& operator -= (const class Vector2& v);
+
+    //! Trivial subtract equal operator. Modifies this vector to be equal to (x-v.x, y-v.y, z-v.z, w).
+    //!
+    //! @returns const reference to this vector.
     _XOINL const Vector4& operator -= (const class Vector3& v);
 
+
+    //! Trivial multiply equal operator. Modifies this vector to be equal to (x*v.x, y*v.y, z*v.z, w*v.w).
+    //!
+    //! @returns const reference to this vector.
     _XOINL const Vector4& operator *= (const Vector4& v);
+
+    //! Trivial multiply equal operator. Modifies this vector to be equal to (x*v, y*v, z*v, w*v).
+    //!
+    //! @returns const reference to this vector.
     _XOINL const Vector4& operator *= (float v);
+
+    //! Trivial multiply equal operator. Modifies this vector to be equal to (x*v, y*v, z*v, w*v).
+    //!
+    //! @returns const reference to this vector.
     _XOINL const Vector4& operator *= (double v);
+
+    //! Trivial multiply equal operator. Modifies this vector to be equal to (x*v, y*v, z*v, w*v).
+    //!
+    //! @returns const reference to this vector.
     _XOINL const Vector4& operator *= (int v);
+
+    //! Trivial multiply equal operator. Modifies this vector to be equal to (x*v.x, y*v.y, z, w).
+    //!
+    //! @returns const reference to this vector.
     _XOINL const Vector4& operator *= (const class Vector2& v);
+
+    //! Trivial multiply equal operator. Modifies this vector to be equal to (x*v.x, y*v.y, z*v.z, w).
+    //!
+    //! @returns const reference to this vector.
     _XOINL const Vector4& operator *= (const class Vector3& v);
-    _XOINL const Vector4& operator *= (const class Matrix4x4& m);
+
+    //! Matrix multiplication operator. Transforms this vector by matrix m.
+    //!
+    // The following is latex, renders nicely in the docs.
+    // See this online editor to preview equations: http://www.hostmath.com/
+    /*!
+      \f[
+        \begin{equation*}
+            \overrightarrow{this}
+          \begin{pmatrix}
+            x\\
+            y\\
+            z\\
+            w\\
+          \end{pmatrix}
+          *=
+          M
+          \begin{pmatrix}
+            m&m&m&m\\
+            m&m&m&m\\
+            m&m&m&m\\
+            m&m&m&m\\
+          \end{pmatrix}
+          =
+          \overrightarrow{this} 
+          \begin{pmatrix}
+            x\\
+            y\\
+            z\\
+            w\\
+          \end{pmatrix}
+        \end{equation*}
+      \f]
+    */
+    //!
+    //! @returns const reference to this vector.
+    _XOINL const Vector4& operator *= (const class Matrix4x4& M);
 
     _XOINL const Vector4& operator /= (const Vector4& v);
     _XOINL const Vector4& operator /= (float v);

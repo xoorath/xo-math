@@ -318,7 +318,7 @@ EXPAND_ONLY_PREDEF     = NO
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = 
 INCLUDE_FILE_PATTERNS  = 
-PREDEFINED             = XOMATH_INTERNAL XO_NO_NS
+PREDEFINED             = XOMATH_INTERNAL XO_NO_NS XO_SSE XO_SSE2
 EXPAND_AS_DEFINED      = 
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------

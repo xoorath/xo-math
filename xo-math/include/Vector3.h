@@ -24,6 +24,9 @@ static_assert(false, "Don't include Vector3.h directly. Include GameMath.h, whic
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS
+
+//! A three dimensional euclidean vector, optimized for use in games.
+//! \sa https://en.wikipedia.org/wiki/Euclidean_vector
 class _MM_ALIGN16 Vector3 {
 #if XO_SSE
         static const __m128 MASK;
@@ -60,7 +63,7 @@ public:
     _XOINL void Get(float& x, float& y, float &z) const;
     _XOINL void Get(float* f) const;
 
-    _XO_OVERLOAD_NEW_DELETE
+    _XO_OVERLOAD_NEW_DELETE();
 
 #if XO_SSE
     // type cast operator

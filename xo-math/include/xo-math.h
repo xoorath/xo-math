@@ -187,7 +187,7 @@ namespace sse {
 #   if defined(_XO_OVERLOAD_NEW_DELETE)
 _XOMATH_INTERNAL_MACRO_WARNING
 #   else
-#   define _XO_OVERLOAD_NEW_DELETE \
+#   define _XO_OVERLOAD_NEW_DELETE() \
         _XOINL static void* operator new (std::size_t size)     { return XO_16ALIGNED_MALLOC(size); } \
         _XOINL static void* operator new[] (std::size_t size)   { return XO_16ALIGNED_MALLOC(size); } \
         _XOINL static void operator delete (void* ptr)          { XO_16ALIGNED_FREE(ptr); } \
@@ -199,7 +199,7 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #if defined(_XO_OVERLOAD_NEW_DELETE)
 _XOMATH_INTERNAL_MACRO_WARNING
 #   else
-#       define _XO_OVERLOAD_NEW_DELETE
+#       define _XO_OVERLOAD_NEW_DELETE()
 #   endif
 #endif
 

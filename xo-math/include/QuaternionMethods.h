@@ -25,7 +25,7 @@ static_assert(false, "Don't include QuaternionMethods.h directly. Include GameMa
 
 XOMATH_BEGIN_XO_NS
 
-namespace  {
+namespace xo_internal {
     _XOINL float QuaternionSquareSum(const Quaternion& q) {
 #if XO_SSE
         __m128 square = _mm_mul_ps(q.m, q.m);
@@ -130,7 +130,7 @@ Quaternion Quaternion::Inverse() const {
 }
 
 const Quaternion& Quaternion::MakeInverse() {
-    float magnitude = QuaternionSquareSum(*this);
+    float magnitude = xo_internal::QuaternionSquareSum(*this);
     
     if (CloseEnough(magnitude, 1.0f, Epsilon)) {
         return MakeConjugate();
@@ -149,7 +149,7 @@ Quaternion Quaternion::Normalized() const {
 }
 
 const Quaternion& Quaternion::Normalize() {
-    float magnitude = QuaternionSquareSum(*this);
+    float magnitude = xo_internal::QuaternionSquareSum(*this);
     if (CloseEnough(magnitude, 1.0f, Epsilon)) {
         return *this;
     }
