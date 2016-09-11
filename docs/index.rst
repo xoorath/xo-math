@@ -13,6 +13,8 @@ Types
    classes/vector4.rst
    classes/matrix4x4.rst
    classes/quaternion.rst
+   functions.rst
+   defines.rst
 
 License
 -------

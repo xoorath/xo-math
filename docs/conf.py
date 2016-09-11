@@ -10,11 +10,11 @@ if on_rtd:
   call('doxygen')
 
 
-extensions = ['breathe', 'sphinx.ext.imgmath']
+extensions = ['breathe', 'sphinx.ext.mathjax']
 
 breathe_projects = {
     "xo-math":"./xml/",
-    }
+}
 breathe_default_members = ('members', 'undoc-members')
 
 templates_path = ['_templates']
