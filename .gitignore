@@ -12,3 +12,4 @@ xo-math/x32
 *.sublime-workspace
 xo-math/build/a.out
 xo-math/build/a.exe
+docs/*.tmp
