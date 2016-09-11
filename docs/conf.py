@@ -10,7 +10,7 @@ if on_rtd:
   call('doxygen')
 
 
-extensions = ['breathe']
+extensions = ['breathe', 'sphinx.ext.imgmath']
 
 breathe_projects = {
     "xo-math":"./xml/",
