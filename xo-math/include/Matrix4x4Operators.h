@@ -23,7 +23,7 @@
 static_assert(false, "Don't include Matrix4x4Operators.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 const Vector4& Matrix4x4::operator [](int i) const {
     return r[i];
@@ -84,6 +84,6 @@ Matrix4x4 Matrix4x4::operator + (const Matrix4x4& m) const { return Matrix4x4(*t
 Matrix4x4 Matrix4x4::operator - (const Matrix4x4& m) const { return Matrix4x4(*this) -= m; }
 Matrix4x4 Matrix4x4::operator * (const Matrix4x4& m) const { return Matrix4x4(*this) *= m; }
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif

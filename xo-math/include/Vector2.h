@@ -23,7 +23,8 @@
 static_assert(false, "Don't include Vector2.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
+
 class _MM_ALIGN16 Vector2 {
 public:
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 2.0f;
@@ -219,6 +220,7 @@ const Vector2 Vector2::Right(1.0f, 0.0f);
 
 const Vector2 Vector2::One(1.0f, 1.0f);
 const Vector2 Vector2::Zero(0.0f, 0.0f);
-XOMATH_END_XO_NS
+
+XOMATH_END_XO_NS();
 
 #endif // XOMATH_INTERNAL

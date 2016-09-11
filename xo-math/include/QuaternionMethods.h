@@ -23,7 +23,7 @@
 static_assert(false, "Don't include QuaternionMethods.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 namespace xo_internal {
     _XOINL float QuaternionSquareSum(const Quaternion& q) {
@@ -404,7 +404,6 @@ Quaternion Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t) {
     return q;
 }
 
-
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif

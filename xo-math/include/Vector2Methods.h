@@ -23,7 +23,7 @@
 static_assert(false, "Don't include Vector2Methods.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 Vector2::Vector2() {
 }
@@ -211,6 +211,6 @@ float Vector2::DistanceSquared(const Vector2& v) const      { return DistanceSqu
 Vector2 Vector2::Lerp(const Vector2& v, float t) const      { return Lerp(*this, v, t); }
 Vector2 Vector2::Midpoint(const Vector2& v) const           { return Midpoint(*this, v); }
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif

@@ -24,20 +24,20 @@
 
 ////////////////////////////////////////////////////////////////////////// XOMATH_BEGIN_XO_NS, XOMATH_END_XO_NS
 #ifdef XO_CUSTOM_NS
-#   define XOMATH_BEGIN_XO_NS  namespace XO_CUSTOM_NS {
-#   define XOMATH_END_XO_NS    }
+#   define XOMATH_BEGIN_XO_NS()  namespace XO_CUSTOM_NS {
+#   define XOMATH_END_XO_NS()    }
 #elif defined(XO_SINGLE_NS)
-#   define XOMATH_BEGIN_XO_NS  namespace xo {
-#   define XOMATH_END_XO_NS    }
+#   define XOMATH_BEGIN_XO_NS()  namespace xo {
+#   define XOMATH_END_XO_NS()    }
 #elif defined(XO_SIMPLE_NS)
-#   define XOMATH_BEGIN_XO_NS  namespace xomath {
-#   define XOMATH_END_XO_NS    }
+#   define XOMATH_BEGIN_XO_NS()  namespace xomath {
+#   define XOMATH_END_XO_NS()    }
 #elif defined(XO_NO_NS)
-#   define XOMATH_BEGIN_XO_NS
-#   define XOMATH_END_XO_NS
+#   define XOMATH_BEGIN_XO_NS()
+#   define XOMATH_END_XO_NS()
 #else
-#   define XOMATH_BEGIN_XO_NS  namespace xo { namespace math {
-#   define XOMATH_END_XO_NS    } }
+#   define XOMATH_BEGIN_XO_NS()  namespace xo { namespace math {
+#   define XOMATH_END_XO_NS()    } }
 #endif
 
 ////////////////////////////////////////////////////////////////////////// Dependencies for xo-math headers
@@ -138,7 +138,8 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #   endif
 #endif
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
+
 _XOCONSTEXPR const float PI = 3.141592653589793238462643383279502884197169399375105820f;
 _XOCONSTEXPR const float PIx2 = 2.0f * PI;
 _XOCONSTEXPR const float TAU = PIx2;
@@ -258,7 +259,7 @@ float RandomRange(float low, float high) {
     return _XO_TLS_DISTRIBUTION;
 }
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #if defined(_XO_ASSIGN_QUAT)
 _XOMATH_INTERNAL_MACRO_WARNING

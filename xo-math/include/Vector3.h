@@ -23,7 +23,7 @@
 static_assert(false, "Don't include Vector3.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 //! A three dimensional euclidean vector, optimized for use in games.
 //! \sa https://en.wikipedia.org/wiki/Euclidean_vector
@@ -419,6 +419,6 @@ const Vector3 Vector3::Backward(0.0f, 0.0f, -1.0f);
 const Vector3 Vector3::One(1.0f, 1.0f, 1.0f);
 const Vector3 Vector3::Zero(0.0f, 0.0f, 0.0f);
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif // XOMATH_INTERNAL

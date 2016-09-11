@@ -23,7 +23,7 @@
 static_assert(false, "Don't include SSE.h directly. Include GameMath.h.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 _XOINL
 Vector2 Abs(const Vector2& v) {
@@ -351,6 +351,6 @@ namespace sse {
 }
 #endif
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif // XOMATH_INTERNAL

@@ -23,7 +23,7 @@
 static_assert(false, "Don't include Vector2Operators.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 float& Vector2::operator [](int i) { return f[i]; }
 const float& Vector2::operator [](int i) const { return f[i]; }
@@ -180,6 +180,6 @@ bool Vector2::operator != (int v) const                     { return !((*this) =
 bool Vector2::operator != (const class Vector3& v) const    { return !((*this) == v); }
 bool Vector2::operator != (const class Vector4& v) const    { return !((*this) == v); }
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif

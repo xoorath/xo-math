@@ -25,7 +25,7 @@ static_assert(false, "Don't include Matrix4x4.h directly. Include GameMath.h, wh
 _XOMATH_INTERNAL_MACRO_WARNING
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 class _MM_ALIGN16 Matrix4x4 {
 public:
@@ -187,7 +187,7 @@ const Matrix4x4 Matrix4x4::Zero = {
                                     {0.0f, 0.0f, 0.0f, 0.0f}
                                 };
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS()
 
 #undef _XOMATH_INIT_MATRIX4X4
 

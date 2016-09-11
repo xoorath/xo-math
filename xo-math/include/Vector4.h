@@ -23,7 +23,7 @@
 static_assert(false, "Don't include Vector4.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 //! @brief A four dimensional euclidean vector, optimized for use in games.
 //!
@@ -373,6 +373,6 @@ const Vector4 Vector4::UnitY = {0.0f, 1.0f, 0.0f, 0.0f};
 const Vector4 Vector4::UnitZ = {0.0f, 0.0f, 1.0f, 0.0f};
 const Vector4 Vector4::UnitW = {0.0f, 0.0f, 0.0f, 1.0f};
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif // XOMATH_INTERNAL

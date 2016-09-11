@@ -23,7 +23,7 @@
 static_assert(false, "Don't include Vector4Operators.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 #if XO_SSE
 
@@ -163,7 +163,7 @@ const Vector4& Vector4::operator *= (float v) {
 }
 
 const Vector4& Vector4::operator *= (const Matrix4x4& M) {
-    return Set(((*this) * m.r[0]).Sum(), ((*this) * m.r[1]).Sum(), ((*this) * m.r[2]).Sum(), ((*this) * m.r[3]).Sum());
+    return Set(((*this) * M.r[0]).Sum(), ((*this) * M.r[1]).Sum(), ((*this) * M.r[2]).Sum(), ((*this) * M.r[3]).Sum());
 }
 
 const Vector4& Vector4::operator *= (double v)          { return (*this) *= (float)v; }
@@ -368,6 +368,6 @@ bool Vector4::operator != (const Vector3& v) const  { return !((*this) == v); }
 #undef IDX_Z
 #undef IDX_W
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif

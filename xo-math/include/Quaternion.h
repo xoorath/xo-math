@@ -23,7 +23,7 @@
 static_assert(false, "Don't include Quaternion.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 class _MM_ALIGN16 Quaternion {
 #if XO_SSE
@@ -106,6 +106,6 @@ public:
 const Quaternion Quaternion::Identity = { 0.0f, 0.0f, 0.0f, 1.0f };
 const Quaternion Quaternion::Zero = { 0.0f, 0.0f, 0.0f, 0.0f };
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif // XOMATH_INTERNAL

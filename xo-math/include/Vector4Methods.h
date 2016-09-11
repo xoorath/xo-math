@@ -23,7 +23,7 @@
 static_assert(false, "Don't include Vector4Methods.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 #if defined IDX_X
 _XOMATH_INTERNAL_MACRO_WARNING
@@ -304,6 +304,6 @@ Vector4 Vector4::Lerp(const Vector4& v, float t) const {
 #undef IDX_W
 
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif

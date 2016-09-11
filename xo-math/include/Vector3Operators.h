@@ -23,7 +23,7 @@
 static_assert(false, "Don't include Vector3Operators.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 #if XO_SSE
 Vector3::operator __m128() const {
@@ -315,6 +315,7 @@ bool Vector3::operator != (double v) const                  { return !((*this) =
 bool Vector3::operator != (int v) const                     { return !((*this) == v); }
 bool Vector3::operator != (const Vector2& v) const    { return !((*this) == v); }
 bool Vector3::operator != (const Vector4& v) const    { return !((*this) == v); }
-XOMATH_END_XO_NS
+
+XOMATH_END_XO_NS();
 
 #endif // XOMATH_INTERNAL
