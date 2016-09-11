@@ -89,24 +89,24 @@ Vector4::Vector4(const __m128& vec) :
 }
 #endif
 
-Vector4::Vector4(const Vector2& v) :
+Vector4::Vector4(const class Vector2& vec) :
 #if XO_SSE
-    m(_mm_set_ps(0.0f, 0.0f, v.y, v.x)) 
+    m(_mm_set_ps(0.0f, 0.0f, vec.y, vec.x)) 
 {
 }
 #else
-    x(v.x), y(v.y), z(0.0f), w(0.0f)
+    x(vec.x), y(vec.y), z(0.0f), w(0.0f)
 {
 }
 #endif
 
-Vector4::Vector4(const Vector3& v) :
+Vector4::Vector4(const class Vector3& vec) :
 #if XO_SSE
-    m(v.m)
+    m(vec.m)
 {
 }
 #else
-    x(v.x), y(v.y), z(v.z), w(0.0f)
+    x(vec.x), y(vec.y), z(vec.z), w(0.0f)
 {
 }
 #endif

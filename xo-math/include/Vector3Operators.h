@@ -73,10 +73,10 @@ const Vector3& Vector3::operator += (float v) {
     return *this;
 }
 
-const Vector3& Vector3::operator += (double v)          { return (*this) += float(v); }
-const Vector3& Vector3::operator += (int v)             { return (*this) += float(v); }
-const Vector3& Vector3::operator += (const Vector2& v)  { return (*this) += Vector3(v); }
-const Vector3& Vector3::operator += (const Vector4& v)  { return (*this) += Vector3(v); }
+const Vector3& Vector3::operator += (double v)                  { return (*this) += float(v); }
+const Vector3& Vector3::operator += (int v)                     { return (*this) += float(v); }
+const Vector3& Vector3::operator += (const class Vector2& v)    { return (*this) += Vector3(v); }
+const Vector3& Vector3::operator += (const class Vector4& v)    { return (*this) += Vector3(v); }
 
 const Vector3& Vector3::operator -= (const Vector3& v) {
 #if XO_SSE
@@ -100,10 +100,10 @@ const Vector3& Vector3::operator -= (float v) {
     return *this;
 }
 
-const Vector3& Vector3::operator -= (double v)          { return (*this) -= float(v); }
-const Vector3& Vector3::operator -= (int v)             { return (*this) -= float(v); }
-const Vector3& Vector3::operator -= (const Vector2& v)  { return (*this) -= Vector3(v); }
-const Vector3& Vector3::operator -= (const Vector4& v)  { return (*this) -= Vector3(v); }
+const Vector3& Vector3::operator -= (double v)                  { return (*this) -= float(v); }
+const Vector3& Vector3::operator -= (int v)                     { return (*this) -= float(v); }
+const Vector3& Vector3::operator -= (const class Vector2& v)    { return (*this) -= Vector3(v); }
+const Vector3& Vector3::operator -= (const class Vector4& v)    { return (*this) -= Vector3(v); }
 
 const Vector3& Vector3::operator *= (const Vector3& v) {
 #if XO_SSE
@@ -127,14 +127,14 @@ const Vector3& Vector3::operator *= (float v) {
     return *this;
 }
 
-const Vector3& Vector3::operator *= (const Matrix4x4& m) {
+const Vector3& Vector3::operator *= (const class Matrix4x4& m) {
     return (*this) = ((Vector4)*this) *= m;
 }
 
-const Vector3& Vector3::operator *= (double v)          { return (*this) *= float(v); }
-const Vector3& Vector3::operator *= (int v)             { return (*this) *= float(v); }
-const Vector3& Vector3::operator *= (const Vector2& v)  { return (*this) *= Vector3(v); }
-const Vector3& Vector3::operator *= (const Vector4& v)  { return (*this) *= Vector3(v); }
+const Vector3& Vector3::operator *= (double v)                  { return (*this) *= float(v); }
+const Vector3& Vector3::operator *= (int v)                     { return (*this) *= float(v); }
+const Vector3& Vector3::operator *= (const class Vector2& v)    { return (*this) *= Vector3(v); }
+const Vector3& Vector3::operator *= (const class Vector4& v)    { return (*this) *= Vector3(v); }
 
 #if defined(XO_NO_INVERSE_DIVISION)
 const Vector3& Vector3::operator /= (const Vector3& v) {
@@ -216,68 +216,68 @@ const Vector3& Vector3::operator /= (float v) {
     return *this;
 }
 #endif
-const Vector3& Vector3::operator /= (double v)              { return (*this) /= float(v); }
-const Vector3& Vector3::operator /= (int v)                 { return (*this) /= float(v); }
-const Vector3& Vector3::operator /= (const Vector2& v)      { return (*this) /= Vector3(v); }
-const Vector3& Vector3::operator /= (const Vector4& v)      { return (*this) /= Vector3(v); }
+const Vector3& Vector3::operator /= (double v)                  { return (*this) /= float(v); }
+const Vector3& Vector3::operator /= (int v)                     { return (*this) /= float(v); }
+const Vector3& Vector3::operator /= (const class Vector2& v)    { return (*this) /= Vector3(v); }
+const Vector3& Vector3::operator /= (const class Vector4& v)    { return (*this) /= Vector3(v); }
 
 Vector3 Vector3::operator + (const Vector3& v) const        { return Vector3(*this) += v; }
 Vector3 Vector3::operator + (float v) const                 { return Vector3(*this) += v; }
 Vector3 Vector3::operator + (double v) const                { return Vector3(*this) += v; }
 Vector3 Vector3::operator + (int v) const                   { return Vector3(*this) += v; }
-Vector3 Vector3::operator + (const Vector2& v) const        { return Vector3(*this) += v; }
-Vector3 Vector3::operator + (const Vector4& v) const        { return Vector3(*this) += v; }
+Vector3 Vector3::operator + (const class Vector2& v) const  { return Vector3(*this) += v; }
+Vector3 Vector3::operator + (const class Vector4& v) const  { return Vector3(*this) += v; }
 
 Vector3 Vector3::operator - (const Vector3& v) const        { return Vector3(*this) -= v; }
 Vector3 Vector3::operator - (float v) const                 { return Vector3(*this) -= v; }
 Vector3 Vector3::operator - (double v) const                { return Vector3(*this) -= v; }
 Vector3 Vector3::operator - (int v) const                   { return Vector3(*this) -= v; }
-Vector3 Vector3::operator - (const Vector2& v) const        { return Vector3(*this) -= v; }
-Vector3 Vector3::operator - (const Vector4& v) const        { return Vector3(*this) -= v; }
+Vector3 Vector3::operator - (const class Vector2& v) const  { return Vector3(*this) -= v; }
+Vector3 Vector3::operator - (const class Vector4& v) const  { return Vector3(*this) -= v; }
 
 Vector3 Vector3::operator * (const Vector3& v) const        { return Vector3(*this) *= v; }
 Vector3 Vector3::operator * (float v) const                 { return Vector3(*this) *= v; }
 Vector3 Vector3::operator * (double v) const                { return Vector3(*this) *= v; }
 Vector3 Vector3::operator * (int v) const                   { return Vector3(*this) *= v; }
-Vector3 Vector3::operator * (const Vector2& v) const        { return Vector3(*this) *= v; }
-Vector3 Vector3::operator * (const Vector4& v) const        { return Vector3(*this) *= v; }
-Vector3 Vector3::operator * (const Matrix4x4& m) const      { return Vector3(*this) *= m; }
+Vector3 Vector3::operator * (const class Vector2& v) const  { return Vector3(*this) *= v; }
+Vector3 Vector3::operator * (const class Vector4& v) const  { return Vector3(*this) *= v; }
+Vector3 Vector3::operator * (const class Matrix4x4& m) const      { return Vector3(*this) *= m; }
 
 Vector3 Vector3::operator / (const Vector3& v) const        { return Vector3(*this) /= v; }
 Vector3 Vector3::operator / (float v) const                 { return Vector3(*this) /= v; }
 Vector3 Vector3::operator / (double v) const                { return Vector3(*this) /= v; }
 Vector3 Vector3::operator / (int v) const                   { return Vector3(*this) /= v; }
-Vector3 Vector3::operator / (const Vector2& v) const        { return Vector3(*this) /= v; }
-Vector3 Vector3::operator / (const Vector4& v) const        { return Vector3(*this) /= v; }
+Vector3 Vector3::operator / (const class Vector2& v) const  { return Vector3(*this) /= v; }
+Vector3 Vector3::operator / (const class Vector4& v) const  { return Vector3(*this) /= v; }
 
 
-bool Vector3::operator < (const Vector3& v) const   { return MagnitudeSquared() < v.MagnitudeSquared(); }
-bool Vector3::operator < (float v) const            { return MagnitudeSquared() < (v * v); }
-bool Vector3::operator < (double v) const           { return MagnitudeSquared() < (float)(v * v); }
-bool Vector3::operator < (int v) const              { return MagnitudeSquared() < (float)(v * v); }
-bool Vector3::operator < (const Vector2& v) const   { return MagnitudeSquared() < v.MagnitudeSquared(); }
-bool Vector3::operator < (const Vector4& v) const   { return MagnitudeSquared() < v.MagnitudeSquared(); }
+bool Vector3::operator < (const Vector3& v) const       { return MagnitudeSquared() < v.MagnitudeSquared(); }
+bool Vector3::operator < (float v) const                { return MagnitudeSquared() < (v * v); }
+bool Vector3::operator < (double v) const               { return MagnitudeSquared() < (float)(v * v); }
+bool Vector3::operator < (int v) const                  { return MagnitudeSquared() < (float)(v * v); }
+bool Vector3::operator < (const class Vector2& v) const { return MagnitudeSquared() < v.MagnitudeSquared(); }
+bool Vector3::operator < (const class Vector4& v) const { return MagnitudeSquared() < v.MagnitudeSquared(); }
 
-bool Vector3::operator <= (const Vector3& v) const  { return MagnitudeSquared() <= v.MagnitudeSquared(); }
-bool Vector3::operator <= (float v) const           { return MagnitudeSquared() <= (v * v); }
-bool Vector3::operator <= (double v) const          { return MagnitudeSquared() <= (float)(v * v); }
-bool Vector3::operator <= (int v) const             { return MagnitudeSquared() <= (float)(v * v); }
-bool Vector3::operator <= (const Vector2& v) const  { return MagnitudeSquared() <= v.MagnitudeSquared(); }
-bool Vector3::operator <= (const Vector4& v) const  { return MagnitudeSquared() <= v.MagnitudeSquared(); }
+bool Vector3::operator <= (const Vector3& v) const          { return MagnitudeSquared() <= v.MagnitudeSquared(); }
+bool Vector3::operator <= (float v) const                   { return MagnitudeSquared() <= (v * v); }
+bool Vector3::operator <= (double v) const                  { return MagnitudeSquared() <= (float)(v * v); }
+bool Vector3::operator <= (int v) const                     { return MagnitudeSquared() <= (float)(v * v); }
+bool Vector3::operator <= (const class Vector2& v) const    { return MagnitudeSquared() <= v.MagnitudeSquared(); }
+bool Vector3::operator <= (const class Vector4& v) const    { return MagnitudeSquared() <= v.MagnitudeSquared(); }
 
-bool Vector3::operator > (const Vector3& v) const   { return MagnitudeSquared() > v.MagnitudeSquared(); }
-bool Vector3::operator > (float v) const            { return MagnitudeSquared() > (v * v); }
-bool Vector3::operator > (double v) const           { return MagnitudeSquared() > (float)(v * v); }
-bool Vector3::operator > (int v) const              { return MagnitudeSquared() > (float)(v * v); }
-bool Vector3::operator > (const Vector2& v) const   { return MagnitudeSquared() > v.MagnitudeSquared(); }
-bool Vector3::operator > (const Vector4& v) const   { return MagnitudeSquared() > v.MagnitudeSquared(); }
+bool Vector3::operator > (const Vector3& v) const       { return MagnitudeSquared() > v.MagnitudeSquared(); }
+bool Vector3::operator > (float v) const                { return MagnitudeSquared() > (v * v); }
+bool Vector3::operator > (double v) const               { return MagnitudeSquared() > (float)(v * v); }
+bool Vector3::operator > (int v) const                  { return MagnitudeSquared() > (float)(v * v); }
+bool Vector3::operator > (const class Vector2& v) const { return MagnitudeSquared() > v.MagnitudeSquared(); }
+bool Vector3::operator > (const class Vector4& v) const { return MagnitudeSquared() > v.MagnitudeSquared(); }
 
-bool Vector3::operator >= (const Vector3& v) const  { return MagnitudeSquared() >= v.MagnitudeSquared(); }
-bool Vector3::operator >= (float v) const           { return MagnitudeSquared() >= (v * v); }
-bool Vector3::operator >= (double v) const          { return MagnitudeSquared() >= (float)(v * v); }
-bool Vector3::operator >= (int v) const             { return MagnitudeSquared() >= (float)(v * v); }
-bool Vector3::operator >= (const Vector2& v) const  { return MagnitudeSquared() >= v.MagnitudeSquared(); }
-bool Vector3::operator >= (const Vector4& v) const  { return MagnitudeSquared() >= v.MagnitudeSquared(); }
+bool Vector3::operator >= (const Vector3& v) const          { return MagnitudeSquared() >= v.MagnitudeSquared(); }
+bool Vector3::operator >= (float v) const                   { return MagnitudeSquared() >= (v * v); }
+bool Vector3::operator >= (double v) const                  { return MagnitudeSquared() >= (float)(v * v); }
+bool Vector3::operator >= (int v) const                     { return MagnitudeSquared() >= (float)(v * v); }
+bool Vector3::operator >= (const class Vector2& v) const    { return MagnitudeSquared() >= v.MagnitudeSquared(); }
+bool Vector3::operator >= (const class Vector4& v) const    { return MagnitudeSquared() >= v.MagnitudeSquared(); }
 
 bool Vector3::operator == (const Vector3& v) const {
 #   if XO_SSE2
@@ -294,14 +294,14 @@ bool Vector3::operator == (const Vector3& v) const {
 bool Vector3::operator == (float v) const                   { return CloseEnough(MagnitudeSquared(), v*v, Epsilon);}
 bool Vector3::operator == (double v) const                  { return CloseEnough(MagnitudeSquared(), (float)(v*v), Epsilon);}
 bool Vector3::operator == (int v) const                     { return CloseEnough(MagnitudeSquared(), (float)(v*v), Epsilon);}
-bool Vector3::operator == (const Vector2& v) const {
+bool Vector3::operator == (const class Vector2& v) const {
 #   if XO_SSE
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, v.y, v.x), m)), sse::Epsilon)) & 0b0011) == 0b0011;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
 #   endif
 }
-bool Vector3::operator == (const Vector4& v) const {
+bool Vector3::operator == (const class Vector4& v) const {
 #   if XO_SSE
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 0b0111) == 0b0111;
 #   else
@@ -313,8 +313,8 @@ bool Vector3::operator != (const Vector3& v) const          { return !((*this) =
 bool Vector3::operator != (float v) const                   { return !((*this) == v); }
 bool Vector3::operator != (double v) const                  { return !((*this) == v); }
 bool Vector3::operator != (int v) const                     { return !((*this) == v); }
-bool Vector3::operator != (const Vector2& v) const    { return !((*this) == v); }
-bool Vector3::operator != (const Vector4& v) const    { return !((*this) == v); }
+bool Vector3::operator != (const class Vector2& v) const    { return !((*this) == v); }
+bool Vector3::operator != (const class Vector4& v) const    { return !((*this) == v); }
 
 XOMATH_END_XO_NS();
 

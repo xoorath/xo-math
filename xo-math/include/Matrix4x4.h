@@ -50,14 +50,14 @@ public:
     // [r1.x, r1.y, r1.z, r1.w]
     // [r2.x, r2.y, r2.z, r2.w]
     // [r3.x, r3.y, r3.z, r3.w]
-    _XOINL Matrix4x4(const class Vector4& r0, const class Vector4& r1, const class Vector4& r2, const class Vector4& r3);
+    _XOINL Matrix4x4(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3);
 
     // Specify the upper left of the matrix as one Vector3 per row, leaving the rightmost column as 0, except it's bottommost element.
     // [r0.x, r0.y, r0.z, 0.0]
     // [r1.x, r1.y, r1.z, 0.0]
     // [r2.x, r2.y, r2.z, 0.0]
     // [0.0,  0.0,  0.0,  1.0]
-    _XOINL Matrix4x4(const class Vector3& r0, const class Vector3& r1, const class Vector3& r2);
+    _XOINL Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2);
 
     // Set this matrix as a transpose of itself, then return a ref to itself.
     // See: https://en.wikipedia.org/wiki/Transpose
@@ -187,7 +187,7 @@ const Matrix4x4 Matrix4x4::Zero = {
                                     {0.0f, 0.0f, 0.0f, 0.0f}
                                 };
 
-XOMATH_END_XO_NS()
+XOMATH_END_XO_NS();
 
 #undef _XOMATH_INIT_MATRIX4X4
 

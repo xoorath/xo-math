@@ -106,8 +106,8 @@ const Vector4& Vector4::operator += (float v) {
 
 const Vector4& Vector4::operator += (double v)          { return (*this) += (float)v; }
 const Vector4& Vector4::operator += (int v)             { return (*this) += (float)v; }
-const Vector4& Vector4::operator += (const Vector2& v)  { return (*this) += Vector4(v); }
-const Vector4& Vector4::operator += (const Vector3& v)  { return (*this) += Vector4(v); }
+const Vector4& Vector4::operator += (const class Vector2& v)  { return (*this) += Vector4(v); }
+const Vector4& Vector4::operator += (const class Vector3& v)  { return (*this) += Vector4(v); }
 
 const Vector4& Vector4::operator -= (const Vector4& v) {
 #if XO_SSE
@@ -135,8 +135,8 @@ const Vector4& Vector4::operator -= (float v) {
 
 const Vector4& Vector4::operator -= (double v)          { return (*this) -= (float)v; }
 const Vector4& Vector4::operator -= (int v)             { return (*this) -= (float)v; }
-const Vector4& Vector4::operator -= (const Vector2& v)  { return (*this) -= Vector4(v); }
-const Vector4& Vector4::operator -= (const Vector3& v)  { return (*this) -= Vector4(v); }
+const Vector4& Vector4::operator -= (const class Vector2& v)  { return (*this) -= Vector4(v); }
+const Vector4& Vector4::operator -= (const class Vector3& v)  { return (*this) -= Vector4(v); }
 
 const Vector4& Vector4::operator *= (const Vector4& v) {
 #if XO_SSE
@@ -162,14 +162,14 @@ const Vector4& Vector4::operator *= (float v) {
     return *this;
 }
 
-const Vector4& Vector4::operator *= (const Matrix4x4& M) {
+const Vector4& Vector4::operator *= (const class Matrix4x4& M) {
     return Set(((*this) * M.r[0]).Sum(), ((*this) * M.r[1]).Sum(), ((*this) * M.r[2]).Sum(), ((*this) * M.r[3]).Sum());
 }
 
 const Vector4& Vector4::operator *= (double v)          { return (*this) *= (float)v; }
 const Vector4& Vector4::operator *= (int v)             { return (*this) *= (float)v; }
-const Vector4& Vector4::operator *= (const Vector2& v)  { return (*this) *= Vector4(v); }
-const Vector4& Vector4::operator *= (const Vector3& v)  { return (*this) *= Vector4(v); }
+const Vector4& Vector4::operator *= (const class Vector2& v)  { return (*this) *= Vector4(v); }
+const Vector4& Vector4::operator *= (const class Vector3& v)  { return (*this) *= Vector4(v); }
 
 #if defined(XO_NO_INVERSE_DIVISION)
 const Vector4& Vector4::operator /= (const Vector4& v) {
@@ -255,65 +255,65 @@ const Vector4& Vector4::operator /= (float v) {
 #endif
 const Vector4& Vector4::operator /= (double v)          { return (*this) /= float(v); }
 const Vector4& Vector4::operator /= (int v)             { return (*this) /= float(v); }
-const Vector4& Vector4::operator /= (const Vector2& v)  { return (*this) /= Vector4(v); }
-const Vector4& Vector4::operator /= (const Vector3& v)  { return (*this) /= Vector4(v); }
+const Vector4& Vector4::operator /= (const class Vector2& v)  { return (*this) /= Vector4(v); }
+const Vector4& Vector4::operator /= (const class Vector3& v)  { return (*this) /= Vector4(v); }
 
 Vector4 Vector4::operator + (const Vector4& v) const    { return Vector4(*this) += v; }
 Vector4 Vector4::operator + (float v) const             { return Vector4(*this) += v; }
 Vector4 Vector4::operator + (double v) const            { return Vector4(*this) += v; }
 Vector4 Vector4::operator + (int v) const               { return Vector4(*this) += v; }
-Vector4 Vector4::operator + (const Vector2& v) const    { return Vector4(*this) += v; }
-Vector4 Vector4::operator + (const Vector3& v) const    { return Vector4(*this) += v; }
+Vector4 Vector4::operator + (const class Vector2& v) const    { return Vector4(*this) += v; }
+Vector4 Vector4::operator + (const class Vector3& v) const    { return Vector4(*this) += v; }
 
 Vector4 Vector4::operator - (const Vector4& v) const    { return Vector4(*this) -= v; }
 Vector4 Vector4::operator - (float v) const             { return Vector4(*this) -= v; }
 Vector4 Vector4::operator - (double v) const            { return Vector4(*this) -= v; }
 Vector4 Vector4::operator - (int v) const               { return Vector4(*this) -= v; }
-Vector4 Vector4::operator - (const Vector2& v) const    { return Vector4(*this) -= v; }
-Vector4 Vector4::operator - (const Vector3& v) const    { return Vector4(*this) -= v; }
+Vector4 Vector4::operator - (const class Vector2& v) const    { return Vector4(*this) -= v; }
+Vector4 Vector4::operator - (const class Vector3& v) const    { return Vector4(*this) -= v; }
 
 Vector4 Vector4::operator * (const Vector4& v) const    { return Vector4(*this) *= v; }
 Vector4 Vector4::operator * (float v) const             { return Vector4(*this) *= v; }
 Vector4 Vector4::operator * (double v) const            { return Vector4(*this) *= v; }
 Vector4 Vector4::operator * (int v) const               { return Vector4(*this) *= v; }
-Vector4 Vector4::operator * (const Vector2& v) const    { return Vector4(*this) *= v; }
-Vector4 Vector4::operator * (const Vector3& v) const    { return Vector4(*this) *= v; }
-Vector4 Vector4::operator * (const Matrix4x4& m) const  { return Vector4(*this) *= m; }
+Vector4 Vector4::operator * (const class Vector2& v) const    { return Vector4(*this) *= v; }
+Vector4 Vector4::operator * (const class Vector3& v) const    { return Vector4(*this) *= v; }
+Vector4 Vector4::operator * (const class Matrix4x4& M) const  { return Vector4(*this) *= M; }
 
 Vector4 Vector4::operator / (const Vector4& v) const    { return Vector4(*this) /= v; }
 Vector4 Vector4::operator / (float v) const             { return Vector4(*this) /= v; }
 Vector4 Vector4::operator / (double v) const            { return Vector4(*this) /= v; }
 Vector4 Vector4::operator / (int v) const               { return Vector4(*this) /= v; }
-Vector4 Vector4::operator / (const Vector2& v) const    { return Vector4(*this) /= v; }
-Vector4 Vector4::operator / (const Vector3& v) const    { return Vector4(*this) /= v; }
+Vector4 Vector4::operator / (const class Vector2& v) const    { return Vector4(*this) /= v; }
+Vector4 Vector4::operator / (const class Vector3& v) const    { return Vector4(*this) /= v; }
 
 bool Vector4::operator < (const Vector4& v) const       { return MagnitudeSquared() < v.MagnitudeSquared(); }
 bool Vector4::operator < (float v) const                { return MagnitudeSquared() < (v * v); }
 bool Vector4::operator < (double v) const               { return MagnitudeSquared() < (float)(v * v); }
 bool Vector4::operator < (int v) const                  { return MagnitudeSquared() < (float)(v * v); }
-bool Vector4::operator < (const Vector2& v) const       { return MagnitudeSquared() < v.MagnitudeSquared(); }
-bool Vector4::operator < (const Vector3& v) const       { return MagnitudeSquared() < v.MagnitudeSquared(); }
+bool Vector4::operator < (const class Vector2& v) const       { return MagnitudeSquared() < v.MagnitudeSquared(); }
+bool Vector4::operator < (const class Vector3& v) const       { return MagnitudeSquared() < v.MagnitudeSquared(); }
 
 bool Vector4::operator <= (const Vector4& v) const      { return MagnitudeSquared() <= v.MagnitudeSquared(); }
 bool Vector4::operator <= (float v) const               { return MagnitudeSquared() <= (v * v); }
 bool Vector4::operator <= (double v) const              { return MagnitudeSquared() <= (float)(v * v); }
 bool Vector4::operator <= (int v) const                 { return MagnitudeSquared() <= (float)(v * v); }
-bool Vector4::operator <= (const Vector2& v) const      { return MagnitudeSquared() <= v.MagnitudeSquared(); }
-bool Vector4::operator <= (const Vector3& v) const      { return MagnitudeSquared() <= v.MagnitudeSquared(); }
+bool Vector4::operator <= (const class Vector2& v) const      { return MagnitudeSquared() <= v.MagnitudeSquared(); }
+bool Vector4::operator <= (const class Vector3& v) const      { return MagnitudeSquared() <= v.MagnitudeSquared(); }
 
 bool Vector4::operator > (const Vector4& v) const       { return MagnitudeSquared() > v.MagnitudeSquared(); }
 bool Vector4::operator > (float v) const                { return MagnitudeSquared() > (v * v); }
 bool Vector4::operator > (double v) const               { return MagnitudeSquared() > (float)(v * v); }
 bool Vector4::operator > (int v) const                  { return MagnitudeSquared() > (float)(v * v); }
-bool Vector4::operator > (const Vector2& v) const       { return MagnitudeSquared() > v.MagnitudeSquared(); }
-bool Vector4::operator > (const Vector3& v) const       { return MagnitudeSquared() > v.MagnitudeSquared(); }
+bool Vector4::operator > (const class Vector2& v) const       { return MagnitudeSquared() > v.MagnitudeSquared(); }
+bool Vector4::operator > (const class Vector3& v) const       { return MagnitudeSquared() > v.MagnitudeSquared(); }
 
 bool Vector4::operator >= (const Vector4& v) const      { return MagnitudeSquared() >= v.MagnitudeSquared(); }
 bool Vector4::operator >= (float v) const               { return MagnitudeSquared() >= (v * v); }
 bool Vector4::operator >= (double v) const              { return MagnitudeSquared() >= (float)(v * v); }
 bool Vector4::operator >= (int v) const                 { return MagnitudeSquared() >= (float)(v * v); }
-bool Vector4::operator >= (const Vector2& v) const      { return MagnitudeSquared() >= v.MagnitudeSquared(); }
-bool Vector4::operator >= (const Vector3& v) const      { return MagnitudeSquared() >= v.MagnitudeSquared(); }
+bool Vector4::operator >= (const class Vector2& v) const      { return MagnitudeSquared() >= v.MagnitudeSquared(); }
+bool Vector4::operator >= (const class Vector3& v) const      { return MagnitudeSquared() >= v.MagnitudeSquared(); }
 
 bool Vector4::operator == (const Vector4& v) const {
 #   if XO_SSE2
@@ -339,7 +339,7 @@ bool Vector4::operator == (float v) const           { return CloseEnough(Magnitu
 bool Vector4::operator == (double v) const          { return CloseEnough(MagnitudeSquared(), (float)(v * v), Epsilon); }
 bool Vector4::operator == (int v) const             { return CloseEnough(MagnitudeSquared(), (float)(v * v), Epsilon); }
 
-bool Vector4::operator == (const Vector2& v) const {
+bool Vector4::operator == (const class Vector2& v) const {
 #   if XO_SSE
     // Todo: check that this is actually faster.
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(m, _mm_set_ps(0.0f, 0.0f, v.y, v.x))), sse::Epsilon)) & 0b0011) == 0b0011;
@@ -348,7 +348,7 @@ bool Vector4::operator == (const Vector2& v) const {
 #   endif
 }
 
-bool Vector4::operator == (const Vector3& v) const {
+bool Vector4::operator == (const class Vector3& v) const {
 #   if XO_SSE
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 0b0111) == 0b0111;
 #   else
@@ -360,8 +360,8 @@ bool Vector4::operator != (const Vector4& v) const  { return !((*this) == v); }
 bool Vector4::operator != (float v) const           { return !((*this) == v); }
 bool Vector4::operator != (double v) const          { return !((*this) == v); }
 bool Vector4::operator != (int v) const             { return !((*this) == v); }
-bool Vector4::operator != (const Vector2& v) const  { return !((*this) == v); }
-bool Vector4::operator != (const Vector3& v) const  { return !((*this) == v); }
+bool Vector4::operator != (const class Vector2& v) const  { return !((*this) == v); }
+bool Vector4::operator != (const class Vector3& v) const  { return !((*this) == v); }
 
 #undef IDX_X
 #undef IDX_Y

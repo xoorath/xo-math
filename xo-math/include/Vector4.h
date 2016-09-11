@@ -267,7 +267,7 @@ public:
     _XOINL Vector4 operator * (int v) const;
     _XOINL Vector4 operator * (const class Vector2& v) const;
     _XOINL Vector4 operator * (const class Vector3& v) const;
-    _XOINL Vector4 operator * (const class Matrix4x4& m) const;
+    _XOINL Vector4 operator * (const class Matrix4x4& M) const;
 
     _XOINL Vector4 operator / (const Vector4& v) const;
     _XOINL Vector4 operator / (float v) const;

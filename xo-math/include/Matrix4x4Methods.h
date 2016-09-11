@@ -66,7 +66,7 @@ Matrix4x4::Matrix4x4(const Matrix4x4& m) :
 {
 }
 
-Matrix4x4::Matrix4x4(const class Vector4& r0, const class Vector4& r1, const class Vector4& r2, const class Vector4& r3)  :
+Matrix4x4::Matrix4x4(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3)  :
     r {
         r0,
         r1,
@@ -76,7 +76,7 @@ Matrix4x4::Matrix4x4(const class Vector4& r0, const class Vector4& r1, const cla
 {
 }
 
-Matrix4x4::Matrix4x4(const class Vector3& r0, const class Vector3& r1, const class Vector3& r2) :
+Matrix4x4::Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2) :
     r {
         Vector4(r0), 
         Vector4(r1), 

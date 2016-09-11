@@ -87,7 +87,7 @@ Vector3::Vector3(const __m128& vec) :
 }
 #endif
 
-Vector3::Vector3(const Vector2& v) :
+Vector3::Vector3(const class Vector2& v) :
 #if XO_SSE
     m(_mm_set_ps(0.0f, 0.0f, v.y, v.x))
 #else
@@ -96,7 +96,7 @@ Vector3::Vector3(const Vector2& v) :
 {
 }
 
-Vector3::Vector3(const Vector4& v) :
+Vector3::Vector3(const class Vector4& v) :
 #if XO_SSE
     m(v.m)
 #else
