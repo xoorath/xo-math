@@ -162,10 +162,6 @@ const Vector4& Vector4::operator *= (float v) {
     return *this;
 }
 
-const Vector4& Vector4::operator *= (const class Matrix4x4& M) {
-    return Set(((*this) * M.r[0]).Sum(), ((*this) * M.r[1]).Sum(), ((*this) * M.r[2]).Sum(), ((*this) * M.r[3]).Sum());
-}
-
 const Vector4& Vector4::operator *= (double v)          { return (*this) *= (float)v; }
 const Vector4& Vector4::operator *= (int v)             { return (*this) *= (float)v; }
 const Vector4& Vector4::operator *= (const class Vector2& v)  { return (*this) *= Vector4(v); }
@@ -278,7 +274,6 @@ Vector4 Vector4::operator * (double v) const            { return Vector4(*this) 
 Vector4 Vector4::operator * (int v) const               { return Vector4(*this) *= v; }
 Vector4 Vector4::operator * (const class Vector2& v) const    { return Vector4(*this) *= v; }
 Vector4 Vector4::operator * (const class Vector3& v) const    { return Vector4(*this) *= v; }
-Vector4 Vector4::operator * (const class Matrix4x4& M) const  { return Vector4(*this) *= M; }
 
 Vector4 Vector4::operator / (const Vector4& v) const    { return Vector4(*this) /= v; }
 Vector4 Vector4::operator / (float v) const             { return Vector4(*this) /= v; }

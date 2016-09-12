@@ -27,7 +27,7 @@ XOMATH_BEGIN_XO_NS();
 
 //! @brief A four dimensional euclidean vector, optimized for use in games.
 //!
-//! Most useful for three dimensional rotations. See Matrix4x4::Transform and Vector4::operator*=.
+//! Most useful for three dimensional rotations. See Matrix4x4::Transform and Matrix4x4::operator*=.
 //! @sa https://en.wikipedia.org/wiki/Euclidean_vector
 class _MM_ALIGN16 Vector4 {
 public:
@@ -139,40 +139,6 @@ public:
     _XOINL const Vector4& operator *= (int v);
     _XOINL const Vector4& operator *= (const class Vector2& v);
     _XOINL const Vector4& operator *= (const class Vector3& v);
-
-    //! Matrix multiplication operator. Transforms this vector by matrix m.
-    //!
-    // The following is latex, renders nicely in the docs.
-    // See this online editor to preview equations: http://www.hostmath.com/
-    /*!
-    \f[
-        \begin{bmatrix}
-            m00&m01&m02&m03\\
-            m10&m11&m12&m13\\
-            m20&m21&m22&m23\\
-            m30&m31&m32&m33\\
-        \end{bmatrix}
-        \times
-        \begin{bmatrix}
-            x\\
-            y\\
-            z\\
-            w\\
-        \end{bmatrix}
-    \f]
-    \f[
-            =
-            \begin{bmatrix}
-                (m00\times x) + (m01\times x) + (m02\times x) + (m03\times x)\\
-                (m10\times y) + (m11\times y) + (m12\times y) + (m13\times y)\\
-                (m20\times z) + (m21\times z) + (m22\times z) + (m23\times z)\\
-                (m30\times w) + (m31\times w) + (m32\times w) + (m33\times w)
-            \end{bmatrix}
-        \f]
-    */
-    //! @sa https://en.wikipedia.org/wiki/Matrix_multiplication
-    //! @sa https://youtu.be/Awcj447pYuk?t=1m28s
-    _XOINL const Vector4& operator *= (const class Matrix4x4& M);
     //! @}
 
     //! @name Divide Equals Operator
@@ -221,7 +187,6 @@ public:
     _XOINL Vector4 operator * (int v) const;
     _XOINL Vector4 operator * (const class Vector2& v) const;
     _XOINL Vector4 operator * (const class Vector3& v) const;
-    _XOINL Vector4 operator * (const class Matrix4x4& M) const;
     //! @}
 
     //! @name Division Operator

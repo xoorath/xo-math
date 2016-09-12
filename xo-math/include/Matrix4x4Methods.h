@@ -113,12 +113,12 @@ Matrix4x4 Matrix4x4::Transpose() const {
 }
 
 const Matrix4x4& Matrix4x4::Transform(Vector3& v) const {
-    v *= *this;
+    v = (*this) * Vector4(v);
     return *this;
 }
 
 const Matrix4x4& Matrix4x4::Transform(Vector4& v) const {
-    v *= *this;
+    v = (*this) * v;
     return *this;
 }
 

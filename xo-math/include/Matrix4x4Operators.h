@@ -84,6 +84,14 @@ Matrix4x4 Matrix4x4::operator + (const Matrix4x4& m) const { return Matrix4x4(*t
 Matrix4x4 Matrix4x4::operator - (const Matrix4x4& m) const { return Matrix4x4(*this) -= m; }
 Matrix4x4 Matrix4x4::operator * (const Matrix4x4& m) const { return Matrix4x4(*this) *= m; }
 
+Vector4 Matrix4x4::operator * (const Vector4& v) const {
+    return { (r[0] * v).Sum(), (r[1] * v).Sum(), (r[2] * v).Sum(), (r[3] * v).Sum() };
+}
+
+Vector3 Matrix4x4::operator * (const Vector3& v) const {
+    return{ (r[0] * v).Sum(), (r[1] * v).Sum(), (r[2] * v).Sum() };
+}
+
 XOMATH_END_XO_NS();
 
 #endif
