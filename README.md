@@ -18,6 +18,38 @@ xo-math is designed to be **friendly**. Easy to use and easy to understand, xo-m
 
 If you feel I've failed my mission here, [please let me know](https://github.com/xoorath/xo-math/issues).
 
+# Quick Start
+
+Download [xo-math.h](https://raw.githubusercontent.com/xoorath/xo-math/master/xo-math.h) from the root of the repo, include it in your project and you're good to go.
+
+```c++
+#include <iostream>
+#include "include/xo-math.h"
+
+using namespace std;
+using namespace xo;
+
+int main() {
+    
+    math::Vector3 vec = math::Vector3::RandomOnConeRadians(math::Vector3::Up, math::HalfPI/2.0f);
+    cout << "random 45 degree cone vector from Vector3::Up: " << vec << endl;
+
+    if(vec == 1.0f) {
+        cout << "The vector is normalized." << endl;
+    }
+
+    math::Matrix4x4 tilt = math::Matrix4x4::RotationXDegrees(-90.0f);
+    tilt.Transform(vec);
+    cout << "Now rotated -90 degrees by the x axis: " << vec << endl;
+
+    float x, y, z;
+    vec.Get(x, y, z);
+    cout << "Extracted vector elements. x:" << x << " y:" << y << " z:" << z << endl;
+
+    return 0;
+}
+```
+
 # Documentation
 
 Documentation is hosted by Read The Docs: **[xo-math.rtfd.io](http://xo-math.rtfd.io)**
