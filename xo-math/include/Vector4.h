@@ -48,8 +48,8 @@ public:
 #if XO_SSE
     _XOINL Vector4(const __m128& vec); //!< Assigns m to vec, sets all elements.
 #endif
-    _XOINL Vector4(const class Vector2& v); //!< \f$\begin{pmatrix}v.x&v.y&0&0\end{pmatrix}\f$
-    _XOINL Vector4(const class Vector3& v); //!< \f$\begin{pmatrix}v.x&v.y&v.z&0\end{pmatrix}\f$
+    _XOINL Vector4(const class Vector2& v); //!< Assigns same-name values from v, zero to z and w. \f$\begin{pmatrix}v.x&v.y&0&0\end{pmatrix}\f$
+    _XOINL Vector4(const class Vector3& v); //!< Assigns same-name values from v, zero to w.\f$\begin{pmatrix}v.x&v.y&v.z&0\end{pmatrix}\f$
     //! @}
 
 
@@ -77,32 +77,39 @@ public:
     _XOINL void Get(float* f) const;
     //! @}
 
+    //! @name Special Operators
+    //! @{
+
     //! Overloads the new and delete operators for vector4 when memory alignment is required (such as with SSE).
     //! @sa XO_16ALIGNED_MALLOC, XO_16ALIGNED_FREE
     _XO_OVERLOAD_NEW_DELETE();
 
 #if XO_SSE
-    //! type cast operator. Allows Vector4 to be used implicitly where ever __m128 can be.
+    //! Type cast operator. Allows Vector4 to be used implicitly where ever __m128 can be.
     _XOINL operator const __m128&() const;
 #endif
 
-    //! extract reference operator, useful for setting values by index.
+    //! Extract reference operator, useful for setting values by index.
     //! \f[i\begin{cases}0 & return\ x;\\1 & return\ y;\\2 & return\ z;\\3 & return\ w;\\? & undefined\end{cases}\f]
     _XOINL float& operator [](int i);
 
-    //! extract const reference operator, useful for getting values by index.
+    //! Extract const reference operator, useful for getting values by index.
     //! \f[i\begin{cases}0 & return\ x;\\1 & return\ y;\\2 & return\ z;\\3 & return\ w;\\? & undefined\end{cases}\f]
     _XOINL const float& operator [](int i) const;
 
-    //! negate operator. Returns a vector with all elements with a flipped sign: \f$\begin{pmatrix}-x,&-y,&-z,&-w\end{pmatrix}\f$
+    //! Negate operator. Returns a vector with all elements with a flipped sign:
+    //!
+    //! \f$\begin{pmatrix}-x,&-y,&-z,&-w\end{pmatrix}\f$
     _XOINL Vector4 operator -() const;
 
-    //! swizzle operator. Returns a vector with all elements in reverse order: \f$\begin{pmatrix}w,&z,&y,&x\end{pmatrix}\f$
+    //! Swizzle operator. Returns a vector with all elements in reverse order:
+    //!
+    //! \f$\begin{pmatrix}w,&z,&y,&x\end{pmatrix}\f$
     _XOINL Vector4 operator ~() const;
+    //! @}
 
     //! @name Add Equals Operator
     //! Adds all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @return A const reference to this vector.
     //! @{
     _XOINL const Vector4& operator += (const Vector4& v);
     _XOINL const Vector4& operator += (float v);
@@ -114,7 +121,6 @@ public:
 
     //! @name Subtract Equals Operator
     //! Subtracts all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @return A const reference to this vector.
     //! @{
     _XOINL const Vector4& operator -= (const Vector4& v);
     _XOINL const Vector4& operator -= (float v);
@@ -126,7 +132,6 @@ public:
 
     //! @name Multiply Equals Operator
     //! Multiplies all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @return A const reference to this vector.
     //! @{
     _XOINL const Vector4& operator *= (const Vector4& v);
     _XOINL const Vector4& operator *= (float v);
@@ -172,7 +177,6 @@ public:
 
     //! @name Divide Equals Operator
     //! Divides all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @return A const reference to this vector.
     //! @sa XO_NO_INVERSE_DIVISION
     //! @{
     _XOINL const Vector4& operator /= (const Vector4& v);
@@ -287,16 +291,21 @@ public:
     //! @}
 
     //! The sum of all vector elements.
-    //! @returns x+y+z+w
+    //!
+    //! \f$x+y+z+w\f$
     _XOINL float Sum() const;
 
     //! The square length of this vector in 4 dimensional space.
-    //! It's prefered to use the MagnitudeSquared when possible, as Magnitude requires a call to Sqrt.
+    //! It's preferred to use the MagnitudeSquared when possible, as Magnitude requires a call to Sqrt.
+    //!
+    //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert^2 = (x\times x)+(y\times y)+(z\times z)+(w\times w)\f$
     //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
     _XOINL float MagnitudeSquared() const;
 
     //! The length of this vector in 4 dimensional space.
     //! It's preferred to use the MagnitudeSquared when possible, as Magnitude requires a call to Sqrt.
+    //!
+    //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert = \sqrt{(x\times x)+(y\times y)+(z\times z)+(w\times w)}\f$
     //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
     _XOINL float Magnitude() const;
 
@@ -314,23 +323,78 @@ public:
     //! Returns true when the Magnitude of this vector is within Vector4::Epsilon of being 1.0
     _XOINL bool IsNormalized() const;
 
-    
+    //! Set outVec to have elements equal to the max of each element in a and b.
+    //!
+    //! \f$\begin{pmatrix}\max(a.x, b.x)&\max(a.y, b.y)&\max(a.z, b.z)&\max(a.w, b.w)\end{pmatrix}\f$
     _XOINL static void Max(const Vector4& a, const Vector4& b, Vector4& outVec);
+    
+    //! Set outVec to have elements equal to the min of each element in a and b.
+    //!
+    //! \f$\begin{pmatrix}\min(a.x, b.x)&\min(a.y, b.y)&\min(a.z, b.z)&\min(a.w, b.w)\end{pmatrix}\f$
     _XOINL static void Min(const Vector4& a, const Vector4& b, Vector4& outVec);
+
+    //! Sets outVec to a vector interpolated between a and b by a scalar amount t.
+    //! @sa https://en.wikipedia.org/wiki/Linear_interpolation
     _XOINL static void Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec);
 
+    //! Returns a vector with elements equal to the max of each element in a and b.
+    //!
+    //! \f$\begin{pmatrix}\max(a.x, b.x)&\max(a.y, b.y)&\max(a.z, b.z)&\max(a.w, b.w)\end{pmatrix}\f$
     _XOINL static Vector4 Max(const Vector4& a, const Vector4& b);
+
+    //! Returns a vector with elements equal to the min of each element in a and b.
+    //!
+    //! \f$\begin{pmatrix}\min(a.x, b.x)&\min(a.y, b.y)&\min(a.z, b.z)&\min(a.w, b.w)\end{pmatrix}\f$
     _XOINL static Vector4 Min(const Vector4& a, const Vector4& b);
+
+    //! Returns a vector interpolated between a and b by a scalar amount t.
+    //! @sa https://en.wikipedia.org/wiki/Linear_interpolation
     _XOINL static Vector4 Lerp(const Vector4& a, const Vector4& b, float t);
 
+    //! Returns a single number representing a product of magnitudes. Commonly used with two normalized 
+    //! vectors to determine if they are pointed the same way. In this case: 1.0 represents same-facing vectors
+    //! 0 represents perpendicular vectors, and -1 will be facing away
+    //!
+    //! \f$a\cdot b =(a.x\times b.x) + (a.y\times b.y) + (a.z\times b.z) + (a.w\times  b.w)\f$
+    //!
+    //! @sa https://en.wikipedia.org/wiki/Dot_product
     _XOINL static float Dot(const Vector4& a, const Vector4& b);
 
+    //! Returns the square distance between vectors a and b in 4 dimensional space.
+    //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
+    //!
+    //! \f$distance^2 = \lvert\rvert\boldsymbol{b-a}\lvert\rvert^2\f$
     _XOINL static float DistanceSquared(const Vector4& a, const Vector4& b);
+
+    //! Returns the distance between vectors a and b in 4 dimensional space.
+    //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
+    //!
+    //! \f$distance = \lvert\rvert\boldsymbol{b-a}\lvert\rvert\f$
     _XOINL static float Distance(const Vector4&a, const Vector4&b);
 
+    //! Returns a single number representing a product of magnitudes. Commonly used with two normalized 
+    //! vectors to determine if they are pointed the same way. In this case: 1.0 represents same-facing vectors
+    //! 0 represents perpendicular vectors, and -1 will be facing away
+    //!
+    //! \f$a\cdot b =(x\times v.x) + (y\times v.y) + (z\times v.z) + (w\times  v.w)\f$
+    //!
+    //! @sa https://en.wikipedia.org/wiki/Dot_product
     _XOINL float Dot(const Vector4& v) const;
+
+    //! Returns the square distance between this vector and v in 4 dimensional space.
+    //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
+    //!
+    //! \f$distance^2 = \lvert\rvert\boldsymbol{v-this}\lvert\rvert^2\f$
     _XOINL float DistanceSquared(const Vector4& v) const;
+
+    //! Returns the distance between this vector and v in 4 dimensional space.
+    //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
+    //!
+    //! \f$distance = \lvert\rvert\boldsymbol{v-this}\lvert\rvert\f$
     _XOINL float Distance(const Vector4& v) const;
+
+    //! Returns a vector interpolated between this vector and v by a scalar amount t.
+    //! @sa https://en.wikipedia.org/wiki/Linear_interpolation
     _XOINL Vector4 Lerp(const Vector4& v, float t) const;
 
     friend std::ostream& operator <<(std::ostream& os, const Vector4& v) {
@@ -346,14 +410,17 @@ public:
         UnitZ, //!< \f$\begin{pmatrix}0&0&1&0\end{pmatrix}\f$
         UnitW; //!< \f$\begin{pmatrix}0&0&0&1\end{pmatrix}\f$
 
-    //! @union Data
     union {
-        //! @struct Float data
         struct {
-            float x, y, z, w;
+            float x;
+            float y;
+            float z;
+            float w;
         };
         float f[4]; //!< ordered as \f$\begin{pmatrix}x&y&z&w\end{pmatrix}\f$
 #if XO_SSE
+        //! Exists when SSE is in use, represents a 128 bit xmm register.
+        //! @sa https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions
         __m128 m;
 #endif
     };

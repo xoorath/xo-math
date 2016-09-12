@@ -46,6 +46,23 @@
     <link rel="stylesheet" href="{{ pathto(cssfile, 1) }}" type="text/css" />
   {% endfor %}
 
+  <style>
+    .rst-content dl:not(.docutils) {
+      margin-bottom: 0em;
+    }
+
+    .breathe-sectiondef-title {
+      margin-top: 2em;
+      margin-bottom: 1em;
+      margin-left: -1em;
+      font-size: 18px;
+    }
+
+    .wy-nav-content {
+      max-width: 1200px;
+    }
+  </style>
+
   {%- block linktags %}
     {%- if hasdoc('about') %}
         <link rel="author" title="{{ _('About these documents') }}"
