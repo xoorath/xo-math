@@ -20,7 +20,5 @@ If you feel I've failed my mission here, [please let me know](https://github.com
 
 # Documentation
 
-- [wiki home / quick start](https://github.com/xoorath/xo-math/wiki)
-- [configuration](https://github.com/xoorath/xo-math/wiki/Configuration)
-- [platform support](https://github.com/xoorath/xo-math/wiki/Platform-Support)
+Documentation is hosted by Read The Docs: **[xo-math.rtfd.io](http://xo-math.rtfd.io)**
 
