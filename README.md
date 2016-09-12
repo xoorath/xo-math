@@ -24,7 +24,7 @@ Download [xo-math.h](https://raw.githubusercontent.com/xoorath/xo-math/master/xo
 
 ```c++
 #include <iostream>
-#include "include/xo-math.h"
+#include "xo-math.h"
 
 using namespace std;
 using namespace xo;
