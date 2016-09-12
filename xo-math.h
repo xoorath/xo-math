@@ -24,20 +24,20 @@
 
 ////////////////////////////////////////////////////////////////////////// XOMATH_BEGIN_XO_NS, XOMATH_END_XO_NS
 #ifdef XO_CUSTOM_NS
-#   define XOMATH_BEGIN_XO_NS  namespace XO_CUSTOM_NS {
-#   define XOMATH_END_XO_NS    }
+#   define XOMATH_BEGIN_XO_NS()  namespace XO_CUSTOM_NS {
+#   define XOMATH_END_XO_NS()    }
 #elif defined(XO_SINGLE_NS)
-#   define XOMATH_BEGIN_XO_NS  namespace xo {
-#   define XOMATH_END_XO_NS    }
+#   define XOMATH_BEGIN_XO_NS()  namespace xo {
+#   define XOMATH_END_XO_NS()    }
 #elif defined(XO_SIMPLE_NS)
-#   define XOMATH_BEGIN_XO_NS  namespace xomath {
-#   define XOMATH_END_XO_NS    }
+#   define XOMATH_BEGIN_XO_NS()  namespace xomath {
+#   define XOMATH_END_XO_NS()    }
 #elif defined(XO_NO_NS)
-#   define XOMATH_BEGIN_XO_NS
-#   define XOMATH_END_XO_NS
+#   define XOMATH_BEGIN_XO_NS()
+#   define XOMATH_END_XO_NS()
 #else
-#   define XOMATH_BEGIN_XO_NS  namespace xo { namespace math {
-#   define XOMATH_END_XO_NS    } }
+#   define XOMATH_BEGIN_XO_NS()  namespace xo { namespace math {
+#   define XOMATH_END_XO_NS()    } }
 #endif
 
 ////////////////////////////////////////////////////////////////////////// Dependencies for xo-math headers
@@ -330,7 +330,8 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #   endif
 #endif
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
+
 _XOCONSTEXPR const float PI = 3.141592653589793238462643383279502884197169399375105820f;
 _XOCONSTEXPR const float PIx2 = 2.0f * PI;
 _XOCONSTEXPR const float TAU = PIx2;
@@ -379,7 +380,7 @@ namespace sse {
 #   if defined(_XO_OVERLOAD_NEW_DELETE)
 _XOMATH_INTERNAL_MACRO_WARNING
 #   else
-#   define _XO_OVERLOAD_NEW_DELETE \
+#   define _XO_OVERLOAD_NEW_DELETE() \
         _XOINL static void* operator new (std::size_t size)     { return XO_16ALIGNED_MALLOC(size); } \
         _XOINL static void* operator new[] (std::size_t size)   { return XO_16ALIGNED_MALLOC(size); } \
         _XOINL static void operator delete (void* ptr)          { XO_16ALIGNED_FREE(ptr); } \
@@ -391,7 +392,7 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #if defined(_XO_OVERLOAD_NEW_DELETE)
 _XOMATH_INTERNAL_MACRO_WARNING
 #   else
-#       define _XO_OVERLOAD_NEW_DELETE
+#       define _XO_OVERLOAD_NEW_DELETE()
 #   endif
 #endif
 
@@ -450,7 +451,7 @@ float RandomRange(float low, float high) {
     return _XO_TLS_DISTRIBUTION;
 }
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #if defined(_XO_ASSIGN_QUAT)
 _XOMATH_INTERNAL_MACRO_WARNING
@@ -474,7 +475,8 @@ _XOMATH_INTERNAL_MACRO_WARNING
 static_assert(false, "Don't include Vector2.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
+
 class _MM_ALIGN16 Vector2 {
 public:
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 2.0f;
@@ -670,7 +672,8 @@ const Vector2 Vector2::Right(1.0f, 0.0f);
 
 const Vector2 Vector2::One(1.0f, 1.0f);
 const Vector2 Vector2::Zero(0.0f, 0.0f);
-XOMATH_END_XO_NS
+
+XOMATH_END_XO_NS();
 
 #endif // XOMATH_INTERNAL
 
@@ -678,7 +681,10 @@ XOMATH_END_XO_NS
 static_assert(false, "Don't include Vector3.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
+
+//! A three dimensional euclidean vector, optimized for use in games.
+//! \sa https://en.wikipedia.org/wiki/Euclidean_vector
 class _MM_ALIGN16 Vector3 {
 #if XO_SSE
         static const __m128 MASK;
@@ -715,7 +721,7 @@ public:
     _XOINL void Get(float& x, float& y, float &z) const;
     _XOINL void Get(float* f) const;
 
-    _XO_OVERLOAD_NEW_DELETE
+    _XO_OVERLOAD_NEW_DELETE();
 
 #if XO_SSE
     // type cast operator
@@ -1071,7 +1077,7 @@ const Vector3 Vector3::Backward(0.0f, 0.0f, -1.0f);
 const Vector3 Vector3::One(1.0f, 1.0f, 1.0f);
 const Vector3 Vector3::Zero(0.0f, 0.0f, 0.0f);
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif // XOMATH_INTERNAL
 
@@ -1079,109 +1085,224 @@ XOMATH_END_XO_NS
 static_assert(false, "Don't include Vector4.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
+
+//! @brief A four dimensional euclidean vector, optimized for use in games.
+//!
+//! Most useful for three dimensional rotations. See Matrix4x4::Transform and Vector4::operator*=.
+//! @sa https://en.wikipedia.org/wiki/Euclidean_vector
 class _MM_ALIGN16 Vector4 {
 public:
 #if XO_SSE
+    //! Smallest increment from zero that could be assigned to each element of this vector and would still be seen as equal to a zero vector.
     _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
 #else
+    //! Smallest increment from zero that could be assigned to each element of this vector and would still be seen as equal to a zero vector.
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
 #endif
-    // No initialization is done.
-    _XOINL Vector4();
-    
-    _XOINL Vector4(float f);
-    _XOINL Vector4(float x, float y, float z, float w);
-    _XOINL Vector4(const Vector4& vec);
 
+    //! @name Constructors
+    //! @{
+    _XOINL Vector4(); //!< Performs no initialization.
+    _XOINL Vector4(float f); //!< All elements are set to f.
+    _XOINL Vector4(float x, float y, float z, float w); //!< Assigns each named value accordingly.
+    _XOINL Vector4(const Vector4& vec); //!< Copy constructor, trivial.
 #if XO_SSE
-    _XOINL Vector4(const __m128& vec);
+    _XOINL Vector4(const __m128& vec); //!< Assigns m to vec, sets all elements.
 #endif
+    _XOINL Vector4(const class Vector2& v); //!< Assigns same-name values from v, zero to z and w. \f$\begin{pmatrix}v.x&v.y&0&0\end{pmatrix}\f$
+    _XOINL Vector4(const class Vector3& v); //!< Assigns same-name values from v, zero to w.\f$\begin{pmatrix}v.x&v.y&v.z&0\end{pmatrix}\f$
+    //! @}
 
-    _XOINL Vector4(const class Vector2& v);
-    _XOINL Vector4(const class Vector3& v);
 
+    //! @name Set / Get Methods
+    //! Set and get methods
+    //! @{
+    //! Set all. x, y, z and w will be assigned to the input params.
     _XOINL const Vector4& Set(float x, float y, float z, float w);
+
+    //! Set each. x, y, z and w will be assigned to f.
     _XOINL const Vector4& Set(float f);
+
+    //! Set each. Copies vec into this.
     _XOINL const Vector4& Set(const Vector4& vec);
 
 #if XO_SSE
+    //! Set each. Copies vec int m.
     _XOINL const Vector4& Set(const __m128& vec);
 #endif
 
+    //! Extract all getter. x, y, z and w will be assigned to those values of this vector.
     _XOINL void Get(float& x, float& y, float& z, float& w) const;
-    _XOINL void Get(float* f) const;
 
-    _XO_OVERLOAD_NEW_DELETE
+    //! Extract all getter. f[0], f[1], f[2] and f[3] will be assigned to x, y, z and w respectively. 
+    _XOINL void Get(float* f) const;
+    //! @}
+
+    //! @name Special Operators
+    //! @{
+
+    //! Overloads the new and delete operators for vector4 when memory alignment is required (such as with SSE).
+    //! @sa XO_16ALIGNED_MALLOC, XO_16ALIGNED_FREE
+    _XO_OVERLOAD_NEW_DELETE();
 
 #if XO_SSE
-    // type cast operator
+    //! Type cast operator. Allows Vector4 to be used implicitly where ever __m128 can be.
     _XOINL operator const __m128&() const;
 #endif
 
+    //! Extract reference operator, useful for setting values by index.
+    //! \f[i\begin{cases}0 & return\ x;\\1 & return\ y;\\2 & return\ z;\\3 & return\ w;\\? & undefined\end{cases}\f]
     _XOINL float& operator [](int i);
-    _XOINL const float& operator [](int i) const;
-    _XOINL Vector4 operator -() const;
-    _XOINL Vector4 operator ~() const;
 
+    //! Extract const reference operator, useful for getting values by index.
+    //! \f[i\begin{cases}0 & return\ x;\\1 & return\ y;\\2 & return\ z;\\3 & return\ w;\\? & undefined\end{cases}\f]
+    _XOINL const float& operator [](int i) const;
+
+    //! Negate operator. Returns a vector with all elements with a flipped sign:
+    //!
+    //! \f$\begin{pmatrix}-x,&-y,&-z,&-w\end{pmatrix}\f$
+    _XOINL Vector4 operator -() const;
+
+    //! Swizzle operator. Returns a vector with all elements in reverse order:
+    //!
+    //! \f$\begin{pmatrix}w,&z,&y,&x\end{pmatrix}\f$
+    _XOINL Vector4 operator ~() const;
+    //! @}
+
+    //! @name Add Equals Operator
+    //! Adds all same-name vector elements with other vector types, or all elements to scalar/integer types.
+    //! @{
     _XOINL const Vector4& operator += (const Vector4& v);
     _XOINL const Vector4& operator += (float v);
     _XOINL const Vector4& operator += (double v);
     _XOINL const Vector4& operator += (int v);
     _XOINL const Vector4& operator += (const class Vector2& v);
     _XOINL const Vector4& operator += (const class Vector3& v);
+    //! @}
 
+    //! @name Subtract Equals Operator
+    //! Subtracts all same-name vector elements with other vector types, or all elements to scalar/integer types.
+    //! @{
     _XOINL const Vector4& operator -= (const Vector4& v);
     _XOINL const Vector4& operator -= (float v);
     _XOINL const Vector4& operator -= (double v);
     _XOINL const Vector4& operator -= (int v);
     _XOINL const Vector4& operator -= (const class Vector2& v);
     _XOINL const Vector4& operator -= (const class Vector3& v);
+    //! @}
 
+    //! @name Multiply Equals Operator
+    //! Multiplies all same-name vector elements with other vector types, or all elements to scalar/integer types.
+    //! @{
     _XOINL const Vector4& operator *= (const Vector4& v);
     _XOINL const Vector4& operator *= (float v);
     _XOINL const Vector4& operator *= (double v);
     _XOINL const Vector4& operator *= (int v);
     _XOINL const Vector4& operator *= (const class Vector2& v);
     _XOINL const Vector4& operator *= (const class Vector3& v);
-    _XOINL const Vector4& operator *= (const class Matrix4x4& m);
 
+    //! Matrix multiplication operator. Transforms this vector by matrix m.
+    //!
+    // The following is latex, renders nicely in the docs.
+    // See this online editor to preview equations: http://www.hostmath.com/
+    /*!
+    \f[
+        \begin{bmatrix}
+            m00&m01&m02&m03\\
+            m10&m11&m12&m13\\
+            m20&m21&m22&m23\\
+            m30&m31&m32&m33\\
+        \end{bmatrix}
+        \times
+        \begin{bmatrix}
+            x\\
+            y\\
+            z\\
+            w\\
+        \end{bmatrix}
+    \f]
+    \f[
+            =
+            \begin{bmatrix}
+                (m00\times x) + (m01\times x) + (m02\times x) + (m03\times x)\\
+                (m10\times y) + (m11\times y) + (m12\times y) + (m13\times y)\\
+                (m20\times z) + (m21\times z) + (m22\times z) + (m23\times z)\\
+                (m30\times w) + (m31\times w) + (m32\times w) + (m33\times w)
+            \end{bmatrix}
+        \f]
+    */
+    //! @sa https://en.wikipedia.org/wiki/Matrix_multiplication
+    //! @sa https://youtu.be/Awcj447pYuk?t=1m28s
+    _XOINL const Vector4& operator *= (const class Matrix4x4& M);
+    //! @}
+
+    //! @name Divide Equals Operator
+    //! Divides all same-name vector elements with other vector types, or all elements to scalar/integer types.
+    //! @sa XO_NO_INVERSE_DIVISION
+    //! @{
     _XOINL const Vector4& operator /= (const Vector4& v);
     _XOINL const Vector4& operator /= (float v);
     _XOINL const Vector4& operator /= (double v);
     _XOINL const Vector4& operator /= (int v);
     _XOINL const Vector4& operator /= (const class Vector2& v);
     _XOINL const Vector4& operator /= (const class Vector3& v);
+    //! @}
 
+    //! @name Addition Operator
+    //! Builds a vector by adding all same-name vector elements with other vector types, or all elements to scalar/integer types.
+    //! @return A vector resulting from the equation.
+    //! @{
     _XOINL Vector4 operator + (const Vector4& v) const;
     _XOINL Vector4 operator + (float v) const;
     _XOINL Vector4 operator + (double v) const;
     _XOINL Vector4 operator + (int v) const;
     _XOINL Vector4 operator + (const class Vector2& v) const;
     _XOINL Vector4 operator + (const class Vector3& v) const;
+    //! @}
 
+    //! @name Subtraction Operator
+    //! Builds a vector by subtracting all same-name vector elements with other vector types, or all elements to scalar/integer types.
+    //! @return A vector resulting from the equation.
+    //! @{
     _XOINL Vector4 operator - (const Vector4& v) const;
     _XOINL Vector4 operator - (float v) const;
     _XOINL Vector4 operator - (double v) const;
     _XOINL Vector4 operator - (int v) const;
     _XOINL Vector4 operator - (const class Vector2& v) const;
     _XOINL Vector4 operator - (const class Vector3& v) const;
+    //! @}
 
+    //! @name Multiplication Operator
+    //! Builds a vector by multiplying all same-name vector elements with other vector types, or all elements to scalar/integer types.
+    //! @return A vector resulting from the equation.
+    //! @{
     _XOINL Vector4 operator * (const Vector4& v) const;
     _XOINL Vector4 operator * (float v) const;
     _XOINL Vector4 operator * (double v) const;
     _XOINL Vector4 operator * (int v) const;
     _XOINL Vector4 operator * (const class Vector2& v) const;
     _XOINL Vector4 operator * (const class Vector3& v) const;
-    _XOINL Vector4 operator * (const class Matrix4x4& m) const;
+    _XOINL Vector4 operator * (const class Matrix4x4& M) const;
+    //! @}
 
+    //! @name Division Operator
+    //! Builds a vector by dividing all same-name vector elements with other vector types, or all elements to scalar/integer types.
+    //! @return A vector resulting from the equation.
+    //! @sa XO_NO_INVERSE_DIVISION
+    //! @{
     _XOINL Vector4 operator / (const Vector4& v) const;
     _XOINL Vector4 operator / (float v) const;
     _XOINL Vector4 operator / (double v) const;
     _XOINL Vector4 operator / (int v) const;
     _XOINL Vector4 operator / (const class Vector2& v) const;
     _XOINL Vector4 operator / (const class Vector3& v) const;
+    //! @}
 
+    //! @name Comparison Operators
+    //! When comparing against other vectors, the square magnitude is compared.
+    //! When comparing against scalars, the scalar is squared and compared to the square magnitude of this vector.
+    //! @{
     _XOINL bool operator < (const Vector4& v) const;
     _XOINL bool operator < (float v) const;
     _XOINL bool operator < (double v) const;
@@ -1209,7 +1330,13 @@ public:
     _XOINL bool operator >= (int v) const;
     _XOINL bool operator >= (const class Vector2& v) const;
     _XOINL bool operator >= (const class Vector3& v) const;
+    //! @}
 
+    //! @name Equal Operators
+    //! When two vectors are compared, each element is compared; When all vector elements have a difference of <= Vector4::Epsilon, they are considered equal.
+    //!
+    //! When a scalar is compared, we square the scalar and check it against our square magnitude. If the difference is <= Vector4::Epsilon, they are considered equal.
+    //! @{
     _XOINL bool operator == (const Vector4& v) const;
     _XOINL bool operator == (float v) const;
     _XOINL bool operator == (double v) const;
@@ -1223,32 +1350,113 @@ public:
     _XOINL bool operator != (int v) const;
     _XOINL bool operator != (const class Vector2& v) const;
     _XOINL bool operator != (const class Vector3& v) const;
+    //! @}
 
+    //! The sum of all vector elements.
+    //!
+    //! \f$x+y+z+w\f$
     _XOINL float Sum() const;
+
+    //! The square length of this vector in 4 dimensional space.
+    //! It's preferred to use the MagnitudeSquared when possible, as Magnitude requires a call to Sqrt.
+    //!
+    //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert^2 = (x\times x)+(y\times y)+(z\times z)+(w\times w)\f$
+    //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
     _XOINL float MagnitudeSquared() const;
+
+    //! The length of this vector in 4 dimensional space.
+    //! It's preferred to use the MagnitudeSquared when possible, as Magnitude requires a call to Sqrt.
+    //!
+    //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert = \sqrt{(x\times x)+(y\times y)+(z\times z)+(w\times w)}\f$
+    //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
     _XOINL float Magnitude() const;
+
+    //! Normalizes this vector to a Magnitude of 1.
+    //! @sa https://en.wikipedia.org/wiki/Unit_vector
     _XOINL const Vector4& Normalize();
+
+    //! Produces a copy of this vector with a unit length of 1.
+    //! @sa https://en.wikipedia.org/wiki/Unit_vector
     _XOINL Vector4 Normalized() const;
+
+    //! Returns true when the Magnitude of this vector is <= Vector4::Epsilon
     _XOINL bool IsZero() const;
+
+    //! Returns true when the Magnitude of this vector is within Vector4::Epsilon of being 1.0
     _XOINL bool IsNormalized() const;
 
-    // todo: reflect glsl behaviour on max and min.
+    //! Set outVec to have elements equal to the max of each element in a and b.
+    //!
+    //! \f$\begin{pmatrix}\max(a.x, b.x)&\max(a.y, b.y)&\max(a.z, b.z)&\max(a.w, b.w)\end{pmatrix}\f$
     _XOINL static void Max(const Vector4& a, const Vector4& b, Vector4& outVec);
+    
+    //! Set outVec to have elements equal to the min of each element in a and b.
+    //!
+    //! \f$\begin{pmatrix}\min(a.x, b.x)&\min(a.y, b.y)&\min(a.z, b.z)&\min(a.w, b.w)\end{pmatrix}\f$
     _XOINL static void Min(const Vector4& a, const Vector4& b, Vector4& outVec);
+
+    //! Sets outVec to a vector interpolated between a and b by a scalar amount t.
+    //! @sa https://en.wikipedia.org/wiki/Linear_interpolation
     _XOINL static void Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec);
 
+    //! Returns a vector with elements equal to the max of each element in a and b.
+    //!
+    //! \f$\begin{pmatrix}\max(a.x, b.x)&\max(a.y, b.y)&\max(a.z, b.z)&\max(a.w, b.w)\end{pmatrix}\f$
     _XOINL static Vector4 Max(const Vector4& a, const Vector4& b);
+
+    //! Returns a vector with elements equal to the min of each element in a and b.
+    //!
+    //! \f$\begin{pmatrix}\min(a.x, b.x)&\min(a.y, b.y)&\min(a.z, b.z)&\min(a.w, b.w)\end{pmatrix}\f$
     _XOINL static Vector4 Min(const Vector4& a, const Vector4& b);
+
+    //! Returns a vector interpolated between a and b by a scalar amount t.
+    //! @sa https://en.wikipedia.org/wiki/Linear_interpolation
     _XOINL static Vector4 Lerp(const Vector4& a, const Vector4& b, float t);
 
+    //! Returns a single number representing a product of magnitudes. Commonly used with two normalized 
+    //! vectors to determine if they are pointed the same way. In this case: 1.0 represents same-facing vectors
+    //! 0 represents perpendicular vectors, and -1 will be facing away
+    //!
+    //! \f$a\cdot b =(a.x\times b.x) + (a.y\times b.y) + (a.z\times b.z) + (a.w\times  b.w)\f$
+    //!
+    //! @sa https://en.wikipedia.org/wiki/Dot_product
     _XOINL static float Dot(const Vector4& a, const Vector4& b);
 
+    //! Returns the square distance between vectors a and b in 4 dimensional space.
+    //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
+    //!
+    //! \f$distance^2 = \lvert\rvert\boldsymbol{b-a}\lvert\rvert^2\f$
     _XOINL static float DistanceSquared(const Vector4& a, const Vector4& b);
+
+    //! Returns the distance between vectors a and b in 4 dimensional space.
+    //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
+    //!
+    //! \f$distance = \lvert\rvert\boldsymbol{b-a}\lvert\rvert\f$
     _XOINL static float Distance(const Vector4&a, const Vector4&b);
 
+    //! Returns a single number representing a product of magnitudes. Commonly used with two normalized 
+    //! vectors to determine if they are pointed the same way. In this case: 1.0 represents same-facing vectors
+    //! 0 represents perpendicular vectors, and -1 will be facing away
+    //!
+    //! \f$a\cdot b =(x\times v.x) + (y\times v.y) + (z\times v.z) + (w\times  v.w)\f$
+    //!
+    //! @sa https://en.wikipedia.org/wiki/Dot_product
     _XOINL float Dot(const Vector4& v) const;
+
+    //! Returns the square distance between this vector and v in 4 dimensional space.
+    //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
+    //!
+    //! \f$distance^2 = \lvert\rvert\boldsymbol{v-this}\lvert\rvert^2\f$
     _XOINL float DistanceSquared(const Vector4& v) const;
+
+    //! Returns the distance between this vector and v in 4 dimensional space.
+    //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
+    //!
+    //! \f$distance = \lvert\rvert\boldsymbol{v-this}\lvert\rvert\f$
     _XOINL float Distance(const Vector4& v) const;
+
+    //! Returns a vector interpolated between this vector and v by a scalar amount t.
+    //! @sa https://en.wikipedia.org/wiki/Linear_interpolation
     _XOINL Vector4 Lerp(const Vector4& v, float t) const;
 
     friend std::ostream& operator <<(std::ostream& os, const Vector4& v) {
@@ -1257,15 +1465,24 @@ public:
     }
 
     static const Vector4
-        One, Zero,
-        UnitX, UnitY, UnitZ, UnitW;
+        One, //!< \f$\begin{pmatrix}1&1&1&1\end{pmatrix}\f$
+        Zero, //!< \f$\begin{pmatrix}0&0&0&0\end{pmatrix}\f$
+        UnitX, //!< \f$\begin{pmatrix}1&0&0&0\end{pmatrix}\f$
+        UnitY, //!< \f$\begin{pmatrix}0&1&0&0\end{pmatrix}\f$
+        UnitZ, //!< \f$\begin{pmatrix}0&0&1&0\end{pmatrix}\f$
+        UnitW; //!< \f$\begin{pmatrix}0&0&0&1\end{pmatrix}\f$
 
     union {
         struct {
-            float x, y, z, w;
+            float x;
+            float y;
+            float z;
+            float w;
         };
-        float f[4];
+        float f[4]; //!< ordered as \f$\begin{pmatrix}x&y&z&w\end{pmatrix}\f$
 #if XO_SSE
+        //! Exists when SSE is in use, represents a 128 bit xmm register.
+        //! @sa https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions
         __m128 m;
 #endif
     };
@@ -1279,7 +1496,7 @@ const Vector4 Vector4::UnitY = {0.0f, 1.0f, 0.0f, 0.0f};
 const Vector4 Vector4::UnitZ = {0.0f, 0.0f, 1.0f, 0.0f};
 const Vector4 Vector4::UnitW = {0.0f, 0.0f, 0.0f, 1.0f};
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif // XOMATH_INTERNAL
 
@@ -1289,7 +1506,7 @@ static_assert(false, "Don't include Matrix4x4.h directly. Include GameMath.h, wh
 _XOMATH_INTERNAL_MACRO_WARNING
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 class _MM_ALIGN16 Matrix4x4 {
 public:
@@ -1314,14 +1531,14 @@ public:
     // [r1.x, r1.y, r1.z, r1.w]
     // [r2.x, r2.y, r2.z, r2.w]
     // [r3.x, r3.y, r3.z, r3.w]
-    _XOINL Matrix4x4(const class Vector4& r0, const class Vector4& r1, const class Vector4& r2, const class Vector4& r3);
+    _XOINL Matrix4x4(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3);
 
     // Specify the upper left of the matrix as one Vector3 per row, leaving the rightmost column as 0, except it's bottommost element.
     // [r0.x, r0.y, r0.z, 0.0]
     // [r1.x, r1.y, r1.z, 0.0]
     // [r2.x, r2.y, r2.z, 0.0]
     // [0.0,  0.0,  0.0,  1.0]
-    _XOINL Matrix4x4(const class Vector3& r0, const class Vector3& r1, const class Vector3& r2);
+    _XOINL Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2);
 
     // Set this matrix as a transpose of itself, then return a ref to itself.
     // See: https://en.wikipedia.org/wiki/Transpose
@@ -1331,7 +1548,7 @@ public:
     // See: https://en.wikipedia.org/wiki/Transpose
     _XOINL Matrix4x4 Transpose() const;
 
-    _XO_OVERLOAD_NEW_DELETE
+    _XO_OVERLOAD_NEW_DELETE();
 
     // Get a constant reference to a row in the matrix
     _XOINL const Vector4& operator [](int i) const;
@@ -1451,7 +1668,7 @@ const Matrix4x4 Matrix4x4::Zero = {
                                     {0.0f, 0.0f, 0.0f, 0.0f}
                                 };
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #undef _XOMATH_INIT_MATRIX4X4
 
@@ -1461,7 +1678,7 @@ XOMATH_END_XO_NS
 static_assert(false, "Don't include Quaternion.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 class _MM_ALIGN16 Quaternion {
 #if XO_SSE
@@ -1481,7 +1698,7 @@ public:
     _XOINL Quaternion(const Matrix4x4& m);
     _XOINL Quaternion(float x, float y, float z, float w);
 
-    _XO_OVERLOAD_NEW_DELETE
+    _XO_OVERLOAD_NEW_DELETE();
 
     _XOINL float& operator [](int i);
     _XOINL const float& operator [](int i) const;
@@ -1544,7 +1761,7 @@ public:
 const Quaternion Quaternion::Identity = { 0.0f, 0.0f, 0.0f, 1.0f };
 const Quaternion Quaternion::Zero = { 0.0f, 0.0f, 0.0f, 0.0f };
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif // XOMATH_INTERNAL
 
@@ -1553,7 +1770,7 @@ XOMATH_END_XO_NS
 static_assert(false, "Don't include Vector2Operators.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 float& Vector2::operator [](int i) { return f[i]; }
 const float& Vector2::operator [](int i) const { return f[i]; }
@@ -1571,10 +1788,10 @@ const Vector2& Vector2::operator += (float v) {
     y += v;
     return *this; 
 }
-const Vector2& Vector2::operator += (double v)          { return *this += (float)v; }
-const Vector2& Vector2::operator += (int v)             { return *this += (float)v; }
-const Vector2& Vector2::operator += (const Vector3& v)  { return *this += Vector2(v); }
-const Vector2& Vector2::operator += (const Vector4& v)  { return *this += Vector2(v); }
+const Vector2& Vector2::operator += (double v)                  { return *this += (float)v; }
+const Vector2& Vector2::operator += (int v)                     { return *this += (float)v; }
+const Vector2& Vector2::operator += (const class Vector3& v)    { return *this += Vector2(v); }
+const Vector2& Vector2::operator += (const class Vector4& v)    { return *this += Vector2(v); }
 
 const Vector2& Vector2::operator -= (const Vector2& v) {
     x -= v.x;
@@ -1586,10 +1803,10 @@ const Vector2& Vector2::operator -= (float v) {
     y -= v;
     return *this; 
 }
-const Vector2& Vector2::operator -= (double v)          { return *this -= (float)v; }
-const Vector2& Vector2::operator -= (int v)             { return *this -= (float)v; }
-const Vector2& Vector2::operator -= (const Vector3& v)  { return *this -= Vector2(v); }
-const Vector2& Vector2::operator -= (const Vector4& v)  { return *this -= Vector2(v); }
+const Vector2& Vector2::operator -= (double v)                  { return *this -= (float)v; }
+const Vector2& Vector2::operator -= (int v)                     { return *this -= (float)v; }
+const Vector2& Vector2::operator -= (const class Vector3& v)    { return *this -= Vector2(v); }
+const Vector2& Vector2::operator -= (const class Vector4& v)    { return *this -= Vector2(v); }
 
 const Vector2& Vector2::operator *= (const Vector2& v) {
     x *= v.x;
@@ -1601,10 +1818,10 @@ const Vector2& Vector2::operator *= (float v) {
     y *= v;
     return *this;
 }
-const Vector2& Vector2::operator *= (double v)          { return *this *= (float)v; }
-const Vector2& Vector2::operator *= (int v)             { return *this *= (float)v; }
-const Vector2& Vector2::operator *= (const Vector3& v)  { return *this; }
-const Vector2& Vector2::operator *= (const Vector4& v)  { return *this; }
+const Vector2& Vector2::operator *= (double v)                  { return *this *= (float)v; }
+const Vector2& Vector2::operator *= (int v)                     { return *this *= (float)v; }
+const Vector2& Vector2::operator *= (const class Vector3& v)    { return *this; }
+const Vector2& Vector2::operator *= (const class Vector4& v)    { return *this; }
 
 const Vector2& Vector2::operator /= (const Vector2& v) {
     x /= v.x;
@@ -1621,38 +1838,38 @@ const Vector2& Vector2::operator /= (float v) {
 #endif
     
 }
-const Vector2& Vector2::operator /= (double v)          { return *this /= (float)v; }
-const Vector2& Vector2::operator /= (int v)             { return *this /= (float)v; }
-const Vector2& Vector2::operator /= (const Vector3& v)  { return *this /= Vector2(v); }
-const Vector2& Vector2::operator /= (const Vector4& v)  { return *this /= Vector2(v); }
+const Vector2& Vector2::operator /= (double v)                  { return *this /= (float)v; }
+const Vector2& Vector2::operator /= (int v)                     { return *this /= (float)v; }
+const Vector2& Vector2::operator /= (const class Vector3& v)    { return *this /= Vector2(v); }
+const Vector2& Vector2::operator /= (const class Vector4& v)    { return *this /= Vector2(v); }
 
-Vector2 Vector2::operator + (const Vector2& v) const    { return Vector2(*this) += v; }
-Vector2 Vector2::operator + (float v) const             { return Vector2(*this) += v; }
-Vector2 Vector2::operator + (double v) const            { return Vector2(*this) += v; }
-Vector2 Vector2::operator + (int v) const               { return Vector2(*this) += v; }
-Vector2 Vector2::operator + (const Vector3& v) const    { return Vector2(*this) += v; }
-Vector2 Vector2::operator + (const Vector4& v) const    { return Vector2(*this) += v; }
+Vector2 Vector2::operator + (const Vector2& v) const        { return Vector2(*this) += v; }
+Vector2 Vector2::operator + (float v) const                 { return Vector2(*this) += v; }
+Vector2 Vector2::operator + (double v) const                { return Vector2(*this) += v; }
+Vector2 Vector2::operator + (int v) const                   { return Vector2(*this) += v; }
+Vector2 Vector2::operator + (const class Vector3& v) const  { return Vector2(*this) += v; }
+Vector2 Vector2::operator + (const class Vector4& v) const  { return Vector2(*this) += v; }
 
-Vector2 Vector2::operator - (const Vector2& v) const    { return Vector2(*this) -= v; }
-Vector2 Vector2::operator - (float v) const             { return Vector2(*this) -= v; }
-Vector2 Vector2::operator - (double v) const            { return Vector2(*this) -= v; }
-Vector2 Vector2::operator - (int v) const               { return Vector2(*this) -= v; }
-Vector2 Vector2::operator - (const Vector3& v) const    { return Vector2(*this) -= v; }
-Vector2 Vector2::operator - (const Vector4& v) const    { return Vector2(*this) -= v; }
+Vector2 Vector2::operator - (const Vector2& v) const        { return Vector2(*this) -= v; }
+Vector2 Vector2::operator - (float v) const                 { return Vector2(*this) -= v; }
+Vector2 Vector2::operator - (double v) const                { return Vector2(*this) -= v; }
+Vector2 Vector2::operator - (int v) const                   { return Vector2(*this) -= v; }
+Vector2 Vector2::operator - (const class Vector3& v) const  { return Vector2(*this) -= v; }
+Vector2 Vector2::operator - (const class Vector4& v) const  { return Vector2(*this) -= v; }
 
-Vector2 Vector2::operator * (const Vector2& v) const    { return Vector2(*this) *= v; }
-Vector2 Vector2::operator * (float v) const             { return Vector2(*this) *= v; }
-Vector2 Vector2::operator * (double v) const            { return Vector2(*this) *= v; }
-Vector2 Vector2::operator * (int v) const               { return Vector2(*this) *= v; }
-Vector2 Vector2::operator * (const Vector3& v) const    { return Vector2(*this) *= v; }
-Vector2 Vector2::operator * (const Vector4& v) const    { return Vector2(*this) *= v; }
+Vector2 Vector2::operator * (const Vector2& v) const        { return Vector2(*this) *= v; }
+Vector2 Vector2::operator * (float v) const                 { return Vector2(*this) *= v; }
+Vector2 Vector2::operator * (double v) const                { return Vector2(*this) *= v; }
+Vector2 Vector2::operator * (int v) const                   { return Vector2(*this) *= v; }
+Vector2 Vector2::operator * (const class Vector3& v) const  { return Vector2(*this) *= v; }
+Vector2 Vector2::operator * (const class Vector4& v) const  { return Vector2(*this) *= v; }
 
-Vector2 Vector2::operator / (const Vector2& v) const    { return Vector2(*this) /= v; }
-Vector2 Vector2::operator / (float v) const             { return Vector2(*this) /= v; }
-Vector2 Vector2::operator / (double v) const            { return Vector2(*this) /= v; }
-Vector2 Vector2::operator / (int v) const               { return Vector2(*this) /= v; }
-Vector2 Vector2::operator / (const Vector3& v) const    { return Vector2(*this) /= v; }
-Vector2 Vector2::operator / (const Vector4& v) const    { return Vector2(*this) /= v; }
+Vector2 Vector2::operator / (const Vector2& v) const        { return Vector2(*this) /= v; }
+Vector2 Vector2::operator / (float v) const                 { return Vector2(*this) /= v; }
+Vector2 Vector2::operator / (double v) const                { return Vector2(*this) /= v; }
+Vector2 Vector2::operator / (int v) const                   { return Vector2(*this) /= v; }
+Vector2 Vector2::operator / (const class Vector3& v) const  { return Vector2(*this) /= v; }
+Vector2 Vector2::operator / (const class Vector4& v) const  { return Vector2(*this) /= v; }
 
 bool Vector2::operator < (const Vector2& v) const           { return MagnitudeSquared() < v.MagnitudeSquared(); }
 bool Vector2::operator < (float v) const                    { return MagnitudeSquared() < (v * v); }
@@ -1710,7 +1927,7 @@ bool Vector2::operator != (int v) const                     { return !((*this) =
 bool Vector2::operator != (const class Vector3& v) const    { return !((*this) == v); }
 bool Vector2::operator != (const class Vector4& v) const    { return !((*this) == v); }
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif
 
@@ -1718,7 +1935,7 @@ XOMATH_END_XO_NS
 static_assert(false, "Don't include Vector2Methods.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 Vector2::Vector2() {
 }
@@ -1906,7 +2123,7 @@ float Vector2::DistanceSquared(const Vector2& v) const      { return DistanceSqu
 Vector2 Vector2::Lerp(const Vector2& v, float t) const      { return Lerp(*this, v, t); }
 Vector2 Vector2::Midpoint(const Vector2& v) const           { return Midpoint(*this, v); }
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif
 
@@ -1914,7 +2131,7 @@ XOMATH_END_XO_NS
 static_assert(false, "Don't include Vector3Operators.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 #if XO_SSE
 Vector3::operator __m128() const {
@@ -1964,10 +2181,10 @@ const Vector3& Vector3::operator += (float v) {
     return *this;
 }
 
-const Vector3& Vector3::operator += (double v)          { return (*this) += float(v); }
-const Vector3& Vector3::operator += (int v)             { return (*this) += float(v); }
-const Vector3& Vector3::operator += (const Vector2& v)  { return (*this) += Vector3(v); }
-const Vector3& Vector3::operator += (const Vector4& v)  { return (*this) += Vector3(v); }
+const Vector3& Vector3::operator += (double v)                  { return (*this) += float(v); }
+const Vector3& Vector3::operator += (int v)                     { return (*this) += float(v); }
+const Vector3& Vector3::operator += (const class Vector2& v)    { return (*this) += Vector3(v); }
+const Vector3& Vector3::operator += (const class Vector4& v)    { return (*this) += Vector3(v); }
 
 const Vector3& Vector3::operator -= (const Vector3& v) {
 #if XO_SSE
@@ -1991,10 +2208,10 @@ const Vector3& Vector3::operator -= (float v) {
     return *this;
 }
 
-const Vector3& Vector3::operator -= (double v)          { return (*this) -= float(v); }
-const Vector3& Vector3::operator -= (int v)             { return (*this) -= float(v); }
-const Vector3& Vector3::operator -= (const Vector2& v)  { return (*this) -= Vector3(v); }
-const Vector3& Vector3::operator -= (const Vector4& v)  { return (*this) -= Vector3(v); }
+const Vector3& Vector3::operator -= (double v)                  { return (*this) -= float(v); }
+const Vector3& Vector3::operator -= (int v)                     { return (*this) -= float(v); }
+const Vector3& Vector3::operator -= (const class Vector2& v)    { return (*this) -= Vector3(v); }
+const Vector3& Vector3::operator -= (const class Vector4& v)    { return (*this) -= Vector3(v); }
 
 const Vector3& Vector3::operator *= (const Vector3& v) {
 #if XO_SSE
@@ -2018,14 +2235,14 @@ const Vector3& Vector3::operator *= (float v) {
     return *this;
 }
 
-const Vector3& Vector3::operator *= (const Matrix4x4& m) {
+const Vector3& Vector3::operator *= (const class Matrix4x4& m) {
     return (*this) = ((Vector4)*this) *= m;
 }
 
-const Vector3& Vector3::operator *= (double v)          { return (*this) *= float(v); }
-const Vector3& Vector3::operator *= (int v)             { return (*this) *= float(v); }
-const Vector3& Vector3::operator *= (const Vector2& v)  { return (*this) *= Vector3(v); }
-const Vector3& Vector3::operator *= (const Vector4& v)  { return (*this) *= Vector3(v); }
+const Vector3& Vector3::operator *= (double v)                  { return (*this) *= float(v); }
+const Vector3& Vector3::operator *= (int v)                     { return (*this) *= float(v); }
+const Vector3& Vector3::operator *= (const class Vector2& v)    { return (*this) *= Vector3(v); }
+const Vector3& Vector3::operator *= (const class Vector4& v)    { return (*this) *= Vector3(v); }
 
 #if defined(XO_NO_INVERSE_DIVISION)
 const Vector3& Vector3::operator /= (const Vector3& v) {
@@ -2107,68 +2324,68 @@ const Vector3& Vector3::operator /= (float v) {
     return *this;
 }
 #endif
-const Vector3& Vector3::operator /= (double v)              { return (*this) /= float(v); }
-const Vector3& Vector3::operator /= (int v)                 { return (*this) /= float(v); }
-const Vector3& Vector3::operator /= (const Vector2& v)      { return (*this) /= Vector3(v); }
-const Vector3& Vector3::operator /= (const Vector4& v)      { return (*this) /= Vector3(v); }
+const Vector3& Vector3::operator /= (double v)                  { return (*this) /= float(v); }
+const Vector3& Vector3::operator /= (int v)                     { return (*this) /= float(v); }
+const Vector3& Vector3::operator /= (const class Vector2& v)    { return (*this) /= Vector3(v); }
+const Vector3& Vector3::operator /= (const class Vector4& v)    { return (*this) /= Vector3(v); }
 
 Vector3 Vector3::operator + (const Vector3& v) const        { return Vector3(*this) += v; }
 Vector3 Vector3::operator + (float v) const                 { return Vector3(*this) += v; }
 Vector3 Vector3::operator + (double v) const                { return Vector3(*this) += v; }
 Vector3 Vector3::operator + (int v) const                   { return Vector3(*this) += v; }
-Vector3 Vector3::operator + (const Vector2& v) const        { return Vector3(*this) += v; }
-Vector3 Vector3::operator + (const Vector4& v) const        { return Vector3(*this) += v; }
+Vector3 Vector3::operator + (const class Vector2& v) const  { return Vector3(*this) += v; }
+Vector3 Vector3::operator + (const class Vector4& v) const  { return Vector3(*this) += v; }
 
 Vector3 Vector3::operator - (const Vector3& v) const        { return Vector3(*this) -= v; }
 Vector3 Vector3::operator - (float v) const                 { return Vector3(*this) -= v; }
 Vector3 Vector3::operator - (double v) const                { return Vector3(*this) -= v; }
 Vector3 Vector3::operator - (int v) const                   { return Vector3(*this) -= v; }
-Vector3 Vector3::operator - (const Vector2& v) const        { return Vector3(*this) -= v; }
-Vector3 Vector3::operator - (const Vector4& v) const        { return Vector3(*this) -= v; }
+Vector3 Vector3::operator - (const class Vector2& v) const  { return Vector3(*this) -= v; }
+Vector3 Vector3::operator - (const class Vector4& v) const  { return Vector3(*this) -= v; }
 
 Vector3 Vector3::operator * (const Vector3& v) const        { return Vector3(*this) *= v; }
 Vector3 Vector3::operator * (float v) const                 { return Vector3(*this) *= v; }
 Vector3 Vector3::operator * (double v) const                { return Vector3(*this) *= v; }
 Vector3 Vector3::operator * (int v) const                   { return Vector3(*this) *= v; }
-Vector3 Vector3::operator * (const Vector2& v) const        { return Vector3(*this) *= v; }
-Vector3 Vector3::operator * (const Vector4& v) const        { return Vector3(*this) *= v; }
-Vector3 Vector3::operator * (const Matrix4x4& m) const      { return Vector3(*this) *= m; }
+Vector3 Vector3::operator * (const class Vector2& v) const  { return Vector3(*this) *= v; }
+Vector3 Vector3::operator * (const class Vector4& v) const  { return Vector3(*this) *= v; }
+Vector3 Vector3::operator * (const class Matrix4x4& m) const      { return Vector3(*this) *= m; }
 
 Vector3 Vector3::operator / (const Vector3& v) const        { return Vector3(*this) /= v; }
 Vector3 Vector3::operator / (float v) const                 { return Vector3(*this) /= v; }
 Vector3 Vector3::operator / (double v) const                { return Vector3(*this) /= v; }
 Vector3 Vector3::operator / (int v) const                   { return Vector3(*this) /= v; }
-Vector3 Vector3::operator / (const Vector2& v) const        { return Vector3(*this) /= v; }
-Vector3 Vector3::operator / (const Vector4& v) const        { return Vector3(*this) /= v; }
+Vector3 Vector3::operator / (const class Vector2& v) const  { return Vector3(*this) /= v; }
+Vector3 Vector3::operator / (const class Vector4& v) const  { return Vector3(*this) /= v; }
 
 
-bool Vector3::operator < (const Vector3& v) const   { return MagnitudeSquared() < v.MagnitudeSquared(); }
-bool Vector3::operator < (float v) const            { return MagnitudeSquared() < (v * v); }
-bool Vector3::operator < (double v) const           { return MagnitudeSquared() < (float)(v * v); }
-bool Vector3::operator < (int v) const              { return MagnitudeSquared() < (float)(v * v); }
-bool Vector3::operator < (const Vector2& v) const   { return MagnitudeSquared() < v.MagnitudeSquared(); }
-bool Vector3::operator < (const Vector4& v) const   { return MagnitudeSquared() < v.MagnitudeSquared(); }
+bool Vector3::operator < (const Vector3& v) const       { return MagnitudeSquared() < v.MagnitudeSquared(); }
+bool Vector3::operator < (float v) const                { return MagnitudeSquared() < (v * v); }
+bool Vector3::operator < (double v) const               { return MagnitudeSquared() < (float)(v * v); }
+bool Vector3::operator < (int v) const                  { return MagnitudeSquared() < (float)(v * v); }
+bool Vector3::operator < (const class Vector2& v) const { return MagnitudeSquared() < v.MagnitudeSquared(); }
+bool Vector3::operator < (const class Vector4& v) const { return MagnitudeSquared() < v.MagnitudeSquared(); }
 
-bool Vector3::operator <= (const Vector3& v) const  { return MagnitudeSquared() <= v.MagnitudeSquared(); }
-bool Vector3::operator <= (float v) const           { return MagnitudeSquared() <= (v * v); }
-bool Vector3::operator <= (double v) const          { return MagnitudeSquared() <= (float)(v * v); }
-bool Vector3::operator <= (int v) const             { return MagnitudeSquared() <= (float)(v * v); }
-bool Vector3::operator <= (const Vector2& v) const  { return MagnitudeSquared() <= v.MagnitudeSquared(); }
-bool Vector3::operator <= (const Vector4& v) const  { return MagnitudeSquared() <= v.MagnitudeSquared(); }
+bool Vector3::operator <= (const Vector3& v) const          { return MagnitudeSquared() <= v.MagnitudeSquared(); }
+bool Vector3::operator <= (float v) const                   { return MagnitudeSquared() <= (v * v); }
+bool Vector3::operator <= (double v) const                  { return MagnitudeSquared() <= (float)(v * v); }
+bool Vector3::operator <= (int v) const                     { return MagnitudeSquared() <= (float)(v * v); }
+bool Vector3::operator <= (const class Vector2& v) const    { return MagnitudeSquared() <= v.MagnitudeSquared(); }
+bool Vector3::operator <= (const class Vector4& v) const    { return MagnitudeSquared() <= v.MagnitudeSquared(); }
 
-bool Vector3::operator > (const Vector3& v) const   { return MagnitudeSquared() > v.MagnitudeSquared(); }
-bool Vector3::operator > (float v) const            { return MagnitudeSquared() > (v * v); }
-bool Vector3::operator > (double v) const           { return MagnitudeSquared() > (float)(v * v); }
-bool Vector3::operator > (int v) const              { return MagnitudeSquared() > (float)(v * v); }
-bool Vector3::operator > (const Vector2& v) const   { return MagnitudeSquared() > v.MagnitudeSquared(); }
-bool Vector3::operator > (const Vector4& v) const   { return MagnitudeSquared() > v.MagnitudeSquared(); }
+bool Vector3::operator > (const Vector3& v) const       { return MagnitudeSquared() > v.MagnitudeSquared(); }
+bool Vector3::operator > (float v) const                { return MagnitudeSquared() > (v * v); }
+bool Vector3::operator > (double v) const               { return MagnitudeSquared() > (float)(v * v); }
+bool Vector3::operator > (int v) const                  { return MagnitudeSquared() > (float)(v * v); }
+bool Vector3::operator > (const class Vector2& v) const { return MagnitudeSquared() > v.MagnitudeSquared(); }
+bool Vector3::operator > (const class Vector4& v) const { return MagnitudeSquared() > v.MagnitudeSquared(); }
 
-bool Vector3::operator >= (const Vector3& v) const  { return MagnitudeSquared() >= v.MagnitudeSquared(); }
-bool Vector3::operator >= (float v) const           { return MagnitudeSquared() >= (v * v); }
-bool Vector3::operator >= (double v) const          { return MagnitudeSquared() >= (float)(v * v); }
-bool Vector3::operator >= (int v) const             { return MagnitudeSquared() >= (float)(v * v); }
-bool Vector3::operator >= (const Vector2& v) const  { return MagnitudeSquared() >= v.MagnitudeSquared(); }
-bool Vector3::operator >= (const Vector4& v) const  { return MagnitudeSquared() >= v.MagnitudeSquared(); }
+bool Vector3::operator >= (const Vector3& v) const          { return MagnitudeSquared() >= v.MagnitudeSquared(); }
+bool Vector3::operator >= (float v) const                   { return MagnitudeSquared() >= (v * v); }
+bool Vector3::operator >= (double v) const                  { return MagnitudeSquared() >= (float)(v * v); }
+bool Vector3::operator >= (int v) const                     { return MagnitudeSquared() >= (float)(v * v); }
+bool Vector3::operator >= (const class Vector2& v) const    { return MagnitudeSquared() >= v.MagnitudeSquared(); }
+bool Vector3::operator >= (const class Vector4& v) const    { return MagnitudeSquared() >= v.MagnitudeSquared(); }
 
 bool Vector3::operator == (const Vector3& v) const {
 #   if XO_SSE2
@@ -2185,14 +2402,14 @@ bool Vector3::operator == (const Vector3& v) const {
 bool Vector3::operator == (float v) const                   { return CloseEnough(MagnitudeSquared(), v*v, Epsilon);}
 bool Vector3::operator == (double v) const                  { return CloseEnough(MagnitudeSquared(), (float)(v*v), Epsilon);}
 bool Vector3::operator == (int v) const                     { return CloseEnough(MagnitudeSquared(), (float)(v*v), Epsilon);}
-bool Vector3::operator == (const Vector2& v) const {
+bool Vector3::operator == (const class Vector2& v) const {
 #   if XO_SSE
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, v.y, v.x), m)), sse::Epsilon)) & 0b0011) == 0b0011;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
 #   endif
 }
-bool Vector3::operator == (const Vector4& v) const {
+bool Vector3::operator == (const class Vector4& v) const {
 #   if XO_SSE
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 0b0111) == 0b0111;
 #   else
@@ -2204,9 +2421,10 @@ bool Vector3::operator != (const Vector3& v) const          { return !((*this) =
 bool Vector3::operator != (float v) const                   { return !((*this) == v); }
 bool Vector3::operator != (double v) const                  { return !((*this) == v); }
 bool Vector3::operator != (int v) const                     { return !((*this) == v); }
-bool Vector3::operator != (const Vector2& v) const    { return !((*this) == v); }
-bool Vector3::operator != (const Vector4& v) const    { return !((*this) == v); }
-XOMATH_END_XO_NS
+bool Vector3::operator != (const class Vector2& v) const    { return !((*this) == v); }
+bool Vector3::operator != (const class Vector4& v) const    { return !((*this) == v); }
+
+XOMATH_END_XO_NS();
 
 #endif // XOMATH_INTERNAL
 
@@ -2214,7 +2432,7 @@ XOMATH_END_XO_NS
 static_assert(false, "Don't include Vector3Methods.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 #if XO_SSE
 
@@ -2278,7 +2496,7 @@ Vector3::Vector3(const __m128& vec) :
 }
 #endif
 
-Vector3::Vector3(const Vector2& v) :
+Vector3::Vector3(const class Vector2& v) :
 #if XO_SSE
     m(_mm_set_ps(0.0f, 0.0f, v.y, v.x))
 #else
@@ -2287,7 +2505,7 @@ Vector3::Vector3(const Vector2& v) :
 {
 }
 
-Vector3::Vector3(const Vector4& v) :
+Vector3::Vector3(const class Vector4& v) :
 #if XO_SSE
     m(v.m)
 #else
@@ -2670,7 +2888,7 @@ Vector3 Vector3::RandomInConeDegrees(float angle) const                   { retu
 #undef IDX_Z
 #undef IDX_W
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif
 
@@ -2678,7 +2896,7 @@ XOMATH_END_XO_NS
 static_assert(false, "Don't include Vector4Operators.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 #if XO_SSE
 
@@ -2761,8 +2979,8 @@ const Vector4& Vector4::operator += (float v) {
 
 const Vector4& Vector4::operator += (double v)          { return (*this) += (float)v; }
 const Vector4& Vector4::operator += (int v)             { return (*this) += (float)v; }
-const Vector4& Vector4::operator += (const Vector2& v)  { return (*this) += Vector4(v); }
-const Vector4& Vector4::operator += (const Vector3& v)  { return (*this) += Vector4(v); }
+const Vector4& Vector4::operator += (const class Vector2& v)  { return (*this) += Vector4(v); }
+const Vector4& Vector4::operator += (const class Vector3& v)  { return (*this) += Vector4(v); }
 
 const Vector4& Vector4::operator -= (const Vector4& v) {
 #if XO_SSE
@@ -2790,8 +3008,8 @@ const Vector4& Vector4::operator -= (float v) {
 
 const Vector4& Vector4::operator -= (double v)          { return (*this) -= (float)v; }
 const Vector4& Vector4::operator -= (int v)             { return (*this) -= (float)v; }
-const Vector4& Vector4::operator -= (const Vector2& v)  { return (*this) -= Vector4(v); }
-const Vector4& Vector4::operator -= (const Vector3& v)  { return (*this) -= Vector4(v); }
+const Vector4& Vector4::operator -= (const class Vector2& v)  { return (*this) -= Vector4(v); }
+const Vector4& Vector4::operator -= (const class Vector3& v)  { return (*this) -= Vector4(v); }
 
 const Vector4& Vector4::operator *= (const Vector4& v) {
 #if XO_SSE
@@ -2817,14 +3035,14 @@ const Vector4& Vector4::operator *= (float v) {
     return *this;
 }
 
-const Vector4& Vector4::operator *= (const Matrix4x4& m) {
-    return Set(((*this) * m.r[0]).Sum(), ((*this) * m.r[1]).Sum(), ((*this) * m.r[2]).Sum(), ((*this) * m.r[3]).Sum());
+const Vector4& Vector4::operator *= (const class Matrix4x4& M) {
+    return Set(((*this) * M.r[0]).Sum(), ((*this) * M.r[1]).Sum(), ((*this) * M.r[2]).Sum(), ((*this) * M.r[3]).Sum());
 }
 
 const Vector4& Vector4::operator *= (double v)          { return (*this) *= (float)v; }
 const Vector4& Vector4::operator *= (int v)             { return (*this) *= (float)v; }
-const Vector4& Vector4::operator *= (const Vector2& v)  { return (*this) *= Vector4(v); }
-const Vector4& Vector4::operator *= (const Vector3& v)  { return (*this) *= Vector4(v); }
+const Vector4& Vector4::operator *= (const class Vector2& v)  { return (*this) *= Vector4(v); }
+const Vector4& Vector4::operator *= (const class Vector3& v)  { return (*this) *= Vector4(v); }
 
 #if defined(XO_NO_INVERSE_DIVISION)
 const Vector4& Vector4::operator /= (const Vector4& v) {
@@ -2910,65 +3128,65 @@ const Vector4& Vector4::operator /= (float v) {
 #endif
 const Vector4& Vector4::operator /= (double v)          { return (*this) /= float(v); }
 const Vector4& Vector4::operator /= (int v)             { return (*this) /= float(v); }
-const Vector4& Vector4::operator /= (const Vector2& v)  { return (*this) /= Vector4(v); }
-const Vector4& Vector4::operator /= (const Vector3& v)  { return (*this) /= Vector4(v); }
+const Vector4& Vector4::operator /= (const class Vector2& v)  { return (*this) /= Vector4(v); }
+const Vector4& Vector4::operator /= (const class Vector3& v)  { return (*this) /= Vector4(v); }
 
 Vector4 Vector4::operator + (const Vector4& v) const    { return Vector4(*this) += v; }
 Vector4 Vector4::operator + (float v) const             { return Vector4(*this) += v; }
 Vector4 Vector4::operator + (double v) const            { return Vector4(*this) += v; }
 Vector4 Vector4::operator + (int v) const               { return Vector4(*this) += v; }
-Vector4 Vector4::operator + (const Vector2& v) const    { return Vector4(*this) += v; }
-Vector4 Vector4::operator + (const Vector3& v) const    { return Vector4(*this) += v; }
+Vector4 Vector4::operator + (const class Vector2& v) const    { return Vector4(*this) += v; }
+Vector4 Vector4::operator + (const class Vector3& v) const    { return Vector4(*this) += v; }
 
 Vector4 Vector4::operator - (const Vector4& v) const    { return Vector4(*this) -= v; }
 Vector4 Vector4::operator - (float v) const             { return Vector4(*this) -= v; }
 Vector4 Vector4::operator - (double v) const            { return Vector4(*this) -= v; }
 Vector4 Vector4::operator - (int v) const               { return Vector4(*this) -= v; }
-Vector4 Vector4::operator - (const Vector2& v) const    { return Vector4(*this) -= v; }
-Vector4 Vector4::operator - (const Vector3& v) const    { return Vector4(*this) -= v; }
+Vector4 Vector4::operator - (const class Vector2& v) const    { return Vector4(*this) -= v; }
+Vector4 Vector4::operator - (const class Vector3& v) const    { return Vector4(*this) -= v; }
 
 Vector4 Vector4::operator * (const Vector4& v) const    { return Vector4(*this) *= v; }
 Vector4 Vector4::operator * (float v) const             { return Vector4(*this) *= v; }
 Vector4 Vector4::operator * (double v) const            { return Vector4(*this) *= v; }
 Vector4 Vector4::operator * (int v) const               { return Vector4(*this) *= v; }
-Vector4 Vector4::operator * (const Vector2& v) const    { return Vector4(*this) *= v; }
-Vector4 Vector4::operator * (const Vector3& v) const    { return Vector4(*this) *= v; }
-Vector4 Vector4::operator * (const Matrix4x4& m) const  { return Vector4(*this) *= m; }
+Vector4 Vector4::operator * (const class Vector2& v) const    { return Vector4(*this) *= v; }
+Vector4 Vector4::operator * (const class Vector3& v) const    { return Vector4(*this) *= v; }
+Vector4 Vector4::operator * (const class Matrix4x4& M) const  { return Vector4(*this) *= M; }
 
 Vector4 Vector4::operator / (const Vector4& v) const    { return Vector4(*this) /= v; }
 Vector4 Vector4::operator / (float v) const             { return Vector4(*this) /= v; }
 Vector4 Vector4::operator / (double v) const            { return Vector4(*this) /= v; }
 Vector4 Vector4::operator / (int v) const               { return Vector4(*this) /= v; }
-Vector4 Vector4::operator / (const Vector2& v) const    { return Vector4(*this) /= v; }
-Vector4 Vector4::operator / (const Vector3& v) const    { return Vector4(*this) /= v; }
+Vector4 Vector4::operator / (const class Vector2& v) const    { return Vector4(*this) /= v; }
+Vector4 Vector4::operator / (const class Vector3& v) const    { return Vector4(*this) /= v; }
 
 bool Vector4::operator < (const Vector4& v) const       { return MagnitudeSquared() < v.MagnitudeSquared(); }
 bool Vector4::operator < (float v) const                { return MagnitudeSquared() < (v * v); }
 bool Vector4::operator < (double v) const               { return MagnitudeSquared() < (float)(v * v); }
 bool Vector4::operator < (int v) const                  { return MagnitudeSquared() < (float)(v * v); }
-bool Vector4::operator < (const Vector2& v) const       { return MagnitudeSquared() < v.MagnitudeSquared(); }
-bool Vector4::operator < (const Vector3& v) const       { return MagnitudeSquared() < v.MagnitudeSquared(); }
+bool Vector4::operator < (const class Vector2& v) const       { return MagnitudeSquared() < v.MagnitudeSquared(); }
+bool Vector4::operator < (const class Vector3& v) const       { return MagnitudeSquared() < v.MagnitudeSquared(); }
 
 bool Vector4::operator <= (const Vector4& v) const      { return MagnitudeSquared() <= v.MagnitudeSquared(); }
 bool Vector4::operator <= (float v) const               { return MagnitudeSquared() <= (v * v); }
 bool Vector4::operator <= (double v) const              { return MagnitudeSquared() <= (float)(v * v); }
 bool Vector4::operator <= (int v) const                 { return MagnitudeSquared() <= (float)(v * v); }
-bool Vector4::operator <= (const Vector2& v) const      { return MagnitudeSquared() <= v.MagnitudeSquared(); }
-bool Vector4::operator <= (const Vector3& v) const      { return MagnitudeSquared() <= v.MagnitudeSquared(); }
+bool Vector4::operator <= (const class Vector2& v) const      { return MagnitudeSquared() <= v.MagnitudeSquared(); }
+bool Vector4::operator <= (const class Vector3& v) const      { return MagnitudeSquared() <= v.MagnitudeSquared(); }
 
 bool Vector4::operator > (const Vector4& v) const       { return MagnitudeSquared() > v.MagnitudeSquared(); }
 bool Vector4::operator > (float v) const                { return MagnitudeSquared() > (v * v); }
 bool Vector4::operator > (double v) const               { return MagnitudeSquared() > (float)(v * v); }
 bool Vector4::operator > (int v) const                  { return MagnitudeSquared() > (float)(v * v); }
-bool Vector4::operator > (const Vector2& v) const       { return MagnitudeSquared() > v.MagnitudeSquared(); }
-bool Vector4::operator > (const Vector3& v) const       { return MagnitudeSquared() > v.MagnitudeSquared(); }
+bool Vector4::operator > (const class Vector2& v) const       { return MagnitudeSquared() > v.MagnitudeSquared(); }
+bool Vector4::operator > (const class Vector3& v) const       { return MagnitudeSquared() > v.MagnitudeSquared(); }
 
 bool Vector4::operator >= (const Vector4& v) const      { return MagnitudeSquared() >= v.MagnitudeSquared(); }
 bool Vector4::operator >= (float v) const               { return MagnitudeSquared() >= (v * v); }
 bool Vector4::operator >= (double v) const              { return MagnitudeSquared() >= (float)(v * v); }
 bool Vector4::operator >= (int v) const                 { return MagnitudeSquared() >= (float)(v * v); }
-bool Vector4::operator >= (const Vector2& v) const      { return MagnitudeSquared() >= v.MagnitudeSquared(); }
-bool Vector4::operator >= (const Vector3& v) const      { return MagnitudeSquared() >= v.MagnitudeSquared(); }
+bool Vector4::operator >= (const class Vector2& v) const      { return MagnitudeSquared() >= v.MagnitudeSquared(); }
+bool Vector4::operator >= (const class Vector3& v) const      { return MagnitudeSquared() >= v.MagnitudeSquared(); }
 
 bool Vector4::operator == (const Vector4& v) const {
 #   if XO_SSE2
@@ -2994,7 +3212,7 @@ bool Vector4::operator == (float v) const           { return CloseEnough(Magnitu
 bool Vector4::operator == (double v) const          { return CloseEnough(MagnitudeSquared(), (float)(v * v), Epsilon); }
 bool Vector4::operator == (int v) const             { return CloseEnough(MagnitudeSquared(), (float)(v * v), Epsilon); }
 
-bool Vector4::operator == (const Vector2& v) const {
+bool Vector4::operator == (const class Vector2& v) const {
 #   if XO_SSE
     // Todo: check that this is actually faster.
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(m, _mm_set_ps(0.0f, 0.0f, v.y, v.x))), sse::Epsilon)) & 0b0011) == 0b0011;
@@ -3003,7 +3221,7 @@ bool Vector4::operator == (const Vector2& v) const {
 #   endif
 }
 
-bool Vector4::operator == (const Vector3& v) const {
+bool Vector4::operator == (const class Vector3& v) const {
 #   if XO_SSE
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 0b0111) == 0b0111;
 #   else
@@ -3015,15 +3233,15 @@ bool Vector4::operator != (const Vector4& v) const  { return !((*this) == v); }
 bool Vector4::operator != (float v) const           { return !((*this) == v); }
 bool Vector4::operator != (double v) const          { return !((*this) == v); }
 bool Vector4::operator != (int v) const             { return !((*this) == v); }
-bool Vector4::operator != (const Vector2& v) const  { return !((*this) == v); }
-bool Vector4::operator != (const Vector3& v) const  { return !((*this) == v); }
+bool Vector4::operator != (const class Vector2& v) const  { return !((*this) == v); }
+bool Vector4::operator != (const class Vector3& v) const  { return !((*this) == v); }
 
 #undef IDX_X
 #undef IDX_Y
 #undef IDX_Z
 #undef IDX_W
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif
 
@@ -3031,7 +3249,7 @@ XOMATH_END_XO_NS
 static_assert(false, "Don't include Vector4Methods.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 #if defined IDX_X
 _XOMATH_INTERNAL_MACRO_WARNING
@@ -3097,24 +3315,24 @@ Vector4::Vector4(const __m128& vec) :
 }
 #endif
 
-Vector4::Vector4(const Vector2& v) :
+Vector4::Vector4(const class Vector2& vec) :
 #if XO_SSE
-    m(_mm_set_ps(0.0f, 0.0f, v.y, v.x)) 
+    m(_mm_set_ps(0.0f, 0.0f, vec.y, vec.x)) 
 {
 }
 #else
-    x(v.x), y(v.y), z(0.0f), w(0.0f)
+    x(vec.x), y(vec.y), z(0.0f), w(0.0f)
 {
 }
 #endif
 
-Vector4::Vector4(const Vector3& v) :
+Vector4::Vector4(const class Vector3& vec) :
 #if XO_SSE
-    m(v.m)
+    m(vec.m)
 {
 }
 #else
-    x(v.x), y(v.y), z(v.z), w(0.0f)
+    x(vec.x), y(vec.y), z(vec.z), w(0.0f)
 {
 }
 #endif
@@ -3312,7 +3530,7 @@ Vector4 Vector4::Lerp(const Vector4& v, float t) const {
 #undef IDX_W
 
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif
 
@@ -3320,7 +3538,7 @@ XOMATH_END_XO_NS
 static_assert(false, "Don't include Matrix4x4Operators.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 const Vector4& Matrix4x4::operator [](int i) const {
     return r[i];
@@ -3381,7 +3599,7 @@ Matrix4x4 Matrix4x4::operator + (const Matrix4x4& m) const { return Matrix4x4(*t
 Matrix4x4 Matrix4x4::operator - (const Matrix4x4& m) const { return Matrix4x4(*this) -= m; }
 Matrix4x4 Matrix4x4::operator * (const Matrix4x4& m) const { return Matrix4x4(*this) *= m; }
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif
 
@@ -3389,7 +3607,7 @@ XOMATH_END_XO_NS
 static_assert(false, "Don't include Matrix4x4Methods.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 Matrix4x4::Matrix4x4() {
 }
@@ -3432,7 +3650,7 @@ Matrix4x4::Matrix4x4(const Matrix4x4& m) :
 {
 }
 
-Matrix4x4::Matrix4x4(const class Vector4& r0, const class Vector4& r1, const class Vector4& r2, const class Vector4& r3)  :
+Matrix4x4::Matrix4x4(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3)  :
     r {
         r0,
         r1,
@@ -3442,7 +3660,7 @@ Matrix4x4::Matrix4x4(const class Vector4& r0, const class Vector4& r1, const cla
 {
 }
 
-Matrix4x4::Matrix4x4(const class Vector3& r0, const class Vector3& r1, const class Vector3& r2) :
+Matrix4x4::Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2) :
     r {
         Vector4(r0), 
         Vector4(r1), 
@@ -3805,7 +4023,7 @@ Matrix4x4 Matrix4x4::LookAtFromDirection(const Vector3& direction) {
     return m;
 }
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif
 
@@ -3813,7 +4031,7 @@ XOMATH_END_XO_NS
 static_assert(false, "Don't include QuaternionOperators.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 float& Quaternion::operator [](int i) { 
   return f[i]; 
@@ -3853,7 +4071,7 @@ bool Quaternion::operator != (const Quaternion& q) const {
   return !((*this) == q);
 }
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif
 
@@ -3861,9 +4079,9 @@ XOMATH_END_XO_NS
 static_assert(false, "Don't include QuaternionMethods.h directly. Include GameMath.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
-namespace  {
+namespace xo_internal {
     _XOINL float QuaternionSquareSum(const Quaternion& q) {
 #if XO_SSE
         __m128 square = _mm_mul_ps(q.m, q.m);
@@ -3968,7 +4186,7 @@ Quaternion Quaternion::Inverse() const {
 }
 
 const Quaternion& Quaternion::MakeInverse() {
-    float magnitude = QuaternionSquareSum(*this);
+    float magnitude = xo_internal::QuaternionSquareSum(*this);
     
     if (CloseEnough(magnitude, 1.0f, Epsilon)) {
         return MakeConjugate();
@@ -3987,7 +4205,7 @@ Quaternion Quaternion::Normalized() const {
 }
 
 const Quaternion& Quaternion::Normalize() {
-    float magnitude = QuaternionSquareSum(*this);
+    float magnitude = xo_internal::QuaternionSquareSum(*this);
     if (CloseEnough(magnitude, 1.0f, Epsilon)) {
         return *this;
     }
@@ -4242,8 +4460,7 @@ Quaternion Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t) {
     return q;
 }
 
-
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif
 
@@ -4252,7 +4469,7 @@ XOMATH_END_XO_NS
 static_assert(false, "Don't include SSE.h directly. Include GameMath.h.");
 #else // XOMATH_INTERNAL
 
-XOMATH_BEGIN_XO_NS
+XOMATH_BEGIN_XO_NS();
 
 _XOINL
 Vector2 Abs(const Vector2& v) {
@@ -4580,7 +4797,7 @@ namespace sse {
 }
 #endif
 
-XOMATH_END_XO_NS
+XOMATH_END_XO_NS();
 
 #endif // XOMATH_INTERNAL
 
