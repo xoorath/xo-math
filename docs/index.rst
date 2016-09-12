@@ -3,7 +3,7 @@ xo-math
 
 docs here
 
-Types
+TOC
 :::::::::::::::::::::
 .. toctree::
    :maxdepth: 1

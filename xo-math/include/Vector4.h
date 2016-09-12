@@ -41,15 +41,15 @@ public:
 
     //! @name Constructors
     //! @{
-    _XOINL Vector4(); //!< @note Performs no initialization.
-    _XOINL Vector4(float f);
-    _XOINL Vector4(float x, float y, float z, float w);
-    _XOINL Vector4(const Vector4& vec);
+    _XOINL Vector4(); //!< Performs no initialization.
+    _XOINL Vector4(float f); //!< All elements are set to f.
+    _XOINL Vector4(float x, float y, float z, float w); //!< Assigns each named value accordingly.
+    _XOINL Vector4(const Vector4& vec); //!< Copy constructor, trivial.
 #if XO_SSE
-    _XOINL Vector4(const __m128& vec);
+    _XOINL Vector4(const __m128& vec); //!< Assigns m to vec, sets all elements.
 #endif
-    _XOINL Vector4(const class Vector2& v); //!< @note w and z will be zero after values from v are assigned.
-    _XOINL Vector4(const class Vector3& v); //!< @note w will be zero after values from v are assigned.
+    _XOINL Vector4(const class Vector2& v); //!< \f$\begin{pmatrix}v.x&v.y&0&0\end{pmatrix}\f$
+    _XOINL Vector4(const class Vector3& v); //!< \f$\begin{pmatrix}v.x&v.y&v.z&0\end{pmatrix}\f$
     //! @}
 
 
@@ -352,7 +352,7 @@ public:
         struct {
             float x, y, z, w;
         };
-        float f[4];
+        float f[4]; //!< ordered as \f$\begin{pmatrix}x&y&z&w\end{pmatrix}\f$
 #if XO_SSE
         __m128 m;
 #endif
