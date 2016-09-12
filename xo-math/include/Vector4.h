@@ -54,7 +54,6 @@ public:
 
 
     //! @name Set / Get Methods
-    //! Set and get methods
     //! @{
     //! Set all. x, y, z and w will be assigned to the input params.
     _XOINL const Vector4& Set(float x, float y, float z, float w);
@@ -80,7 +79,7 @@ public:
     //! @name Special Operators
     //! @{
 
-    //! Overloads the new and delete operators for vector4 when memory alignment is required (such as with SSE).
+    //! Overloads the new and delete operators for Vector4 when memory alignment is required (such as with SSE).
     //! @sa XO_16ALIGNED_MALLOC, XO_16ALIGNED_FREE
     _XO_OVERLOAD_NEW_DELETE();
 
