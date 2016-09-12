@@ -754,8 +754,6 @@ public:
     _XOINL const Vector3& operator *= (int v);
     _XOINL const Vector3& operator *= (const class Vector2& v);
     _XOINL const Vector3& operator *= (const class Vector4& v);
-    // Converts to Vector4 and back for the multiplication.
-    _XOINL const Vector3& operator *= (const class Matrix4x4& v);
 
     _XOINL const Vector3& operator /= (const Vector3& v);
     _XOINL const Vector3& operator /= (float v);
@@ -784,8 +782,6 @@ public:
     _XOINL Vector3 operator * (int v) const;
     _XOINL Vector3 operator * (const class Vector2& v) const;
     _XOINL Vector3 operator * (const class Vector4& v) const;
-    // Converts to Vector4 and back for the multiplication.
-    _XOINL Vector3 operator * (const class Matrix4x4& v) const;
 
     _XOINL Vector3 operator / (const Vector3& v) const;
     _XOINL Vector3 operator / (float v) const;
@@ -1089,7 +1085,7 @@ XOMATH_BEGIN_XO_NS();
 
 //! @brief A four dimensional euclidean vector, optimized for use in games.
 //!
-//! Most useful for three dimensional rotations. See Matrix4x4::Transform and Vector4::operator*=.
+//! Most useful for three dimensional rotations. See Matrix4x4::Transform and Matrix4x4::operator*=.
 //! @sa https://en.wikipedia.org/wiki/Euclidean_vector
 class _MM_ALIGN16 Vector4 {
 public:
@@ -1201,40 +1197,6 @@ public:
     _XOINL const Vector4& operator *= (int v);
     _XOINL const Vector4& operator *= (const class Vector2& v);
     _XOINL const Vector4& operator *= (const class Vector3& v);
-
-    //! Matrix multiplication operator. Transforms this vector by matrix m.
-    //!
-    // The following is latex, renders nicely in the docs.
-    // See this online editor to preview equations: http://www.hostmath.com/
-    /*!
-    \f[
-        \begin{bmatrix}
-            m00&m01&m02&m03\\
-            m10&m11&m12&m13\\
-            m20&m21&m22&m23\\
-            m30&m31&m32&m33\\
-        \end{bmatrix}
-        \times
-        \begin{bmatrix}
-            x\\
-            y\\
-            z\\
-            w\\
-        \end{bmatrix}
-    \f]
-    \f[
-            =
-            \begin{bmatrix}
-                (m00\times x) + (m01\times x) + (m02\times x) + (m03\times x)\\
-                (m10\times y) + (m11\times y) + (m12\times y) + (m13\times y)\\
-                (m20\times z) + (m21\times z) + (m22\times z) + (m23\times z)\\
-                (m30\times w) + (m31\times w) + (m32\times w) + (m33\times w)
-            \end{bmatrix}
-        \f]
-    */
-    //! @sa https://en.wikipedia.org/wiki/Matrix_multiplication
-    //! @sa https://youtu.be/Awcj447pYuk?t=1m28s
-    _XOINL const Vector4& operator *= (const class Matrix4x4& M);
     //! @}
 
     //! @name Divide Equals Operator
@@ -1283,7 +1245,6 @@ public:
     _XOINL Vector4 operator * (int v) const;
     _XOINL Vector4 operator * (const class Vector2& v) const;
     _XOINL Vector4 operator * (const class Vector3& v) const;
-    _XOINL Vector4 operator * (const class Matrix4x4& M) const;
     //! @}
 
     //! @name Division Operator
@@ -1511,74 +1472,214 @@ XOMATH_BEGIN_XO_NS();
 class _MM_ALIGN16 Matrix4x4 {
 public:
 
-    _XOINL Matrix4x4();
+    //! @name Constructors
+    //! @{
+    _XOINL Matrix4x4(); //!< Performs no initialization.
+    _XOINL explicit Matrix4x4(float m); //!< All elements are set to f.
 
-    // initialize all elements to m
-    _XOINL explicit Matrix4x4(float m);
+    //! specify each element in row major form.
+    /*!
+        \f[
+            \begin{bmatrix}
+            m00&m01&m02&m03\\
+            m10&m11&m12&m13\\
+            m20&m21&m22&m23\\
+            m30&m31&m32&m33
+            \end{bmatrix}
+        \f]
+    */
+    _XOINL Matrix4x4(float m00, float m01, float m02, float m03,
+                     float m10, float m11, float m12, float m13,
+                     float m20, float m21, float m22, float m23,
+                     float m30, float m31, float m32, float m33);
 
-    // specify each element in row major form.
-    // [a0, b0, c0, d0]
-    // [a1, b1, c1, d1]
-    // [a2, b2, c2, d2]
-    // [a3, b3, c3, d3]
-    _XOINL Matrix4x4(float a0, float b0, float c0, float d0, float a1, float b1, float c1, float d1, float a2, float b2, float c2, float d2, float a3, float b3, float c3, float d3);
-
-    // specify this matrix as a copy of m
+    //! Copy constructor, trivial.
     _XOINL Matrix4x4(const Matrix4x4& m);
 
-    // initialize each row as the Vector4's 
-    // [r0.x, r0.y, r0.z, r0.w]
-    // [r1.x, r1.y, r1.z, r1.w]
-    // [r2.x, r2.y, r2.z, r2.w]
-    // [r3.x, r3.y, r3.z, r3.w]
+    //! Specifies each row.
+    /*!
+        \f[
+            \begin{bmatrix}
+            r0.x&r0.y&r0.z&r0.w\\
+            r1.x&r1.y&r1.z&r1.w\\
+            r2.x&r2.y&r2.z&r2.w\\
+            r3.x&r3.y&r3.z&r3.w
+            \end{bmatrix}
+        \f]
+    */
     _XOINL Matrix4x4(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3);
 
-    // Specify the upper left of the matrix as one Vector3 per row, leaving the rightmost column as 0, except it's bottommost element.
-    // [r0.x, r0.y, r0.z, 0.0]
-    // [r1.x, r1.y, r1.z, 0.0]
-    // [r2.x, r2.y, r2.z, 0.0]
-    // [0.0,  0.0,  0.0,  1.0]
+    //! Specify the upper left of the matrix as one Vector3 per row, leaving unset elements as 0 except the bottom right which will be set to 1.
+    /*!
+        \f[
+            \begin{bmatrix}
+            r0.x&r0.y&r0.z&0.0\\
+            r1.x&r1.y&r1.z&0.0\\
+            r2.x&r2.y&r2.z&0.0\\
+            0.0&0.0&0.0&1.0
+            \end{bmatrix}
+        \f]
+    */
     _XOINL Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2);
 
-    // Set this matrix as a transpose of itself, then return a ref to itself.
-    // See: https://en.wikipedia.org/wiki/Transpose
+    //! @}
+
+    //! Sets this matrix as a transpose of itself
+    /*!
+        \f[
+            \begin{bmatrix}
+            m00&m01&m02&m03\\
+            m10&m11&m12&m13\\
+            m20&m21&m22&m23\\
+            m30&m31&m32&m33
+            \end{bmatrix}
+            \Rrightarrow
+            \begin{bmatrix}
+            m00&m10&m20&m30\\
+            m01&m11&m21&m31\\
+            m02&m12&m22&m32\\
+            m03&m13&m32&m33
+            \end{bmatrix}
+        \f]
+    */
+    //! @sa https://en.wikipedia.org/wiki/Transpose
     _XOINL const Matrix4x4& MakeTranspose();
 
-    // Return a transpose of this matrix
-    // See: https://en.wikipedia.org/wiki/Transpose
+    //! Returns a transpose of this matrix
+    /*!
+        \f[
+            \begin{bmatrix}
+            m00&m01&m02&m03\\
+            m10&m11&m12&m13\\
+            m20&m21&m22&m23\\
+            m30&m31&m32&m33
+            \end{bmatrix}
+            \Rrightarrow
+            \begin{bmatrix}
+            m00&m10&m20&m30\\
+            m01&m11&m21&m31\\
+            m02&m12&m22&m32\\
+            m03&m13&m32&m33
+            \end{bmatrix}
+        \f]
+    */
+    //! @sa https://en.wikipedia.org/wiki/Transpose
     _XOINL Matrix4x4 Transpose() const;
 
+    //! @name Special Operators
+    //! @{
+
+    //! Overloads the new and delete operators for Matrix4x4 when memory alignment is required (such as with SSE).
+    //! @sa XO_16ALIGNED_MALLOC, XO_16ALIGNED_FREE
     _XO_OVERLOAD_NEW_DELETE();
 
-    // Get a constant reference to a row in the matrix
+    //! Extracts a const reference of a row, useful for getting rows by index.
     _XOINL const Vector4& operator [](int i) const;
 
-    // Get a mutable reference to a row in the matrix
+    //! Extracts a reference of a row, useful for setting rows by index.
     _XOINL Vector4& operator [](int i);
 
-    // Get a constant reference to a float in the matrix
+    //! Extracts a const reference of a value, useful for getting values by index.
     _XOINL const float& operator ()(int r, int c) const;
     
-    // Get a mutable reference to a float in the matrix
+    //! Extracts a reference of a value, useful for setting values by index.
     _XOINL float& operator ()(int r, int c);
-
-    // Get a reference to a row in the matrix.
-    _XOINL const Vector4& GetRow(int i) const;
-
-    // Return a column, copied out of the matrix
-    _XOINL Vector4 GetColumn(int i) const;
 
     // Return a copy of the transpose.
     // See: https://en.wikipedia.org/wiki/Transpose
     _XOINL Matrix4x4 operator ~() const;
+    //! @}
 
+    //! @name Set / Get Methods
+    //! @{
+    //! Get a const reference to a row in the matrix.
+    _XOINL const Vector4& GetRow(int i) const;
+
+    //! Return a column, copied out of the matrix
+    _XOINL Vector4 GetColumn(int i) const;
+    //! @}
+
+
+    //! @name Operators
+    //! @{
     _XOINL const Matrix4x4& operator += (const Matrix4x4& m);
     _XOINL const Matrix4x4& operator -= (const Matrix4x4& m);
+    //! @sa https://en.wikipedia.org/wiki/Matrix_multiplication
     _XOINL const Matrix4x4& operator *= (const Matrix4x4& m);
-    
+
     _XOINL Matrix4x4 operator + (const Matrix4x4& m) const;
     _XOINL Matrix4x4 operator - (const Matrix4x4& m) const;
+    //! @sa https://en.wikipedia.org/wiki/Matrix_multiplication
     _XOINL Matrix4x4 operator * (const Matrix4x4& m) const;
+
+    //! Vector transformation operator. Transforms vector v by this matrix.
+    //!
+    // The following is latex, renders nicely in the docs.
+    // See this online editor to preview equations: http://www.hostmath.com/
+    /*!
+    \f[
+        \begin{bmatrix}
+            m00&m01&m02&m03\\
+            m10&m11&m12&m13\\
+            m20&m21&m22&m23\\
+            m30&m31&m32&m33\\
+        \end{bmatrix}
+        \times
+        \begin{bmatrix}
+            x\\
+            y\\
+            z\\
+            w\\
+        \end{bmatrix}
+    \f]
+    \f[
+        =
+        \begin{bmatrix}
+            (m00\times x) + (m01\times x) + (m02\times x) + (m03\times x)\\
+            (m10\times y) + (m11\times y) + (m12\times y) + (m13\times y)\\
+            (m20\times z) + (m21\times z) + (m22\times z) + (m23\times z)\\
+            (m30\times w) + (m31\times w) + (m32\times w) + (m33\times w)
+        \end{bmatrix}
+    \f]
+    */
+    //! @sa https://en.wikipedia.org/wiki/Matrix_multiplication
+    //! @sa https://youtu.be/Awcj447pYuk?t=1m28s
+    _XOINL Vector4 operator * (const Vector4& v) const;
+
+    //! Vector transformation operator. Transforms vector v by this matrix.
+    //!
+    // The following is latex, renders nicely in the docs.
+    // See this online editor to preview equations: http://www.hostmath.com/
+    /*!
+    \f[
+        \begin{bmatrix}
+            m00&m01&m02&m03\\
+            m10&m11&m12&m13\\
+            m20&m21&m22&m23\\
+            m30&m31&m32&m33\\
+        \end{bmatrix}
+        \times
+        \begin{bmatrix}
+            x\\
+            y\\
+            z\\
+            0\\
+        \end{bmatrix}
+    \f]
+    \f[
+        =
+        \begin{bmatrix}
+            (m00\times x) + (m01\times x) + (m02\times x) + (m03\times x)\\
+            (m10\times y) + (m11\times y) + (m12\times y) + (m13\times y)\\
+            (m20\times z) + (m21\times z) + (m22\times z) + (m23\times z)
+        \end{bmatrix}
+    \f]
+    */
+    //! @sa https://en.wikipedia.org/wiki/Matrix_multiplication
+    //! @sa https://youtu.be/Awcj447pYuk?t=1m28s
+    _XOINL Vector3 operator * (const Vector3& v) const;
+
+    //! @}
     
     _XOINL const Matrix4x4& Transform(Vector3& v) const;
     _XOINL const Matrix4x4& Transform(Vector4& v) const;
@@ -1644,7 +1745,39 @@ public:
     Vector4 r[4];
 
     static const Matrix4x4
-        Identity, One, Zero;
+        /*!
+        \f[
+            \begin{bmatrix}
+            1&0&0&0\\
+            0&1&0&0\\
+            0&0&1&0\\
+            0&0&0&1
+            \end{bmatrix}
+        \f]
+        */
+        Identity,
+        /*!
+        \f[
+            \begin{bmatrix}
+            1&1&1&1\\
+            1&1&1&1\\
+            1&1&1&1\\
+            1&1&1&1
+            \end{bmatrix}
+        \f]
+        */
+        One,
+        /*!
+        \f[
+            \begin{bmatrix}
+            0&0&0&0\\
+            0&0&0&0\\
+            0&0&0&0\\
+            0&0&0&0
+            \end{bmatrix}
+        \f]
+        */
+        Zero;
 };
 
 const Matrix4x4 Matrix4x4::Identity = {
@@ -2235,10 +2368,6 @@ const Vector3& Vector3::operator *= (float v) {
     return *this;
 }
 
-const Vector3& Vector3::operator *= (const class Matrix4x4& m) {
-    return (*this) = ((Vector4)*this) *= m;
-}
-
 const Vector3& Vector3::operator *= (double v)                  { return (*this) *= float(v); }
 const Vector3& Vector3::operator *= (int v)                     { return (*this) *= float(v); }
 const Vector3& Vector3::operator *= (const class Vector2& v)    { return (*this) *= Vector3(v); }
@@ -2349,7 +2478,6 @@ Vector3 Vector3::operator * (double v) const                { return Vector3(*th
 Vector3 Vector3::operator * (int v) const                   { return Vector3(*this) *= v; }
 Vector3 Vector3::operator * (const class Vector2& v) const  { return Vector3(*this) *= v; }
 Vector3 Vector3::operator * (const class Vector4& v) const  { return Vector3(*this) *= v; }
-Vector3 Vector3::operator * (const class Matrix4x4& m) const      { return Vector3(*this) *= m; }
 
 Vector3 Vector3::operator / (const Vector3& v) const        { return Vector3(*this) /= v; }
 Vector3 Vector3::operator / (float v) const                 { return Vector3(*this) /= v; }
@@ -3035,10 +3163,6 @@ const Vector4& Vector4::operator *= (float v) {
     return *this;
 }
 
-const Vector4& Vector4::operator *= (const class Matrix4x4& M) {
-    return Set(((*this) * M.r[0]).Sum(), ((*this) * M.r[1]).Sum(), ((*this) * M.r[2]).Sum(), ((*this) * M.r[3]).Sum());
-}
-
 const Vector4& Vector4::operator *= (double v)          { return (*this) *= (float)v; }
 const Vector4& Vector4::operator *= (int v)             { return (*this) *= (float)v; }
 const Vector4& Vector4::operator *= (const class Vector2& v)  { return (*this) *= Vector4(v); }
@@ -3151,7 +3275,6 @@ Vector4 Vector4::operator * (double v) const            { return Vector4(*this) 
 Vector4 Vector4::operator * (int v) const               { return Vector4(*this) *= v; }
 Vector4 Vector4::operator * (const class Vector2& v) const    { return Vector4(*this) *= v; }
 Vector4 Vector4::operator * (const class Vector3& v) const    { return Vector4(*this) *= v; }
-Vector4 Vector4::operator * (const class Matrix4x4& M) const  { return Vector4(*this) *= M; }
 
 Vector4 Vector4::operator / (const Vector4& v) const    { return Vector4(*this) /= v; }
 Vector4 Vector4::operator / (float v) const             { return Vector4(*this) /= v; }
@@ -3599,6 +3722,14 @@ Matrix4x4 Matrix4x4::operator + (const Matrix4x4& m) const { return Matrix4x4(*t
 Matrix4x4 Matrix4x4::operator - (const Matrix4x4& m) const { return Matrix4x4(*this) -= m; }
 Matrix4x4 Matrix4x4::operator * (const Matrix4x4& m) const { return Matrix4x4(*this) *= m; }
 
+Vector4 Matrix4x4::operator * (const Vector4& v) const {
+    return { (r[0] * v).Sum(), (r[1] * v).Sum(), (r[2] * v).Sum(), (r[3] * v).Sum() };
+}
+
+Vector3 Matrix4x4::operator * (const Vector3& v) const {
+    return{ (r[0] * v).Sum(), (r[1] * v).Sum(), (r[2] * v).Sum() };
+}
+
 XOMATH_END_XO_NS();
 
 #endif
@@ -3697,12 +3828,12 @@ Matrix4x4 Matrix4x4::Transpose() const {
 }
 
 const Matrix4x4& Matrix4x4::Transform(Vector3& v) const {
-    v *= *this;
+    v = (*this) * Vector4(v);
     return *this;
 }
 
 const Matrix4x4& Matrix4x4::Transform(Vector4& v) const {
-    v *= *this;
+    v = (*this) * v;
     return *this;
 }
 
