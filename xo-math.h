@@ -479,8 +479,6 @@ XOMATH_BEGIN_XO_NS();
 
 class _MM_ALIGN16 Vector2 {
 public:
-    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 2.0f;
-
     // No initialization is done.
     _XOINL Vector2();
     
@@ -652,9 +650,16 @@ public:
     }
 
     static const Vector2
-        UnitX, UnitY,
-        Up, Down, Left, Right,
-        One, Zero;
+        UnitX, 
+        UnitY,
+        Up,
+        Down,
+        Left,
+        Right,
+        One,
+        Zero;
+
+    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 2.0f;
 
     union {
         struct { float x, y; };
@@ -686,17 +691,7 @@ XOMATH_BEGIN_XO_NS();
 //! A three dimensional euclidean vector, optimized for use in games.
 //! \sa https://en.wikipedia.org/wiki/Euclidean_vector
 class _MM_ALIGN16 Vector3 {
-#if XO_SSE
-        static const __m128 MASK;
-#endif
-
 public:
-#if XO_SSE
-    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 3.0f;
-#else
-    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 3.0f;
-#endif
-
     // No initialization is done.
     _XOINL Vector3();
 
@@ -1029,9 +1024,23 @@ public:
 
     static const Vector3
         Origin,
-        UnitX, UnitY, UnitZ,
-        Up, Down, Left, Right, Forward, Backward,
-        One, Zero;
+        UnitX,
+        UnitY,
+        UnitZ,
+        Up,
+        Down,
+        Left,
+        Right,
+        Forward,
+        Backward,
+        One,
+        Zero;
+
+#if XO_SSE
+    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 3.0f;
+#else
+    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 3.0f;
+#endif
 
 #if XO_SSE
     union {
@@ -1048,6 +1057,11 @@ public:
         };
         float f[3];
     };
+#endif
+
+private:
+#if XO_SSE
+    static const __m128 MASK;
 #endif
 };
 
@@ -1089,12 +1103,6 @@ XOMATH_BEGIN_XO_NS();
 //! @sa https://en.wikipedia.org/wiki/Euclidean_vector
 class _MM_ALIGN16 Vector4 {
 public:
-#if XO_SSE
-    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
-#else
-    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
-#endif
-
     ////////////////////////////////////////////////////////////////////////// Constructors
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector47Vector4Ev
     _XOINL Vector4(); 
@@ -1287,6 +1295,12 @@ public:
         UnitY, 
         UnitZ, 
         UnitW; 
+        
+#if XO_SSE
+    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
+#else
+    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
+#endif
 
     ////////////////////////////////////////////////////////////////////////// Members
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector41xE
@@ -1330,7 +1344,6 @@ XOMATH_BEGIN_XO_NS();
 //! @sa https://en.wikipedia.org/wiki/Matrix_(mathematics)
 class _MM_ALIGN16 Matrix4x4 {
 public:
-
     _XOINL Matrix4x4(); 
 
     _XOINL explicit Matrix4x4(float m); 
@@ -1500,19 +1513,7 @@ static_assert(false, "Don't include Quaternion.h directly. Include xo-math.h, wh
 XOMATH_BEGIN_XO_NS();
 
 class _MM_ALIGN16 Quaternion {
-#if XO_SSE
-    static const unsigned IDX_X = 0;
-    static const unsigned IDX_Y = 1;
-    static const unsigned IDX_Z = 2;
-    static const unsigned IDX_W = 3;
-#endif
 public:
-#if XO_SSE
-    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
-#else
-    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
-#endif
-
     _XOINL Quaternion();
     _XOINL Quaternion(const Matrix4x4& m);
     _XOINL Quaternion(float x, float y, float z, float w);
@@ -1563,6 +1564,16 @@ public:
     _XOINL static Quaternion Slerp(const Quaternion& a, const Quaternion& b, float t);
     _XOINL static Quaternion Lerp(const Quaternion& a, const Quaternion& b, float t);
 
+    static const Quaternion
+        Identity,
+        Zero;
+
+#if XO_SSE
+    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
+#else
+    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
+#endif
+
     union {
         struct {
             float x, y, z, w;
@@ -1573,8 +1584,13 @@ public:
 #endif
     };
 
-    static const Quaternion
-        Identity, Zero;
+private:
+#if XO_SSE
+    static const unsigned IDX_X = 0;
+    static const unsigned IDX_Y = 1;
+    static const unsigned IDX_Z = 2;
+    static const unsigned IDX_W = 3;
+#endif
 };
 
 const Quaternion Quaternion::Identity = { 0.0f, 0.0f, 0.0f, 1.0f };
