@@ -76,7 +76,13 @@
 	"folders":
 	[
 		{
-			"path": "../"
+			"path": "../",
+			"folder_exclude_patterns":[
+				"docs/breathe",
+				"docs/html",
+				"docs/xml",
+				"*.xcodeproj"
+			]
 		}
 	]
 }

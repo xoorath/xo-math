@@ -20,7 +20,7 @@
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Vector4.h directly. Include GameMath.h, which fully implements this type.");
+static_assert(false, "Don't include Vector4.h directly. Include xo-math.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();

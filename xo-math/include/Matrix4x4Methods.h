@@ -20,7 +20,7 @@
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Matrix4x4Methods.h directly. Include GameMath.h, which fully implements this type.");
+static_assert(false, "Don't include Matrix4x4Methods.h directly. Include xo-math.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();
@@ -84,6 +84,23 @@ Matrix4x4::Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2) :
         Vector4(0.0f, 0.0f, 0.0f, 1.0f)
     }
 {
+}
+
+Matrix4x4::Matrix4x4(const class Quaternion& q) {
+    Vector4* v4 = (Vector4*)&q;
+    Vector4 q2 = *v4 + *v4;
+
+    Vector4 qq2 = (*v4) * q2;
+    Vector4 wq2 = q2 * q.w;
+
+    float xy2 = q.x * q2.y;
+    float xz2 = q.x * q2.z;
+    float yz2 = q.y * q2.z;
+
+    r[0] = { 1.0f - qq2.y - qq2.z,  xy2 + wq2.z,            xz2 - wq2.y,          0.0f};
+    r[1] = { xy2 - wq2.z,           1.0f - qq2.x - qq2.z,   yz2 + wq2.x,          0.0f};
+    r[2] = { xz2 + wq2.y,           yz2 - wq2.x,            1.0f - qq2.x - qq2.y,   0.0f};
+    r[3] = Vector4::UnitW;
 }
 
 const Matrix4x4& Matrix4x4::MakeTranspose() {
@@ -275,6 +292,7 @@ void Matrix4x4::OrthographicProjection(float w, float h, float n, float f, Matri
         };
 }
  
+ // Todo: consider using ProjectionRadians / ProjectionDegrees since fov values are in radians currently.
 void Matrix4x4::Projection(float fovx, float fovy, float n, float f, Matrix4x4& m) {
     auto fmn = f - n;
     m = {

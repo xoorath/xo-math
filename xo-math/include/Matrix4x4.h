@@ -20,7 +20,7 @@
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Matrix4x4.h directly. Include GameMath.h, which fully implements this type.");
+static_assert(false, "Don't include Matrix4x4.h directly. Include xo-math.h, which fully implements this type.");
 #elif defined(_XOMATH_INIT_MATRIX4X4) || defined(_XO_TRANSPOSE_SWAP)
 _XOMATH_INTERNAL_MACRO_WARNING
 #else // XOMATH_INTERNAL
@@ -84,6 +84,8 @@ public:
     */
     _XOINL Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2);
 
+    //! Creates a rotation matrix from quaternion q.
+    _XOINL Matrix4x4(const class Quaternion& q);
     //! @}
 
     //! Sets this matrix as a transpose of itself
@@ -95,7 +97,7 @@ public:
             m20&m21&m22&m23\\
             m30&m31&m32&m33
             \end{bmatrix}
-            \Rrightarrow
+            \Rightarrow
             \begin{bmatrix}
             m00&m10&m20&m30\\
             m01&m11&m21&m31\\
@@ -116,7 +118,7 @@ public:
             m20&m21&m22&m23\\
             m30&m31&m32&m33
             \end{bmatrix}
-            \Rrightarrow
+            \Rightarrow
             \begin{bmatrix}
             m00&m10&m20&m30\\
             m01&m11&m21&m31\\
@@ -366,17 +368,67 @@ public:
     //! @sa https://en.wikipedia.org/wiki/Rotation_matrix
     _XOINL static void RotationRadians(const Vector3& v, Matrix4x4& outMatrix);
 
-    
+    //! Assigns outMatrix to an axis-angle rotation matrix with \f$\theta\f$ radians along axis a.    
+    //!
+    //! \f$let\ c = \cos\theta\f$
+    //!
+    //! \f$let\ s = \sin\theta\f$
+    //!
+    //! \f$let\ t = 1 - c\f$
+    /*!
+    \f[
+        \begin{bmatrix}
+            txx+c&txy-zs&txz+ys&0\\
+            txy+zs&tyy+c&tyz-xs&0\\
+            txz-ys&tyz+xs&tzz+c&0\\
+            0&0&0&1
+        \end{bmatrix}
+    \f]
+    */
     _XOINL static void AxisAngleRadians(const Vector3& axis, float radians, Matrix4x4& outMatrix);
 
+    //! Calls Matrix4x4::RotationXRadians, converting the input degrees to radians.
     _XOINL static void RotationXDegrees(float degrees, Matrix4x4& outMatrix);
+
+    //! Calls Matrix4x4::RotationYRadians, converting the input degrees to radians.
     _XOINL static void RotationYDegrees(float degrees, Matrix4x4& outMatrix);
+
+    //! Calls Matrix4x4::RotationZRadians, converting the input degrees to radians.
     _XOINL static void RotationZDegrees(float degrees, Matrix4x4& outMatrix);
+
+    //! Calls Matrix4x4::RotationDegrees, converting the input degrees to radians.
     _XOINL static void RotationDegrees(float x, float y, float z, Matrix4x4& outMatrix);
+
+    //! Calls Matrix4x4::RotationDegrees, converting the input degrees to radians.
     _XOINL static void RotationDegrees(const Vector3& v, Matrix4x4& outMatrix);
+
+    //! Calls Matrix4x4::AxisAngleDegrees, converting the input degrees to radians.
     _XOINL static void AxisAngleDegrees(const Vector3& axis, float degrees, Matrix4x4& outMatrix);
 
+    //! Assigns outMatrix to an orthographic projection matrix.
+    //!
+    //! \f$let\ w = width\f$
+    //!
+    //! \f$let\ h = height\f$
+    //!
+    //! \f$let\ n = near\f$
+    //!
+    //! \f$let\ f = far\f$
+    /*!
+    \f[
+        \begin{bmatrix}
+            txx+c&txy-zs&txz+ys&0\\
+            txy+zs&tyy+c&tyz-xs&0\\
+            txz-ys&tyz+xs&tzz+c&0\\
+            0&0&0&1
+        \end{bmatrix}
+    \f]
+    */
+    //! @sa http://scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix
     _XOINL static void OrthographicProjection(float width, float height, float near, float far, Matrix4x4& outMatrix);
+
+    //! Assigns outMatrix to a projection matrix.
+    //! @sa http://scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix
     _XOINL static void Projection(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix);
 
     _XOINL static void LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up, Matrix4x4& outMatrix);

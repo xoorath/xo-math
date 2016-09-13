@@ -20,7 +20,7 @@
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include DetectSIMD.h directly. Include GameMath.h.");
+static_assert(false, "Don't include DetectSIMD.h directly. Include xo-math.h.");
 #else // XOMATH_INTERNAL
 
 #if !defined(XO_SSE) && !defined(XO_SSE2) && !defined(XO_SSE3) && !defined(XO_SSSE3) && !defined(XO_SSE4_1) && !defined(XO_SSE4_2) && !defined(XO_AVX) && !defined(XO_AVX2) && !defined(XO_AVX512)

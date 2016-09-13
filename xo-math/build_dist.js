@@ -87,14 +87,27 @@ function ReadInclude(name) {
 
     var reading = false;
     for(var i = 0; i < split.length; ++i) {
-      if(reading) {
+      if(split[i].indexOf('//!<') > 0) {
+        var subidx = split[i].indexOf('//!<');
+        // take everything but the start of the doxygen  same-line comment
+        txt += split[i].substring(0, subidx) + '\n';
+      }
+      else if(split[i].indexOf('//!') > 0) {
+        // do nothing, doxygen comment
+      }
+      else if(split[i].indexOf('/*!') > 0) {
+        // ignore doxygen block comment
+        reading = false;
+      }
+      else if(reading) {
         txt += split[i] + '\n';
       }
       else {
         if(split[i].indexOf('XOMATH_INTERNAL') > 0) {
           reading = true;
           txt += split[i] + '\n';
-          console.log('started reading', i);
+        } else if (split[i].indexOf('*/') > 0) {
+          reading = true;
         }
       }
     }

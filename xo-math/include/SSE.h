@@ -20,7 +20,7 @@
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include SSE.h directly. Include GameMath.h.");
+static_assert(false, "Don't include SSE.h directly. Include xo-math.h.");
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();
