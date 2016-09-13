@@ -178,8 +178,8 @@ public:
 
     //! Vector transformation operator. Transforms vector v by this matrix.
     //!
-    // The following is latex, renders nicely in the docs.
-    // See this online editor to preview equations: http://www.hostmath.com/
+    //? The following is latex, renders nicely in the docs.
+    //? See this online editor to preview equations: http://www.hostmath.com/
     /*!
     \f[
         \begin{bmatrix}
@@ -212,8 +212,8 @@ public:
 
     //! Vector transformation operator. Transforms vector v by this matrix.
     //!
-    // The following is latex, renders nicely in the docs.
-    // See this online editor to preview equations: http://www.hostmath.com/
+    //? The following is latex, renders nicely in the docs.
+    //? See this online editor to preview equations: http://www.hostmath.com/
     /*!
     \f[
         \begin{bmatrix}

@@ -92,8 +92,11 @@ function ReadInclude(name) {
         // take everything but the start of the doxygen  same-line comment
         txt += split[i].substring(0, subidx) + '\n';
       }
-      else if(split[i].indexOf('//!') > 0) {
+      else if(split[i].indexOf('//!') > 0) { 
         // do nothing, doxygen comment
+      }
+      else if(split[i].indexOf('//?') > 0) {
+        // denotes a fake doxygen comment, to be excluded here and in doxygen
       }
       else if(split[i].indexOf('/*!') > 0) {
         // ignore doxygen block comment
