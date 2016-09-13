@@ -1166,6 +1166,7 @@ public:
     _XOINL const Vector4& operator *= (const class Vector3& v);
     ////////////////////////////////////////////////////////////////////////// Divide Equals Operator
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4dVERK7Vector4
+    // See: XO_NO_INVERSE_DIVISION
     _XOINL const Vector4& operator /= (const Vector4& v);
     _XOINL const Vector4& operator /= (float v);
     _XOINL const Vector4& operator /= (double v);
@@ -1198,6 +1199,7 @@ public:
     _XOINL Vector4 operator * (const class Vector3& v) const;
     ////////////////////////////////////////////////////////////////////////// Division Operator
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4dvERK7Vector4
+    // See: XO_NO_INVERSE_DIVISION
     _XOINL Vector4 operator / (const Vector4& v) const;
     _XOINL Vector4 operator / (float v) const;
     _XOINL Vector4 operator / (double v) const;
@@ -1258,25 +1260,19 @@ public:
 
     ////////////////////////////////////////////////////////////////////////// Static Methods
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43MaxERK7Vector4RK7Vector4R7Vector4
+
     _XOINL static void Max(const Vector4& a, const Vector4& b, Vector4& outVec);
     _XOINL static void Min(const Vector4& a, const Vector4& b, Vector4& outVec);
     _XOINL static void Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec);
+    _XOINL static float Dot(const Vector4& a, const Vector4& b);
+    _XOINL static float DistanceSquared(const Vector4& a, const Vector4& b);
+    _XOINL static float Distance(const Vector4&a, const Vector4&b);
     
-    ////////////////////////////////////////////////////////////////////////// Static Variants
+    ////////////////////////////////////////////////////////////////////////// Variants
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43MaxERK7Vector4RK7Vector4
     _XOINL static Vector4 Max(const Vector4& a, const Vector4& b);
     _XOINL static Vector4 Min(const Vector4& a, const Vector4& b);
     _XOINL static Vector4 Lerp(const Vector4& a, const Vector4& b, float t);
-
-    ////////////////////////////////////////////////////////////////////////// Static Methods
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43MaxERK7Vector4RK7Vector4R7Vector4
-
-    _XOINL static float Dot(const Vector4& a, const Vector4& b);
-    _XOINL static float DistanceSquared(const Vector4& a, const Vector4& b);
-    _XOINL static float Distance(const Vector4&a, const Vector4&b);
-
-    ////////////////////////////////////////////////////////////////////////// Non-static Variants
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43DotERK7Vector4
     _XOINL float Dot(const Vector4& v) const;
     _XOINL float DistanceSquared(const Vector4& v) const;
     _XOINL float Distance(const Vector4& v) const;
