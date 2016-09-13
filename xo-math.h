@@ -1375,12 +1375,8 @@ public:
     _XOINL Matrix4x4 operator - (const Matrix4x4& m) const;
     _XOINL Matrix4x4 operator * (const Matrix4x4& m) const;
 
-    // The following is latex, renders nicely in the docs.
-    // See this online editor to preview equations: http://www.hostmath.com/
     _XOINL Vector4 operator * (const Vector4& v) const;
 
-    // The following is latex, renders nicely in the docs.
-    // See this online editor to preview equations: http://www.hostmath.com/
     _XOINL Vector3 operator * (const Vector3& v) const;
 
     
