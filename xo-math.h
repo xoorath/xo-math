@@ -80,7 +80,7 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #endif
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include DetectSIMD.h directly. Include GameMath.h.");
+static_assert(false, "Don't include DetectSIMD.h directly. Include xo-math.h.");
 #else // XOMATH_INTERNAL
 
 #if !defined(XO_SSE) && !defined(XO_SSE2) && !defined(XO_SSE3) && !defined(XO_SSSE3) && !defined(XO_SSE4_1) && !defined(XO_SSE4_2) && !defined(XO_AVX) && !defined(XO_AVX2) && !defined(XO_AVX512)
@@ -472,7 +472,7 @@ _XOMATH_INTERNAL_MACRO_WARNING
 
 ////////////////////////////////////////////////////////////////////////// Module Includes
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Vector2.h directly. Include GameMath.h, which fully implements this type.");
+static_assert(false, "Don't include Vector2.h directly. Include xo-math.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();
@@ -678,7 +678,7 @@ XOMATH_END_XO_NS();
 #endif // XOMATH_INTERNAL
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Vector3.h directly. Include GameMath.h, which fully implements this type.");
+static_assert(false, "Don't include Vector3.h directly. Include xo-math.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();
@@ -1078,7 +1078,7 @@ XOMATH_END_XO_NS();
 #endif // XOMATH_INTERNAL
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Vector4.h directly. Include GameMath.h, which fully implements this type.");
+static_assert(false, "Don't include Vector4.h directly. Include xo-math.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();
@@ -1090,179 +1090,107 @@ XOMATH_BEGIN_XO_NS();
 class _MM_ALIGN16 Vector4 {
 public:
 #if XO_SSE
-    //! Smallest increment from zero that could be assigned to each element of this vector and would still be seen as equal to a zero vector.
     _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
 #else
-    //! Smallest increment from zero that could be assigned to each element of this vector and would still be seen as equal to a zero vector.
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
 #endif
 
-    //! @name Constructors
-    //! @{
-    _XOINL Vector4(); //!< Performs no initialization.
-    _XOINL Vector4(float f); //!< All elements are set to f.
-    _XOINL Vector4(float x, float y, float z, float w); //!< Assigns each named value accordingly.
-    _XOINL Vector4(const Vector4& vec); //!< Copy constructor, trivial.
+    _XOINL Vector4(); 
+    _XOINL Vector4(float f); 
+    _XOINL Vector4(float x, float y, float z, float w); 
+    _XOINL Vector4(const Vector4& vec); 
 #if XO_SSE
-    _XOINL Vector4(const __m128& vec); //!< Assigns m to vec, sets all elements.
+    _XOINL Vector4(const __m128& vec); 
 #endif
-    _XOINL Vector4(const class Vector2& v); //!< Assigns same-name values from v, zero to z and w. \f$\begin{pmatrix}v.x&v.y&0&0\end{pmatrix}\f$
-    _XOINL Vector4(const class Vector3& v); //!< Assigns same-name values from v, zero to w.\f$\begin{pmatrix}v.x&v.y&v.z&0\end{pmatrix}\f$
-    //! @}
+    _XOINL Vector4(const class Vector2& v); 
+    _XOINL Vector4(const class Vector3& v); 
 
 
-    //! @name Set / Get Methods
-    //! @{
-    //! Set all. x, y, z and w will be assigned to the input params.
     _XOINL const Vector4& Set(float x, float y, float z, float w);
 
-    //! Set each. x, y, z and w will be assigned to f.
     _XOINL const Vector4& Set(float f);
 
-    //! Set each. Copies vec into this.
     _XOINL const Vector4& Set(const Vector4& vec);
 
 #if XO_SSE
-    //! Set each. Copies vec int m.
     _XOINL const Vector4& Set(const __m128& vec);
 #endif
 
-    //! Extract all getter. x, y, z and w will be assigned to those values of this vector.
     _XOINL void Get(float& x, float& y, float& z, float& w) const;
 
-    //! Extract all getter. f[0], f[1], f[2] and f[3] will be assigned to x, y, z and w respectively. 
     _XOINL void Get(float* f) const;
-    //! @}
 
-    //! @name Special Operators
-    //! @{
 
-    //! Overloads the new and delete operators for Vector4 when memory alignment is required (such as with SSE).
-    //! @sa XO_16ALIGNED_MALLOC, XO_16ALIGNED_FREE
     _XO_OVERLOAD_NEW_DELETE();
 
 #if XO_SSE
-    //! Type cast operator. Allows Vector4 to be used implicitly where ever __m128 can be.
     _XOINL operator const __m128&() const;
 #endif
 
-    //! Extract reference operator, useful for setting values by index.
-    //! \f[i\begin{cases}0 & return\ x;\\1 & return\ y;\\2 & return\ z;\\3 & return\ w;\\? & undefined\end{cases}\f]
     _XOINL float& operator [](int i);
 
-    //! Extract const reference operator, useful for getting values by index.
-    //! \f[i\begin{cases}0 & return\ x;\\1 & return\ y;\\2 & return\ z;\\3 & return\ w;\\? & undefined\end{cases}\f]
     _XOINL const float& operator [](int i) const;
 
-    //! Negate operator. Returns a vector with all elements with a flipped sign:
-    //!
-    //! \f$\begin{pmatrix}-x,&-y,&-z,&-w\end{pmatrix}\f$
     _XOINL Vector4 operator -() const;
 
-    //! Swizzle operator. Returns a vector with all elements in reverse order:
-    //!
-    //! \f$\begin{pmatrix}w,&z,&y,&x\end{pmatrix}\f$
     _XOINL Vector4 operator ~() const;
-    //! @}
 
-    //! @name Add Equals Operator
-    //! Adds all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @{
     _XOINL const Vector4& operator += (const Vector4& v);
     _XOINL const Vector4& operator += (float v);
     _XOINL const Vector4& operator += (double v);
     _XOINL const Vector4& operator += (int v);
     _XOINL const Vector4& operator += (const class Vector2& v);
     _XOINL const Vector4& operator += (const class Vector3& v);
-    //! @}
 
-    //! @name Subtract Equals Operator
-    //! Subtracts all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @{
     _XOINL const Vector4& operator -= (const Vector4& v);
     _XOINL const Vector4& operator -= (float v);
     _XOINL const Vector4& operator -= (double v);
     _XOINL const Vector4& operator -= (int v);
     _XOINL const Vector4& operator -= (const class Vector2& v);
     _XOINL const Vector4& operator -= (const class Vector3& v);
-    //! @}
 
-    //! @name Multiply Equals Operator
-    //! Multiplies all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @{
     _XOINL const Vector4& operator *= (const Vector4& v);
     _XOINL const Vector4& operator *= (float v);
     _XOINL const Vector4& operator *= (double v);
     _XOINL const Vector4& operator *= (int v);
     _XOINL const Vector4& operator *= (const class Vector2& v);
     _XOINL const Vector4& operator *= (const class Vector3& v);
-    //! @}
 
-    //! @name Divide Equals Operator
-    //! Divides all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @sa XO_NO_INVERSE_DIVISION
-    //! @{
     _XOINL const Vector4& operator /= (const Vector4& v);
     _XOINL const Vector4& operator /= (float v);
     _XOINL const Vector4& operator /= (double v);
     _XOINL const Vector4& operator /= (int v);
     _XOINL const Vector4& operator /= (const class Vector2& v);
     _XOINL const Vector4& operator /= (const class Vector3& v);
-    //! @}
 
-    //! @name Addition Operator
-    //! Builds a vector by adding all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @return A vector resulting from the equation.
-    //! @{
     _XOINL Vector4 operator + (const Vector4& v) const;
     _XOINL Vector4 operator + (float v) const;
     _XOINL Vector4 operator + (double v) const;
     _XOINL Vector4 operator + (int v) const;
     _XOINL Vector4 operator + (const class Vector2& v) const;
     _XOINL Vector4 operator + (const class Vector3& v) const;
-    //! @}
 
-    //! @name Subtraction Operator
-    //! Builds a vector by subtracting all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @return A vector resulting from the equation.
-    //! @{
     _XOINL Vector4 operator - (const Vector4& v) const;
     _XOINL Vector4 operator - (float v) const;
     _XOINL Vector4 operator - (double v) const;
     _XOINL Vector4 operator - (int v) const;
     _XOINL Vector4 operator - (const class Vector2& v) const;
     _XOINL Vector4 operator - (const class Vector3& v) const;
-    //! @}
 
-    //! @name Multiplication Operator
-    //! Builds a vector by multiplying all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @return A vector resulting from the equation.
-    //! @{
     _XOINL Vector4 operator * (const Vector4& v) const;
     _XOINL Vector4 operator * (float v) const;
     _XOINL Vector4 operator * (double v) const;
     _XOINL Vector4 operator * (int v) const;
     _XOINL Vector4 operator * (const class Vector2& v) const;
     _XOINL Vector4 operator * (const class Vector3& v) const;
-    //! @}
 
-    //! @name Division Operator
-    //! Builds a vector by dividing all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @return A vector resulting from the equation.
-    //! @sa XO_NO_INVERSE_DIVISION
-    //! @{
     _XOINL Vector4 operator / (const Vector4& v) const;
     _XOINL Vector4 operator / (float v) const;
     _XOINL Vector4 operator / (double v) const;
     _XOINL Vector4 operator / (int v) const;
     _XOINL Vector4 operator / (const class Vector2& v) const;
     _XOINL Vector4 operator / (const class Vector3& v) const;
-    //! @}
 
-    //! @name Comparison Operators
-    //! When comparing against other vectors, the square magnitude is compared.
-    //! When comparing against scalars, the scalar is squared and compared to the square magnitude of this vector.
-    //! @{
     _XOINL bool operator < (const Vector4& v) const;
     _XOINL bool operator < (float v) const;
     _XOINL bool operator < (double v) const;
@@ -1290,13 +1218,7 @@ public:
     _XOINL bool operator >= (int v) const;
     _XOINL bool operator >= (const class Vector2& v) const;
     _XOINL bool operator >= (const class Vector3& v) const;
-    //! @}
 
-    //! @name Equal Operators
-    //! When two vectors are compared, each element is compared; When all vector elements have a difference of <= Vector4::Epsilon, they are considered equal.
-    //!
-    //! When a scalar is compared, we square the scalar and check it against our square magnitude. If the difference is <= Vector4::Epsilon, they are considered equal.
-    //! @{
     _XOINL bool operator == (const Vector4& v) const;
     _XOINL bool operator == (float v) const;
     _XOINL bool operator == (double v) const;
@@ -1310,113 +1232,45 @@ public:
     _XOINL bool operator != (int v) const;
     _XOINL bool operator != (const class Vector2& v) const;
     _XOINL bool operator != (const class Vector3& v) const;
-    //! @}
 
-    //! The sum of all vector elements.
-    //!
-    //! \f$x+y+z+w\f$
     _XOINL float Sum() const;
 
-    //! The square length of this vector in 4 dimensional space.
-    //! It's preferred to use the MagnitudeSquared when possible, as Magnitude requires a call to Sqrt.
-    //!
-    //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert^2 = (x\times x)+(y\times y)+(z\times z)+(w\times w)\f$
-    //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
     _XOINL float MagnitudeSquared() const;
 
-    //! The length of this vector in 4 dimensional space.
-    //! It's preferred to use the MagnitudeSquared when possible, as Magnitude requires a call to Sqrt.
-    //!
-    //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert = \sqrt{(x\times x)+(y\times y)+(z\times z)+(w\times w)}\f$
-    //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
     _XOINL float Magnitude() const;
 
-    //! Normalizes this vector to a Magnitude of 1.
-    //! @sa https://en.wikipedia.org/wiki/Unit_vector
     _XOINL const Vector4& Normalize();
 
-    //! Produces a copy of this vector with a unit length of 1.
-    //! @sa https://en.wikipedia.org/wiki/Unit_vector
     _XOINL Vector4 Normalized() const;
 
-    //! Returns true when the Magnitude of this vector is <= Vector4::Epsilon
     _XOINL bool IsZero() const;
 
-    //! Returns true when the Magnitude of this vector is within Vector4::Epsilon of being 1.0
     _XOINL bool IsNormalized() const;
 
-    //! Set outVec to have elements equal to the max of each element in a and b.
-    //!
-    //! \f$\begin{pmatrix}\max(a.x, b.x)&\max(a.y, b.y)&\max(a.z, b.z)&\max(a.w, b.w)\end{pmatrix}\f$
     _XOINL static void Max(const Vector4& a, const Vector4& b, Vector4& outVec);
     
-    //! Set outVec to have elements equal to the min of each element in a and b.
-    //!
-    //! \f$\begin{pmatrix}\min(a.x, b.x)&\min(a.y, b.y)&\min(a.z, b.z)&\min(a.w, b.w)\end{pmatrix}\f$
     _XOINL static void Min(const Vector4& a, const Vector4& b, Vector4& outVec);
 
-    //! Sets outVec to a vector interpolated between a and b by a scalar amount t.
-    //! @sa https://en.wikipedia.org/wiki/Linear_interpolation
     _XOINL static void Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec);
 
-    //! Returns a vector with elements equal to the max of each element in a and b.
-    //!
-    //! \f$\begin{pmatrix}\max(a.x, b.x)&\max(a.y, b.y)&\max(a.z, b.z)&\max(a.w, b.w)\end{pmatrix}\f$
     _XOINL static Vector4 Max(const Vector4& a, const Vector4& b);
 
-    //! Returns a vector with elements equal to the min of each element in a and b.
-    //!
-    //! \f$\begin{pmatrix}\min(a.x, b.x)&\min(a.y, b.y)&\min(a.z, b.z)&\min(a.w, b.w)\end{pmatrix}\f$
     _XOINL static Vector4 Min(const Vector4& a, const Vector4& b);
 
-    //! Returns a vector interpolated between a and b by a scalar amount t.
-    //! @sa https://en.wikipedia.org/wiki/Linear_interpolation
     _XOINL static Vector4 Lerp(const Vector4& a, const Vector4& b, float t);
 
-    //! Returns a single number representing a product of magnitudes. Commonly used with two normalized 
-    //! vectors to determine if they are pointed the same way. In this case: 1.0 represents same-facing vectors
-    //! 0 represents perpendicular vectors, and -1 will be facing away
-    //!
-    //! \f$a\cdot b =(a.x\times b.x) + (a.y\times b.y) + (a.z\times b.z) + (a.w\times  b.w)\f$
-    //!
-    //! @sa https://en.wikipedia.org/wiki/Dot_product
     _XOINL static float Dot(const Vector4& a, const Vector4& b);
 
-    //! Returns the square distance between vectors a and b in 4 dimensional space.
-    //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
-    //!
-    //! \f$distance^2 = \lvert\rvert\boldsymbol{b-a}\lvert\rvert^2\f$
     _XOINL static float DistanceSquared(const Vector4& a, const Vector4& b);
 
-    //! Returns the distance between vectors a and b in 4 dimensional space.
-    //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
-    //!
-    //! \f$distance = \lvert\rvert\boldsymbol{b-a}\lvert\rvert\f$
     _XOINL static float Distance(const Vector4&a, const Vector4&b);
 
-    //! Returns a single number representing a product of magnitudes. Commonly used with two normalized 
-    //! vectors to determine if they are pointed the same way. In this case: 1.0 represents same-facing vectors
-    //! 0 represents perpendicular vectors, and -1 will be facing away
-    //!
-    //! \f$a\cdot b =(x\times v.x) + (y\times v.y) + (z\times v.z) + (w\times  v.w)\f$
-    //!
-    //! @sa https://en.wikipedia.org/wiki/Dot_product
     _XOINL float Dot(const Vector4& v) const;
 
-    //! Returns the square distance between this vector and v in 4 dimensional space.
-    //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
-    //!
-    //! \f$distance^2 = \lvert\rvert\boldsymbol{v-this}\lvert\rvert^2\f$
     _XOINL float DistanceSquared(const Vector4& v) const;
 
-    //! Returns the distance between this vector and v in 4 dimensional space.
-    //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
-    //!
-    //! \f$distance = \lvert\rvert\boldsymbol{v-this}\lvert\rvert\f$
     _XOINL float Distance(const Vector4& v) const;
 
-    //! Returns a vector interpolated between this vector and v by a scalar amount t.
-    //! @sa https://en.wikipedia.org/wiki/Linear_interpolation
     _XOINL Vector4 Lerp(const Vector4& v, float t) const;
 
     friend std::ostream& operator <<(std::ostream& os, const Vector4& v) {
@@ -1425,12 +1279,12 @@ public:
     }
 
     static const Vector4
-        One, //!< \f$\begin{pmatrix}1&1&1&1\end{pmatrix}\f$
-        Zero, //!< \f$\begin{pmatrix}0&0&0&0\end{pmatrix}\f$
-        UnitX, //!< \f$\begin{pmatrix}1&0&0&0\end{pmatrix}\f$
-        UnitY, //!< \f$\begin{pmatrix}0&1&0&0\end{pmatrix}\f$
-        UnitZ, //!< \f$\begin{pmatrix}0&0&1&0\end{pmatrix}\f$
-        UnitW; //!< \f$\begin{pmatrix}0&0&0&1\end{pmatrix}\f$
+        One, 
+        Zero, 
+        UnitX, 
+        UnitY, 
+        UnitZ, 
+        UnitW; 
 
     union {
         struct {
@@ -1439,10 +1293,8 @@ public:
             float z;
             float w;
         };
-        float f[4]; //!< ordered as \f$\begin{pmatrix}x&y&z&w\end{pmatrix}\f$
+        float f[4]; 
 #if XO_SSE
-        //! Exists when SSE is in use, represents a 128 bit xmm register.
-        //! @sa https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions
         __m128 m;
 #endif
     };
@@ -1461,7 +1313,7 @@ XOMATH_END_XO_NS();
 #endif // XOMATH_INTERNAL
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Matrix4x4.h directly. Include GameMath.h, which fully implements this type.");
+static_assert(false, "Don't include Matrix4x4.h directly. Include xo-math.h, which fully implements this type.");
 #elif defined(_XOMATH_INIT_MATRIX4X4) || defined(_XO_TRANSPOSE_SWAP)
 _XOMATH_INTERNAL_MACRO_WARNING
 #else // XOMATH_INTERNAL
@@ -1475,349 +1327,103 @@ XOMATH_BEGIN_XO_NS();
 class _MM_ALIGN16 Matrix4x4 {
 public:
 
-    //! @name Constructors
-    //! @{
-    _XOINL Matrix4x4(); //!< Performs no initialization.
-    _XOINL explicit Matrix4x4(float m); //!< All elements are set to f.
+    _XOINL Matrix4x4(); 
+    _XOINL explicit Matrix4x4(float m); 
 
-    //! specify each element in row major form.
-    /*!
-        \f[
-            \begin{bmatrix}
-            m00&m01&m02&m03\\
-            m10&m11&m12&m13\\
-            m20&m21&m22&m23\\
-            m30&m31&m32&m33
-            \end{bmatrix}
-        \f]
-    */
     _XOINL Matrix4x4(float m00, float m01, float m02, float m03,
                      float m10, float m11, float m12, float m13,
                      float m20, float m21, float m22, float m23,
                      float m30, float m31, float m32, float m33);
 
-    //! Copy constructor, trivial.
     _XOINL Matrix4x4(const Matrix4x4& m);
 
-    //! Specifies each row.
-    /*!
-        \f[
-            \begin{bmatrix}
-            r0.x&r0.y&r0.z&r0.w\\
-            r1.x&r1.y&r1.z&r1.w\\
-            r2.x&r2.y&r2.z&r2.w\\
-            r3.x&r3.y&r3.z&r3.w
-            \end{bmatrix}
-        \f]
-    */
     _XOINL Matrix4x4(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3);
 
-    //! Specify the upper left of the matrix as one Vector3 per row, leaving unset elements as 0 except the bottom right which will be set to 1.
-    /*!
-        \f[
-            \begin{bmatrix}
-            r0.x&r0.y&r0.z&0.0\\
-            r1.x&r1.y&r1.z&0.0\\
-            r2.x&r2.y&r2.z&0.0\\
-            0.0&0.0&0.0&1.0
-            \end{bmatrix}
-        \f]
-    */
     _XOINL Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2);
 
-    //! @}
+    _XOINL Matrix4x4(const class Quaternion& q);
 
-    //! Sets this matrix as a transpose of itself
-    /*!
-        \f[
-            \begin{bmatrix}
-            m00&m01&m02&m03\\
-            m10&m11&m12&m13\\
-            m20&m21&m22&m23\\
-            m30&m31&m32&m33
-            \end{bmatrix}
-            \Rrightarrow
-            \begin{bmatrix}
-            m00&m10&m20&m30\\
-            m01&m11&m21&m31\\
-            m02&m12&m22&m32\\
-            m03&m13&m32&m33
-            \end{bmatrix}
-        \f]
-    */
-    //! @sa https://en.wikipedia.org/wiki/Transpose
     _XOINL const Matrix4x4& MakeTranspose();
 
-    //! Returns a transpose of this matrix
-    /*!
-        \f[
-            \begin{bmatrix}
-            m00&m01&m02&m03\\
-            m10&m11&m12&m13\\
-            m20&m21&m22&m23\\
-            m30&m31&m32&m33
-            \end{bmatrix}
-            \Rrightarrow
-            \begin{bmatrix}
-            m00&m10&m20&m30\\
-            m01&m11&m21&m31\\
-            m02&m12&m22&m32\\
-            m03&m13&m32&m33
-            \end{bmatrix}
-        \f]
-    */
-    //! @sa https://en.wikipedia.org/wiki/Transpose
     _XOINL Matrix4x4 Transpose() const;
 
-    //! @name Special Operators
-    //! @{
 
-    //! Overloads the new and delete operators for Matrix4x4 when memory alignment is required (such as with SSE).
-    //! @sa XO_16ALIGNED_MALLOC, XO_16ALIGNED_FREE
     _XO_OVERLOAD_NEW_DELETE();
 
-    //! Extracts a const reference of a row, useful for getting rows by index.
     _XOINL const Vector4& operator [](int i) const;
 
-    //! Extracts a reference of a row, useful for setting rows by index.
     _XOINL Vector4& operator [](int i);
 
-    //! Extracts a const reference of a value, useful for getting values by index.
     _XOINL const float& operator ()(int r, int c) const;
     
-    //! Extracts a reference of a value, useful for setting values by index.
     _XOINL float& operator ()(int r, int c);
 
     // Return a copy of the transpose.
     // See: https://en.wikipedia.org/wiki/Transpose
     _XOINL Matrix4x4 operator ~() const;
-    //! @}
 
-    //! @name Set / Get Methods
-    //! @{
-    //! Get a const reference to a row in the matrix.
     _XOINL const Vector4& GetRow(int i) const;
 
-    //! Return a column, copied out of the matrix
     _XOINL Vector4 GetColumn(int i) const;
-    //! @}
 
 
-    //! @name Operators
-    //! @{
     _XOINL const Matrix4x4& operator += (const Matrix4x4& m);
     _XOINL const Matrix4x4& operator -= (const Matrix4x4& m);
-    //! @sa https://en.wikipedia.org/wiki/Matrix_multiplication
     _XOINL const Matrix4x4& operator *= (const Matrix4x4& m);
 
     _XOINL Matrix4x4 operator + (const Matrix4x4& m) const;
     _XOINL Matrix4x4 operator - (const Matrix4x4& m) const;
-    //! @sa https://en.wikipedia.org/wiki/Matrix_multiplication
     _XOINL Matrix4x4 operator * (const Matrix4x4& m) const;
 
-    //! Vector transformation operator. Transforms vector v by this matrix.
-    //!
     // The following is latex, renders nicely in the docs.
     // See this online editor to preview equations: http://www.hostmath.com/
-    /*!
-    \f[
-        \begin{bmatrix}
-            m00&m01&m02&m03\\
-            m10&m11&m12&m13\\
-            m20&m21&m22&m23\\
-            m30&m31&m32&m33
-        \end{bmatrix}
-        \times
-        \begin{bmatrix}
-            x\\
-            y\\
-            z\\
-            w
-        \end{bmatrix}
-    \f]
-    \f[
-        =
-        \begin{bmatrix}
-            (m00\times x) + (m01\times x) + (m02\times x) + (m03\times x)\\
-            (m10\times y) + (m11\times y) + (m12\times y) + (m13\times y)\\
-            (m20\times z) + (m21\times z) + (m22\times z) + (m23\times z)\\
-            (m30\times w) + (m31\times w) + (m32\times w) + (m33\times w)
-        \end{bmatrix}
-    \f]
-    */
-    //! @sa https://en.wikipedia.org/wiki/Matrix_multiplication
-    //! @sa https://youtu.be/Awcj447pYuk?t=1m28s
     _XOINL Vector4 operator * (const Vector4& v) const;
 
-    //! Vector transformation operator. Transforms vector v by this matrix.
-    //!
     // The following is latex, renders nicely in the docs.
     // See this online editor to preview equations: http://www.hostmath.com/
-    /*!
-    \f[
-        \begin{bmatrix}
-            m00&m01&m02&m03\\
-            m10&m11&m12&m13\\
-            m20&m21&m22&m23\\
-            m30&m31&m32&m33
-        \end{bmatrix}
-        \times
-        \begin{bmatrix}
-            x\\
-            y\\
-            z\\
-            0
-        \end{bmatrix}
-    \f]
-    \f[
-        =
-        \begin{bmatrix}
-            (m00\times x) + (m01\times x) + (m02\times x) + (m03\times x)\\
-            (m10\times y) + (m11\times y) + (m12\times y) + (m13\times y)\\
-            (m20\times z) + (m21\times z) + (m22\times z) + (m23\times z)
-        \end{bmatrix}
-    \f]
-    */
-    //! @sa https://en.wikipedia.org/wiki/Matrix_multiplication
-    //! @sa https://youtu.be/Awcj447pYuk?t=1m28s
     _XOINL Vector3 operator * (const Vector3& v) const;
 
-    //! @}
     
-    //! Transforms vector v in place by this matrix.
     _XOINL const Matrix4x4& Transform(Vector3& v) const;
-    //! Transforms vector v in place by this matrix.
     _XOINL const Matrix4x4& Transform(Vector4& v) const;
 
 
-    //! Assigns outMatrix to a scale matrix, where each of x y and z scale values are equal to xyz.
-    /*!
-    \f[
-        \begin{bmatrix}
-            xyz&0&0&0\\
-            0&xyz&0&0\\
-            0&0&xyz&0\\
-            0&0&0&1
-        \end{bmatrix}
-    \f]
-    */
     _XOINL static void Scale(float xyz, Matrix4x4& outMatrix);
 
-    //! Assigns outMatrix to a scale matrix, where each of x y and z scale values are their same-named parameters.
-    /*!
-    \f[
-        \begin{bmatrix}
-            x&0&0&0\\
-            0&y&0&0\\
-            0&0&z&0\\
-            0&0&0&1
-        \end{bmatrix}
-    \f]
-    */
     _XOINL static void Scale(float x, float y, float z, Matrix4x4& outMatrix);
 
-    //! Assigns outMatrix to a scale matrix, where each of x y and z scale values are provided by v.
-    /*!
-    \f[
-        \begin{bmatrix}
-            v.x&0&0&0\\
-            0&v.y&0&0\\
-            0&0&v.z&0\\
-            0&0&0&1
-        \end{bmatrix}
-    \f]
-    */
     _XOINL static void Scale(const Vector3& v, Matrix4x4& outMatrix);
 
-    //! Assigns outMatrix to a translation matrix, where each of x y and z are their same-named parameters
-    /*!
-    \f[
-        \begin{bmatrix}
-            1&0&0&x\\
-            0&1&0&y\\
-            0&0&1&z\\
-            0&0&0&1
-        \end{bmatrix}
-    \f]
-    */
     _XOINL static void Translation(float x, float y, float z, Matrix4x4& outMatrix);
-    //! Assigns outMatrix to a translation matrix, where each of x y and z are provided by v.
-    /*!
-    \f[
-        \begin{bmatrix}
-            1&0&0&v.x\\
-            0&1&0&v.y\\
-            0&0&1&v.z\\
-            0&0&0&1
-        \end{bmatrix}
-    \f]
-    */
     _XOINL static void Translation(const Vector3& v, Matrix4x4& outMatrix);
     
 
-    //! Assigns outMatrix to a pitch matrix, where theta \f$\theta\f$ is the parameter radians.
-    /*!
-    \f[
-        \begin{bmatrix}
-            1&0&0&0\\
-            0&\cos\theta&-\sin\theta&0\\
-            0&\sin\theta&\cos\theta&0\\
-            0&0&0&1
-        \end{bmatrix}
-    \f]
-    */
-    //! @sa https://en.wikipedia.org/wiki/Rotation_matrix
     _XOINL static void RotationXRadians(float radians, Matrix4x4& outMatrix);
 
-    //! Assigns outMatrix to a yaw matrix, where theta \f$\theta\f$ is the parameter radians.
-    /*!
-    \f[
-        \begin{bmatrix}
-            \cos\theta&0&\sin\theta&0\\
-            0&1&0&0\\
-            -\sin\theta&0&\cos\theta&0\\
-            0&0&0&1
-        \end{bmatrix}
-    \f]
-    */
-    //! @sa https://en.wikipedia.org/wiki/Rotation_matrix
     _XOINL static void RotationYRadians(float radians, Matrix4x4& outMatrix);
 
-    //! Assigns outMatrix to a roll matrix, where theta \f$\theta\f$ is the parameter radians.
-    /*!
-    \f[
-        \begin{bmatrix}
-            \cos\theta&-\sin\theta&0&0\\
-            \sin\theta&\cos\theta&0&0\\
-            0&0&1&0\\
-            0&0&0&1
-        \end{bmatrix}
-    \f]
-    */
-    //! @sa https://en.wikipedia.org/wiki/Rotation_matrix
     _XOINL static void RotationZRadians(float radians, Matrix4x4& outMatrix);
 
-    //! Assigns outMatrix to a rotation matrix. Rotation matricies are build by multiplying a yaw a pitch and a roll matrix. 
-    //! See Matrix4x4::RotationXRadians, Matrix4x4::RotationYRadians and Matrix4x4::RotationZRadians for details.
-    //! @sa https://en.wikipedia.org/wiki/Rotation_matrix
     _XOINL static void RotationRadians(float x, float y, float z, Matrix4x4& outMatrix);
 
-    //! Assigns outMatrix to a rotation matrix. Rotation matricies are build by multiplying a yaw a pitch and a roll matrix. 
-    //! See Matrix4x4::RotationXRadians, Matrix4x4::RotationYRadians and Matrix4x4::RotationZRadians for details.
-    //! @sa https://en.wikipedia.org/wiki/Rotation_matrix
     _XOINL static void RotationRadians(const Vector3& v, Matrix4x4& outMatrix);
 
-    
     _XOINL static void AxisAngleRadians(const Vector3& axis, float radians, Matrix4x4& outMatrix);
 
     _XOINL static void RotationXDegrees(float degrees, Matrix4x4& outMatrix);
+
     _XOINL static void RotationYDegrees(float degrees, Matrix4x4& outMatrix);
+
     _XOINL static void RotationZDegrees(float degrees, Matrix4x4& outMatrix);
+
     _XOINL static void RotationDegrees(float x, float y, float z, Matrix4x4& outMatrix);
+
     _XOINL static void RotationDegrees(const Vector3& v, Matrix4x4& outMatrix);
+
     _XOINL static void AxisAngleDegrees(const Vector3& axis, float degrees, Matrix4x4& outMatrix);
 
     _XOINL static void OrthographicProjection(float width, float height, float near, float far, Matrix4x4& outMatrix);
+
     _XOINL static void Projection(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix);
 
     _XOINL static void LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up, Matrix4x4& outMatrix);
@@ -1854,42 +1460,11 @@ public:
     _XOINL static Matrix4x4 LookAtFromDirection(const Vector3& direction, const Vector3& up);
     _XOINL static Matrix4x4 LookAtFromDirection(const Vector3& direction);
 
-    //! Matrix rows
     Vector4 r[4];
 
     static const Matrix4x4
-        /*!
-        \f[
-            \begin{bmatrix}
-            1&0&0&0\\
-            0&1&0&0\\
-            0&0&1&0\\
-            0&0&0&1
-            \end{bmatrix}
-        \f]
-        */
         Identity,
-        /*!
-        \f[
-            \begin{bmatrix}
-            1&1&1&1\\
-            1&1&1&1\\
-            1&1&1&1\\
-            1&1&1&1
-            \end{bmatrix}
-        \f]
-        */
         One,
-        /*!
-        \f[
-            \begin{bmatrix}
-            0&0&0&0\\
-            0&0&0&0\\
-            0&0&0&0\\
-            0&0&0&0
-            \end{bmatrix}
-        \f]
-        */
         Zero;
 };
 
@@ -1921,7 +1496,7 @@ XOMATH_END_XO_NS();
 #endif // XOMATH_INTERNAL
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Quaternion.h directly. Include GameMath.h, which fully implements this type.");
+static_assert(false, "Don't include Quaternion.h directly. Include xo-math.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();
@@ -2013,7 +1588,7 @@ XOMATH_END_XO_NS();
 
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Vector2Operators.h directly. Include GameMath.h, which fully implements this type.");
+static_assert(false, "Don't include Vector2Operators.h directly. Include xo-math.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();
@@ -2178,7 +1753,7 @@ XOMATH_END_XO_NS();
 #endif
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Vector2Methods.h directly. Include GameMath.h, which fully implements this type.");
+static_assert(false, "Don't include Vector2Methods.h directly. Include xo-math.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();
@@ -2374,7 +1949,7 @@ XOMATH_END_XO_NS();
 #endif
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Vector3Operators.h directly. Include GameMath.h, which fully implements this type.");
+static_assert(false, "Don't include Vector3Operators.h directly. Include xo-math.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();
@@ -2670,7 +2245,7 @@ XOMATH_END_XO_NS();
 #endif // XOMATH_INTERNAL
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Vector3Methods.h directly. Include GameMath.h, which fully implements this type.");
+static_assert(false, "Don't include Vector3Methods.h directly. Include xo-math.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();
@@ -3134,7 +2709,7 @@ XOMATH_END_XO_NS();
 #endif
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Vector4Operators.h directly. Include GameMath.h, which fully implements this type.");
+static_assert(false, "Don't include Vector4Operators.h directly. Include xo-math.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();
@@ -3482,7 +3057,7 @@ XOMATH_END_XO_NS();
 #endif
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Vector4Methods.h directly. Include GameMath.h, which fully implements this type.");
+static_assert(false, "Don't include Vector4Methods.h directly. Include xo-math.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();
@@ -3848,7 +3423,7 @@ XOMATH_END_XO_NS();
 #endif
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Matrix4x4Methods.h directly. Include GameMath.h, which fully implements this type.");
+static_assert(false, "Don't include Matrix4x4Methods.h directly. Include xo-math.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();
@@ -3912,6 +3487,23 @@ Matrix4x4::Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2) :
         Vector4(0.0f, 0.0f, 0.0f, 1.0f)
     }
 {
+}
+
+Matrix4x4::Matrix4x4(const class Quaternion& q) {
+    Vector4* v4 = (Vector4*)&q;
+    Vector4 q2 = *v4 + *v4;
+
+    Vector4 qq2 = (*v4) * q2;
+    Vector4 wq2 = q2 * q.w;
+
+    float xy2 = q.x * q2.y;
+    float xz2 = q.x * q2.z;
+    float yz2 = q.y * q2.z;
+
+    r[0] = { 1.0f - qq2.y - qq2.z,  xy2 + wq2.z,            xz2 - wq2.y,          0.0f};
+    r[1] = { xy2 - wq2.z,           1.0f - qq2.x - qq2.z,   yz2 + wq2.x,          0.0f};
+    r[2] = { xz2 + wq2.y,           yz2 - wq2.x,            1.0f - qq2.x - qq2.y,   0.0f};
+    r[3] = Vector4::UnitW;
 }
 
 const Matrix4x4& Matrix4x4::MakeTranspose() {
@@ -4103,6 +3695,7 @@ void Matrix4x4::OrthographicProjection(float w, float h, float n, float f, Matri
         };
 }
  
+ // Todo: consider using ProjectionRadians / ProjectionDegrees since fov values are in radians currently.
 void Matrix4x4::Projection(float fovx, float fovy, float n, float f, Matrix4x4& m) {
     auto fmn = f - n;
     m = {
@@ -4272,7 +3865,7 @@ XOMATH_END_XO_NS();
 #endif
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include QuaternionOperators.h directly. Include GameMath.h, which fully implements this type.");
+static_assert(false, "Don't include QuaternionOperators.h directly. Include xo-math.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();
@@ -4320,7 +3913,7 @@ XOMATH_END_XO_NS();
 #endif
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include QuaternionMethods.h directly. Include GameMath.h, which fully implements this type.");
+static_assert(false, "Don't include QuaternionMethods.h directly. Include xo-math.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();
@@ -4710,7 +4303,7 @@ XOMATH_END_XO_NS();
 
 
 #ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include SSE.h directly. Include GameMath.h.");
+static_assert(false, "Don't include SSE.h directly. Include xo-math.h.");
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();
