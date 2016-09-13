@@ -37,6 +37,7 @@ public:
     //! @name Constructors
     //! @{
     _XOINL Matrix4x4(); //!< Performs no initialization.
+
     _XOINL explicit Matrix4x4(float m); //!< All elements are set to f.
 
     //! specify each element in row major form.
@@ -132,7 +133,6 @@ public:
 
     //! @name Special Operators
     //! @{
-
     //! Overloads the new and delete operators for Matrix4x4 when memory alignment is required (such as with SSE).
     //! @sa XO_16ALIGNED_MALLOC, XO_16ALIGNED_FREE
     _XO_OVERLOAD_NEW_DELETE();
@@ -149,8 +149,8 @@ public:
     //! Extracts a reference of a value, useful for setting values by index.
     _XOINL float& operator ()(int r, int c);
 
-    // Return a copy of the transpose.
-    // See: https://en.wikipedia.org/wiki/Transpose
+    //! See Matrix4x4::Transpose for details.
+    //! @sa https://en.wikipedia.org/wiki/Transpose
     _XOINL Matrix4x4 operator ~() const;
     //! @}
 
