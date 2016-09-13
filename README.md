@@ -1,5 +1,6 @@
 [![Build Status](https://semaphoreci.com/api/v1/xoorath/xo-math/branches/master/shields_badge.svg)](https://semaphoreci.com/xoorath/xo-math)
 [![Documentation Status](https://readthedocs.org/projects/xo-math/badge/?version=latest)](http://xo-math.readthedocs.io/en/latest/?badge=latest)
+[![Maintenance](https://img.shields.io/maintenance/yes/2016.svg?maxAge=2592000)](https://github.com/xoorath/xo-math)
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.png?v=103)](https://tldrlegal.com/license/mit-license) 
 
 :warning: **xo-math is currently in progress and not ready for production use.**
