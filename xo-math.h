@@ -1117,6 +1117,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////// Set / Get Methods
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43SetEffff
+
     _XOINL const Vector4& Set(float x, float y, float z, float w);
     _XOINL const Vector4& Set(float f);
     _XOINL const Vector4& Set(const Vector4& vec);
@@ -1129,6 +1130,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////// Special Operators
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector423_XO_OVERLOAD_NEW_DELETEEv
+
     _XO_OVERLOAD_NEW_DELETE();
 #if XO_SSE
     _XOINL operator const __m128&() const;
@@ -1268,6 +1270,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////// Static Methods
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43MaxERK7Vector4RK7Vector4R7Vector4
+
     _XOINL static float Dot(const Vector4& a, const Vector4& b);
     _XOINL static float DistanceSquared(const Vector4& a, const Vector4& b);
     _XOINL static float Distance(const Vector4&a, const Vector4&b);
@@ -1295,7 +1298,7 @@ public:
         UnitY, 
         UnitZ, 
         UnitW; 
-        
+
 #if XO_SSE
     _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
 #else
