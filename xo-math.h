@@ -1104,7 +1104,7 @@ XOMATH_BEGIN_XO_NS();
 class _MM_ALIGN16 Vector4 {
 public:
     ////////////////////////////////////////////////////////////////////////// Constructors
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector47Vector4Ev
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#constructors
     _XOINL Vector4(); 
     _XOINL Vector4(float f); 
     _XOINL Vector4(float x, float y, float z, float w); 
@@ -1116,7 +1116,7 @@ public:
     _XOINL Vector4(const class Vector3& v); 
 
     ////////////////////////////////////////////////////////////////////////// Set / Get Methods
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43SetEffff
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#set_get_methods
 
     _XOINL const Vector4& Set(float x, float y, float z, float w);
     _XOINL const Vector4& Set(float f);
@@ -1129,7 +1129,7 @@ public:
     _XOINL void Get(float* f) const;
 
     ////////////////////////////////////////////////////////////////////////// Special Operators
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector423_XO_OVERLOAD_NEW_DELETEEv
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#special_operators
 
     _XO_OVERLOAD_NEW_DELETE();
 #if XO_SSE
@@ -1141,7 +1141,7 @@ public:
     _XOINL Vector4 operator ~() const;
 
     ////////////////////////////////////////////////////////////////////////// Add Equals Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4pLERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#add_equals_operator
     _XOINL const Vector4& operator += (const Vector4& v);
     _XOINL const Vector4& operator += (float v);
     _XOINL const Vector4& operator += (double v);
@@ -1149,7 +1149,7 @@ public:
     _XOINL const Vector4& operator += (const class Vector2& v);
     _XOINL const Vector4& operator += (const class Vector3& v);
     ////////////////////////////////////////////////////////////////////////// Subtract Equals Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4mIERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#subtract_equals_operator
     _XOINL const Vector4& operator -= (const Vector4& v);
     _XOINL const Vector4& operator -= (float v);
     _XOINL const Vector4& operator -= (double v);
@@ -1157,7 +1157,7 @@ public:
     _XOINL const Vector4& operator -= (const class Vector2& v);
     _XOINL const Vector4& operator -= (const class Vector3& v);
     ////////////////////////////////////////////////////////////////////////// Multiply Equals Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4mLERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#multiply_equals_operator
     _XOINL const Vector4& operator *= (const Vector4& v);
     _XOINL const Vector4& operator *= (float v);
     _XOINL const Vector4& operator *= (double v);
@@ -1165,7 +1165,7 @@ public:
     _XOINL const Vector4& operator *= (const class Vector2& v);
     _XOINL const Vector4& operator *= (const class Vector3& v);
     ////////////////////////////////////////////////////////////////////////// Divide Equals Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4dVERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#divide_equals_operator
     // See: XO_NO_INVERSE_DIVISION
     _XOINL const Vector4& operator /= (const Vector4& v);
     _XOINL const Vector4& operator /= (float v);
@@ -1174,7 +1174,7 @@ public:
     _XOINL const Vector4& operator /= (const class Vector2& v);
     _XOINL const Vector4& operator /= (const class Vector3& v);
     ////////////////////////////////////////////////////////////////////////// Addition Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4plERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#addition_operator
     _XOINL Vector4 operator + (const Vector4& v) const;
     _XOINL Vector4 operator + (float v) const;
     _XOINL Vector4 operator + (double v) const;
@@ -1182,7 +1182,7 @@ public:
     _XOINL Vector4 operator + (const class Vector2& v) const;
     _XOINL Vector4 operator + (const class Vector3& v) const;
     ////////////////////////////////////////////////////////////////////////// Subtraction Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4miERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#subtraction_operator
     _XOINL Vector4 operator - (const Vector4& v) const;
     _XOINL Vector4 operator - (float v) const;
     _XOINL Vector4 operator - (double v) const;
@@ -1190,7 +1190,7 @@ public:
     _XOINL Vector4 operator - (const class Vector2& v) const;
     _XOINL Vector4 operator - (const class Vector3& v) const;
     ////////////////////////////////////////////////////////////////////////// Multiplication Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4mlERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#multiplication_operator
     _XOINL Vector4 operator * (const Vector4& v) const;
     _XOINL Vector4 operator * (float v) const;
     _XOINL Vector4 operator * (double v) const;
@@ -1198,7 +1198,7 @@ public:
     _XOINL Vector4 operator * (const class Vector2& v) const;
     _XOINL Vector4 operator * (const class Vector3& v) const;
     ////////////////////////////////////////////////////////////////////////// Division Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4dvERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#division_operator
     // See: XO_NO_INVERSE_DIVISION
     _XOINL Vector4 operator / (const Vector4& v) const;
     _XOINL Vector4 operator / (float v) const;
@@ -1208,7 +1208,7 @@ public:
     _XOINL Vector4 operator / (const class Vector3& v) const;
 
     ////////////////////////////////////////////////////////////////////////// Comparison Operators
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4ltERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#comparison_operators
     _XOINL bool operator < (const Vector4& v) const;
     _XOINL bool operator < (float v) const;
     _XOINL bool operator < (double v) const;
@@ -1234,7 +1234,7 @@ public:
     _XOINL bool operator >= (const class Vector2& v) const;
     _XOINL bool operator >= (const class Vector3& v) const;
     ////////////////////////////////////////////////////////////////////////// Equality Operators
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4eqERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#equality_operators
     _XOINL bool operator == (const Vector4& v) const;
     _XOINL bool operator == (float v) const;
     _XOINL bool operator == (double v) const;
@@ -1248,8 +1248,8 @@ public:
     _XOINL bool operator != (const class Vector2& v) const;
     _XOINL bool operator != (const class Vector3& v) const;
 
-    ////////////////////////////////////////////////////////////////////////// Public Methods
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43SumEv
+    ////////////////////////////////////////////////////////////////////////// Public Functions
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#public_functions
     _XOINL float Sum() const;
     _XOINL float MagnitudeSquared() const;
     _XOINL float Magnitude() const;
@@ -1259,7 +1259,7 @@ public:
     _XOINL bool IsNormalized() const;
 
     ////////////////////////////////////////////////////////////////////////// Static Methods
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43MaxERK7Vector4RK7Vector4R7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#static_methods
 
     _XOINL static void Max(const Vector4& a, const Vector4& b, Vector4& outVec);
     _XOINL static void Min(const Vector4& a, const Vector4& b, Vector4& outVec);
@@ -1269,7 +1269,7 @@ public:
     _XOINL static float Distance(const Vector4&a, const Vector4&b);
     
     ////////////////////////////////////////////////////////////////////////// Variants
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43MaxERK7Vector4RK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#variants
     _XOINL static Vector4 Max(const Vector4& a, const Vector4& b);
     _XOINL static Vector4 Min(const Vector4& a, const Vector4& b);
     _XOINL static Vector4 Lerp(const Vector4& a, const Vector4& b, float t);
@@ -1279,14 +1279,15 @@ public:
     _XOINL Vector4 Lerp(const Vector4& v, float t) const;
 
     ////////////////////////////////////////////////////////////////////////// Extras
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2lsRNSt7ostreamERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#extras
+
     friend std::ostream& operator <<(std::ostream& os, const Vector4& v) {
         os << "(x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", w:" << v.w << ", mag:" << v.Magnitude() << ")";
         return os;
     }
 
     ////////////////////////////////////////////////////////////////////////// Static Attributes
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43OneE
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#public_static_attributes
     static const Vector4
         One, 
         Zero, 
@@ -1302,7 +1303,7 @@ public:
 #endif
 
     ////////////////////////////////////////////////////////////////////////// Members
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector41xE
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#public_members
     union {
         struct {
             float x;
