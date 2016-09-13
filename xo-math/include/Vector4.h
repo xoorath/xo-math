@@ -50,6 +50,7 @@ public:
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43SetEffff
     //! @name Set / Get Methods
     //! @{
+
     //! Set all. x, y, z and w will be assigned to the input params.
     _XOINL const Vector4& Set(float x, float y, float z, float w);
     //! Set each. x, y, z and w will be assigned to f.
@@ -71,6 +72,7 @@ public:
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector423_XO_OVERLOAD_NEW_DELETEEv
     //! @name Special Operators
     //! @{
+
     //! Overloads the new and delete operators for Vector4 when memory alignment is required (such as with SSE).
     //! @sa XO_16ALIGNED_MALLOC, XO_16ALIGNED_FREE
     _XO_OVERLOAD_NEW_DELETE();
@@ -307,6 +309,7 @@ public:
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43MaxERK7Vector4RK7Vector4R7Vector4
     //! @name Static Methods
     //! @{
+
     //! Returns a single number representing a product of magnitudes. Commonly used with two normalized 
     //! vectors to determine if they are pointed the same way. In this case: 1.0 represents same-facing vectors
     //! 0 represents perpendicular vectors, and -1 will be facing away
@@ -356,7 +359,7 @@ public:
         UnitY, //!< \f$\begin{pmatrix}0&1&0&0\end{pmatrix}\f$
         UnitZ, //!< \f$\begin{pmatrix}0&0&1&0\end{pmatrix}\f$
         UnitW; //!< \f$\begin{pmatrix}0&0&0&1\end{pmatrix}\f$
-        
+
 #if XO_SSE
     //! Smallest increment from zero that could be assigned to each element of this vector and would still be seen as equal to a zero vector.
     _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
