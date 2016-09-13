@@ -212,5 +212,35 @@
 
   {%- block footer %} {% endblock %}
 
+  <script type="text/javascript">
+    String.prototype.replaceAll = function(search, replacement) {
+      var target = this;
+      return target.split(search).join(replacement);
+    };
+
+    console.log('custom script');
+    $(document).ready(function(){
+      console.log('doc loaded');
+      $('.breathe-sectiondef-title').each(function(){
+        console.log('header found');
+        var t = $(this);
+        var id = t.text().toLowerCase().replaceAll(' ', '_').replaceAll('/', '').replaceAll('__', '_');
+        t.attr('id', id);
+        console.log(t);
+
+        var headerlink = $('<a>');
+        headerlink.attr('href', '#' + id);
+        headerlink.attr('title', 'Permalink to ' + t.text());
+        headerlink.text(' ¶');
+        headerlink.appendTo(t);
+
+        /*
+        <a class="headerlink" href="#_CPPv2N7Vector43SetEffff" title="Permalink to this definition">¶</a>
+        */
+      });
+    });
+
+  </script>
+
 </body>
 </html>

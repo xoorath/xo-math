@@ -134,6 +134,7 @@ public:
     //! @}
     ////////////////////////////////////////////////////////////////////////// Divide Equals Operator
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4dVERK7Vector4
+    // See: XO_NO_INVERSE_DIVISION
     //! @name Divide Equals Operator
     //! Divides all same-name vector elements with other vector types, or all elements to scalar/integer types.
     //! @sa XO_NO_INVERSE_DIVISION
@@ -186,6 +187,7 @@ public:
     //! @}
     ////////////////////////////////////////////////////////////////////////// Division Operator
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4dvERK7Vector4
+    // See: XO_NO_INVERSE_DIVISION
     //! @name Division Operator
     //! Builds a vector by dividing all same-name vector elements with other vector types, or all elements to scalar/integer types.
     //! @return A vector resulting from the equation.
@@ -282,6 +284,9 @@ public:
 
     ////////////////////////////////////////////////////////////////////////// Static Methods
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43MaxERK7Vector4RK7Vector4R7Vector4
+    //! @name Static Methods
+    //! @{
+
     //! Set outVec to have elements equal to the max of each element in a and b.
     //!
     //! \f$\begin{pmatrix}\max(a.x, b.x)&\max(a.y, b.y)&\max(a.z, b.z)&\max(a.w, b.w)\end{pmatrix}\f$
@@ -293,23 +298,6 @@ public:
     //! Sets outVec to a vector interpolated between a and b by a scalar amount t.
     //! @sa https://en.wikipedia.org/wiki/Linear_interpolation
     _XOINL static void Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec);
-    
-    ////////////////////////////////////////////////////////////////////////// Static Variants
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43MaxERK7Vector4RK7Vector4
-    //! @name Variants
-    //! These static methods return the result of their overloads containing out outVec param.
-    //! See the variant with an outVec param for more details.
-    //! @{
-    _XOINL static Vector4 Max(const Vector4& a, const Vector4& b);
-    _XOINL static Vector4 Min(const Vector4& a, const Vector4& b);
-    _XOINL static Vector4 Lerp(const Vector4& a, const Vector4& b, float t);
-    //! @}
-
-    ////////////////////////////////////////////////////////////////////////// Static Methods
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43MaxERK7Vector4RK7Vector4R7Vector4
-    //! @name Static Methods
-    //! @{
-
     //! Returns a single number representing a product of magnitudes. Commonly used with two normalized 
     //! vectors to determine if they are pointed the same way. In this case: 1.0 represents same-facing vectors
     //! 0 represents perpendicular vectors, and -1 will be facing away
@@ -329,12 +317,18 @@ public:
     //! \f$distance = \lvert\rvert\boldsymbol{b-a}\lvert\rvert\f$
     _XOINL static float Distance(const Vector4&a, const Vector4&b);
     //! @}
-
-    ////////////////////////////////////////////////////////////////////////// Non-static Variants
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43DotERK7Vector4
+    
+    ////////////////////////////////////////////////////////////////////////// Variants
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43MaxERK7Vector4RK7Vector4
     //! @name Variants
-    //! Member variants of static functions. See the same-named static variant for more details on each method.
+    //! Variants of other same-name static methods. See their documentation for more details under the 
+    //! Static Methods heading.
+    //! Non static variants replace the first Vector4 parameter by 'this' vector.
+    //! Static variants return what would have been the outVec param.
     //! @{
+    _XOINL static Vector4 Max(const Vector4& a, const Vector4& b);
+    _XOINL static Vector4 Min(const Vector4& a, const Vector4& b);
+    _XOINL static Vector4 Lerp(const Vector4& a, const Vector4& b, float t);
     _XOINL float Dot(const Vector4& v) const;
     _XOINL float DistanceSquared(const Vector4& v) const;
     _XOINL float Distance(const Vector4& v) const;
