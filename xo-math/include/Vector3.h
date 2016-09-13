@@ -28,17 +28,7 @@ XOMATH_BEGIN_XO_NS();
 //! A three dimensional euclidean vector, optimized for use in games.
 //! \sa https://en.wikipedia.org/wiki/Euclidean_vector
 class _MM_ALIGN16 Vector3 {
-#if XO_SSE
-        static const __m128 MASK;
-#endif
-
 public:
-#if XO_SSE
-    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 3.0f;
-#else
-    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 3.0f;
-#endif
-
     // No initialization is done.
     _XOINL Vector3();
 
@@ -371,9 +361,23 @@ public:
 
     static const Vector3
         Origin,
-        UnitX, UnitY, UnitZ,
-        Up, Down, Left, Right, Forward, Backward,
-        One, Zero;
+        UnitX,
+        UnitY,
+        UnitZ,
+        Up,
+        Down,
+        Left,
+        Right,
+        Forward,
+        Backward,
+        One,
+        Zero;
+
+#if XO_SSE
+    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 3.0f;
+#else
+    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 3.0f;
+#endif
 
 #if XO_SSE
     union {
@@ -390,6 +394,11 @@ public:
         };
         float f[3];
     };
+#endif
+
+private:
+#if XO_SSE
+    static const __m128 MASK;
 #endif
 };
 

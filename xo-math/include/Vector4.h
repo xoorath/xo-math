@@ -31,14 +31,6 @@ XOMATH_BEGIN_XO_NS();
 //! @sa https://en.wikipedia.org/wiki/Euclidean_vector
 class _MM_ALIGN16 Vector4 {
 public:
-#if XO_SSE
-    //! Smallest increment from zero that could be assigned to each element of this vector and would still be seen as equal to a zero vector.
-    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
-#else
-    //! Smallest increment from zero that could be assigned to each element of this vector and would still be seen as equal to a zero vector.
-    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
-#endif
-
     ////////////////////////////////////////////////////////////////////////// Constructors
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector47Vector4Ev
     //! @name Constructors
@@ -364,6 +356,14 @@ public:
         UnitY, //!< \f$\begin{pmatrix}0&1&0&0\end{pmatrix}\f$
         UnitZ, //!< \f$\begin{pmatrix}0&0&1&0\end{pmatrix}\f$
         UnitW; //!< \f$\begin{pmatrix}0&0&0&1\end{pmatrix}\f$
+        
+#if XO_SSE
+    //! Smallest increment from zero that could be assigned to each element of this vector and would still be seen as equal to a zero vector.
+    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
+#else
+    //! Smallest increment from zero that could be assigned to each element of this vector and would still be seen as equal to a zero vector.
+    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
+#endif
 
     ////////////////////////////////////////////////////////////////////////// Members
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector41xE

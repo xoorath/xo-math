@@ -26,19 +26,7 @@ static_assert(false, "Don't include Quaternion.h directly. Include xo-math.h, wh
 XOMATH_BEGIN_XO_NS();
 
 class _MM_ALIGN16 Quaternion {
-#if XO_SSE
-    static const unsigned IDX_X = 0;
-    static const unsigned IDX_Y = 1;
-    static const unsigned IDX_Z = 2;
-    static const unsigned IDX_W = 3;
-#endif
 public:
-#if XO_SSE
-    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
-#else
-    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
-#endif
-
     _XOINL Quaternion();
     _XOINL Quaternion(const Matrix4x4& m);
     _XOINL Quaternion(float x, float y, float z, float w);
@@ -89,6 +77,16 @@ public:
     _XOINL static Quaternion Slerp(const Quaternion& a, const Quaternion& b, float t);
     _XOINL static Quaternion Lerp(const Quaternion& a, const Quaternion& b, float t);
 
+    static const Quaternion
+        Identity,
+        Zero;
+
+#if XO_SSE
+    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
+#else
+    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
+#endif
+
     union {
         struct {
             float x, y, z, w;
@@ -99,8 +97,13 @@ public:
 #endif
     };
 
-    static const Quaternion
-        Identity, Zero;
+private:
+#if XO_SSE
+    static const unsigned IDX_X = 0;
+    static const unsigned IDX_Y = 1;
+    static const unsigned IDX_Z = 2;
+    static const unsigned IDX_W = 3;
+#endif
 };
 
 const Quaternion Quaternion::Identity = { 0.0f, 0.0f, 0.0f, 1.0f };

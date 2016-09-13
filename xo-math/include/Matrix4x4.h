@@ -33,7 +33,6 @@ XOMATH_BEGIN_XO_NS();
 //! @sa https://en.wikipedia.org/wiki/Matrix_(mathematics)
 class _MM_ALIGN16 Matrix4x4 {
 public:
-
     //! @name Constructors
     //! @{
     _XOINL Matrix4x4(); //!< Performs no initialization.

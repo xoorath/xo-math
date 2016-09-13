@@ -27,8 +27,6 @@ XOMATH_BEGIN_XO_NS();
 
 class _MM_ALIGN16 Vector2 {
 public:
-    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 2.0f;
-
     // No initialization is done.
     _XOINL Vector2();
     
@@ -200,9 +198,16 @@ public:
     }
 
     static const Vector2
-        UnitX, UnitY,
-        Up, Down, Left, Right,
-        One, Zero;
+        UnitX, 
+        UnitY,
+        Up,
+        Down,
+        Left,
+        Right,
+        One,
+        Zero;
+
+    _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 2.0f;
 
     union {
         struct { float x, y; };
