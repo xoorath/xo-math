@@ -32,7 +32,7 @@ XOMATH_BEGIN_XO_NS();
 class _MM_ALIGN16 Vector4 {
 public:
     ////////////////////////////////////////////////////////////////////////// Constructors
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector47Vector4Ev
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#constructors
     //! @name Constructors
     //! @{
     _XOINL Vector4(); //!< Performs no initialization.
@@ -47,7 +47,7 @@ public:
     //! @}
 
     ////////////////////////////////////////////////////////////////////////// Set / Get Methods
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43SetEffff
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#set_get_methods
     //! @name Set / Get Methods
     //! @{
 
@@ -69,7 +69,7 @@ public:
     //! @}
 
     ////////////////////////////////////////////////////////////////////////// Special Operators
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector423_XO_OVERLOAD_NEW_DELETEEv
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#special_operators
     //! @name Special Operators
     //! @{
 
@@ -97,7 +97,7 @@ public:
     //! @}
 
     ////////////////////////////////////////////////////////////////////////// Add Equals Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4pLERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#add_equals_operator
     //! @name Add Equals Operator
     //! Adds all same-name vector elements with other vector types, or all elements to scalar/integer types.
     //! @{
@@ -109,7 +109,7 @@ public:
     _XOINL const Vector4& operator += (const class Vector3& v);
     //! @}
     ////////////////////////////////////////////////////////////////////////// Subtract Equals Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4mIERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#subtract_equals_operator
     //! @name Subtract Equals Operator
     //! Subtracts all same-name vector elements with other vector types, or all elements to scalar/integer types.
     //! @{
@@ -121,7 +121,7 @@ public:
     _XOINL const Vector4& operator -= (const class Vector3& v);
     //! @}
     ////////////////////////////////////////////////////////////////////////// Multiply Equals Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4mLERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#multiply_equals_operator
     //! @name Multiply Equals Operator
     //! Multiplies all same-name vector elements with other vector types, or all elements to scalar/integer types.
     //! @{
@@ -133,7 +133,7 @@ public:
     _XOINL const Vector4& operator *= (const class Vector3& v);
     //! @}
     ////////////////////////////////////////////////////////////////////////// Divide Equals Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4dVERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#divide_equals_operator
     // See: XO_NO_INVERSE_DIVISION
     //! @name Divide Equals Operator
     //! Divides all same-name vector elements with other vector types, or all elements to scalar/integer types.
@@ -147,7 +147,7 @@ public:
     _XOINL const Vector4& operator /= (const class Vector3& v);
     //! @}
     ////////////////////////////////////////////////////////////////////////// Addition Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4plERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#addition_operator
     //! @name Addition Operator
     //! Builds a vector by adding all same-name vector elements with other vector types, or all elements to scalar/integer types.
     //! @return A vector resulting from the equation.
@@ -160,7 +160,7 @@ public:
     _XOINL Vector4 operator + (const class Vector3& v) const;
     //! @}
     ////////////////////////////////////////////////////////////////////////// Subtraction Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4miERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#subtraction_operator
     //! @name Subtraction Operator
     //! Builds a vector by subtracting all same-name vector elements with other vector types, or all elements to scalar/integer types.
     //! @return A vector resulting from the equation.
@@ -173,7 +173,7 @@ public:
     _XOINL Vector4 operator - (const class Vector3& v) const;
     //! @}
     ////////////////////////////////////////////////////////////////////////// Multiplication Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4mlERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#multiplication_operator
     //! @name Multiplication Operator
     //! Builds a vector by multiplying all same-name vector elements with other vector types, or all elements to scalar/integer types.
     //! @return A vector resulting from the equation.
@@ -186,7 +186,7 @@ public:
     _XOINL Vector4 operator * (const class Vector3& v) const;
     //! @}
     ////////////////////////////////////////////////////////////////////////// Division Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4dvERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#division_operator
     // See: XO_NO_INVERSE_DIVISION
     //! @name Division Operator
     //! Builds a vector by dividing all same-name vector elements with other vector types, or all elements to scalar/integer types.
@@ -202,7 +202,7 @@ public:
     //! @}
 
     ////////////////////////////////////////////////////////////////////////// Comparison Operators
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4ltERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#comparison_operators
     //! @name Comparison Operators
     //! When comparing against other vectors, the square magnitude is compared.
     //! When comparing against scalars, the scalar is squared and compared to the square magnitude of this vector.
@@ -233,7 +233,7 @@ public:
     _XOINL bool operator >= (const class Vector3& v) const;
     //! @}
     ////////////////////////////////////////////////////////////////////////// Equality Operators
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4eqERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#equality_operators
     //! @name Equality Operators
     //! When two vectors are compared, each element is compared; When all vector elements have a difference of <= Vector4::Epsilon, they are considered equal.
     //!
@@ -253,8 +253,8 @@ public:
     _XOINL bool operator != (const class Vector3& v) const;
     //! @}
 
-    ////////////////////////////////////////////////////////////////////////// Public Methods
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43SumEv
+    ////////////////////////////////////////////////////////////////////////// Public Functions
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#public_functions
     //! The sum of all vector elements.
     //!
     //! \f$x+y+z+w\f$
@@ -283,7 +283,7 @@ public:
     _XOINL bool IsNormalized() const;
 
     ////////////////////////////////////////////////////////////////////////// Static Methods
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43MaxERK7Vector4RK7Vector4R7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#static_methods
     //! @name Static Methods
     //! @{
 
@@ -319,7 +319,7 @@ public:
     //! @}
     
     ////////////////////////////////////////////////////////////////////////// Variants
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43MaxERK7Vector4RK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#variants
     //! @name Variants
     //! Variants of other same-name static methods. See their documentation for more details under the 
     //! Static Methods heading.
@@ -336,16 +336,20 @@ public:
     //! @}
 
     ////////////////////////////////////////////////////////////////////////// Extras
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2lsRNSt7ostreamERK7Vector4
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#extras
+    //! @name Extras
+    //! @{
+
     //! @todo Make this optional with a define.
     //! Prints the contents of vector v and its magnitude to the provided ostream.
     friend std::ostream& operator <<(std::ostream& os, const Vector4& v) {
         os << "(x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", w:" << v.w << ", mag:" << v.Magnitude() << ")";
         return os;
     }
+    //! @}
 
     ////////////////////////////////////////////////////////////////////////// Static Attributes
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43OneE
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#public_static_attributes
     static const Vector4
         One, //!< \f$\begin{pmatrix}1&1&1&1\end{pmatrix}\f$
         Zero, //!< \f$\begin{pmatrix}0&0&0&0\end{pmatrix}\f$
@@ -363,7 +367,7 @@ public:
 #endif
 
     ////////////////////////////////////////////////////////////////////////// Members
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector41xE
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#public_members
     union {
         struct {
             float x;
