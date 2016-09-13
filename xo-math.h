@@ -1328,6 +1328,7 @@ class _MM_ALIGN16 Matrix4x4 {
 public:
 
     _XOINL Matrix4x4(); 
+
     _XOINL explicit Matrix4x4(float m); 
 
     _XOINL Matrix4x4(float m00, float m01, float m02, float m03,
@@ -1347,7 +1348,6 @@ public:
 
     _XOINL Matrix4x4 Transpose() const;
 
-
     _XO_OVERLOAD_NEW_DELETE();
 
     _XOINL const Vector4& operator [](int i) const;
@@ -1358,8 +1358,6 @@ public:
     
     _XOINL float& operator ()(int r, int c);
 
-    // Return a copy of the transpose.
-    // See: https://en.wikipedia.org/wiki/Transpose
     _XOINL Matrix4x4 operator ~() const;
 
     _XOINL const Vector4& GetRow(int i) const;
