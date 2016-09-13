@@ -1095,6 +1095,8 @@ public:
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
 #endif
 
+    ////////////////////////////////////////////////////////////////////////// Constructors
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector47Vector4Ev
     _XOINL Vector4(); 
     _XOINL Vector4(float f); 
     _XOINL Vector4(float x, float y, float z, float w); 
@@ -1105,85 +1107,87 @@ public:
     _XOINL Vector4(const class Vector2& v); 
     _XOINL Vector4(const class Vector3& v); 
 
-
+    ////////////////////////////////////////////////////////////////////////// Set / Get Methods
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43SetEffff
     _XOINL const Vector4& Set(float x, float y, float z, float w);
-
     _XOINL const Vector4& Set(float f);
-
     _XOINL const Vector4& Set(const Vector4& vec);
 
 #if XO_SSE
     _XOINL const Vector4& Set(const __m128& vec);
 #endif
-
     _XOINL void Get(float& x, float& y, float& z, float& w) const;
-
     _XOINL void Get(float* f) const;
 
-
+    ////////////////////////////////////////////////////////////////////////// Special Operators
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector423_XO_OVERLOAD_NEW_DELETEEv
     _XO_OVERLOAD_NEW_DELETE();
-
 #if XO_SSE
     _XOINL operator const __m128&() const;
 #endif
-
     _XOINL float& operator [](int i);
-
     _XOINL const float& operator [](int i) const;
-
     _XOINL Vector4 operator -() const;
-
     _XOINL Vector4 operator ~() const;
 
+    ////////////////////////////////////////////////////////////////////////// Add Equals Operator
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4pLERK7Vector4
     _XOINL const Vector4& operator += (const Vector4& v);
     _XOINL const Vector4& operator += (float v);
     _XOINL const Vector4& operator += (double v);
     _XOINL const Vector4& operator += (int v);
     _XOINL const Vector4& operator += (const class Vector2& v);
     _XOINL const Vector4& operator += (const class Vector3& v);
-
+    ////////////////////////////////////////////////////////////////////////// Subtract Equals Operator
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4mIERK7Vector4
     _XOINL const Vector4& operator -= (const Vector4& v);
     _XOINL const Vector4& operator -= (float v);
     _XOINL const Vector4& operator -= (double v);
     _XOINL const Vector4& operator -= (int v);
     _XOINL const Vector4& operator -= (const class Vector2& v);
     _XOINL const Vector4& operator -= (const class Vector3& v);
-
+    ////////////////////////////////////////////////////////////////////////// Multiply Equals Operator
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4mLERK7Vector4
     _XOINL const Vector4& operator *= (const Vector4& v);
     _XOINL const Vector4& operator *= (float v);
     _XOINL const Vector4& operator *= (double v);
     _XOINL const Vector4& operator *= (int v);
     _XOINL const Vector4& operator *= (const class Vector2& v);
     _XOINL const Vector4& operator *= (const class Vector3& v);
-
+    ////////////////////////////////////////////////////////////////////////// Divide Equals Operator
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4dVERK7Vector4
     _XOINL const Vector4& operator /= (const Vector4& v);
     _XOINL const Vector4& operator /= (float v);
     _XOINL const Vector4& operator /= (double v);
     _XOINL const Vector4& operator /= (int v);
     _XOINL const Vector4& operator /= (const class Vector2& v);
     _XOINL const Vector4& operator /= (const class Vector3& v);
-
+    ////////////////////////////////////////////////////////////////////////// Addition Operator
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4plERK7Vector4
     _XOINL Vector4 operator + (const Vector4& v) const;
     _XOINL Vector4 operator + (float v) const;
     _XOINL Vector4 operator + (double v) const;
     _XOINL Vector4 operator + (int v) const;
     _XOINL Vector4 operator + (const class Vector2& v) const;
     _XOINL Vector4 operator + (const class Vector3& v) const;
-
+    ////////////////////////////////////////////////////////////////////////// Subtraction Operator
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4miERK7Vector4
     _XOINL Vector4 operator - (const Vector4& v) const;
     _XOINL Vector4 operator - (float v) const;
     _XOINL Vector4 operator - (double v) const;
     _XOINL Vector4 operator - (int v) const;
     _XOINL Vector4 operator - (const class Vector2& v) const;
     _XOINL Vector4 operator - (const class Vector3& v) const;
-
+    ////////////////////////////////////////////////////////////////////////// Multiplication Operator
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4mlERK7Vector4
     _XOINL Vector4 operator * (const Vector4& v) const;
     _XOINL Vector4 operator * (float v) const;
     _XOINL Vector4 operator * (double v) const;
     _XOINL Vector4 operator * (int v) const;
     _XOINL Vector4 operator * (const class Vector2& v) const;
     _XOINL Vector4 operator * (const class Vector3& v) const;
-
+    ////////////////////////////////////////////////////////////////////////// Division Operator
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4dvERK7Vector4
     _XOINL Vector4 operator / (const Vector4& v) const;
     _XOINL Vector4 operator / (float v) const;
     _XOINL Vector4 operator / (double v) const;
@@ -1191,41 +1195,40 @@ public:
     _XOINL Vector4 operator / (const class Vector2& v) const;
     _XOINL Vector4 operator / (const class Vector3& v) const;
 
+    ////////////////////////////////////////////////////////////////////////// Comparison Operators
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4ltERK7Vector4
     _XOINL bool operator < (const Vector4& v) const;
     _XOINL bool operator < (float v) const;
     _XOINL bool operator < (double v) const;
     _XOINL bool operator < (int v) const;
     _XOINL bool operator < (const class Vector2& v) const;
     _XOINL bool operator < (const class Vector3& v) const;
-
     _XOINL bool operator <= (const Vector4& v) const;
     _XOINL bool operator <= (float v) const;
     _XOINL bool operator <= (double v) const;
     _XOINL bool operator <= (int v) const;
     _XOINL bool operator <= (const class Vector2& v) const;
     _XOINL bool operator <= (const class Vector3& v) const;
-
     _XOINL bool operator > (const Vector4& v) const;
     _XOINL bool operator > (float v) const;
     _XOINL bool operator > (double v) const;
     _XOINL bool operator > (int v) const;
     _XOINL bool operator > (const class Vector2& v) const;
     _XOINL bool operator > (const class Vector3& v) const;
-
     _XOINL bool operator >= (const Vector4& v) const;
     _XOINL bool operator >= (float v) const;
     _XOINL bool operator >= (double v) const;
     _XOINL bool operator >= (int v) const;
     _XOINL bool operator >= (const class Vector2& v) const;
     _XOINL bool operator >= (const class Vector3& v) const;
-
+    ////////////////////////////////////////////////////////////////////////// Equality Operators
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector4eqERK7Vector4
     _XOINL bool operator == (const Vector4& v) const;
     _XOINL bool operator == (float v) const;
     _XOINL bool operator == (double v) const;
     _XOINL bool operator == (int v) const;
     _XOINL bool operator == (const class Vector2& v) const;
     _XOINL bool operator == (const class Vector3& v) const;
-
     _XOINL bool operator != (const Vector4& v) const;
     _XOINL bool operator != (float v) const;
     _XOINL bool operator != (double v) const;
@@ -1233,51 +1236,50 @@ public:
     _XOINL bool operator != (const class Vector2& v) const;
     _XOINL bool operator != (const class Vector3& v) const;
 
+    ////////////////////////////////////////////////////////////////////////// Public Methods
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43SumEv
     _XOINL float Sum() const;
-
     _XOINL float MagnitudeSquared() const;
-
     _XOINL float Magnitude() const;
-
     _XOINL const Vector4& Normalize();
-
     _XOINL Vector4 Normalized() const;
-
     _XOINL bool IsZero() const;
-
     _XOINL bool IsNormalized() const;
 
+    ////////////////////////////////////////////////////////////////////////// Static Methods
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43MaxERK7Vector4RK7Vector4R7Vector4
     _XOINL static void Max(const Vector4& a, const Vector4& b, Vector4& outVec);
-    
     _XOINL static void Min(const Vector4& a, const Vector4& b, Vector4& outVec);
-
     _XOINL static void Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec);
-
+    
+    ////////////////////////////////////////////////////////////////////////// Static Variants
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43MaxERK7Vector4RK7Vector4
     _XOINL static Vector4 Max(const Vector4& a, const Vector4& b);
-
     _XOINL static Vector4 Min(const Vector4& a, const Vector4& b);
-
     _XOINL static Vector4 Lerp(const Vector4& a, const Vector4& b, float t);
 
+    ////////////////////////////////////////////////////////////////////////// Static Methods
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43MaxERK7Vector4RK7Vector4R7Vector4
     _XOINL static float Dot(const Vector4& a, const Vector4& b);
-
     _XOINL static float DistanceSquared(const Vector4& a, const Vector4& b);
-
     _XOINL static float Distance(const Vector4&a, const Vector4&b);
 
+    ////////////////////////////////////////////////////////////////////////// Non-static Variants
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43DotERK7Vector4
     _XOINL float Dot(const Vector4& v) const;
-
     _XOINL float DistanceSquared(const Vector4& v) const;
-
     _XOINL float Distance(const Vector4& v) const;
-
     _XOINL Vector4 Lerp(const Vector4& v, float t) const;
 
+    ////////////////////////////////////////////////////////////////////////// Extras
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2lsRNSt7ostreamERK7Vector4
     friend std::ostream& operator <<(std::ostream& os, const Vector4& v) {
         os << "(x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", w:" << v.w << ", mag:" << v.Magnitude() << ")";
         return os;
     }
 
+    ////////////////////////////////////////////////////////////////////////// Static Attributes
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector43OneE
     static const Vector4
         One, 
         Zero, 
@@ -1286,6 +1288,8 @@ public:
         UnitZ, 
         UnitW; 
 
+    ////////////////////////////////////////////////////////////////////////// Members
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#_CPPv2N7Vector41xE
     union {
         struct {
             float x;
