@@ -220,6 +220,13 @@
 
     console.log('custom script');
     $(document).ready(function(){
+      
+      var toc = $('<ul>');
+      toc.insertBefore($('.breathe-sectiondef:first'));
+
+      var tocTitle = $('<dl class="docutils"><dt><strong>Table of Contents</strong></dt></dl>');
+      tocTitle.insertBefore(toc);
+
       console.log('doc loaded');
       $('.breathe-sectiondef-title').each(function(){
         console.log('header found');
@@ -228,15 +235,18 @@
         t.attr('id', id);
         console.log(t);
 
+        var toc_li = $('<li>');
+        toc_li.appendTo(toc);
+        var toc_entry = $('<a>');
+        toc_entry.text(t.text());
+        toc_entry.attr('href', '#' + id);
+        toc_entry.appendTo(toc_li);
+
         var headerlink = $('<a>');
         headerlink.attr('href', '#' + id);
         headerlink.attr('title', 'Permalink to ' + t.text());
         headerlink.text(' ¶');
         headerlink.appendTo(t);
-
-        /*
-        <a class="headerlink" href="#_CPPv2N7Vector43SetEffff" title="Permalink to this definition">¶</a>
-        */
       });
     });
 
