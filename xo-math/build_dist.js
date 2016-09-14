@@ -29,6 +29,11 @@ for(var i = 0; i < g_IncludeNames.length; ++i) {
   g_IncludesText[g_IncludeNames[i]] = null;
 }
 
+String.prototype.replaceAll = function(search, replacement) {
+  var target = this;
+  return target.split(search).join(replacement);
+};
+
 function SaveDistFile() {
   var output = '';
   var lines = g_TemplateText.split('\n');
@@ -101,6 +106,29 @@ function ReadInclude(name) {
       else if(split[i].indexOf('/*!') > 0) {
         // ignore doxygen block comment
         reading = false;
+      }
+      else if(split[i].indexOf('//>See') > 0) {
+        var foundName = null;
+        for(var j = i; j < split.length; ++j) {
+          var nametag = '//! @name';
+          var nameIdx = split[j].indexOf(nametag);
+          if(nameIdx > 0) {
+            foundName = split[j].substring(nameIdx+nametag.length);
+            break;
+          }
+        }
+        if(foundName != null) {
+          foundName = foundName.trim();
+
+          var initialWhitespace = split[i].substring(0, split[i].indexOf('//>See'));
+          txt += initialWhitespace;
+          txt += '////////////////////////////////////////////////////////////////////////// ' + foundName + '\n';
+
+          foundName = foundName.toLowerCase().replaceAll(' ', '_').replaceAll('/', '').replaceAll('__', '_');
+
+          txt += initialWhitespace
+          txt += '// See: http://xo-math.rtfd.io/en/latest/classes/' + name.substring(0, name.indexOf('.h')).toLowerCase() + '.html#' + foundName + '\n';
+        }
       }
       else if(reading) {
         txt += split[i] + '\n';

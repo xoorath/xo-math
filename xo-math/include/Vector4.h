@@ -31,8 +31,7 @@ XOMATH_BEGIN_XO_NS();
 //! @sa https://en.wikipedia.org/wiki/Euclidean_vector
 class _MM_ALIGN16 Vector4 {
 public:
-    ////////////////////////////////////////////////////////////////////////// Constructors
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#constructors
+    //>See
     //! @name Constructors
     //! @{
     _XOINL Vector4(); //!< Performs no initialization.
@@ -46,8 +45,7 @@ public:
     _XOINL Vector4(const class Vector3& v); //!< Assigns same-name values from v, zero to w.\f$\begin{pmatrix}v.x&v.y&v.z&0\end{pmatrix}\f$
     //! @}
 
-    ////////////////////////////////////////////////////////////////////////// Set / Get Methods
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#set_get_methods
+    //>See
     //! @name Set / Get Methods
     //! @{
 
@@ -68,8 +66,7 @@ public:
     _XOINL void Get(float* f) const;
     //! @}
 
-    ////////////////////////////////////////////////////////////////////////// Special Operators
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#special_operators
+    //>See
     //! @name Special Operators
     //! @{
 
@@ -96,8 +93,7 @@ public:
     _XOINL Vector4 operator ~() const;
     //! @}
 
-    ////////////////////////////////////////////////////////////////////////// Add Equals Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#add_equals_operator
+    //>See
     //! @name Add Equals Operator
     //! Adds all same-name vector elements with other vector types, or all elements to scalar/integer types.
     //! @{
@@ -108,8 +104,7 @@ public:
     _XOINL const Vector4& operator += (const class Vector2& v);
     _XOINL const Vector4& operator += (const class Vector3& v);
     //! @}
-    ////////////////////////////////////////////////////////////////////////// Subtract Equals Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#subtract_equals_operator
+    //>See
     //! @name Subtract Equals Operator
     //! Subtracts all same-name vector elements with other vector types, or all elements to scalar/integer types.
     //! @{
@@ -120,8 +115,7 @@ public:
     _XOINL const Vector4& operator -= (const class Vector2& v);
     _XOINL const Vector4& operator -= (const class Vector3& v);
     //! @}
-    ////////////////////////////////////////////////////////////////////////// Multiply Equals Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#multiply_equals_operator
+    //>See
     //! @name Multiply Equals Operator
     //! Multiplies all same-name vector elements with other vector types, or all elements to scalar/integer types.
     //! @{
@@ -132,8 +126,7 @@ public:
     _XOINL const Vector4& operator *= (const class Vector2& v);
     _XOINL const Vector4& operator *= (const class Vector3& v);
     //! @}
-    ////////////////////////////////////////////////////////////////////////// Divide Equals Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#divide_equals_operator
+    //>See
     // See: XO_NO_INVERSE_DIVISION
     //! @name Divide Equals Operator
     //! Divides all same-name vector elements with other vector types, or all elements to scalar/integer types.
@@ -146,8 +139,7 @@ public:
     _XOINL const Vector4& operator /= (const class Vector2& v);
     _XOINL const Vector4& operator /= (const class Vector3& v);
     //! @}
-    ////////////////////////////////////////////////////////////////////////// Addition Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#addition_operator
+    //>See
     //! @name Addition Operator
     //! Builds a vector by adding all same-name vector elements with other vector types, or all elements to scalar/integer types.
     //! @return A vector resulting from the equation.
@@ -159,8 +151,7 @@ public:
     _XOINL Vector4 operator + (const class Vector2& v) const;
     _XOINL Vector4 operator + (const class Vector3& v) const;
     //! @}
-    ////////////////////////////////////////////////////////////////////////// Subtraction Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#subtraction_operator
+    //>See
     //! @name Subtraction Operator
     //! Builds a vector by subtracting all same-name vector elements with other vector types, or all elements to scalar/integer types.
     //! @return A vector resulting from the equation.
@@ -172,8 +163,7 @@ public:
     _XOINL Vector4 operator - (const class Vector2& v) const;
     _XOINL Vector4 operator - (const class Vector3& v) const;
     //! @}
-    ////////////////////////////////////////////////////////////////////////// Multiplication Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#multiplication_operator
+    //>See
     //! @name Multiplication Operator
     //! Builds a vector by multiplying all same-name vector elements with other vector types, or all elements to scalar/integer types.
     //! @return A vector resulting from the equation.
@@ -185,8 +175,7 @@ public:
     _XOINL Vector4 operator * (const class Vector2& v) const;
     _XOINL Vector4 operator * (const class Vector3& v) const;
     //! @}
-    ////////////////////////////////////////////////////////////////////////// Division Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#division_operator
+    //>See
     // See: XO_NO_INVERSE_DIVISION
     //! @name Division Operator
     //! Builds a vector by dividing all same-name vector elements with other vector types, or all elements to scalar/integer types.
@@ -201,8 +190,7 @@ public:
     _XOINL Vector4 operator / (const class Vector3& v) const;
     //! @}
 
-    ////////////////////////////////////////////////////////////////////////// Comparison Operators
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#comparison_operators
+    //>See
     //! @name Comparison Operators
     //! When comparing against other vectors, the square magnitude is compared.
     //! When comparing against scalars, the scalar is squared and compared to the square magnitude of this vector.
@@ -232,8 +220,7 @@ public:
     _XOINL bool operator >= (const class Vector2& v) const;
     _XOINL bool operator >= (const class Vector3& v) const;
     //! @}
-    ////////////////////////////////////////////////////////////////////////// Equality Operators
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#equality_operators
+    //>See
     //! @name Equality Operators
     //! When two vectors are compared, each element is compared; When all vector elements have a difference of <= Vector4::Epsilon, they are considered equal.
     //!
@@ -255,6 +242,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////// Public Functions
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#public_functions
+
     //! The sum of all vector elements.
     //!
     //! \f$x+y+z+w\f$
@@ -282,8 +270,7 @@ public:
     //! Returns true when the Magnitude of this vector is within Vector4::Epsilon of being 1.0
     _XOINL bool IsNormalized() const;
 
-    ////////////////////////////////////////////////////////////////////////// Static Methods
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#static_methods
+    //>See
     //! @name Static Methods
     //! @{
 
@@ -318,8 +305,7 @@ public:
     _XOINL static float Distance(const Vector4&a, const Vector4&b);
     //! @}
     
-    ////////////////////////////////////////////////////////////////////////// Variants
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#variants
+    //>See
     //! @name Variants
     //! Variants of other same-name static methods. See their documentation for more details under the 
     //! Static Methods heading.
@@ -335,8 +321,7 @@ public:
     _XOINL Vector4 Lerp(const Vector4& v, float t) const;
     //! @}
 
-    ////////////////////////////////////////////////////////////////////////// Extras
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#extras
+    //>See
     //! @name Extras
     //! @{
 
