@@ -1250,6 +1250,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////// Public Functions
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#public_functions
+
     _XOINL float Sum() const;
     _XOINL float MagnitudeSquared() const;
     _XOINL float Magnitude() const;
