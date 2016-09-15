@@ -48,7 +48,6 @@ public:
     //>See
     //! @name Set / Get Methods
     //! @{
-
     //! Set all. x, y, z and w will be assigned to the input params.
     _XOINL const Vector4& Set(float x, float y, float z, float w);
     //! Set each. x, y, z and w will be assigned to f.

@@ -292,7 +292,7 @@ void Matrix4x4::OrthographicProjection(float w, float h, float n, float f, Matri
         };
 }
  
- // Todo: consider using ProjectionRadians / ProjectionDegrees since fov values are in radians currently.
+ //! @todo consider using ProjectionRadians / ProjectionDegrees since fov values are in radians currently.
 void Matrix4x4::Projection(float fovx, float fovy, float n, float f, Matrix4x4& m) {
     auto fmn = f - n;
     m = {

@@ -243,24 +243,6 @@ void Vector4::Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec)
     }
 }
 
-Vector4 Vector4::Max(const Vector4& a, const Vector4& b) {
-    Vector4 v;
-    Max(a, b, v);
-    return v;
-}
-
-Vector4 Vector4::Min(const Vector4& a, const Vector4& b) {
-    Vector4 v;
-    Min(a, b, v);
-    return v;
-}
-
-Vector4 Vector4::Lerp(const Vector4& a, const Vector4& b, float t) {
-    Vector4 v;
-    Lerp(a, b, t, v);
-    return v;
-}
-
 float Vector4::Dot(const Vector4& a, const Vector4& b) {
 #if defined(XO_SSE4)
     return _mm_cvtss_f32(_mm_dp_ps(a.m, b.m, 0xff));
@@ -286,6 +268,24 @@ float Vector4::DistanceSquared(const Vector4& a, const Vector4& b) {
 
 float Vector4::Distance(const Vector4&a, const Vector4&b) {
     return (b - a).Magnitude();
+}
+
+Vector4 Vector4::Max(const Vector4& a, const Vector4& b) {
+    Vector4 v;
+    Max(a, b, v);
+    return v;
+}
+
+Vector4 Vector4::Min(const Vector4& a, const Vector4& b) {
+    Vector4 v;
+    Min(a, b, v);
+    return v;
+}
+
+Vector4 Vector4::Lerp(const Vector4& a, const Vector4& b, float t) {
+    Vector4 v;
+    Lerp(a, b, t, v);
+    return v;
 }
 
 float Vector4::Dot(const Vector4& v) const                                { return Dot(*this, v); }

@@ -33,13 +33,12 @@ XOMATH_BEGIN_XO_NS();
 //! @sa https://en.wikipedia.org/wiki/Matrix_(mathematics)
 class _MM_ALIGN16 Matrix4x4 {
 public:
+    //> See
     //! @name Constructors
     //! @{
     _XOINL Matrix4x4(); //!< Performs no initialization.
-
     _XOINL explicit Matrix4x4(float m); //!< All elements are set to f.
-
-    //! specify each element in row major form.
+    //! specify each element.
     /*!
         \f[
             \begin{bmatrix}
@@ -54,10 +53,8 @@ public:
                      float m10, float m11, float m12, float m13,
                      float m20, float m21, float m22, float m23,
                      float m30, float m31, float m32, float m33);
-
     //! Copy constructor, trivial.
     _XOINL Matrix4x4(const Matrix4x4& m);
-
     //! Specifies each row.
     /*!
         \f[
@@ -70,7 +67,6 @@ public:
         \f]
     */
     _XOINL Matrix4x4(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3);
-
     //! Specify the upper left of the matrix as one Vector3 per row, leaving unset elements as 0 except the bottom right which will be set to 1.
     /*!
         \f[
@@ -83,85 +79,42 @@ public:
         \f]
     */
     _XOINL Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2);
-
     //! Creates a rotation matrix from quaternion q.
     _XOINL Matrix4x4(const class Quaternion& q);
     //! @}
 
-    //! Sets this matrix as a transpose of itself
-    /*!
-        \f[
-            \begin{bmatrix}
-            m00&m01&m02&m03\\
-            m10&m11&m12&m13\\
-            m20&m21&m22&m23\\
-            m30&m31&m32&m33
-            \end{bmatrix}
-            \Rightarrow
-            \begin{bmatrix}
-            m00&m10&m20&m30\\
-            m01&m11&m21&m31\\
-            m02&m12&m22&m32\\
-            m03&m13&m32&m33
-            \end{bmatrix}
-        \f]
-    */
-    //! @sa https://en.wikipedia.org/wiki/Transpose
-    _XOINL const Matrix4x4& MakeTranspose();
-
-    //! Returns a transpose of this matrix
-    /*!
-        \f[
-            \begin{bmatrix}
-            m00&m01&m02&m03\\
-            m10&m11&m12&m13\\
-            m20&m21&m22&m23\\
-            m30&m31&m32&m33
-            \end{bmatrix}
-            \Rightarrow
-            \begin{bmatrix}
-            m00&m10&m20&m30\\
-            m01&m11&m21&m31\\
-            m02&m12&m22&m32\\
-            m03&m13&m32&m33
-            \end{bmatrix}
-        \f]
-    */
-    //! @sa https://en.wikipedia.org/wiki/Transpose
-    _XOINL Matrix4x4 Transpose() const;
-
-    //! @name Special Operators
-    //! @{
-    //! Overloads the new and delete operators for Matrix4x4 when memory alignment is required (such as with SSE).
-    //! @sa XO_16ALIGNED_MALLOC, XO_16ALIGNED_FREE
-    _XO_OVERLOAD_NEW_DELETE();
-
-    //! Extracts a const reference of a row, useful for getting rows by index.
-    _XOINL const Vector4& operator [](int i) const;
-
-    //! Extracts a reference of a row, useful for setting rows by index.
-    _XOINL Vector4& operator [](int i);
-
-    //! Extracts a const reference of a value, useful for getting values by index.
-    _XOINL const float& operator ()(int r, int c) const;
-    
-    //! Extracts a reference of a value, useful for setting values by index.
-    _XOINL float& operator ()(int r, int c);
-
-    //! See Matrix4x4::Transpose for details.
-    //! @sa https://en.wikipedia.org/wiki/Transpose
-    _XOINL Matrix4x4 operator ~() const;
-    //! @}
-
     //! @name Set / Get Methods
     //! @{
+
+    //! Sets column i to vector r.
+    _XOINL const Matrix4x4& SetRow(int i, const Vector4& r);
+    //! Sets column i to vector r.
+    _XOINL const Matrix4x4& SetColumn(int i, const Vector4& r);
     //! Get a const reference to a row in the matrix.
     _XOINL const Vector4& GetRow(int i) const;
-
     //! Return a column, copied out of the matrix
     _XOINL Vector4 GetColumn(int i) const;
     //! @}
 
+    //>See
+    //! @name Special Operators
+    //! @{
+
+    //! Overloads the new and delete operators for Matrix4x4 when memory alignment is required (such as with SSE).
+    //! @sa XO_16ALIGNED_MALLOC, XO_16ALIGNED_FREE
+    _XO_OVERLOAD_NEW_DELETE();
+    //! Extracts a const reference of a row, useful for getting rows by index.
+    _XOINL const Vector4& operator [](int i) const;
+    //! Extracts a reference of a row, useful for setting rows by index.
+    _XOINL Vector4& operator [](int i);
+    //! Extracts a const reference of a value, useful for getting values by index.
+    _XOINL const float& operator ()(int r, int c) const;
+    //! Extracts a reference of a value, useful for setting values by index.
+    _XOINL float& operator ()(int r, int c);
+    //! See Matrix4x4::Transpose for details.
+    //! @sa https://en.wikipedia.org/wiki/Transpose
+    _XOINL Matrix4x4 operator ~() const;
+    //! @}
 
     //! @name Operators
     //! @{
@@ -243,13 +196,54 @@ public:
     _XOINL Vector3 operator * (const Vector3& v) const;
 
     //! @}
-    
+
+
+    ////////////////////////////////////////////////////////////////////////// Public Functions
+    // See: http://xo-math.rtfd.io/en/latest/classes/matrix4x4.html#public_functions
+    //! Sets this matrix as a transpose of itself
+    /*!
+        \f[
+            \begin{bmatrix}
+            m00&m01&m02&m03\\
+            m10&m11&m12&m13\\
+            m20&m21&m22&m23\\
+            m30&m31&m32&m33
+            \end{bmatrix}
+            \Rightarrow
+            \begin{bmatrix}
+            m00&m10&m20&m30\\
+            m01&m11&m21&m31\\
+            m02&m12&m22&m32\\
+            m03&m13&m32&m33
+            \end{bmatrix}
+        \f]
+    */
+    //! @sa https://en.wikipedia.org/wiki/Transpose
+    _XOINL const Matrix4x4& MakeTranspose();
+    //! Returns a transpose of this matrix
+    /*!
+        \f[
+            \begin{bmatrix}
+            m00&m01&m02&m03\\
+            m10&m11&m12&m13\\
+            m20&m21&m22&m23\\
+            m30&m31&m32&m33
+            \end{bmatrix}
+            \Rightarrow
+            \begin{bmatrix}
+            m00&m10&m20&m30\\
+            m01&m11&m21&m31\\
+            m02&m12&m22&m32\\
+            m03&m13&m32&m33
+            \end{bmatrix}
+        \f]
+    */
+    //! @sa https://en.wikipedia.org/wiki/Transpose
+    _XOINL Matrix4x4 Transpose() const;
     //! Transforms vector v in place by this matrix.
     _XOINL const Matrix4x4& Transform(Vector3& v) const;
     //! Transforms vector v in place by this matrix.
     _XOINL const Matrix4x4& Transform(Vector4& v) const;
-
-
     //! Assigns outMatrix to a scale matrix, where each of x y and z scale values are equal to xyz.
     /*!
     \f[
@@ -261,8 +255,12 @@ public:
         \end{bmatrix}
     \f]
     */
-    _XOINL static void Scale(float xyz, Matrix4x4& outMatrix);
 
+    //>See
+    //! @name Static Methods
+    //! @{
+
+    _XOINL static void Scale(float xyz, Matrix4x4& outMatrix);
     //! Assigns outMatrix to a scale matrix, where each of x y and z scale values are their same-named parameters.
     /*!
     \f[
@@ -275,7 +273,6 @@ public:
     \f]
     */
     _XOINL static void Scale(float x, float y, float z, Matrix4x4& outMatrix);
-
     //! Assigns outMatrix to a scale matrix, where each of x y and z scale values are provided by v.
     /*!
     \f[
@@ -288,7 +285,6 @@ public:
     \f]
     */
     _XOINL static void Scale(const Vector3& v, Matrix4x4& outMatrix);
-
     //! Assigns outMatrix to a translation matrix, where each of x y and z are their same-named parameters
     /*!
     \f[
@@ -322,13 +318,12 @@ public:
             1&0&0&0\\
             0&\cos\theta&-\sin\theta&0\\
             0&\sin\theta&\cos\theta&0\\
-            0&0&0&1
+            0&0&0&1construc
         \end{bmatrix}
     \f]
     */
     //! @sa https://en.wikipedia.org/wiki/Rotation_matrix
     _XOINL static void RotationXRadians(float radians, Matrix4x4& outMatrix);
-
     //! Assigns outMatrix to a yaw matrix, where theta \f$\theta\f$ is the parameter radians.
     /*!
     \f[
@@ -342,7 +337,6 @@ public:
     */
     //! @sa https://en.wikipedia.org/wiki/Rotation_matrix
     _XOINL static void RotationYRadians(float radians, Matrix4x4& outMatrix);
-
     //! Assigns outMatrix to a roll matrix, where theta \f$\theta\f$ is the parameter radians.
     /*!
     \f[
@@ -356,17 +350,14 @@ public:
     */
     //! @sa https://en.wikipedia.org/wiki/Rotation_matrix
     _XOINL static void RotationZRadians(float radians, Matrix4x4& outMatrix);
-
     //! Assigns outMatrix to a rotation matrix. Rotation matricies are build by multiplying a yaw a pitch and a roll matrix. 
     //! See Matrix4x4::RotationXRadians, Matrix4x4::RotationYRadians and Matrix4x4::RotationZRadians for details.
     //! @sa https://en.wikipedia.org/wiki/Rotation_matrix
     _XOINL static void RotationRadians(float x, float y, float z, Matrix4x4& outMatrix);
-
     //! Assigns outMatrix to a rotation matrix. Rotation matricies are build by multiplying a yaw a pitch and a roll matrix. 
     //! See Matrix4x4::RotationXRadians, Matrix4x4::RotationYRadians and Matrix4x4::RotationZRadians for details.
     //! @sa https://en.wikipedia.org/wiki/Rotation_matrix
     _XOINL static void RotationRadians(const Vector3& v, Matrix4x4& outMatrix);
-
     //! Assigns outMatrix to an axis-angle rotation matrix with \f$\theta\f$ radians along axis a.    
     //!
     //! \f$let\ c = \cos\theta\f$
@@ -385,25 +376,18 @@ public:
     \f]
     */
     _XOINL static void AxisAngleRadians(const Vector3& axis, float radians, Matrix4x4& outMatrix);
-
     //! Calls Matrix4x4::RotationXRadians, converting the input degrees to radians.
     _XOINL static void RotationXDegrees(float degrees, Matrix4x4& outMatrix);
-
     //! Calls Matrix4x4::RotationYRadians, converting the input degrees to radians.
     _XOINL static void RotationYDegrees(float degrees, Matrix4x4& outMatrix);
-
     //! Calls Matrix4x4::RotationZRadians, converting the input degrees to radians.
     _XOINL static void RotationZDegrees(float degrees, Matrix4x4& outMatrix);
-
     //! Calls Matrix4x4::RotationDegrees, converting the input degrees to radians.
     _XOINL static void RotationDegrees(float x, float y, float z, Matrix4x4& outMatrix);
-
     //! Calls Matrix4x4::RotationDegrees, converting the input degrees to radians.
     _XOINL static void RotationDegrees(const Vector3& v, Matrix4x4& outMatrix);
-
     //! Calls Matrix4x4::AxisAngleDegrees, converting the input degrees to radians.
     _XOINL static void AxisAngleDegrees(const Vector3& axis, float degrees, Matrix4x4& outMatrix);
-
     //! Assigns outMatrix to an orthographic projection matrix.
     //!
     //! \f$let\ w = width\f$
@@ -425,16 +409,24 @@ public:
     */
     //! @sa http://scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix
     _XOINL static void OrthographicProjection(float width, float height, float near, float far, Matrix4x4& outMatrix);
-
     //! Assigns outMatrix to a projection matrix.
     //! @sa http://scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix
     _XOINL static void Projection(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix);
-
+    //! todo: doc
     _XOINL static void LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up, Matrix4x4& outMatrix);
+    //! todo: doc
     _XOINL static void LookAtFromPosition(const Vector3& from, const Vector3& to, Matrix4x4& outMatrix);
+    //! todo: doc
     _XOINL static void LookAtFromDirection(const Vector3& direction, const Vector3& up, Matrix4x4& outMatrix);
+    //! todo: doc
     _XOINL static void LookAtFromDirection(const Vector3& direction, Matrix4x4& outMatrix);
+    //! @}
 
+    //!> See
+    //! @name Variants
+    //! Variants of other same-name static methods. See their documentation for more details under the 
+    //! Static Methods heading.
+    //! @{
     _XOINL static Matrix4x4 Scale(float xyz);
     _XOINL static Matrix4x4 Scale(float x, float y, float z);
     _XOINL static Matrix4x4 Scale(const Vector3& v);
@@ -463,6 +455,7 @@ public:
     _XOINL static Matrix4x4 LookAtFromPosition(const Vector3& from, const Vector3& to);
     _XOINL static Matrix4x4 LookAtFromDirection(const Vector3& direction, const Vector3& up);
     _XOINL static Matrix4x4 LookAtFromDirection(const Vector3& direction);
+    //! @}
 
     //! Matrix rows
     Vector4 r[4];
