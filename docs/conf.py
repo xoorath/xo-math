@@ -9,12 +9,15 @@ if on_rtd:
   call('doxygen')
 
 
-extensions = ['breathe', 'sphinx.ext.mathjax']
+extensions = ['breathe', 'sphinx.ext.imgmath']
 
 breathe_projects = {
     "xo-math":"./xml/",
 }
 breathe_default_members = ('members', 'undoc-members')
+
+imgmath_image_format = 'svg'
+imgmath_font_size = 16
 
 templates_path = ['_templates']
 
