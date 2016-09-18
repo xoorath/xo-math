@@ -405,10 +405,17 @@ void TestVector3Methods() {
             test.ReportSuccessIf(temp3, expected, TEST_MSG(msg)); \
             test.ReportSuccessIf(temp.RotateRadians(axis, angle), expected, TEST_MSG(msg)); \
 
+#if defined XO_SPACE_LEFTHAND // positive is clockwise 
         _XO_ROTATE_RADIANS(Vector3::Up, Vector3::Right, HalfPI, Vector3::Forward, "Up rotated pi/2 radians by the right axis should face forward.");
         _XO_ROTATE_RADIANS(Vector3::Up, Vector3::Right, -HalfPI, Vector3::Backward, "Up rotated -pi/2 radians by the right axis should face backward.");
         _XO_ROTATE_RADIANS(Vector3::Up*2.0f, Vector3::Right, HalfPI, Vector3::Forward*2.0f, "Up rotated pi/2 radians by the right axis should face forward.");
         _XO_ROTATE_RADIANS(Vector3::Up*2.0f, Vector3::Right, -HalfPI, Vector3::Backward*2.0f, "Up rotated -pi/2 radians by the right axis should face backward.");
+#elif defined XO_SPACE_RIGHTHAND // positive is counter clockwise
+        _XO_ROTATE_RADIANS(Vector3::Up, Vector3::Right, HalfPI, Vector3::Backward, "Up rotated pi/2 radians by the right axis should face backward.");
+        _XO_ROTATE_RADIANS(Vector3::Up, Vector3::Right, -HalfPI, Vector3::Forward, "Up rotated -pi/2 radians by the right axis should face forward.");
+        _XO_ROTATE_RADIANS(Vector3::Up*2.0f, Vector3::Right, HalfPI, Vector3::Backward*2.0f, "Up rotated pi/2 radians by the right axis should face backward.");
+        _XO_ROTATE_RADIANS(Vector3::Up*2.0f, Vector3::Right, -HalfPI, Vector3::Forward*2.0f, "Up rotated -pi/2 radians by the right axis should face forward.");
+#endif
 
 #undef _XO_ROTATE_RADIANS
 
@@ -419,10 +426,18 @@ void TestVector3Methods() {
             test.ReportSuccessIf(temp3, expected, TEST_MSG(msg)); \
             test.ReportSuccessIf(temp.RotateDegrees(axis, angle), expected, TEST_MSG(msg)); \
 
+#if defined XO_SPACE_LEFTHAND
         _XO_ROTATE_DEGREES(Vector3::Up, Vector3::Right, 90.0f, Vector3::Forward, "Up rotated 90 degrees radians by the right axis should face forward.");
         _XO_ROTATE_DEGREES(Vector3::Up, Vector3::Right, -90.0f, Vector3::Backward, "Up rotated -90 degrees radians by the right axis should face backward.");
         _XO_ROTATE_DEGREES(Vector3::Up*2.0f, Vector3::Right, 90.0f, Vector3::Forward*2.0f, "Up rotated 90 degrees radians by the right axis should face forward.");
         _XO_ROTATE_DEGREES(Vector3::Up*2.0f, Vector3::Right, -90.0f, Vector3::Backward*2.0f, "Up rotated -90 degrees radians by the right axis should face backward.");
+#elif defined XO_SPACE_RIGHTHAND
+        _XO_ROTATE_DEGREES(Vector3::Up, Vector3::Right, 90.0f, Vector3::Backward, "Up rotated 90 degrees radians by the right axis should face forward.");
+        _XO_ROTATE_DEGREES(Vector3::Up, Vector3::Right, -90.0f, Vector3::Forward, "Up rotated -90 degrees radians by the right axis should face backward.");
+        _XO_ROTATE_DEGREES(Vector3::Up*2.0f, Vector3::Right, 90.0f, Vector3::Backward*2.0f, "Up rotated 90 degrees radians by the right axis should face forward.");
+        _XO_ROTATE_DEGREES(Vector3::Up*2.0f, Vector3::Right, -90.0f, Vector3::Forward*2.0f, "Up rotated -90 degrees radians by the right axis should face backward.");        
+#endif
+
 #undef _XO_ROTATE_DEGREES
 
 

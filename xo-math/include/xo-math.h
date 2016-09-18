@@ -22,7 +22,7 @@
 #ifndef XO_MATH_H
 #define XO_MATH_H
 
-////////////////////////////////////////////////////////////////////////// XOMATH_BEGIN_XO_NS, XOMATH_END_XO_NS
+////////////////////////////////////////////////////////////////////////// Optional defines for configuration
 #ifdef XO_CUSTOM_NS
 #   define XOMATH_BEGIN_XO_NS()  namespace XO_CUSTOM_NS {
 #   define XOMATH_END_XO_NS()    }
@@ -38,6 +38,18 @@
 #else
 #   define XOMATH_BEGIN_XO_NS()  namespace xo { namespace math {
 #   define XOMATH_END_XO_NS()    } }
+#endif
+
+#if !defined(XO_ASSERT)
+#   define XO_ASSERT(condition, message)
+#endif
+
+#if defined(XO_SPACE_LEFTHAND) && defined(XO_SPACE_RIGHTHAND)
+static_assert(false, "xo-math found both XO_SPACE_LEFTHAND and XO_SPACE_RIGHTHAND defined. These are incompatible");
+#elif !defined(XO_SPACE_LEFTHAND) && !defined(XO_SPACE_RIGHTHAND)
+    //! Default to right hand space if no configuration is defined.
+    //! @sa https://www.evl.uic.edu/ralph/508S98/coordinates.html
+#   define XO_SPACE_RIGHTHAND 1
 #endif
 
 ////////////////////////////////////////////////////////////////////////// Dependencies for xo-math headers

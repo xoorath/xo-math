@@ -52,7 +52,7 @@ static_assert(false, "Don't include DetectSIMD.h directly. Include xo-math.h.");
 #           define XO_AVX 1
 #           define XO_AVX2 1
 #       endif
-// TODO: add AVX512 for msvc when it exists.
+//! @todo add AVX512 for msvc when it exists.
 #   elif defined(__clang__) || defined (__GNUC__)
 #       if defined(__SSE__)
 #           define XO_SSE 1

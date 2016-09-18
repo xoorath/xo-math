@@ -240,6 +240,15 @@ public:
     */
     //! @sa https://en.wikipedia.org/wiki/Transpose
     _XOINL Matrix4x4 Transpose() const;
+
+    //! @note If the matrix is a simple transform, you can build it with the inverse of it's parameters. 
+    //! for example: RotationYRadians(x).MakeInverse() is equal to RotationYRadians(-x). Furthermore if
+    //! the matrix you're trying to build is a result of multiple simple transforms, the inverse can instead
+    //! be built as the order of multiplication reversed also using negative input params. for example: 
+    //! (Scale(s) * Translation(Vector3(x, y, z))).MakeInverse() is equal to Translation(-Vector3(x, y, z)) * Scale(-s)
+    _XOINL const Matrix4x4& MakeInverse();
+    _XOINL const Matrix4x4& MakeInverseKnownOrthogonal();
+
     //! Transforms vector v in place by this matrix.
     _XOINL const Matrix4x4& Transform(Vector3& v) const;
     //! Transforms vector v in place by this matrix.
@@ -318,7 +327,7 @@ public:
             1&0&0&0\\
             0&\cos\theta&-\sin\theta&0\\
             0&\sin\theta&\cos\theta&0\\
-            0&0&0&1construc
+            0&0&0&1
         \end{bmatrix}
     \f]
     */
@@ -400,25 +409,43 @@ public:
     /*!
     \f[
         \begin{bmatrix}
-            txx+c&txy-zs&txz+ys&0\\
-            txy+zs&tyy+c&tyz-xs&0\\
-            txz-ys&tyz+xs&tzz+c&0\\
-            0&0&0&1
+            1/w&0&0&0\\
+            0&1/h&0&0\\
+            0&0&f-n&0\\
+            0&0&n\times (f-n)&1
         \end{bmatrix}
     \f]
     */
     //! @sa http://scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix
     _XOINL static void OrthographicProjection(float width, float height, float near, float far, Matrix4x4& outMatrix);
-    //! Assigns outMatrix to a projection matrix.
+    //! Assigns outMatrix to a perspective projection matrix. Parameters fovx and fovy are angles in radians.
+    //! If you know the desired fovx and aren't sure what to use for fovy, multiply the fovx you have by the aspect
+    //! ratio of your screen.
+    //!
+    //! \f$let\ n = near\f$
+    //!
+    //! \f$let\ f = far\f$
+    /*!
+    \f[
+        \begin{bmatrix}
+            atan (fovx/2)&0&0&0\\
+            0&atan (fovy/2)&0&0\\
+            0&0&f/(f-n)&1\\
+            0&0&-n\times (f/-n)&1
+        \end{bmatrix}
+    \f]
+    */
     //! @sa http://scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix
-    _XOINL static void Projection(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix);
-    //! todo: doc
+    _XOINL static void PerspectiveProjectionRadians(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix);
+    //! Calls Matrix4x4::PerspectiveProjectionRadians , converting the inputs fovx and fovy to radians.
+    _XOINL static void PerspectiveProjectionDegrees(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix);
+    //! Assigns outMatrix to a look at matrix.
     _XOINL static void LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up, Matrix4x4& outMatrix);
-    //! todo: doc
+    //! Assigns outMatrix to a look at matrix, with up being Vector3::Up
     _XOINL static void LookAtFromPosition(const Vector3& from, const Vector3& to, Matrix4x4& outMatrix);
-    //! todo: doc
+    //! Assigns outMatrix to a look at matrix, from Vector3::Zero towards direction.
     _XOINL static void LookAtFromDirection(const Vector3& direction, const Vector3& up, Matrix4x4& outMatrix);
-    //! todo: doc
+    //! Assigns outMatrix to a look at matrix, from Vector3::Zero towards direction with up being Vector3::Up.
     _XOINL static void LookAtFromDirection(const Vector3& direction, Matrix4x4& outMatrix);
     //! @}
 
@@ -449,12 +476,25 @@ public:
     _XOINL static Matrix4x4 AxisAngleDegrees(const Vector3& axis, float degrees);
 
     _XOINL static Matrix4x4 OrthographicProjection(float width, float height, float near, float far);
-    _XOINL static Matrix4x4 Projection(float fovx, float fovy, float near, float far);
+    _XOINL static Matrix4x4 PerspectiveProjectionRadians(float fovx, float fovy, float near, float far);
+    _XOINL static Matrix4x4 PerspectiveProjectionDegrees(float fovx, float fovy, float near, float far);
 
     _XOINL static Matrix4x4 LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up);
     _XOINL static Matrix4x4 LookAtFromPosition(const Vector3& from, const Vector3& to);
     _XOINL static Matrix4x4 LookAtFromDirection(const Vector3& direction, const Vector3& up);
     _XOINL static Matrix4x4 LookAtFromDirection(const Vector3& direction);
+    //! @}
+
+    //>See
+    //! @name Extras
+    //! @{
+
+    //! @todo Make this optional with a define.
+    //! Prints the contents of matrix m to the provided ostream in the form of its four row vectors.
+    friend std::ostream& operator <<(std::ostream& os, const Matrix4x4& m) {
+        os << "\nrow 0: " << m.r[0] << "\nrow 1: " << m.r[1] << "\nrow 2: " << m.r[2] << "\nrow 3: " << m.r[3] << "\n";
+        return os;
+    }
     //! @}
 
     //! Matrix rows

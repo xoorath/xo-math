@@ -23,6 +23,12 @@
 static_assert(false, "Don't include Matrix4x4Methods.h directly. Include xo-math.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
 
+#if defined(_XO_ASSERT_MSG)
+_XOMATH_INTERNAL_MACRO_WARNING
+#else
+#   define _XO_ASSERT_MSG(msg) "xo-math Matrix4x4" msg
+#endif
+
 XOMATH_BEGIN_XO_NS();
 
 Matrix4x4::Matrix4x4() {
@@ -140,6 +146,11 @@ const Matrix4x4& Matrix4x4::Transform(Vector4& v) const {
 }
 
 void Matrix4x4::Scale(float xyz, Matrix4x4& m) {
+    // Also valid but requires division or recip:
+    // 1 0 0 0
+    // 0 1 0 0
+    // 0 0 1 0
+    // 0 0 0 1/xyz
     m = {
             {xyz,  0.0f, 0.0f, 0.0f},
             {0.0f, xyz,  0.0f, 0.0f},
@@ -283,26 +294,29 @@ void Matrix4x4::AxisAngleDegrees(const Vector3& a, float degrees, Matrix4x4& m) 
 }
 
 void Matrix4x4::OrthographicProjection(float w, float h, float n, float f, Matrix4x4& m) {
-    auto fmn = f - n;
+    XO_ASSERT(w != 0.0f, _XO_ASSERT_MSG("::OrthographicProjection Width (w) should not be zero."));
+    XO_ASSERT(h != 0.0f, _XO_ASSERT_MSG("::OrthographicProjection Height (h) should not be zero."));
     m = {
-            {1.0f/w,    0.0f,   0.0f,           0.0f},
-            {0.0f,      1.0f/h, 0.0f,           0.0f},
-            {0.0f,      0.0f,   -(2.0f/fmn),    -((f+n)/fmn)},
-            {0.0f,      0.0f,   0.0f,           1.0f}
+            {1.0f/w,    0.0f,       0.0f,    0.0f},
+            {0.0f,      1.0f/h,     0.0f,    0.0f},
+            {0.0f,      0.0f,       f-n,     0.0f},
+            {0.0f,      0.0f,       n*(f-n), 1.0f}
         };
 }
  
- //! @todo consider using ProjectionRadians / ProjectionDegrees since fov values are in radians currently.
-void Matrix4x4::Projection(float fovx, float fovy, float n, float f, Matrix4x4& m) {
-    auto fmn = f - n;
+void Matrix4x4::PerspectiveProjectionRadians(float fovx, float fovy, float n, float f, Matrix4x4& m) {
+    XO_ASSERT(n != f, _XO_ASSERT_MSG("::PerspectiveProjectionRadians Near (n) and far (f) values should not be equal."));
     m = {
             {ATan(fovx/2.0f),   0.0f,               0.0f,               0.0f},
             {0.0f,              ATan(fovy/2.0f),    0.0f,               0.0f},
-            {0.0f,              0.0f,               -((f+n)/(fmn)),     -((2.0f*(n*f))/fmn)},
-            {0.0f,              0.0f,               0.0f,               1.0f}
+            {0.0f,              0.0f,               f/(f-n),            1.0f},
+            {0.0f,              0.0f,               -n*(f/-n),          1.0f}
         };
 }
 
+void Matrix4x4::PerspectiveProjectionDegrees(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix) {
+    Matrix4x4::PerspectiveProjectionRadians(fovx * Deg2Rad, fovy * Deg2Rad, near, far, outMatrix);
+}
 
 void Matrix4x4::LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up, Matrix4x4& m) {
     Vector3 zAxis = (to - from).Normalized();
@@ -430,9 +444,16 @@ Matrix4x4 Matrix4x4::OrthographicProjection(float w, float h, float n, float f) 
     OrthographicProjection(w, h, n, f, m);
     return m;
 }
-Matrix4x4 Matrix4x4::Projection(float fovx, float fovy, float n, float f) {
+
+Matrix4x4 Matrix4x4::PerspectiveProjectionRadians(float fovx, float fovy, float n, float f) {
     Matrix4x4 m;
-    Projection(fovx, fovy, n, f, m);
+    PerspectiveProjectionRadians(fovx, fovy, n, f, m);
+    return m;
+}
+
+Matrix4x4 Matrix4x4::PerspectiveProjectionDegrees(float fovx, float fovy, float n, float f) {
+    Matrix4x4 m;
+    PerspectiveProjectionDegrees(fovx, fovy, n, f, m);
     return m;
 }
 
@@ -458,5 +479,7 @@ Matrix4x4 Matrix4x4::LookAtFromDirection(const Vector3& direction) {
 }
 
 XOMATH_END_XO_NS();
+
+#undef _XO_ASSERT_MSG
 
 #endif
