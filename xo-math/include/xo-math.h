@@ -349,7 +349,7 @@ _XOMATH_INTERNAL_MACRO_WARNING
 // p: patch release, contains fixes for a release version.
 
 #define XO_MATH_VERSION_DATE "Summer 2016"
-#define XO_MATH_VERSION_MAJOR 1
+#define XO_MATH_VERSION_MAJOR 0
 #define XO_MATH_VERSION_KIND "b"
 #define XO_MATH_VERSION_MINOR 2
 #define XO_MATH_VERSION_SUB 0
@@ -362,7 +362,11 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with msvc " _XO_MATH_STRINGIFY(_MSC_VER) ", supporting simd: " XO_MATH_HIGHEST_SIMD "."
 #   pragma message(XO_MATH_COMPILER_INFO)
 #elif defined(__clang__)
-#   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with clang " _XO_MATH_STRINGIFY(__clang_major__) "." _XO_MATH_STRINGIFY(__clang_minor__) "." _XO_MATH_STRINGIFY(__clang_patchlevel__) ", supporting simd: " XO_MATH_HIGHEST_SIMD "."
+#   if defined(__APPLE__)
+#       define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with apple-clang " _XO_MATH_STRINGIFY(__clang_major__) "." _XO_MATH_STRINGIFY(__clang_minor__) "." _XO_MATH_STRINGIFY(__clang_patchlevel__) ", supporting simd: " XO_MATH_HIGHEST_SIMD "."
+#   else
+#       define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with clang " _XO_MATH_STRINGIFY(__clang_major__) "." _XO_MATH_STRINGIFY(__clang_minor__) "." _XO_MATH_STRINGIFY(__clang_patchlevel__) ", supporting simd: " XO_MATH_HIGHEST_SIMD "."
+#   endif
 // pragma message is a warning on clang.
 //#   pragma message XO_MATH_COMPILER_INFO
 #elif defined(__GNUC__)

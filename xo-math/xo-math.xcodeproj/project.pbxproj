@@ -23,27 +23,26 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		8108E8BA1D568CB400D73D5F /* Matrix4x4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Matrix4x4.h; path = ../Matrix4x4.h; sourceTree = "<group>"; };
-		8108E8BB1D58B71D00D73D5F /* Vector2Methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector2Methods.h; path = ../Vector2Methods.h; sourceTree = "<group>"; };
-		8108E8BC1D58B71D00D73D5F /* Vector2Operators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector2Operators.h; path = ../Vector2Operators.h; sourceTree = "<group>"; };
-		8108E8BD1D58B71D00D73D5F /* Vector3Methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector3Methods.h; path = ../Vector3Methods.h; sourceTree = "<group>"; };
-		8108E8BE1D58B71D00D73D5F /* Vector3Operators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector3Operators.h; path = ../Vector3Operators.h; sourceTree = "<group>"; };
-		8108E8BF1D58B71D00D73D5F /* Vector4Methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector4Methods.h; path = ../Vector4Methods.h; sourceTree = "<group>"; };
-		8108E8C01D58B71D00D73D5F /* Vector4Operators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector4Operators.h; path = ../Vector4Operators.h; sourceTree = "<group>"; };
-		8108E8C11D5A089400D73D5F /* Matrix4x4Methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Matrix4x4Methods.h; path = ../Matrix4x4Methods.h; sourceTree = "<group>"; };
-		8108E8C21D5A089400D73D5F /* Matrix4x4Operators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Matrix4x4Operators.h; path = ../Matrix4x4Operators.h; sourceTree = "<group>"; };
 		812D15CA1D49669A00195264 /* xo-math */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "xo-math"; sourceTree = BUILT_PRODUCTS_DIR; };
 		812D15DA1D49679300195264 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = SOURCE_ROOT; };
-		812D15DD1D4993A900195264 /* Vector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector2.h; path = ../Vector2.h; sourceTree = "<group>"; };
-		812D15DE1D4993A900195264 /* Vector3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector3.h; path = ../Vector3.h; sourceTree = "<group>"; };
-		816C25901D68A87300DC319A /* Quaternion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Quaternion.h; path = ../Quaternion.h; sourceTree = "<group>"; };
-		816C25911D68A87300DC319A /* QuaternionMethods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QuaternionMethods.h; path = ../QuaternionMethods.h; sourceTree = "<group>"; };
-		816C25921D68A87300DC319A /* QuaternionOperators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QuaternionOperators.h; path = ../QuaternionOperators.h; sourceTree = "<group>"; };
-		816C25931D68A87300DC319A /* xo-math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xo-math.h"; path = "../xo-math.h"; sourceTree = "<group>"; };
-		816C25941D6A5C2700DC319A /* SSE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SSE.h; path = ../SSE.h; sourceTree = "<group>"; };
-		816C25951D6A819000DC319A /* DetectSIMD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DetectSIMD.h; path = ../DetectSIMD.h; sourceTree = "<group>"; };
-		81BB800A1D4E9FC40064AFE7 /* Test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Test.h; sourceTree = "<group>"; };
-		81BB800B1D50BCF80064AFE7 /* Vector4.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Vector4.h; path = ../Vector4.h; sourceTree = "<group>"; };
+		81EE86F01D8F1EB300ECCDB4 /* DetectSIMD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DetectSIMD.h; path = include/DetectSIMD.h; sourceTree = SOURCE_ROOT; };
+		81EE86F11D8F1EB300ECCDB4 /* Matrix4x4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Matrix4x4.h; path = include/Matrix4x4.h; sourceTree = SOURCE_ROOT; };
+		81EE86F21D8F1EB300ECCDB4 /* Matrix4x4Methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Matrix4x4Methods.h; path = include/Matrix4x4Methods.h; sourceTree = SOURCE_ROOT; };
+		81EE86F31D8F1EB300ECCDB4 /* Matrix4x4Operators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Matrix4x4Operators.h; path = include/Matrix4x4Operators.h; sourceTree = SOURCE_ROOT; };
+		81EE86F41D8F1EB300ECCDB4 /* Quaternion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Quaternion.h; path = include/Quaternion.h; sourceTree = SOURCE_ROOT; };
+		81EE86F51D8F1EB300ECCDB4 /* QuaternionMethods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QuaternionMethods.h; path = include/QuaternionMethods.h; sourceTree = SOURCE_ROOT; };
+		81EE86F61D8F1EB300ECCDB4 /* QuaternionOperators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QuaternionOperators.h; path = include/QuaternionOperators.h; sourceTree = SOURCE_ROOT; };
+		81EE86F71D8F1EB300ECCDB4 /* SSE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SSE.h; path = include/SSE.h; sourceTree = SOURCE_ROOT; };
+		81EE86F81D8F1EB300ECCDB4 /* Vector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector2.h; path = include/Vector2.h; sourceTree = SOURCE_ROOT; };
+		81EE86F91D8F1EB300ECCDB4 /* Vector2Methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector2Methods.h; path = include/Vector2Methods.h; sourceTree = SOURCE_ROOT; };
+		81EE86FA1D8F1EB300ECCDB4 /* Vector2Operators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector2Operators.h; path = include/Vector2Operators.h; sourceTree = SOURCE_ROOT; };
+		81EE86FB1D8F1EB300ECCDB4 /* Vector3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector3.h; path = include/Vector3.h; sourceTree = SOURCE_ROOT; };
+		81EE86FC1D8F1EB300ECCDB4 /* Vector3Methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector3Methods.h; path = include/Vector3Methods.h; sourceTree = SOURCE_ROOT; };
+		81EE86FD1D8F1EB300ECCDB4 /* Vector3Operators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector3Operators.h; path = include/Vector3Operators.h; sourceTree = SOURCE_ROOT; };
+		81EE86FE1D8F1EB300ECCDB4 /* Vector4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector4.h; path = include/Vector4.h; sourceTree = SOURCE_ROOT; };
+		81EE86FF1D8F1EB300ECCDB4 /* Vector4Methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector4Methods.h; path = include/Vector4Methods.h; sourceTree = SOURCE_ROOT; };
+		81EE87001D8F1EB300ECCDB4 /* Vector4Operators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector4Operators.h; path = include/Vector4Operators.h; sourceTree = SOURCE_ROOT; };
+		81EE87011D8F1EB300ECCDB4 /* xo-math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xo-math.h"; path = "include/xo-math.h"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,26 +59,7 @@
 		812D15C11D49669A00195264 = {
 			isa = PBXGroup;
 			children = (
-				816C25951D6A819000DC319A /* DetectSIMD.h */,
-				816C25941D6A5C2700DC319A /* SSE.h */,
-				816C25901D68A87300DC319A /* Quaternion.h */,
-				816C25911D68A87300DC319A /* QuaternionMethods.h */,
-				816C25921D68A87300DC319A /* QuaternionOperators.h */,
-				816C25931D68A87300DC319A /* xo-math.h */,
-				8108E8BA1D568CB400D73D5F /* Matrix4x4.h */,
-				8108E8C11D5A089400D73D5F /* Matrix4x4Methods.h */,
-				8108E8C21D5A089400D73D5F /* Matrix4x4Operators.h */,
 				812D15CB1D49669A00195264 /* Products */,
-				81BB800A1D4E9FC40064AFE7 /* Test.h */,
-				812D15DD1D4993A900195264 /* Vector2.h */,
-				8108E8BB1D58B71D00D73D5F /* Vector2Methods.h */,
-				8108E8BC1D58B71D00D73D5F /* Vector2Operators.h */,
-				812D15DE1D4993A900195264 /* Vector3.h */,
-				8108E8BD1D58B71D00D73D5F /* Vector3Methods.h */,
-				8108E8BE1D58B71D00D73D5F /* Vector3Operators.h */,
-				81BB800B1D50BCF80064AFE7 /* Vector4.h */,
-				8108E8BF1D58B71D00D73D5F /* Vector4Methods.h */,
-				8108E8C01D58B71D00D73D5F /* Vector4Operators.h */,
 				812D15CC1D49669A00195264 /* xo-math */,
 			);
 			sourceTree = "<group>";
@@ -95,6 +75,24 @@
 		812D15CC1D49669A00195264 /* xo-math */ = {
 			isa = PBXGroup;
 			children = (
+				81EE86F01D8F1EB300ECCDB4 /* DetectSIMD.h */,
+				81EE86F11D8F1EB300ECCDB4 /* Matrix4x4.h */,
+				81EE86F21D8F1EB300ECCDB4 /* Matrix4x4Methods.h */,
+				81EE86F31D8F1EB300ECCDB4 /* Matrix4x4Operators.h */,
+				81EE86F41D8F1EB300ECCDB4 /* Quaternion.h */,
+				81EE86F51D8F1EB300ECCDB4 /* QuaternionMethods.h */,
+				81EE86F61D8F1EB300ECCDB4 /* QuaternionOperators.h */,
+				81EE86F71D8F1EB300ECCDB4 /* SSE.h */,
+				81EE86F81D8F1EB300ECCDB4 /* Vector2.h */,
+				81EE86F91D8F1EB300ECCDB4 /* Vector2Methods.h */,
+				81EE86FA1D8F1EB300ECCDB4 /* Vector2Operators.h */,
+				81EE86FB1D8F1EB300ECCDB4 /* Vector3.h */,
+				81EE86FC1D8F1EB300ECCDB4 /* Vector3Methods.h */,
+				81EE86FD1D8F1EB300ECCDB4 /* Vector3Operators.h */,
+				81EE86FE1D8F1EB300ECCDB4 /* Vector4.h */,
+				81EE86FF1D8F1EB300ECCDB4 /* Vector4Methods.h */,
+				81EE87001D8F1EB300ECCDB4 /* Vector4Operators.h */,
+				81EE87011D8F1EB300ECCDB4 /* xo-math.h */,
 				812D15DA1D49679300195264 /* Main.cpp */,
 			);
 			path = "xo-math";
