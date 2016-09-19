@@ -51,6 +51,23 @@ int main() {
 }
 ```
 
+# Support
+
+Here's what I know about compiler/platform support:
+
+| Compiler Name | Version | Supported? |
+| ------------- | ------- | ---------- |
+| clang++       | >=3.3   | Yes!       |
+| g++           | >=4.8   | Yes!       |
+| msvc          | 2015    | Yes!       |
+| apple llvm    | >=7.3   | Yes!       |
+| apple llvm    | >=5     | Probably?  |
+| intel         | >= 11.1 | Unknown.[***](https://www.crowdrise.com/intel-parallel-studio-for-xo-math/fundraiser/jaredthomson) |
+
+For inquires about closed platform support such as PlayStation 4, XBox One and Wii: please [get in touch](mailto:jared@xoorath.com).
+
+*** You can help: I'm accepting donations for intel paralell studio to ensure proper support of this compiler by xo-math. The fundraiser is on [crowdrise here](https://www.crowdrise.com/intel-parallel-studio-for-xo-math/fundraiser/jaredthomson).
+
 # Documentation
 
 Documentation is hosted by Read The Docs: **[xo-math.rtfd.io](http://xo-math.rtfd.io)**
