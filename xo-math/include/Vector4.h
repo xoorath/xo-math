@@ -48,20 +48,21 @@ public:
     //>See
     //! @name Set / Get Methods
     //! @{
+    
     //! Set all. x, y, z and w will be assigned to the input params.
     _XOINL const Vector4& Set(float x, float y, float z, float w);
     //! Set each. x, y, z and w will be assigned to f.
     _XOINL const Vector4& Set(float f);
     //! Set each. Copies vec into this.
     _XOINL const Vector4& Set(const Vector4& vec);
-
 #if XO_SSE
     //! Set each. Copies vec int m.
     _XOINL const Vector4& Set(const __m128& vec);
 #endif
     //! Extract all getter. x, y, z and w will be assigned to those values of this vector.
     _XOINL void Get(float& x, float& y, float& z, float& w) const;
-    //! Extract all getter. f[0], f[1], f[2] and f[3] will be assigned to x, y, z and w respectively. 
+    //! Extract all getter. f[0], f[1], f[2] and f[3] will be assigned to x, y, z and w respectively.
+    //! @Note When using SSE f must be aligned. Example: _MM_ALIGN16 float f[4];
     _XOINL void Get(float* f) const;
     //! @}
 

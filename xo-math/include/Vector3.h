@@ -29,42 +29,66 @@ XOMATH_BEGIN_XO_NS();
 //! \sa https://en.wikipedia.org/wiki/Euclidean_vector
 class _MM_ALIGN16 Vector3 {
 public:
-    // No initialization is done.
-    _XOINL Vector3();
-
-    _XOINL Vector3(float f);
-    _XOINL Vector3(float x, float y, float z);
-    _XOINL Vector3(const Vector3& vec);
+    //>See
+    //! @name Constructors
+    //! @{
+    _XOINL Vector3(); //!< Performs no initialization.
+    _XOINL Vector3(float f); //!< All elements are set to f.
+    _XOINL Vector3(float x, float y, float z); //!< Assigns each named value accordingly.
+    _XOINL Vector3(const Vector3& vec); //!< Copy constructor, trivial.
 #if XO_SSE
-    _XOINL Vector3(const __m128& vec);
+    _XOINL Vector3(const __m128& vec); //!< Assigns m to vec, sets all elements.
 #endif
-    _XOINL Vector3(const class Vector2& v);
-    _XOINL Vector3(const class Vector4& v);
+    _XOINL Vector3(const class Vector2& v); //!< Assigns same-name values from v, zero to z. \f$\begin{pmatrix}v.x&v.y&0\end{pmatrix}\f$
+    _XOINL Vector3(const class Vector4& v); //!< Assigns same-name values from v. \f$\begin{pmatrix}v.x&v.y&v.z\end{pmatrix}\f$
+    //! @}
 
+    //>See
+    //! @name Set / Get Methods
+    //! @{
+    
+    //! Set all. x, y, and z will be assigned to the input params.
     _XOINL const Vector3& Set(float x, float y, float z);
-
+    //! Set each. x, y, and z will be assigned to f.
     _XOINL const Vector3& Set(float f);
+    //! Set each. Copies vec into this.
     _XOINL const Vector3& Set(const Vector3& vec);
-
 #if XO_SSE
+    //! Set each. Copies vec int m.
     _XOINL const Vector3& Set(const __m128& vec);
 #endif
-
     _XOINL void Get(float& x, float& y, float &z) const;
+    //! Extract all getter. f[0], f[1], and f[2] will be assigned to x, y, and z respectively.
+    //! @Note When using SSE f must be aligned and at least 4 floats wide. Example: _MM_ALIGN16 float f[4];
     _XOINL void Get(float* f) const;
+    //! @}
 
+    //>See
+    //! @name Special Operators
+    //! @{
+
+    //! Overloads the new and delete operators for Vector3 when memory alignment is required (such as with SSE).
+    //! @sa XO_16ALIGNED_MALLOC, XO_16ALIGNED_FREE
     _XO_OVERLOAD_NEW_DELETE();
-
 #if XO_SSE
-    // type cast operator
+    //! Type cast operator. Allows Vector3 to be used implicitly where ever __m128 can be.
     _XOINL operator __m128() const;
 #endif
-
+    //! Extract reference operator, useful for setting values by index.
+    //! \f[i\begin{cases}0 & return\ x;\\1 & return\ y;\\2 & return\ z;\\? & undefined\end{cases}\f]
     _XOINL float& operator [](int i);
+    //! Extract const reference operator, useful for getting values by index.
+    //! \f[i\begin{cases}0 & return\ x;\\1 & return\ y;\\2 & return\ z;\\? & undefined\end{cases}\f]
     _XOINL const float& operator [](int i) const;
-
+    //! Negate operator. Returns a vector with all elements with a flipped sign:
+    //!
+    //! \f$\begin{pmatrix}-x,&-y,&-z\end{pmatrix}\f$
     _XOINL Vector3 operator -() const;
+    //! Swizzle operator. Returns a vector with all elements in reverse order:
+    //!
+    //! \f$\begin{pmatrix}z,&y,&x\end{pmatrix}\f$
     _XOINL Vector3 operator ~() const;
+    //! @}
 
     _XOINL const Vector3& operator += (const Vector3& v);
     _XOINL const Vector3& operator += (float v);
