@@ -4,14 +4,14 @@
 What is xo-math
 ----------
 
-xo-math is an open source single header file module for optimized game math. C++11 or newer required.
+xo-math is an `open source <#license>`_ single header file module for optimized game math. C++11 or newer required. 
 
 Mission
 ----------
 
 xo-math is designed to be as **fast** as possible on your target platform, and thoroughly tested for performance against other alternatives.
 
-xo-math is designed to be **future-looking**. We push simd math past what currently adopted platforms support and build solutions for the up and coming.
+xo-math is designed to be **future-looking**. We push simd math past what currently adopted platforms support and build solutions for the up and coming that will out perform on launch day.
 
 xo-math is designed to be **friendly**. Easy to use and easy to understand, xo-math has built it's license and API for mere mortals to comprehend. You should be able to understand what we're all about in *10 minutes or less*, drag and drop xo-math.h into your project and start coding in just minutes more.
 
@@ -67,18 +67,31 @@ apple-clang            OSX                  4.2 (Xcode 4.6)
 
 **Desired Support**
 
-====================== ============================ =======================
-Compiler               Targets                      Minimum Version
-====================== ============================ =======================
-msvc++                 Android, ARM, Win32, XB1     12.0 (VS2013)
-g++                    Linux, OSX, Win32            4.8
-clang++                Linux, OSX, Win32            3.2
-apple-clang            OSX, iOS, tvOS, watchOS      4.2 (Xcode 4.6)
-icc++                  Linux, OSX, Win32, PS4       11.1
-====================== ============================ =======================
+====================== ================================= =======================
+Compiler               Targets                           Minimum Version
+====================== ================================= =======================
+msvc++                 `Android`_, ARM, Win32, `XB1`_    12.0 (VS2013)
+g++                    Linux, OSX, Win32                 4.8
+clang++                Linux, OSX, `PS4`_, Win32         3.2
+apple-clang            OSX, `iOS`_                       4.2 (Xcode 4.6)
+SNC                    `PS Vita`_                        
+icc++                  Linux, OSX, Win32, `PS4`_         11.1
+MULTI                  `Wii U`_                          ?
+ARMCC                  `3DS`_                            5.05
+====================== ================================= =======================
 
-**`intel parallel studio for xo-math`_**
-The intel c++ compiler is not yet supported, but you can help. I have a crowdrise campaign for a single user license of `intel parallel studio for xo-math`_. For more details on the campaign, see the campaign description.
+*Note:* There are some simplifications here. Minimum versions are based on the earliest known compiler with basic c++11 support. Some targets require special compilers that may have a different minimum version based on SDK availability. In these cases, the compiler for the lowest supported SDK version is our target.
+
+**Key Challenges**
+
+Although all above platforms should be supported, I have a lack of testing bandwidth to ensure compilation is seamless on these platforms. In some cases compilation will fail on a lack of a specific c++ feature.
+
+On ARM devices `NEON`_ should be supported, but currently is not. At this time ARM devices should be able to use xo-math and will default to floating point math without SIMD support.
+
+`Intel parallel studio for xo-math`_
+----------
+
+The intel c++ compiler is not yet supported, but you can help. I have a crowdrise campaign for a single user license of `Intel parallel studio for xo-math`_. For more details on the campaign, see the campaign description.
 
 Documentation
 ----------
@@ -106,4 +119,12 @@ The project is licensed under the MIT license.
 
 .. _xo-math.h: https://raw.githubusercontent.com/xoorath/xo-math/master/xo-math.h
 .. _on github: https://github.com/xoorath/xo-math/issues
-.. _intel parallel studio for xo-math: https://www.crowdrise.com/intel-parallel-studio-for-xo-math
+.. _Intel parallel studio for xo-math: https://www.crowdrise.com/intel-parallel-studio-for-xo-math
+.. _NEON: http://www.arm.com/products/processors/technologies/neon.php
+.. _XB1: http://www.xbox.com/en-US/developers
+.. _PS4: https://www.playstation.com/en-us/develop/
+.. _PS Vita: https://www.playstation.com/en-us/develop/
+.. _Wii U: https://developer.nintendo.com
+.. _3DS: https://developer.nintendo.com
+.. _iOS: https://developer.apple.com/programs/
+.. _Android: https://developer.android.com/index.html
