@@ -46,7 +46,7 @@ public:
     //>See
     //! @name Set / Get Methods
     //! @{
-    
+
     //! Set all. x, y, and z will be assigned to the input params.
     _XOINL const Vector3& Set(float x, float y, float z);
     //! Set each. x, y, and z will be assigned to f.
@@ -84,89 +84,96 @@ public:
     //!
     //! \f$\begin{pmatrix}-x,&-y,&-z\end{pmatrix}\f$
     _XOINL Vector3 operator -() const;
-    //! Swizzle operator. Returns a vector with all elements in reverse order:
+    //! Returns this vector swizzled so elements appear in reverse order. Vector3::ZYX provides the same functionality.
     //!
     //! \f$\begin{pmatrix}z,&y,&x\end{pmatrix}\f$
     _XOINL Vector3 operator ~() const;
     //! @}
 
+    //>See
+    //! @name Math Operators
+    //! Operates on all same-name vector elements with other vector types, or all elements to scalar/integer types.
+    //! @sa XO_NO_INVERSE_DIVISION
+    //! @{
     _XOINL const Vector3& operator += (const Vector3& v);
     _XOINL const Vector3& operator += (float v);
     _XOINL const Vector3& operator += (double v);
     _XOINL const Vector3& operator += (int v);
     _XOINL const Vector3& operator += (const class Vector2& v);
     _XOINL const Vector3& operator += (const class Vector4& v);
-
     _XOINL const Vector3& operator -= (const Vector3& v);
     _XOINL const Vector3& operator -= (float v);
     _XOINL const Vector3& operator -= (double v);
     _XOINL const Vector3& operator -= (int v);
     _XOINL const Vector3& operator -= (const class Vector2& v);
     _XOINL const Vector3& operator -= (const class Vector4& v);
-
     _XOINL const Vector3& operator *= (const Vector3& v);
     _XOINL const Vector3& operator *= (float v);
     _XOINL const Vector3& operator *= (double v);
     _XOINL const Vector3& operator *= (int v);
     _XOINL const Vector3& operator *= (const class Vector2& v);
     _XOINL const Vector3& operator *= (const class Vector4& v);
-
     _XOINL const Vector3& operator /= (const Vector3& v);
     _XOINL const Vector3& operator /= (float v);
     _XOINL const Vector3& operator /= (double v);
     _XOINL const Vector3& operator /= (int v);
     _XOINL const Vector3& operator /= (const class Vector2& v);
     _XOINL const Vector3& operator /= (const class Vector4& v);
-
     _XOINL Vector3 operator + (const Vector3& v) const;
     _XOINL Vector3 operator + (float v) const;
     _XOINL Vector3 operator + (double v) const;
     _XOINL Vector3 operator + (int v) const;
     _XOINL Vector3 operator + (const class Vector2& v) const;
     _XOINL Vector3 operator + (const class Vector4& v) const;
-
     _XOINL Vector3 operator - (const Vector3& v) const;
     _XOINL Vector3 operator - (float v) const;
     _XOINL Vector3 operator - (double v) const;
     _XOINL Vector3 operator - (int v) const;
     _XOINL Vector3 operator - (const class Vector2& v) const;
     _XOINL Vector3 operator - (const class Vector4& v) const;
-
     _XOINL Vector3 operator * (const Vector3& v) const;
     _XOINL Vector3 operator * (float v) const;
     _XOINL Vector3 operator * (double v) const;
     _XOINL Vector3 operator * (int v) const;
     _XOINL Vector3 operator * (const class Vector2& v) const;
     _XOINL Vector3 operator * (const class Vector4& v) const;
-
     _XOINL Vector3 operator / (const Vector3& v) const;
     _XOINL Vector3 operator / (float v) const;
     _XOINL Vector3 operator / (double v) const;
     _XOINL Vector3 operator / (int v) const;
     _XOINL Vector3 operator / (const class Vector2& v) const;
     _XOINL Vector3 operator / (const class Vector4& v) const;
+    //! @}
 
+    //>See
+    //! @name Comparison Operators
+    //! When comparing (<, >, <=, >=) against other vectors, the square magnitude is compared.
+    //! 
+    //! When comparing (<, >, <=, >=) against scalars, the scalar is squared and compared to the SquareMagnitude() of this vector.
+    //!
+    //! When comparing equality (==, !=) against other vectors, each same name element is compared. If each element has a 
+    //! difference of <= Vector3::Epsilon the vector is considered equal.
+    //!
+    //! When comparing equality (==, !=) against scalars, the scalar is squared and compared to the SquareMagnitude() of this vector.
+    //! @{
     _XOINL bool operator < (const Vector3& v) const;
     _XOINL bool operator < (float v) const;
     _XOINL bool operator < (double v) const;
     _XOINL bool operator < (int v) const;
     _XOINL bool operator < (const class Vector2& v) const;
     _XOINL bool operator < (const class Vector4& v) const;
-
     _XOINL bool operator <= (const Vector3& v) const;
     _XOINL bool operator <= (float v) const;
     _XOINL bool operator <= (double v) const;
     _XOINL bool operator <= (int v) const;
     _XOINL bool operator <= (const class Vector2& v) const;
     _XOINL bool operator <= (const class Vector4& v) const;
-
     _XOINL bool operator > (const Vector3& v) const;
     _XOINL bool operator > (float v) const;
     _XOINL bool operator > (double v) const;
     _XOINL bool operator > (int v) const;
     _XOINL bool operator > (const class Vector2& v) const;
     _XOINL bool operator > (const class Vector4& v) const;
-
     _XOINL bool operator >= (const Vector3& v) const;
     _XOINL bool operator >= (float v) const;
     _XOINL bool operator >= (double v) const;
@@ -180,199 +187,136 @@ public:
     _XOINL bool operator == (int v) const;
     _XOINL bool operator == (const class Vector2& v) const;
     _XOINL bool operator == (const class Vector4& v) const;
-
     _XOINL bool operator != (const Vector3& v) const;
     _XOINL bool operator != (float v) const;
     _XOINL bool operator != (double v) const;
     _XOINL bool operator != (int v) const;
     _XOINL bool operator != (const class Vector2& v) const;
     _XOINL bool operator != (const class Vector4& v) const;
+    //! @}
 
-    // Return a copy of this vector swizzled so that x=z, y=y and z=x.
+    //!> See
+    //! @name Methods
+    //! @{
+
+    //! Returns this vector swizzled so elements appear in reverse order. Vector3::operator~() provides the same functionality.
+    //!
+    //! \f$\begin{pmatrix}z,&y,&x\end{pmatrix}\f$
     _XOINL Vector3 ZYX() const;
-
-    // Return x+y+z
+    //! The sum of all vector elements.
+    //!
+    //! \f$x+y+z\f$
     _XOINL float Sum() const;
-
     // Return the magnitude (length) of this vector squared. This is faster than Magnitude().
     _XOINL float MagnitudeSquared() const;
-
     // Return the magnitude (length) of this vector.
     _XOINL float Magnitude() const;
-
     // Normalize this vector so that the magnitude (length) is 1, then return a reference to this vector.
     // Note: This method has no effect if the length of the vector is already 1.
     _XOINL const Vector3& Normalize();
-
     // Return a copy of this vector normalized so that the magnitude (length) is 1.
     // Note: This method has no effect if the length of the vector is already 1.
     _XOINL Vector3 Normalized() const;
-
     // Return true if the magnitude (length) of this vector is zero.
     _XOINL bool IsZero() const;
-
     // Return true if the magnitude (length) of this vector is 1.
     _XOINL bool IsNormalized() const;
+    //! @}
 
-    // Returns the dot product (scalar product) of vectors a and b.
-    // See: https://en.wikipedia.org/wiki/Dot_product
-    _XOINL static float Dot(const Vector3& a, const Vector3& b);
+    //>See
+    //! @name Static Methods
+    //! @{
 
-    // Returns the cross product (vector product) of vectors a and b.
-    // See: https://en.wikipedia.org/wiki/Cross_product
-    _XOINL static void Cross(const Vector3& a, const Vector3& b, Vector3& outVec);
-
-    // Return a vector with each element equal to the max of that element in and b.
-    // Example: Max({1.0f, -1.0f, -1.0f}, {-1.0f, 1.0f, -1.0f}) == {1.0f, 1.0f, -1.0f}
+    //! Set outVec to have elements equal to the max of each element in a and b.
+    //!
+    //! \f$\begin{pmatrix}\max(a.x, b.x)&\max(a.y, b.y)&\max(a.z, b.z)\end{pmatrix}\f$
     _XOINL static void Max(const Vector3& a, const Vector3& b, Vector3& outVec);
-
-    // Return a vector with each element equal to the min of that element in and b.
-    // Example: Max({1.0f, -1.0f, 1.0f}, {-1.0f, 1.0f, 1.0f}) == {-1.0f, -1.0f, 1.0f}
+    //! Set outVec to have elements equal to the min of each element in a and b.
+    //!
+    //! \f$\begin{pmatrix}\min(a.x, b.x)&\min(a.y, b.y)&\min(a.z, b.z)\end{pmatrix}\f$
     _XOINL static void Min(const Vector3& a, const Vector3& b, Vector3& outVec);
-
-    // Returns a point linearly interpolated between a and b by a factor of t. 
-    // Where t is 0, a is returned. Where t is 1, b is returned.
-    // See: https://en.wikipedia.org/wiki/Linear_interpolation
+    //! Sets outVec to a vector interpolated between a and b by a scalar amount t.
+    //! @sa https://en.wikipedia.org/wiki/Linear_interpolation
     _XOINL static void Lerp(const Vector3& a, const Vector3& b, float t, Vector3& outVec);
-
-    // Rotate the input vector v by 'angle' radians on the specified axis, and return the result.
-    // Example: RotateRadians(Vector3::Up, Vector3::Right, Pi/2.0f) == Vector3::Forward
+    //! Returns a single number representing a product of magnitudes. Commonly used with two normalized 
+    //! vectors to determine if they are pointed the same way. In this case: 1.0 represents same-facing vectors
+    //! 0 represents perpendicular vectors, and -1 will be facing away
+    //!
+    //! \f$a\cdot b =(a.x\times b.x) + (a.y\times b.y) + (a.z\times b.z)\f$
+    //!
+    //! @sa https://en.wikipedia.org/wiki/Dot_product
+    _XOINL static float Dot(const Vector3& a, const Vector3& b);
+    //! Returns the cross product (vector product) of vectors a and b.
+    //! @sa https://en.wikipedia.org/wiki/Cross_product
+    _XOINL static void Cross(const Vector3& a, const Vector3& b, Vector3& outVec);
+    //! Assign outVec to v rotated along an axis by a specified angle in radians.
     _XOINL static void RotateRadians(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec);
-
-    // Rotate the input vector v by 'angle' degrees on the specified axis, and return the result.
-    // Example: RotateDegrees(Vector3::Up, Vector3::Right, 90.0f) == Vector3::Forward
+    //! Calls Vector3::RotateRadians, converting the input angle in degrees to radians.
     _XOINL static void RotateDegrees(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec);
-
-    // Return a random vector on edge of a cone with an angle relative to forward.
-    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
-    // angles at and beyond PI radians will no longer represent a meaningful cone.
+    //! Return a random vector on edge of a cone with an angle relative to the input forward.
+    //! @note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
+    //! angles at and beyond PI radians will no longer represent a meaningful cone.
     _XOINL static void RandomOnConeRadians(const Vector3& forward, float angle, Vector3& outVec);
-
-    // Return a random vector inside a cone with an angle relative to forward.
-    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
-    // angles at and beyond PI radians will no longer represent a meaningful cone.
+    //! Return a random vector inside a cone with an angle relative to the input forward.
+    //! @note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
+    //! angles at and beyond PI radians will no longer represent a meaningful cone.
     _XOINL static void RandomInConeRadians(const Vector3& forward, float angle, Vector3& outVec);
-
-    // Return a random vector on edge of a cone with an angle relative forward.
-    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
-    // angles at and beyond 180.0f degrees will no longer represent a meaningful cone.
+    //! Calls Vector3::RandomOnConeRadians, converting the input angle in degrees to radians.
     _XOINL static void RandomOnConeDegrees(const Vector3& forward, float angle, Vector3& outVec);
-
-    // Return a random vector inside a cone with an angle relative to forward.
-    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
-    // angles at and beyond 180.0f degrees will no longer represent a meaningful cone.
+    //! Calls Vector3::RandomInConeRadians, converting the input angle in degrees to radians.
     _XOINL static void RandomInConeDegrees(const Vector3& forward, float angle, Vector3& outVec);
-
-    // Return a random vector with a length of 1.0f
+    //! Return a random vector with a length of 1.0f.
     _XOINL static void RandomOnSphere(Vector3& outVec);
-
-    // Return a random vector who's length does not exceed 1
+    //! Return a random vector with a magnitude that does not exceed 1.
     _XOINL static void RandomInSphere(Vector3& outVec);
-
-    // Return a random vector with length d
+    //! Return a random vector with a magnitude of d.
     _XOINL static void RandomAtDistance(float d, Vector3& outVec);
-
-    // Return a random vector who's length does not exceed d
+    //! Return a random vector with a magnitude that does not exceed d.
     _XOINL static void RandomInDistance(float d, Vector3& outVec);
 
-    // Return a random vector with a magnitude between low and high
+
+    //>See
+    //! @name Variants
+    //! Variants of other same-name static methods. See their documentation for more details under the 
+    //! Static Methods heading.
+    //!
+    //! Non static variants replace the first Vector4 parameter by 'this' vector.
+    //! Static variants return what would have been the outVec param.
+    //! @{
     _XOINL static void RandomInRange(float low, float high, Vector3& outVec);
-
-    // Returns the angle in radians between vectors a and b.
     _XOINL static float AngleRadians(const Vector3& a, const Vector3& b);
-
-    // Returns the angle in degrees between vectors a and b.
     _XOINL static float AngleDegrees(const Vector3& a, const Vector3& b);
-
-    // Returns the distance between vectors a and b. This is faster than Distance().
     _XOINL static float DistanceSquared(const Vector3& a, const Vector3& b);
-
-    // Returns the distance between vectors a and b.
     _XOINL static float Distance(const Vector3&a, const Vector3&b);
-
-    // See static Vector3::Cross variant with the outVec parameter.
     _XOINL static Vector3 Cross(const Vector3& a, const Vector3& b);
-    
-    // See static Vector3::Max variant with the outVec parameter.
     _XOINL static Vector3 Max(const Vector3& a, const Vector3& b);
-    
-    // See static Vector3::Min variant with the outVec parameter.
     _XOINL static Vector3 Min(const Vector3& a, const Vector3& b);
-    
-    // See static Vector3::Lerp variant with the outVec parameter.
     _XOINL static Vector3 Lerp(const Vector3& a, const Vector3& b, float t);
-    
-    // See static Vector3::RotateRadians variant with the outVec parameter.
     _XOINL static Vector3 RotateRadians(const Vector3& v, const Vector3& axis, float angle);
-    
-    // See static Vector3::RotateDegrees variant with the outVec parameter.
     _XOINL static Vector3 RotateDegrees(const Vector3& v, const Vector3& axis, float angle);
-    
-    // See static Vector3::RandomOnConeRadians variant with the outVec parameter.
     _XOINL static Vector3 RandomOnConeRadians(const Vector3& forward, float angle);
-    
-    // See static Vector3::RandomInConeRadians variant with the outVec parameter.
     _XOINL static Vector3 RandomInConeRadians(const Vector3& forward, float angle);
-    
-    // See static Vector3::RandomOnConeDegrees variant with the outVec parameter.
     _XOINL static Vector3 RandomOnConeDegrees(const Vector3& forward, float angle);
-    
-    // See static Vector3::RandomInConeDegrees variant with the outVec parameter.
     _XOINL static Vector3 RandomInConeDegrees(const Vector3& forward, float angle);
-    
-    // See static Vector3::RandomOnSphere variant with the outVec parameter.
     _XOINL static Vector3 RandomOnSphere();
-    
-    // See static Vector3::RandomInSphere variant with the outVec parameter.
     _XOINL static Vector3 RandomInSphere();
-    
-    // See static Vector3::RandomAtDistance variant with the outVec parameter.
     _XOINL static Vector3 RandomAtDistance(float d);
-    
-    // See static Vector3::RandomInDistance variant with the outVec parameter.
     _XOINL static Vector3 RandomInDistance(float d);
-    
-    // See static Vector3::RandomInRange variant with the outVec parameter.
     _XOINL static Vector3 RandomInRange(float low, float high);
-
-    // See static Vector3::Dot
     _XOINL float Dot(const Vector3& v) const;
-
-    // See static Vector3::Cross
     _XOINL Vector3 Cross(const Vector3& v) const;
-
-    // See static Vector3::Dot
     _XOINL float AngleRadians(const Vector3& v) const;
-
-    // See static Vector3::AngleDegrees
     _XOINL float AngleDegrees(const Vector3& v) const;
-
-    // See static Vector3::DistanceSquared
     _XOINL float DistanceSquared(const Vector3& v) const;
-
-    // See static Vector3::Distance
     _XOINL float Distance(const Vector3& v) const;
-
-    // See static Vector3::Lerp
     _XOINL Vector3 Lerp(const Vector3& v, float t) const;
-
-    // See static Vector3::RotateRadians
     _XOINL Vector3 RotateRadians(const Vector3& axis, float angle) const;
-
-    // See static Vector3::RotateDegrees
     _XOINL Vector3 RotateDegrees(const Vector3& axis, float angle) const;
-
-    // See static Vector3::RandomOnConeRadians
     _XOINL Vector3 RandomOnConeRadians(float angle) const;
-
-    // See static Vector3::RandomInConeRadians
     _XOINL Vector3 RandomInConeRadians(float angle) const;
-
-    // See static Vector3::RandomOnConeDegrees
     _XOINL Vector3 RandomOnConeDegrees(float angle) const;
-
-    // See static Vector3::RandomInConeDegrees
     _XOINL Vector3 RandomInConeDegrees(float angle) const;
+    //! @}
 
     friend std::ostream& operator <<(std::ostream& os, const Vector3& v) {
 #if XO_SSE

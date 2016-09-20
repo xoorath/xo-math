@@ -48,7 +48,7 @@ public:
     //>See
     //! @name Set / Get Methods
     //! @{
-    
+
     //! Set all. x, y, z and w will be assigned to the input params.
     _XOINL const Vector4& Set(float x, float y, float z, float w);
     //! Set each. x, y, z and w will be assigned to f.
@@ -87,15 +87,16 @@ public:
     //!
     //! \f$\begin{pmatrix}-x,&-y,&-z,&-w\end{pmatrix}\f$
     _XOINL Vector4 operator -() const;
-    //! Swizzle operator. Returns a vector with all elements in reverse order:
+    //! Returns this vector swizzled so elements appear in reverse order.
     //!
     //! \f$\begin{pmatrix}w,&z,&y,&x\end{pmatrix}\f$
     _XOINL Vector4 operator ~() const;
     //! @}
 
     //>See
-    //! @name Add Equals Operator
-    //! Adds all same-name vector elements with other vector types, or all elements to scalar/integer types.
+    //! @name Math Operators
+    //! Operates on all same-name vector elements with other vector types, or all elements to scalar/integer types.
+    //! @sa XO_NO_INVERSE_DIVISION
     //! @{
     _XOINL const Vector4& operator += (const Vector4& v);
     _XOINL const Vector4& operator += (float v);
@@ -103,85 +104,44 @@ public:
     _XOINL const Vector4& operator += (int v);
     _XOINL const Vector4& operator += (const class Vector2& v);
     _XOINL const Vector4& operator += (const class Vector3& v);
-    //! @}
-    //>See
-    //! @name Subtract Equals Operator
-    //! Subtracts all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @{
     _XOINL const Vector4& operator -= (const Vector4& v);
     _XOINL const Vector4& operator -= (float v);
     _XOINL const Vector4& operator -= (double v);
     _XOINL const Vector4& operator -= (int v);
     _XOINL const Vector4& operator -= (const class Vector2& v);
     _XOINL const Vector4& operator -= (const class Vector3& v);
-    //! @}
-    //>See
-    //! @name Multiply Equals Operator
-    //! Multiplies all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @{
     _XOINL const Vector4& operator *= (const Vector4& v);
     _XOINL const Vector4& operator *= (float v);
     _XOINL const Vector4& operator *= (double v);
     _XOINL const Vector4& operator *= (int v);
     _XOINL const Vector4& operator *= (const class Vector2& v);
     _XOINL const Vector4& operator *= (const class Vector3& v);
-    //! @}
-    //>See
     // See: XO_NO_INVERSE_DIVISION
-    //! @name Divide Equals Operator
-    //! Divides all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @sa XO_NO_INVERSE_DIVISION
-    //! @{
     _XOINL const Vector4& operator /= (const Vector4& v);
     _XOINL const Vector4& operator /= (float v);
     _XOINL const Vector4& operator /= (double v);
     _XOINL const Vector4& operator /= (int v);
     _XOINL const Vector4& operator /= (const class Vector2& v);
     _XOINL const Vector4& operator /= (const class Vector3& v);
-    //! @}
-    //>See
-    //! @name Addition Operator
-    //! Builds a vector by adding all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @return A vector resulting from the equation.
-    //! @{
     _XOINL Vector4 operator + (const Vector4& v) const;
     _XOINL Vector4 operator + (float v) const;
     _XOINL Vector4 operator + (double v) const;
     _XOINL Vector4 operator + (int v) const;
     _XOINL Vector4 operator + (const class Vector2& v) const;
     _XOINL Vector4 operator + (const class Vector3& v) const;
-    //! @}
-    //>See
-    //! @name Subtraction Operator
-    //! Builds a vector by subtracting all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @return A vector resulting from the equation.
-    //! @{
     _XOINL Vector4 operator - (const Vector4& v) const;
     _XOINL Vector4 operator - (float v) const;
     _XOINL Vector4 operator - (double v) const;
     _XOINL Vector4 operator - (int v) const;
     _XOINL Vector4 operator - (const class Vector2& v) const;
     _XOINL Vector4 operator - (const class Vector3& v) const;
-    //! @}
-    //>See
-    //! @name Multiplication Operator
-    //! Builds a vector by multiplying all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @return A vector resulting from the equation.
-    //! @{
     _XOINL Vector4 operator * (const Vector4& v) const;
     _XOINL Vector4 operator * (float v) const;
     _XOINL Vector4 operator * (double v) const;
     _XOINL Vector4 operator * (int v) const;
     _XOINL Vector4 operator * (const class Vector2& v) const;
     _XOINL Vector4 operator * (const class Vector3& v) const;
-    //! @}
-    //>See
     // See: XO_NO_INVERSE_DIVISION
-    //! @name Division Operator
-    //! Builds a vector by dividing all same-name vector elements with other vector types, or all elements to scalar/integer types.
-    //! @return A vector resulting from the equation.
-    //! @sa XO_NO_INVERSE_DIVISION
-    //! @{
     _XOINL Vector4 operator / (const Vector4& v) const;
     _XOINL Vector4 operator / (float v) const;
     _XOINL Vector4 operator / (double v) const;
@@ -192,8 +152,14 @@ public:
 
     //>See
     //! @name Comparison Operators
-    //! When comparing against other vectors, the square magnitude is compared.
-    //! When comparing against scalars, the scalar is squared and compared to the square magnitude of this vector.
+    //! When comparing (<, >, <=, >=) against other vectors, the square magnitude is compared.
+    //! 
+    //! When comparing (<, >, <=, >=) against scalars, the scalar is squared and compared to the SquareMagnitude() of this vector.
+    //!
+    //! When comparing equality (==, !=) against other vectors, each same name element is compared. If each element has a 
+    //! difference of <= Vector4::Epsilon the vector is considered equal.
+    //!
+    //! When comparing equality (==, !=) against scalars, the scalar is squared and compared to the SquareMagnitude() of this vector.
     //! @{
     _XOINL bool operator < (const Vector4& v) const;
     _XOINL bool operator < (float v) const;
@@ -219,13 +185,7 @@ public:
     _XOINL bool operator >= (int v) const;
     _XOINL bool operator >= (const class Vector2& v) const;
     _XOINL bool operator >= (const class Vector3& v) const;
-    //! @}
-    //>See
-    //! @name Equality Operators
-    //! When two vectors are compared, each element is compared; When all vector elements have a difference of <= Vector4::Epsilon, they are considered equal.
-    //!
-    //! When a scalar is compared, we square the scalar and check it against our square magnitude. If the difference is <= Vector4::Epsilon, they are considered equal.
-    //! @{
+
     _XOINL bool operator == (const Vector4& v) const;
     _XOINL bool operator == (float v) const;
     _XOINL bool operator == (double v) const;
@@ -240,8 +200,9 @@ public:
     _XOINL bool operator != (const class Vector3& v) const;
     //! @}
 
-    ////////////////////////////////////////////////////////////////////////// Public Functions
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#public_functions
+    //!> See
+    //! @name Methods
+    //! @{
 
     //! The sum of all vector elements.
     //!
@@ -269,6 +230,8 @@ public:
     _XOINL bool IsZero() const;
     //! Returns true when the Magnitude of this vector is within Vector4::Epsilon of being 1.0
     _XOINL bool IsNormalized() const;
+
+    //! @}
 
     //>See
     //! @name Static Methods
@@ -309,6 +272,7 @@ public:
     //! @name Variants
     //! Variants of other same-name static methods. See their documentation for more details under the 
     //! Static Methods heading.
+    //!
     //! Non static variants replace the first Vector4 parameter by 'this' vector.
     //! Static variants return what would have been the outVec param.
     //! @{
