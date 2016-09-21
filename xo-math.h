@@ -22,7 +22,7 @@
 #ifndef XO_MATH_H
 #define XO_MATH_H
 
-////////////////////////////////////////////////////////////////////////// XOMATH_BEGIN_XO_NS, XOMATH_END_XO_NS
+////////////////////////////////////////////////////////////////////////// Optional defines for configuration
 #ifdef XO_CUSTOM_NS
 #   define XOMATH_BEGIN_XO_NS()  namespace XO_CUSTOM_NS {
 #   define XOMATH_END_XO_NS()    }
@@ -38,6 +38,18 @@
 #else
 #   define XOMATH_BEGIN_XO_NS()  namespace xo { namespace math {
 #   define XOMATH_END_XO_NS()    } }
+#endif
+
+#if !defined(XO_ASSERT)
+#   define XO_ASSERT(condition, message)
+#endif
+
+#if defined(XO_SPACE_LEFTHAND) && defined(XO_SPACE_RIGHTHAND)
+static_assert(false, "xo-math found both XO_SPACE_LEFTHAND and XO_SPACE_RIGHTHAND defined. These are incompatible");
+#elif !defined(XO_SPACE_LEFTHAND) && !defined(XO_SPACE_RIGHTHAND)
+    //! Default to right hand space if no configuration is defined.
+    //! @sa https://www.evl.uic.edu/ralph/508S98/coordinates.html
+#   define XO_SPACE_RIGHTHAND 1
 #endif
 
 ////////////////////////////////////////////////////////////////////////// Dependencies for xo-math headers
@@ -112,7 +124,7 @@ static_assert(false, "Don't include DetectSIMD.h directly. Include xo-math.h.");
 #           define XO_AVX 1
 #           define XO_AVX2 1
 #       endif
-// TODO: add AVX512 for msvc when it exists.
+//! @todo add AVX512 for msvc when it exists.
 #   elif defined(__clang__) || defined (__GNUC__)
 #       if defined(__SSE__)
 #           define XO_SSE 1
@@ -1081,8 +1093,16 @@ const Vector3 Vector3::Up(0.0f, 1.0f, 0.0f);
 const Vector3 Vector3::Down(0.0f, -1.0f, 0.0f);
 const Vector3 Vector3::Left(-1.0f, 0.0f, 0.0f);
 const Vector3 Vector3::Right(1.0f, 0.0f, 0.0f);
+
+#if defined(XO_SPACE_LEFTHAND)
 const Vector3 Vector3::Forward(0.0f, 0.0f, 1.0f);
 const Vector3 Vector3::Backward(0.0f, 0.0f, -1.0f);
+#endif
+
+#if defined(XO_SPACE_RIGHTHAND)
+const Vector3 Vector3::Forward(0.0f, 0.0f, -1.0f);
+const Vector3 Vector3::Backward(0.0f, 0.0f, 1.0f);
+#endif
 
 const Vector3 Vector3::One(1.0f, 1.0f, 1.0f);
 const Vector3 Vector3::Zero(0.0f, 0.0f, 0.0f);
@@ -1117,7 +1137,6 @@ public:
 
     ////////////////////////////////////////////////////////////////////////// Set / Get Methods
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#set_get_methods
-
     _XOINL const Vector4& Set(float x, float y, float z, float w);
     _XOINL const Vector4& Set(float f);
     _XOINL const Vector4& Set(const Vector4& vec);
@@ -1345,43 +1364,33 @@ XOMATH_BEGIN_XO_NS();
 //! @sa https://en.wikipedia.org/wiki/Matrix_(mathematics)
 class _MM_ALIGN16 Matrix4x4 {
 public:
+    //> See
     _XOINL Matrix4x4(); 
-
     _XOINL explicit Matrix4x4(float m); 
-
     _XOINL Matrix4x4(float m00, float m01, float m02, float m03,
                      float m10, float m11, float m12, float m13,
                      float m20, float m21, float m22, float m23,
                      float m30, float m31, float m32, float m33);
-
     _XOINL Matrix4x4(const Matrix4x4& m);
-
     _XOINL Matrix4x4(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3);
-
     _XOINL Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2);
-
     _XOINL Matrix4x4(const class Quaternion& q);
 
-    _XOINL const Matrix4x4& MakeTranspose();
 
-    _XOINL Matrix4x4 Transpose() const;
-
-    _XO_OVERLOAD_NEW_DELETE();
-
-    _XOINL const Vector4& operator [](int i) const;
-
-    _XOINL Vector4& operator [](int i);
-
-    _XOINL const float& operator ()(int r, int c) const;
-    
-    _XOINL float& operator ()(int r, int c);
-
-    _XOINL Matrix4x4 operator ~() const;
-
+    _XOINL const Matrix4x4& SetRow(int i, const Vector4& r);
+    _XOINL const Matrix4x4& SetColumn(int i, const Vector4& r);
     _XOINL const Vector4& GetRow(int i) const;
-
     _XOINL Vector4 GetColumn(int i) const;
 
+    ////////////////////////////////////////////////////////////////////////// Special Operators
+    // See: http://xo-math.rtfd.io/en/latest/classes/matrix4x4.html#special_operators
+
+    _XO_OVERLOAD_NEW_DELETE();
+    _XOINL const Vector4& operator [](int i) const;
+    _XOINL Vector4& operator [](int i);
+    _XOINL const float& operator ()(int r, int c) const;
+    _XOINL float& operator ()(int r, int c);
+    _XOINL Matrix4x4 operator ~() const;
 
     _XOINL const Matrix4x4& operator += (const Matrix4x4& m);
     _XOINL const Matrix4x4& operator -= (const Matrix4x4& m);
@@ -1395,49 +1404,44 @@ public:
 
     _XOINL Vector3 operator * (const Vector3& v) const;
 
-    
+
+
+    ////////////////////////////////////////////////////////////////////////// Public Functions
+    // See: http://xo-math.rtfd.io/en/latest/classes/matrix4x4.html#public_functions
+    _XOINL const Matrix4x4& MakeTranspose();
+    _XOINL Matrix4x4 Transpose() const;
+
+    _XOINL const Matrix4x4& MakeInverse();
+    _XOINL const Matrix4x4& MakeInverseKnownOrthogonal();
+
     _XOINL const Matrix4x4& Transform(Vector3& v) const;
     _XOINL const Matrix4x4& Transform(Vector4& v) const;
 
+    ////////////////////////////////////////////////////////////////////////// Static Methods
+    // See: http://xo-math.rtfd.io/en/latest/classes/matrix4x4.html#static_methods
 
     _XOINL static void Scale(float xyz, Matrix4x4& outMatrix);
-
     _XOINL static void Scale(float x, float y, float z, Matrix4x4& outMatrix);
-
     _XOINL static void Scale(const Vector3& v, Matrix4x4& outMatrix);
-
     _XOINL static void Translation(float x, float y, float z, Matrix4x4& outMatrix);
     _XOINL static void Translation(const Vector3& v, Matrix4x4& outMatrix);
     
 
     _XOINL static void RotationXRadians(float radians, Matrix4x4& outMatrix);
-
     _XOINL static void RotationYRadians(float radians, Matrix4x4& outMatrix);
-
     _XOINL static void RotationZRadians(float radians, Matrix4x4& outMatrix);
-
     _XOINL static void RotationRadians(float x, float y, float z, Matrix4x4& outMatrix);
-
     _XOINL static void RotationRadians(const Vector3& v, Matrix4x4& outMatrix);
-
     _XOINL static void AxisAngleRadians(const Vector3& axis, float radians, Matrix4x4& outMatrix);
-
     _XOINL static void RotationXDegrees(float degrees, Matrix4x4& outMatrix);
-
     _XOINL static void RotationYDegrees(float degrees, Matrix4x4& outMatrix);
-
     _XOINL static void RotationZDegrees(float degrees, Matrix4x4& outMatrix);
-
     _XOINL static void RotationDegrees(float x, float y, float z, Matrix4x4& outMatrix);
-
     _XOINL static void RotationDegrees(const Vector3& v, Matrix4x4& outMatrix);
-
     _XOINL static void AxisAngleDegrees(const Vector3& axis, float degrees, Matrix4x4& outMatrix);
-
     _XOINL static void OrthographicProjection(float width, float height, float near, float far, Matrix4x4& outMatrix);
-
-    _XOINL static void Projection(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix);
-
+    _XOINL static void PerspectiveProjectionRadians(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix);
+    _XOINL static void PerspectiveProjectionDegrees(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix);
     _XOINL static void LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up, Matrix4x4& outMatrix);
     _XOINL static void LookAtFromPosition(const Vector3& from, const Vector3& to, Matrix4x4& outMatrix);
     _XOINL static void LookAtFromDirection(const Vector3& direction, const Vector3& up, Matrix4x4& outMatrix);
@@ -1465,12 +1469,21 @@ public:
     _XOINL static Matrix4x4 AxisAngleDegrees(const Vector3& axis, float degrees);
 
     _XOINL static Matrix4x4 OrthographicProjection(float width, float height, float near, float far);
-    _XOINL static Matrix4x4 Projection(float fovx, float fovy, float near, float far);
+    _XOINL static Matrix4x4 PerspectiveProjectionRadians(float fovx, float fovy, float near, float far);
+    _XOINL static Matrix4x4 PerspectiveProjectionDegrees(float fovx, float fovy, float near, float far);
 
     _XOINL static Matrix4x4 LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up);
     _XOINL static Matrix4x4 LookAtFromPosition(const Vector3& from, const Vector3& to);
     _XOINL static Matrix4x4 LookAtFromDirection(const Vector3& direction, const Vector3& up);
     _XOINL static Matrix4x4 LookAtFromDirection(const Vector3& direction);
+
+    ////////////////////////////////////////////////////////////////////////// Extras
+    // See: http://xo-math.rtfd.io/en/latest/classes/matrix4x4.html#extras
+
+    friend std::ostream& operator <<(std::ostream& os, const Matrix4x4& m) {
+        os << "\nrow 0: " << m.r[0] << "\nrow 1: " << m.r[1] << "\nrow 2: " << m.r[2] << "\nrow 3: " << m.r[3] << "\n";
+        return os;
+    }
 
     Vector4 r[4];
 
@@ -3295,24 +3308,6 @@ void Vector4::Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec)
     }
 }
 
-Vector4 Vector4::Max(const Vector4& a, const Vector4& b) {
-    Vector4 v;
-    Max(a, b, v);
-    return v;
-}
-
-Vector4 Vector4::Min(const Vector4& a, const Vector4& b) {
-    Vector4 v;
-    Min(a, b, v);
-    return v;
-}
-
-Vector4 Vector4::Lerp(const Vector4& a, const Vector4& b, float t) {
-    Vector4 v;
-    Lerp(a, b, t, v);
-    return v;
-}
-
 float Vector4::Dot(const Vector4& a, const Vector4& b) {
 #if defined(XO_SSE4)
     return _mm_cvtss_f32(_mm_dp_ps(a.m, b.m, 0xff));
@@ -3338,6 +3333,24 @@ float Vector4::DistanceSquared(const Vector4& a, const Vector4& b) {
 
 float Vector4::Distance(const Vector4&a, const Vector4&b) {
     return (b - a).Magnitude();
+}
+
+Vector4 Vector4::Max(const Vector4& a, const Vector4& b) {
+    Vector4 v;
+    Max(a, b, v);
+    return v;
+}
+
+Vector4 Vector4::Min(const Vector4& a, const Vector4& b) {
+    Vector4 v;
+    Min(a, b, v);
+    return v;
+}
+
+Vector4 Vector4::Lerp(const Vector4& a, const Vector4& b, float t) {
+    Vector4 v;
+    Lerp(a, b, t, v);
+    return v;
 }
 
 float Vector4::Dot(const Vector4& v) const                                { return Dot(*this, v); }
@@ -3440,6 +3453,12 @@ XOMATH_END_XO_NS();
 #ifndef XOMATH_INTERNAL
 static_assert(false, "Don't include Matrix4x4Methods.h directly. Include xo-math.h, which fully implements this type.");
 #else // XOMATH_INTERNAL
+
+#if defined(_XO_ASSERT_MSG)
+_XOMATH_INTERNAL_MACRO_WARNING
+#else
+#   define _XO_ASSERT_MSG(msg) "xo-math Matrix4x4" msg
+#endif
 
 XOMATH_BEGIN_XO_NS();
 
@@ -3558,6 +3577,11 @@ const Matrix4x4& Matrix4x4::Transform(Vector4& v) const {
 }
 
 void Matrix4x4::Scale(float xyz, Matrix4x4& m) {
+    // Also valid but requires division or recip:
+    // 1 0 0 0
+    // 0 1 0 0
+    // 0 0 1 0
+    // 0 0 0 1/xyz
     m = {
             {xyz,  0.0f, 0.0f, 0.0f},
             {0.0f, xyz,  0.0f, 0.0f},
@@ -3701,26 +3725,29 @@ void Matrix4x4::AxisAngleDegrees(const Vector3& a, float degrees, Matrix4x4& m) 
 }
 
 void Matrix4x4::OrthographicProjection(float w, float h, float n, float f, Matrix4x4& m) {
-    auto fmn = f - n;
+    XO_ASSERT(w != 0.0f, _XO_ASSERT_MSG("::OrthographicProjection Width (w) should not be zero."));
+    XO_ASSERT(h != 0.0f, _XO_ASSERT_MSG("::OrthographicProjection Height (h) should not be zero."));
     m = {
-            {1.0f/w,    0.0f,   0.0f,           0.0f},
-            {0.0f,      1.0f/h, 0.0f,           0.0f},
-            {0.0f,      0.0f,   -(2.0f/fmn),    -((f+n)/fmn)},
-            {0.0f,      0.0f,   0.0f,           1.0f}
+            {1.0f/w,    0.0f,       0.0f,    0.0f},
+            {0.0f,      1.0f/h,     0.0f,    0.0f},
+            {0.0f,      0.0f,       f-n,     0.0f},
+            {0.0f,      0.0f,       n*(f-n), 1.0f}
         };
 }
  
- // Todo: consider using ProjectionRadians / ProjectionDegrees since fov values are in radians currently.
-void Matrix4x4::Projection(float fovx, float fovy, float n, float f, Matrix4x4& m) {
-    auto fmn = f - n;
+void Matrix4x4::PerspectiveProjectionRadians(float fovx, float fovy, float n, float f, Matrix4x4& m) {
+    XO_ASSERT(n != f, _XO_ASSERT_MSG("::PerspectiveProjectionRadians Near (n) and far (f) values should not be equal."));
     m = {
             {ATan(fovx/2.0f),   0.0f,               0.0f,               0.0f},
             {0.0f,              ATan(fovy/2.0f),    0.0f,               0.0f},
-            {0.0f,              0.0f,               -((f+n)/(fmn)),     -((2.0f*(n*f))/fmn)},
-            {0.0f,              0.0f,               0.0f,               1.0f}
+            {0.0f,              0.0f,               f/(f-n),            1.0f},
+            {0.0f,              0.0f,               -n*(f/-n),          1.0f}
         };
 }
 
+void Matrix4x4::PerspectiveProjectionDegrees(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix) {
+    Matrix4x4::PerspectiveProjectionRadians(fovx * Deg2Rad, fovy * Deg2Rad, near, far, outMatrix);
+}
 
 void Matrix4x4::LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up, Matrix4x4& m) {
     Vector3 zAxis = (to - from).Normalized();
@@ -3848,9 +3875,16 @@ Matrix4x4 Matrix4x4::OrthographicProjection(float w, float h, float n, float f) 
     OrthographicProjection(w, h, n, f, m);
     return m;
 }
-Matrix4x4 Matrix4x4::Projection(float fovx, float fovy, float n, float f) {
+
+Matrix4x4 Matrix4x4::PerspectiveProjectionRadians(float fovx, float fovy, float n, float f) {
     Matrix4x4 m;
-    Projection(fovx, fovy, n, f, m);
+    PerspectiveProjectionRadians(fovx, fovy, n, f, m);
+    return m;
+}
+
+Matrix4x4 Matrix4x4::PerspectiveProjectionDegrees(float fovx, float fovy, float n, float f) {
+    Matrix4x4 m;
+    PerspectiveProjectionDegrees(fovx, fovy, n, f, m);
     return m;
 }
 
@@ -3876,6 +3910,8 @@ Matrix4x4 Matrix4x4::LookAtFromDirection(const Vector3& direction) {
 }
 
 XOMATH_END_XO_NS();
+
+#undef _XO_ASSERT_MSG
 
 #endif
 
@@ -4693,7 +4729,7 @@ XOMATH_END_XO_NS();
 // p: patch release, contains fixes for a release version.
 
 #define XO_MATH_VERSION_DATE "Summer 2016"
-#define XO_MATH_VERSION_MAJOR 1
+#define XO_MATH_VERSION_MAJOR 0
 #define XO_MATH_VERSION_KIND "b"
 #define XO_MATH_VERSION_MINOR 2
 #define XO_MATH_VERSION_SUB 0
@@ -4706,7 +4742,11 @@ XOMATH_END_XO_NS();
 #   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with msvc " _XO_MATH_STRINGIFY(_MSC_VER) ", supporting simd: " XO_MATH_HIGHEST_SIMD "."
 #   pragma message(XO_MATH_COMPILER_INFO)
 #elif defined(__clang__)
-#   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with clang " _XO_MATH_STRINGIFY(__clang_major__) "." _XO_MATH_STRINGIFY(__clang_minor__) "." _XO_MATH_STRINGIFY(__clang_patchlevel__) ", supporting simd: " XO_MATH_HIGHEST_SIMD "."
+#   if defined(__APPLE__)
+#       define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with apple-clang " _XO_MATH_STRINGIFY(__clang_major__) "." _XO_MATH_STRINGIFY(__clang_minor__) "." _XO_MATH_STRINGIFY(__clang_patchlevel__) ", supporting simd: " XO_MATH_HIGHEST_SIMD "."
+#   else
+#       define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with clang " _XO_MATH_STRINGIFY(__clang_major__) "." _XO_MATH_STRINGIFY(__clang_minor__) "." _XO_MATH_STRINGIFY(__clang_patchlevel__) ", supporting simd: " XO_MATH_HIGHEST_SIMD "."
+#   endif
 // pragma message is a warning on clang.
 //#   pragma message XO_MATH_COMPILER_INFO
 #elif defined(__GNUC__)
