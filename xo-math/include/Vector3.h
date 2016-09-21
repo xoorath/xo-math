@@ -195,7 +195,7 @@ public:
     _XOINL bool operator != (const class Vector4& v) const;
     //! @}
 
-    //!> See
+    //>See
     //! @name Methods
     //! @{
 
@@ -207,19 +207,27 @@ public:
     //!
     //! \f$x+y+z\f$
     _XOINL float Sum() const;
-    // Return the magnitude (length) of this vector squared. This is faster than Magnitude().
+    //! The square length of this vector.
+    //! It's preferred to use Vector3::MagnitudeSquared when possible, as Vector3::Magnitude requires a call to Sqrt.
+    //!
+    //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert^2 = (x\times x)+(y\times y)+(z\times z)\f$
+    //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
     _XOINL float MagnitudeSquared() const;
-    // Return the magnitude (length) of this vector.
+    //! The length of this vector
+    //! It's preferred to use Vector3::MagnitudeSquared when possible, as Vector3::Magnitude requires a call to Sqrt.
+    //!
+    //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert = \sqrt{(x\times x)+(y\times y)+(z\times z)}\f$
+    //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
     _XOINL float Magnitude() const;
-    // Normalize this vector so that the magnitude (length) is 1, then return a reference to this vector.
-    // Note: This method has no effect if the length of the vector is already 1.
+    //! Normalizes this vector to a Magnitude of 1.
+    //! @sa https://en.wikipedia.org/wiki/Unit_vector
     _XOINL const Vector3& Normalize();
-    // Return a copy of this vector normalized so that the magnitude (length) is 1.
-    // Note: This method has no effect if the length of the vector is already 1.
+    //! Returns a copy of this vector with a unit length of 1.
+    //! @sa https://en.wikipedia.org/wiki/Unit_vector
     _XOINL Vector3 Normalized() const;
-    // Return true if the magnitude (length) of this vector is zero.
+    //! Returns true when the Magnitude of this vector is <= Vector3::Epsilon
     _XOINL bool IsZero() const;
-    // Return true if the magnitude (length) of this vector is 1.
+    //! Returns true when the Magnitude of this vector is within Vector3::Epsilon of being 1.0
     _XOINL bool IsNormalized() const;
     //! @}
 
@@ -280,7 +288,7 @@ public:
     //! Variants of other same-name static methods. See their documentation for more details under the 
     //! Static Methods heading.
     //!
-    //! Non static variants replace the first Vector4 parameter by 'this' vector.
+    //! Non static variants replace the first Vector3 parameter by 'this' vector.
     //! Static variants return what would have been the outVec param.
     //! @{
     _XOINL static void RandomInRange(float low, float high, Vector3& outVec);
@@ -318,6 +326,12 @@ public:
     _XOINL Vector3 RandomInConeDegrees(float angle) const;
     //! @}
 
+    //>See
+    //! @name Extras
+    //! @{
+
+    //! @todo Make this optional with a define.
+    //! Prints the contents of vector v and its magnitude to the provided ostream.
     friend std::ostream& operator <<(std::ostream& os, const Vector3& v) {
 #if XO_SSE
         os << "(x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", w:" << v.w << ", mag:" << v.Magnitude() << ")";
@@ -326,33 +340,56 @@ public:
 #endif
         return os;
     }
+    //! @}
 
+    ////////////////////////////////////////////////////////////////////////// Static Attributes
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#public_static_attributes
     static const Vector3
-        Origin,
-        UnitX,
-        UnitY,
-        UnitZ,
-        Up,
-        Down,
-        Left,
-        Right,
+        Origin, //!< \f$\begin{pmatrix}0&0&0\end{pmatrix}\f$
+        UnitX, //!< \f$\begin{pmatrix}1&0&0\end{pmatrix}\f$
+        UnitY, //!< \f$\begin{pmatrix}0&1&0\end{pmatrix}\f$
+        UnitZ, //!< \f$\begin{pmatrix}0&0&1\end{pmatrix}\f$
+        Up, //!< \f$\begin{pmatrix}0&1&0\end{pmatrix}\f$
+        Down, //!< \f$\begin{pmatrix}0&-1&0\end{pmatrix}\f$
+        Left, //!< \f$\begin{pmatrix}-1&0&0\end{pmatrix}\f$
+        Right, //!< \f$\begin{pmatrix}1&0&0\end{pmatrix}\f$
+        //! If XO_SPACE_LEFTHAND is defined: \f$\begin{pmatrix}0&0&1\end{pmatrix}\f$
+        //!
+        //! If XO_SPACE_RIGHTHAND is defined: \f$\begin{pmatrix}0&0&-1\end{pmatrix}\f$
+        //! @sa XO_SPACE_LEFTHAND, XO_SPACE_RIGHTHAND
         Forward,
+        //! If XO_SPACE_LEFTHAND is defined: \f$\begin{pmatrix}0&0&-1\end{pmatrix}\f$
+        //!
+        //! If XO_SPACE_RIGHTHAND is defined: \f$\begin{pmatrix}0&0&1\end{pmatrix}\f$
+        //! @sa XO_SPACE_LEFTHAND, XO_SPACE_RIGHTHAND
         Backward,
-        One,
-        Zero;
+        One, //!< \f$\begin{pmatrix}1&1&1\end{pmatrix}\f$
+        Zero; //!< \f$\begin{pmatrix}0&0&0\end{pmatrix}\f$
 
 #if XO_SSE
+    //! Smallest increment from zero that could be assigned to each element of this vector and would still be seen as equal to a zero vector.
     _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 3.0f;
 #else
+    //! Smallest increment from zero that could be assigned to each element of this vector and would still be seen as equal to a zero vector.
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 3.0f;
 #endif
 
+    ////////////////////////////////////////////////////////////////////////// Members
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#public_members
 #if XO_SSE
     union {
         struct {
-            float x, y, z, w;
+            float x;
+            float y;
+            float z;
+            //! Unused in math, used to pad the vector to 128 bits for SSE.
+            //! Exists only when SSE is in use, represents a 128 bit xmm register.
+            //! @sa https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions
+            float w;
         };
-        float f[4];
+        float f[4]; //!< ordered as \f$\begin{pmatrix}x&y&z&w\end{pmatrix}\f$
+        //! Exists when SSE is in use, represents a 128 bit xmm register.
+        //! @sa https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions
         __m128 m;
     };
 #else

@@ -91,23 +91,24 @@ function ReadInclude(name) {
     var txt = '';
 
     var reading = false;
+    var optionallyRemoveNextEmptyLine = false;
     for(var i = 0; i < split.length; ++i) {
-      if(split[i].indexOf('//!<') > 0) {
+      if(split[i].indexOf('//!<') >= 0) {
         var subidx = split[i].indexOf('//!<');
         // take everything but the start of the doxygen  same-line comment
         txt += split[i].substring(0, subidx) + '\n';
       }
-      else if(split[i].indexOf('//!') > 0) { 
+      else if(split[i].indexOf('//!') >= 0) { 
         // do nothing, doxygen comment
       }
-      else if(split[i].indexOf('//?') > 0) {
+      else if(split[i].indexOf('//?') >= 0) {
         // denotes a fake doxygen comment, to be excluded here and in doxygen
       }
-      else if(split[i].indexOf('/*!') > 0) {
+      else if(split[i].indexOf('/*!') >= 0) {
         // ignore doxygen block comment
         reading = false;
       }
-      else if(split[i].indexOf('//>See') > 0) {
+      else if(split[i].indexOf('//>See') >= 0) {
         var foundName = null;
         for(var j = i; j < split.length; ++j) {
           var nametag = '//! @name';
@@ -128,10 +129,20 @@ function ReadInclude(name) {
 
           txt += initialWhitespace
           txt += '// See: http://xo-math.rtfd.io/en/latest/classes/' + name.substring(0, name.indexOf('.h')).toLowerCase() + '.html#' + foundName + '\n';
+          optionallyRemoveNextEmptyLine = true;
         }
       }
       else if(reading) {
-        txt += split[i] + '\n';
+        var skipLine = false
+
+        if(optionallyRemoveNextEmptyLine) {
+          if(split[i].trim().length === 0)
+            skipLine = true;
+          optionallyRemoveNextEmptyLine = false;
+        }
+
+        if(!skipLine)
+          txt += split[i] + '\n';
       }
       else {
         if(split[i].indexOf('XOMATH_INTERNAL') > 0) {

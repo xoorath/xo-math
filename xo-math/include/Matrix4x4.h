@@ -385,7 +385,11 @@ public:
     \f]
     */
     _XOINL static void AxisAngleRadians(const Vector3& axis, float radians, Matrix4x4& outMatrix);
-    //! Calls Matrix4x4::RotationXRadians, converting the input degrees to radians.
+    //! The length of this vector.
+    //! It's preferred to use Vector3::MagnitudeSquared when possible, as Vector3::Magnitude requires a call to Sqrt.
+    //!
+    //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert = \sqrt{(x\times x)+(y\times y)+(z\times z)}\f$
+    //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
     _XOINL static void RotationXDegrees(float degrees, Matrix4x4& outMatrix);
     //! Calls Matrix4x4::RotationYRadians, converting the input degrees to radians.
     _XOINL static void RotationYDegrees(float degrees, Matrix4x4& outMatrix);

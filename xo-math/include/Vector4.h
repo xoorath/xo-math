@@ -87,7 +87,7 @@ public:
     //!
     //! \f$\begin{pmatrix}-x,&-y,&-z,&-w\end{pmatrix}\f$
     _XOINL Vector4 operator -() const;
-    //! Returns this vector swizzled so elements appear in reverse order.
+    //! Returns this vector swizzled so elements appear in reverse order. Vector4::WZYX provides the same functionality.
     //!
     //! \f$\begin{pmatrix}w,&z,&y,&x\end{pmatrix}\f$
     _XOINL Vector4 operator ~() const;
@@ -223,7 +223,7 @@ public:
     //! Normalizes this vector to a Magnitude of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
     _XOINL const Vector4& Normalize();
-    //! Produces a copy of this vector with a unit length of 1.
+    //! Returns a copy of this vector with a unit length of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
     _XOINL Vector4 Normalized() const;
     //! Returns true when the Magnitude of this vector is <= Vector4::Epsilon
