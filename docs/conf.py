@@ -8,6 +8,7 @@ if on_rtd:
   from subprocess import call 
   call('doxygen')
 
+needs_sphinx = '1.4'
 
 extensions = ['breathe', 'sphinx.ext.imgmath']
 
