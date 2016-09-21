@@ -124,7 +124,6 @@ static_assert(false, "Don't include DetectSIMD.h directly. Include xo-math.h.");
 #           define XO_AVX 1
 #           define XO_AVX2 1
 #       endif
-//! @todo add AVX512 for msvc when it exists.
 #   elif defined(__clang__) || defined (__GNUC__)
 #       if defined(__SSE__)
 #           define XO_SSE 1
@@ -700,96 +699,86 @@ static_assert(false, "Don't include Vector3.h directly. Include xo-math.h, which
 
 XOMATH_BEGIN_XO_NS();
 
-//! A three dimensional euclidean vector, optimized for use in games.
-//! \sa https://en.wikipedia.org/wiki/Euclidean_vector
 class _MM_ALIGN16 Vector3 {
 public:
-    // No initialization is done.
-    _XOINL Vector3();
-
-    _XOINL Vector3(float f);
-    _XOINL Vector3(float x, float y, float z);
-    _XOINL Vector3(const Vector3& vec);
+    ////////////////////////////////////////////////////////////////////////// Constructors
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#constructors
+    _XOINL Vector3(); 
+    _XOINL Vector3(float f); 
+    _XOINL Vector3(float x, float y, float z); 
+    _XOINL Vector3(const Vector3& vec); 
 #if XO_SSE
-    _XOINL Vector3(const __m128& vec);
+    _XOINL Vector3(const __m128& vec); 
 #endif
-    _XOINL Vector3(const class Vector2& v);
-    _XOINL Vector3(const class Vector4& v);
+    _XOINL Vector3(const class Vector2& v); 
+    _XOINL Vector3(const class Vector4& v); 
 
+    ////////////////////////////////////////////////////////////////////////// Set / Get Methods
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#set_get_methods
     _XOINL const Vector3& Set(float x, float y, float z);
-
     _XOINL const Vector3& Set(float f);
     _XOINL const Vector3& Set(const Vector3& vec);
-
 #if XO_SSE
     _XOINL const Vector3& Set(const __m128& vec);
 #endif
-
     _XOINL void Get(float& x, float& y, float &z) const;
     _XOINL void Get(float* f) const;
 
+    ////////////////////////////////////////////////////////////////////////// Special Operators
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#special_operators
     _XO_OVERLOAD_NEW_DELETE();
-
 #if XO_SSE
-    // type cast operator
     _XOINL operator __m128() const;
 #endif
-
     _XOINL float& operator [](int i);
     _XOINL const float& operator [](int i) const;
-
     _XOINL Vector3 operator -() const;
     _XOINL Vector3 operator ~() const;
 
+    ////////////////////////////////////////////////////////////////////////// Math Operators
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#math_operators
     _XOINL const Vector3& operator += (const Vector3& v);
     _XOINL const Vector3& operator += (float v);
     _XOINL const Vector3& operator += (double v);
     _XOINL const Vector3& operator += (int v);
     _XOINL const Vector3& operator += (const class Vector2& v);
     _XOINL const Vector3& operator += (const class Vector4& v);
-
     _XOINL const Vector3& operator -= (const Vector3& v);
     _XOINL const Vector3& operator -= (float v);
     _XOINL const Vector3& operator -= (double v);
     _XOINL const Vector3& operator -= (int v);
     _XOINL const Vector3& operator -= (const class Vector2& v);
     _XOINL const Vector3& operator -= (const class Vector4& v);
-
     _XOINL const Vector3& operator *= (const Vector3& v);
     _XOINL const Vector3& operator *= (float v);
     _XOINL const Vector3& operator *= (double v);
     _XOINL const Vector3& operator *= (int v);
     _XOINL const Vector3& operator *= (const class Vector2& v);
     _XOINL const Vector3& operator *= (const class Vector4& v);
-
     _XOINL const Vector3& operator /= (const Vector3& v);
     _XOINL const Vector3& operator /= (float v);
     _XOINL const Vector3& operator /= (double v);
     _XOINL const Vector3& operator /= (int v);
     _XOINL const Vector3& operator /= (const class Vector2& v);
     _XOINL const Vector3& operator /= (const class Vector4& v);
-
     _XOINL Vector3 operator + (const Vector3& v) const;
     _XOINL Vector3 operator + (float v) const;
     _XOINL Vector3 operator + (double v) const;
     _XOINL Vector3 operator + (int v) const;
     _XOINL Vector3 operator + (const class Vector2& v) const;
     _XOINL Vector3 operator + (const class Vector4& v) const;
-
     _XOINL Vector3 operator - (const Vector3& v) const;
     _XOINL Vector3 operator - (float v) const;
     _XOINL Vector3 operator - (double v) const;
     _XOINL Vector3 operator - (int v) const;
     _XOINL Vector3 operator - (const class Vector2& v) const;
     _XOINL Vector3 operator - (const class Vector4& v) const;
-
     _XOINL Vector3 operator * (const Vector3& v) const;
     _XOINL Vector3 operator * (float v) const;
     _XOINL Vector3 operator * (double v) const;
     _XOINL Vector3 operator * (int v) const;
     _XOINL Vector3 operator * (const class Vector2& v) const;
     _XOINL Vector3 operator * (const class Vector4& v) const;
-
     _XOINL Vector3 operator / (const Vector3& v) const;
     _XOINL Vector3 operator / (float v) const;
     _XOINL Vector3 operator / (double v) const;
@@ -797,27 +786,26 @@ public:
     _XOINL Vector3 operator / (const class Vector2& v) const;
     _XOINL Vector3 operator / (const class Vector4& v) const;
 
+    ////////////////////////////////////////////////////////////////////////// Comparison Operators
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#comparison_operators
     _XOINL bool operator < (const Vector3& v) const;
     _XOINL bool operator < (float v) const;
     _XOINL bool operator < (double v) const;
     _XOINL bool operator < (int v) const;
     _XOINL bool operator < (const class Vector2& v) const;
     _XOINL bool operator < (const class Vector4& v) const;
-
     _XOINL bool operator <= (const Vector3& v) const;
     _XOINL bool operator <= (float v) const;
     _XOINL bool operator <= (double v) const;
     _XOINL bool operator <= (int v) const;
     _XOINL bool operator <= (const class Vector2& v) const;
     _XOINL bool operator <= (const class Vector4& v) const;
-
     _XOINL bool operator > (const Vector3& v) const;
     _XOINL bool operator > (float v) const;
     _XOINL bool operator > (double v) const;
     _XOINL bool operator > (int v) const;
     _XOINL bool operator > (const class Vector2& v) const;
     _XOINL bool operator > (const class Vector4& v) const;
-
     _XOINL bool operator >= (const Vector3& v) const;
     _XOINL bool operator >= (float v) const;
     _XOINL bool operator >= (double v) const;
@@ -831,7 +819,6 @@ public:
     _XOINL bool operator == (int v) const;
     _XOINL bool operator == (const class Vector2& v) const;
     _XOINL bool operator == (const class Vector4& v) const;
-
     _XOINL bool operator != (const Vector3& v) const;
     _XOINL bool operator != (float v) const;
     _XOINL bool operator != (double v) const;
@@ -839,192 +826,74 @@ public:
     _XOINL bool operator != (const class Vector2& v) const;
     _XOINL bool operator != (const class Vector4& v) const;
 
-    // Return a copy of this vector swizzled so that x=z, y=y and z=x.
+    ////////////////////////////////////////////////////////////////////////// Methods
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#methods
     _XOINL Vector3 ZYX() const;
-
-    // Return x+y+z
     _XOINL float Sum() const;
-
-    // Return the magnitude (length) of this vector squared. This is faster than Magnitude().
     _XOINL float MagnitudeSquared() const;
-
-    // Return the magnitude (length) of this vector.
     _XOINL float Magnitude() const;
-
-    // Normalize this vector so that the magnitude (length) is 1, then return a reference to this vector.
-    // Note: This method has no effect if the length of the vector is already 1.
     _XOINL const Vector3& Normalize();
-
-    // Return a copy of this vector normalized so that the magnitude (length) is 1.
-    // Note: This method has no effect if the length of the vector is already 1.
     _XOINL Vector3 Normalized() const;
-
-    // Return true if the magnitude (length) of this vector is zero.
     _XOINL bool IsZero() const;
-
-    // Return true if the magnitude (length) of this vector is 1.
     _XOINL bool IsNormalized() const;
 
-    // Returns the dot product (scalar product) of vectors a and b.
-    // See: https://en.wikipedia.org/wiki/Dot_product
-    _XOINL static float Dot(const Vector3& a, const Vector3& b);
-
-    // Returns the cross product (vector product) of vectors a and b.
-    // See: https://en.wikipedia.org/wiki/Cross_product
-    _XOINL static void Cross(const Vector3& a, const Vector3& b, Vector3& outVec);
-
-    // Return a vector with each element equal to the max of that element in and b.
-    // Example: Max({1.0f, -1.0f, -1.0f}, {-1.0f, 1.0f, -1.0f}) == {1.0f, 1.0f, -1.0f}
+    ////////////////////////////////////////////////////////////////////////// Static Methods
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#static_methods
     _XOINL static void Max(const Vector3& a, const Vector3& b, Vector3& outVec);
-
-    // Return a vector with each element equal to the min of that element in and b.
-    // Example: Max({1.0f, -1.0f, 1.0f}, {-1.0f, 1.0f, 1.0f}) == {-1.0f, -1.0f, 1.0f}
     _XOINL static void Min(const Vector3& a, const Vector3& b, Vector3& outVec);
-
-    // Returns a point linearly interpolated between a and b by a factor of t. 
-    // Where t is 0, a is returned. Where t is 1, b is returned.
-    // See: https://en.wikipedia.org/wiki/Linear_interpolation
     _XOINL static void Lerp(const Vector3& a, const Vector3& b, float t, Vector3& outVec);
-
-    // Rotate the input vector v by 'angle' radians on the specified axis, and return the result.
-    // Example: RotateRadians(Vector3::Up, Vector3::Right, Pi/2.0f) == Vector3::Forward
+    _XOINL static float Dot(const Vector3& a, const Vector3& b);
+    _XOINL static void Cross(const Vector3& a, const Vector3& b, Vector3& outVec);
     _XOINL static void RotateRadians(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec);
-
-    // Rotate the input vector v by 'angle' degrees on the specified axis, and return the result.
-    // Example: RotateDegrees(Vector3::Up, Vector3::Right, 90.0f) == Vector3::Forward
     _XOINL static void RotateDegrees(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec);
-
-    // Return a random vector on edge of a cone with an angle relative to forward.
-    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
-    // angles at and beyond PI radians will no longer represent a meaningful cone.
     _XOINL static void RandomOnConeRadians(const Vector3& forward, float angle, Vector3& outVec);
-
-    // Return a random vector inside a cone with an angle relative to forward.
-    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
-    // angles at and beyond PI radians will no longer represent a meaningful cone.
     _XOINL static void RandomInConeRadians(const Vector3& forward, float angle, Vector3& outVec);
-
-    // Return a random vector on edge of a cone with an angle relative forward.
-    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
-    // angles at and beyond 180.0f degrees will no longer represent a meaningful cone.
     _XOINL static void RandomOnConeDegrees(const Vector3& forward, float angle, Vector3& outVec);
-
-    // Return a random vector inside a cone with an angle relative to forward.
-    // Note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
-    // angles at and beyond 180.0f degrees will no longer represent a meaningful cone.
     _XOINL static void RandomInConeDegrees(const Vector3& forward, float angle, Vector3& outVec);
-
-    // Return a random vector with a length of 1.0f
     _XOINL static void RandomOnSphere(Vector3& outVec);
-
-    // Return a random vector who's length does not exceed 1
     _XOINL static void RandomInSphere(Vector3& outVec);
-
-    // Return a random vector with length d
     _XOINL static void RandomAtDistance(float d, Vector3& outVec);
-
-    // Return a random vector who's length does not exceed d
     _XOINL static void RandomInDistance(float d, Vector3& outVec);
 
-    // Return a random vector with a magnitude between low and high
+
+    ////////////////////////////////////////////////////////////////////////// Variants
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#variants
     _XOINL static void RandomInRange(float low, float high, Vector3& outVec);
-
-    // Returns the angle in radians between vectors a and b.
     _XOINL static float AngleRadians(const Vector3& a, const Vector3& b);
-
-    // Returns the angle in degrees between vectors a and b.
     _XOINL static float AngleDegrees(const Vector3& a, const Vector3& b);
-
-    // Returns the distance between vectors a and b. This is faster than Distance().
     _XOINL static float DistanceSquared(const Vector3& a, const Vector3& b);
-
-    // Returns the distance between vectors a and b.
     _XOINL static float Distance(const Vector3&a, const Vector3&b);
-
-    // See static Vector3::Cross variant with the outVec parameter.
     _XOINL static Vector3 Cross(const Vector3& a, const Vector3& b);
-    
-    // See static Vector3::Max variant with the outVec parameter.
     _XOINL static Vector3 Max(const Vector3& a, const Vector3& b);
-    
-    // See static Vector3::Min variant with the outVec parameter.
     _XOINL static Vector3 Min(const Vector3& a, const Vector3& b);
-    
-    // See static Vector3::Lerp variant with the outVec parameter.
     _XOINL static Vector3 Lerp(const Vector3& a, const Vector3& b, float t);
-    
-    // See static Vector3::RotateRadians variant with the outVec parameter.
     _XOINL static Vector3 RotateRadians(const Vector3& v, const Vector3& axis, float angle);
-    
-    // See static Vector3::RotateDegrees variant with the outVec parameter.
     _XOINL static Vector3 RotateDegrees(const Vector3& v, const Vector3& axis, float angle);
-    
-    // See static Vector3::RandomOnConeRadians variant with the outVec parameter.
     _XOINL static Vector3 RandomOnConeRadians(const Vector3& forward, float angle);
-    
-    // See static Vector3::RandomInConeRadians variant with the outVec parameter.
     _XOINL static Vector3 RandomInConeRadians(const Vector3& forward, float angle);
-    
-    // See static Vector3::RandomOnConeDegrees variant with the outVec parameter.
     _XOINL static Vector3 RandomOnConeDegrees(const Vector3& forward, float angle);
-    
-    // See static Vector3::RandomInConeDegrees variant with the outVec parameter.
     _XOINL static Vector3 RandomInConeDegrees(const Vector3& forward, float angle);
-    
-    // See static Vector3::RandomOnSphere variant with the outVec parameter.
     _XOINL static Vector3 RandomOnSphere();
-    
-    // See static Vector3::RandomInSphere variant with the outVec parameter.
     _XOINL static Vector3 RandomInSphere();
-    
-    // See static Vector3::RandomAtDistance variant with the outVec parameter.
     _XOINL static Vector3 RandomAtDistance(float d);
-    
-    // See static Vector3::RandomInDistance variant with the outVec parameter.
     _XOINL static Vector3 RandomInDistance(float d);
-    
-    // See static Vector3::RandomInRange variant with the outVec parameter.
     _XOINL static Vector3 RandomInRange(float low, float high);
-
-    // See static Vector3::Dot
     _XOINL float Dot(const Vector3& v) const;
-
-    // See static Vector3::Cross
     _XOINL Vector3 Cross(const Vector3& v) const;
-
-    // See static Vector3::Dot
     _XOINL float AngleRadians(const Vector3& v) const;
-
-    // See static Vector3::AngleDegrees
     _XOINL float AngleDegrees(const Vector3& v) const;
-
-    // See static Vector3::DistanceSquared
     _XOINL float DistanceSquared(const Vector3& v) const;
-
-    // See static Vector3::Distance
     _XOINL float Distance(const Vector3& v) const;
-
-    // See static Vector3::Lerp
     _XOINL Vector3 Lerp(const Vector3& v, float t) const;
-
-    // See static Vector3::RotateRadians
     _XOINL Vector3 RotateRadians(const Vector3& axis, float angle) const;
-
-    // See static Vector3::RotateDegrees
     _XOINL Vector3 RotateDegrees(const Vector3& axis, float angle) const;
-
-    // See static Vector3::RandomOnConeRadians
     _XOINL Vector3 RandomOnConeRadians(float angle) const;
-
-    // See static Vector3::RandomInConeRadians
     _XOINL Vector3 RandomInConeRadians(float angle) const;
-
-    // See static Vector3::RandomOnConeDegrees
     _XOINL Vector3 RandomOnConeDegrees(float angle) const;
-
-    // See static Vector3::RandomInConeDegrees
     _XOINL Vector3 RandomInConeDegrees(float angle) const;
 
+    ////////////////////////////////////////////////////////////////////////// Extras
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#extras
     friend std::ostream& operator <<(std::ostream& os, const Vector3& v) {
 #if XO_SSE
         os << "(x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", w:" << v.w << ", mag:" << v.Magnitude() << ")";
@@ -1034,19 +903,21 @@ public:
         return os;
     }
 
+    ////////////////////////////////////////////////////////////////////////// Static Attributes
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#public_static_attributes
     static const Vector3
-        Origin,
-        UnitX,
-        UnitY,
-        UnitZ,
-        Up,
-        Down,
-        Left,
-        Right,
+        Origin, 
+        UnitX, 
+        UnitY, 
+        UnitZ, 
+        Up, 
+        Down, 
+        Left, 
+        Right, 
         Forward,
         Backward,
-        One,
-        Zero;
+        One, 
+        Zero; 
 
 #if XO_SSE
     _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 3.0f;
@@ -1054,12 +925,17 @@ public:
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 3.0f;
 #endif
 
+    ////////////////////////////////////////////////////////////////////////// Members
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#public_members
 #if XO_SSE
     union {
         struct {
-            float x, y, z, w;
+            float x;
+            float y;
+            float z;
+            float w;
         };
-        float f[4];
+        float f[4]; 
         __m128 m;
     };
 #else
@@ -1117,10 +993,6 @@ static_assert(false, "Don't include Vector4.h directly. Include xo-math.h, which
 
 XOMATH_BEGIN_XO_NS();
 
-//! @brief A four dimensional euclidean vector, optimized for use in games.
-//!
-//! Most useful for three dimensional rotations. See Matrix4x4::Transform and Matrix4x4::operator*=.
-//! @sa https://en.wikipedia.org/wiki/Euclidean_vector
 class _MM_ALIGN16 Vector4 {
 public:
     ////////////////////////////////////////////////////////////////////////// Constructors
@@ -1140,7 +1012,6 @@ public:
     _XOINL const Vector4& Set(float x, float y, float z, float w);
     _XOINL const Vector4& Set(float f);
     _XOINL const Vector4& Set(const Vector4& vec);
-
 #if XO_SSE
     _XOINL const Vector4& Set(const __m128& vec);
 #endif
@@ -1149,7 +1020,6 @@ public:
 
     ////////////////////////////////////////////////////////////////////////// Special Operators
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#special_operators
-
     _XO_OVERLOAD_NEW_DELETE();
 #if XO_SSE
     _XOINL operator const __m128&() const;
@@ -1159,32 +1029,26 @@ public:
     _XOINL Vector4 operator -() const;
     _XOINL Vector4 operator ~() const;
 
-    ////////////////////////////////////////////////////////////////////////// Add Equals Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#add_equals_operator
+    ////////////////////////////////////////////////////////////////////////// Math Operators
+    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#math_operators
     _XOINL const Vector4& operator += (const Vector4& v);
     _XOINL const Vector4& operator += (float v);
     _XOINL const Vector4& operator += (double v);
     _XOINL const Vector4& operator += (int v);
     _XOINL const Vector4& operator += (const class Vector2& v);
     _XOINL const Vector4& operator += (const class Vector3& v);
-    ////////////////////////////////////////////////////////////////////////// Subtract Equals Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#subtract_equals_operator
     _XOINL const Vector4& operator -= (const Vector4& v);
     _XOINL const Vector4& operator -= (float v);
     _XOINL const Vector4& operator -= (double v);
     _XOINL const Vector4& operator -= (int v);
     _XOINL const Vector4& operator -= (const class Vector2& v);
     _XOINL const Vector4& operator -= (const class Vector3& v);
-    ////////////////////////////////////////////////////////////////////////// Multiply Equals Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#multiply_equals_operator
     _XOINL const Vector4& operator *= (const Vector4& v);
     _XOINL const Vector4& operator *= (float v);
     _XOINL const Vector4& operator *= (double v);
     _XOINL const Vector4& operator *= (int v);
     _XOINL const Vector4& operator *= (const class Vector2& v);
     _XOINL const Vector4& operator *= (const class Vector3& v);
-    ////////////////////////////////////////////////////////////////////////// Divide Equals Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#divide_equals_operator
     // See: XO_NO_INVERSE_DIVISION
     _XOINL const Vector4& operator /= (const Vector4& v);
     _XOINL const Vector4& operator /= (float v);
@@ -1192,32 +1056,24 @@ public:
     _XOINL const Vector4& operator /= (int v);
     _XOINL const Vector4& operator /= (const class Vector2& v);
     _XOINL const Vector4& operator /= (const class Vector3& v);
-    ////////////////////////////////////////////////////////////////////////// Addition Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#addition_operator
     _XOINL Vector4 operator + (const Vector4& v) const;
     _XOINL Vector4 operator + (float v) const;
     _XOINL Vector4 operator + (double v) const;
     _XOINL Vector4 operator + (int v) const;
     _XOINL Vector4 operator + (const class Vector2& v) const;
     _XOINL Vector4 operator + (const class Vector3& v) const;
-    ////////////////////////////////////////////////////////////////////////// Subtraction Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#subtraction_operator
     _XOINL Vector4 operator - (const Vector4& v) const;
     _XOINL Vector4 operator - (float v) const;
     _XOINL Vector4 operator - (double v) const;
     _XOINL Vector4 operator - (int v) const;
     _XOINL Vector4 operator - (const class Vector2& v) const;
     _XOINL Vector4 operator - (const class Vector3& v) const;
-    ////////////////////////////////////////////////////////////////////////// Multiplication Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#multiplication_operator
     _XOINL Vector4 operator * (const Vector4& v) const;
     _XOINL Vector4 operator * (float v) const;
     _XOINL Vector4 operator * (double v) const;
     _XOINL Vector4 operator * (int v) const;
     _XOINL Vector4 operator * (const class Vector2& v) const;
     _XOINL Vector4 operator * (const class Vector3& v) const;
-    ////////////////////////////////////////////////////////////////////////// Division Operator
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#division_operator
     // See: XO_NO_INVERSE_DIVISION
     _XOINL Vector4 operator / (const Vector4& v) const;
     _XOINL Vector4 operator / (float v) const;
@@ -1252,8 +1108,7 @@ public:
     _XOINL bool operator >= (int v) const;
     _XOINL bool operator >= (const class Vector2& v) const;
     _XOINL bool operator >= (const class Vector3& v) const;
-    ////////////////////////////////////////////////////////////////////////// Equality Operators
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#equality_operators
+
     _XOINL bool operator == (const Vector4& v) const;
     _XOINL bool operator == (float v) const;
     _XOINL bool operator == (double v) const;
@@ -1267,8 +1122,6 @@ public:
     _XOINL bool operator != (const class Vector2& v) const;
     _XOINL bool operator != (const class Vector3& v) const;
 
-    ////////////////////////////////////////////////////////////////////////// Public Functions
-    // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#public_functions
 
     _XOINL float Sum() const;
     _XOINL float MagnitudeSquared() const;
@@ -1278,9 +1131,9 @@ public:
     _XOINL bool IsZero() const;
     _XOINL bool IsNormalized() const;
 
+
     ////////////////////////////////////////////////////////////////////////// Static Methods
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#static_methods
-
     _XOINL static void Max(const Vector4& a, const Vector4& b, Vector4& outVec);
     _XOINL static void Min(const Vector4& a, const Vector4& b, Vector4& outVec);
     _XOINL static void Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec);
@@ -1300,7 +1153,6 @@ public:
 
     ////////////////////////////////////////////////////////////////////////// Extras
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#extras
-
     friend std::ostream& operator <<(std::ostream& os, const Vector4& v) {
         os << "(x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", w:" << v.w << ", mag:" << v.Magnitude() << ")";
         return os;
@@ -1358,10 +1210,6 @@ _XOMATH_INTERNAL_MACRO_WARNING
 
 XOMATH_BEGIN_XO_NS();
 
-//! @brief A 4x4 matrix type for building transformations.
-//!
-//! The Matrix4x4 is constructed with an array of four Vector4 rows.
-//! @sa https://en.wikipedia.org/wiki/Matrix_(mathematics)
 class _MM_ALIGN16 Matrix4x4 {
 public:
     //> See
@@ -1384,7 +1232,6 @@ public:
 
     ////////////////////////////////////////////////////////////////////////// Special Operators
     // See: http://xo-math.rtfd.io/en/latest/classes/matrix4x4.html#special_operators
-
     _XO_OVERLOAD_NEW_DELETE();
     _XOINL const Vector4& operator [](int i) const;
     _XOINL Vector4& operator [](int i);
@@ -1419,7 +1266,6 @@ public:
 
     ////////////////////////////////////////////////////////////////////////// Static Methods
     // See: http://xo-math.rtfd.io/en/latest/classes/matrix4x4.html#static_methods
-
     _XOINL static void Scale(float xyz, Matrix4x4& outMatrix);
     _XOINL static void Scale(float x, float y, float z, Matrix4x4& outMatrix);
     _XOINL static void Scale(const Vector3& v, Matrix4x4& outMatrix);
@@ -1479,7 +1325,6 @@ public:
 
     ////////////////////////////////////////////////////////////////////////// Extras
     // See: http://xo-math.rtfd.io/en/latest/classes/matrix4x4.html#extras
-
     friend std::ostream& operator <<(std::ostream& os, const Matrix4x4& m) {
         os << "\nrow 0: " << m.r[0] << "\nrow 1: " << m.r[1] << "\nrow 2: " << m.r[2] << "\nrow 3: " << m.r[3] << "\n";
         return os;
