@@ -284,11 +284,16 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #endif // XOMATH_INTERNAL
 
 
-#if defined(_XOCONSTEXPR)
+#if defined(_XOCONSTEXPR) || defined(_XONOCONSTEXPR)
 _XOMATH_INTERNAL_MACRO_WARNING
 #else
 // todo: remove constexpr in visual studio 2013 and re-test for support
-#   define _XOCONSTEXPR constexpr
+#   if defined(_MSC_VER) && _MSC_VER < 1800
+#       define _XOCONSTEXPR
+#       define _XONOCONSTEXPR
+#    else
+#       define _XOCONSTEXPR constexpr
+#    endif
 #endif
 
 #if defined(_XOINL)
@@ -307,8 +312,10 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #if defined(_XOTLS)
 _XOMATH_INTERNAL_MACRO_WARNING
 #else
-#   if defined(__clang__) && defined(__APPLE__)
+#   if (defined(__clang__) && defined(__APPLE__))
 #       define _XOTLS __thread
+#	elif (defined(_MSC_VER) && _MSC_VER < 1800)
+#       define _XOTLS __declspec(thread)
 #   else
 #       define _XOTLS thread_local
 #   endif
@@ -318,7 +325,7 @@ _XOMATH_INTERNAL_MACRO_WARNING
 _XOMATH_INTERNAL_MACRO_WARNING
 #else
     // apple clang doesn't give us thread_local until xcode 8.
-#   if defined(__clang__) && (__APPLE__)
+#   if (defined(__clang__) && defined(__APPLE__)) || (defined(_MSC_VER) && _MSC_VER < 1800)
 #       define _XO_TLS_ENGINE \
             static _XOTLS std::mt19937* tls_engline; \
             static _XOTLS char mem[sizeof(std::mt19937)];\
@@ -334,7 +341,7 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #if defined(_XO_TLS_DISTRIBUTION)
 _XOMATH_INTERNAL_MACRO_WARNING
 #else
-#   if defined(__clang__) && (__APPLE__)
+#   if defined(__clang__) && defined(__APPLE__) || (defined(_MSC_VER) && _MSC_VER < 1800)
 #       define _XO_TLS_DISTRIBUTION dist(*tls_engline)
 #   else
 #       define _XO_TLS_DISTRIBUTION dist(tls_engline)
@@ -670,13 +677,22 @@ public:
         One,
         Zero;
 
+#if defined(_XONOCONSTEXPR)
+    static const float Epsilon;
+#else
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 2.0f;
+#endif
+
 
     union {
         struct { float x, y; };
         float f[2];
     };
 };
+
+#if defined(_XONOCONSTEXPR)
+const float Vector2::Epsilon = FloatEpsilon * 2.0f;
+#endif
 
 const Vector2 Vector2::UnitX(1.0f, 0.0f);
 const Vector2 Vector2::UnitY(0.0f, 1.0f);
@@ -919,10 +935,14 @@ public:
         One, 
         Zero; 
 
-#if XO_SSE
-    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 3.0f;
+#if defined(_XONOCONSTEXPR)
+    static const float Epsilon;
 #else
+#   if XO_SSE
+    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 3.0f;
+#   else
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 3.0f;
+#   endif
 #endif
 
     ////////////////////////////////////////////////////////////////////////// Members
@@ -952,6 +972,14 @@ private:
     static const __m128 MASK;
 #endif
 };
+
+#if defined(_XONOCONSTEXPR)
+#   if XO_SSE
+const float Vector3::Epsilon = sse::SSEFloatEpsilon * 3.0f;
+#   else
+const float Vector3::Epsilon = FloatEpsilon * 3.0f;
+#   endif
+#endif
 
 #if XO_SSE2
 const __m128 Vector3::MASK = _mm_castsi128_ps(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff));
@@ -1168,10 +1196,14 @@ public:
         UnitZ, 
         UnitW; 
 
-#if XO_SSE
-    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
+#if defined(_XONOCONSTEXPR)
+    static const float Epsilon;
 #else
+#   if XO_SSE
+    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
+#   else
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
+#   endif
 #endif
 
     ////////////////////////////////////////////////////////////////////////// Members
@@ -1190,13 +1222,21 @@ public:
     };
 };
 
-const Vector4 Vector4::One = {1.0f, 1.0f, 1.0f, 1.0f};
-const Vector4 Vector4::Zero = {0.0f, 0.0f, 0.0f, 0.0f};
+#if defined(_XONOCONSTEXPR)
+#   if XO_SSE
+const float Vector4::Epsilon = sse::SSEFloatEpsilon * 4.0f;
+#   else
+const float Vector4::Epsilon = FloatEpsilon * 4.0f;
+#   endif
+#endif
 
-const Vector4 Vector4::UnitX = {1.0f, 0.0f, 0.0f, 0.0f};
-const Vector4 Vector4::UnitY = {0.0f, 1.0f, 0.0f, 0.0f};
-const Vector4 Vector4::UnitZ = {0.0f, 0.0f, 1.0f, 0.0f};
-const Vector4 Vector4::UnitW = {0.0f, 0.0f, 0.0f, 1.0f};
+const Vector4 Vector4::One(1.0f, 1.0f, 1.0f, 1.0f);
+const Vector4 Vector4::Zero(0.0f, 0.0f, 0.0f, 0.0f);
+
+const Vector4 Vector4::UnitX(1.0f, 0.0f, 0.0f, 0.0f);
+const Vector4 Vector4::UnitY(0.0f, 1.0f, 0.0f, 0.0f);
+const Vector4 Vector4::UnitZ(0.0f, 0.0f, 1.0f, 0.0f);
+const Vector4 Vector4::UnitW(0.0f, 0.0f, 0.0f, 1.0f);
 
 XOMATH_END_XO_NS();
 
@@ -1338,26 +1378,20 @@ public:
         Zero;
 };
 
-const Matrix4x4 Matrix4x4::Identity = {
-                                        {1.0f, 0.0f, 0.0f, 0.0f},
-                                        {0.0f, 1.0f, 0.0f, 0.0f},
-                                        {0.0f, 0.0f, 1.0f, 0.0f},
-                                        {0.0f, 0.0f, 0.0f, 1.0f}
-                                    };
+const Matrix4x4 Matrix4x4::Identity(Vector4(1.0f, 0.0f, 0.0f, 0.0f),
+                                    Vector4(0.0f, 1.0f, 0.0f, 0.0f),
+                                    Vector4(0.0f, 0.0f, 1.0f, 0.0f),
+                                    Vector4(0.0f, 0.0f, 0.0f, 1.0f));
 
-const Matrix4x4 Matrix4x4::One = {
-                                    {1.0f, 1.0f, 1.0f, 1.0f},
-                                    {1.0f, 1.0f, 1.0f, 1.0f},
-                                    {1.0f, 1.0f, 1.0f, 1.0f},
-                                    {1.0f, 1.0f, 1.0f, 1.0f}
-                                };
+const Matrix4x4 Matrix4x4::One(Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+                               Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+                               Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+                               Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 
-const Matrix4x4 Matrix4x4::Zero = {
-                                    {0.0f, 0.0f, 0.0f, 0.0f},
-                                    {0.0f, 0.0f, 0.0f, 0.0f},
-                                    {0.0f, 0.0f, 0.0f, 0.0f},
-                                    {0.0f, 0.0f, 0.0f, 0.0f}
-                                };
+const Matrix4x4 Matrix4x4::Zero(Vector4(0.0f, 0.0f, 0.0f, 0.0f),
+                                Vector4(0.0f, 0.0f, 0.0f, 0.0f),
+                                Vector4(0.0f, 0.0f, 0.0f, 0.0f),
+                                Vector4(0.0f, 0.0f, 0.0f, 0.0f));
 
 XOMATH_END_XO_NS();
 
@@ -1427,10 +1461,14 @@ public:
         Identity,
         Zero;
 
-#if XO_SSE
-    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
+#if defined(_XONOCONSTEXPR)
+    static const float Epsilon;
 #else
+#   if XO_SSE
+    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
+#   else
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
+#   endif
 #endif
 
     union {
@@ -1452,8 +1490,16 @@ private:
 #endif
 };
 
-const Quaternion Quaternion::Identity = { 0.0f, 0.0f, 0.0f, 1.0f };
-const Quaternion Quaternion::Zero = { 0.0f, 0.0f, 0.0f, 0.0f };
+#if defined(_XONOCONSTEXPR)
+#   if XO_SSE
+const float Quaternion::Epsilon = sse::SSEFloatEpsilon * 4.0f;
+#   else
+const float Quaternion::Epsilon = FloatEpsilon * 4.0f;
+#   endif
+#endif
+
+const Quaternion Quaternion::Identity(0.0f, 0.0f, 0.0f, 1.0f);
+const Quaternion Quaternion::Zero(0.0f, 0.0f, 0.0f, 0.0f);
 
 XOMATH_END_XO_NS();
 
@@ -1601,14 +1647,14 @@ bool Vector2::operator == (double v) const                  { return *this == (f
 bool Vector2::operator == (int v) const                     { return *this == (float)(v*v); }
 bool Vector2::operator == (const class Vector3& v) const {
 #   if XO_SSE2
-    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, y, x), v.m)), sse::Epsilon)) & 0b0011) == 0b0011;
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, y, x), v.m)), sse::Epsilon)) & 3) == 3;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
 #   endif
 }
 bool Vector2::operator == (const class Vector4& v) const {
 #   if XO_SSE
-    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, y, x), v.m)), sse::Epsilon)) & 0b0011) == 0b0011;
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, y, x), v.m)), sse::Epsilon)) & 3) == 3;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
 #   endif
@@ -2078,7 +2124,7 @@ bool Vector3::operator >= (const class Vector4& v) const    { return MagnitudeSq
 
 bool Vector3::operator == (const Vector3& v) const {
 #   if XO_SSE2
-    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v, m)), sse::Epsilon)) & 0b0111) == 0b0111;
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v, m)), sse::Epsilon)) & 7) == 7;
 #   elif XO_SSE
     // TODO: find a faster way with SSE to do a 'close enough' check.
     // I'm not sure if there's a way to do the sign bit masking like we have in sse::Abs to acomplish
@@ -2093,14 +2139,14 @@ bool Vector3::operator == (double v) const                  { return CloseEnough
 bool Vector3::operator == (int v) const                     { return CloseEnough(MagnitudeSquared(), (float)(v*v), Epsilon);}
 bool Vector3::operator == (const class Vector2& v) const {
 #   if XO_SSE
-    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, v.y, v.x), m)), sse::Epsilon)) & 0b0011) == 0b0011;
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, v.y, v.x), m)), sse::Epsilon)) & 3) == 3;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
 #   endif
 }
 bool Vector3::operator == (const class Vector4& v) const {
 #   if XO_SSE
-    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 0b0111) == 0b0111;
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 7) == 7;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon) && CloseEnough(z, v.z, Epsilon);
 #   endif
@@ -2874,7 +2920,7 @@ bool Vector4::operator >= (const class Vector3& v) const      { return Magnitude
 
 bool Vector4::operator == (const Vector4& v) const {
 #   if XO_SSE2
-    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 0b1111) == 0b1111;
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 15) == 15;
 #   elif XO_SSE
     // TODO: find a faster way with SSE to do a 'close enough' check.
     // I'm not sure if there's a way to do the sign bit masking like we have in sse::Abs to acomplish
@@ -2899,7 +2945,7 @@ bool Vector4::operator == (int v) const             { return CloseEnough(Magnitu
 bool Vector4::operator == (const class Vector2& v) const {
 #   if XO_SSE
     // Todo: check that this is actually faster.
-    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(m, _mm_set_ps(0.0f, 0.0f, v.y, v.x))), sse::Epsilon)) & 0b0011) == 0b0011;
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(m, _mm_set_ps(0.0f, 0.0f, v.y, v.x))), sse::Epsilon)) & 3) == 3;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
 #   endif
@@ -2907,7 +2953,7 @@ bool Vector4::operator == (const class Vector2& v) const {
 
 bool Vector4::operator == (const class Vector3& v) const {
 #   if XO_SSE
-    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 0b0111) == 0b0111;
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 7) == 7;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon) && CloseEnough(z, v.z, Epsilon);
 #   endif
@@ -3271,12 +3317,12 @@ const Matrix4x4& Matrix4x4::operator -= (const Matrix4x4& m) {
 
 const Matrix4x4& Matrix4x4::operator *= (const Matrix4x4& m) {
     auto t = m.Transpose();
-    return (*this) = {
+    return (*this) = Matrix4x4(
         (r[0] * t[0]).Sum(), (r[0] * t[1]).Sum(), (r[0] * t[2]).Sum(), (r[0] * t[3]).Sum(),
         (r[1] * t[0]).Sum(), (r[1] * t[1]).Sum(), (r[1] * t[2]).Sum(), (r[1] * t[3]).Sum(),
         (r[2] * t[0]).Sum(), (r[2] * t[1]).Sum(), (r[2] * t[2]).Sum(), (r[2] * t[3]).Sum(),
         (r[3] * t[0]).Sum(), (r[3] * t[1]).Sum(), (r[3] * t[2]).Sum(), (r[3] * t[3]).Sum()
-    };
+    );
 }
 
 Matrix4x4 Matrix4x4::operator + (const Matrix4x4& m) const { return Matrix4x4(*this) += m; }
@@ -3284,11 +3330,11 @@ Matrix4x4 Matrix4x4::operator - (const Matrix4x4& m) const { return Matrix4x4(*t
 Matrix4x4 Matrix4x4::operator * (const Matrix4x4& m) const { return Matrix4x4(*this) *= m; }
 
 Vector4 Matrix4x4::operator * (const Vector4& v) const {
-    return { (r[0] * v).Sum(), (r[1] * v).Sum(), (r[2] * v).Sum(), (r[3] * v).Sum() };
+    return Vector4((r[0] * v).Sum(), (r[1] * v).Sum(), (r[2] * v).Sum(), (r[3] * v).Sum());
 }
 
 Vector3 Matrix4x4::operator * (const Vector3& v) const {
-    return{ (r[0] * v).Sum(), (r[1] * v).Sum(), (r[2] * v).Sum() };
+    return Vector3((r[0] * v).Sum(), (r[1] * v).Sum(), (r[2] * v).Sum());
 }
 
 XOMATH_END_XO_NS();
@@ -3316,56 +3362,45 @@ Matrix4x4::Matrix4x4(float m)
     r[0].m = r[1].m = r[2].m = r[3].m = _mm_set_ps1(m);
 }
 #else
-    : r {
-        Vector4(m),
-        Vector4(m),
-        Vector4(m),
-        Vector4(m)
-    }
 {
+	r[0] = Vector4(m);
+	r[1] = Vector4(m);
+	r[2] = Vector4(m);
+	r[3] = Vector4(m);
 }
 #endif
 
-Matrix4x4::Matrix4x4(float a0, float b0, float c0, float d0, float a1, float b1, float c1, float d1, float a2, float b2, float c2, float d2, float a3, float b3, float c3, float d3) :
-    r {
-        Vector4(a0, b0, c0, d0),
-        Vector4(a1, b1, c1, d1),
-        Vector4(a2, b2, c2, d2),
-        Vector4(a3, b3, c3, d3)
-    }
-
+Matrix4x4::Matrix4x4(float a0, float b0, float c0, float d0, float a1, float b1, float c1, float d1, float a2, float b2, float c2, float d2, float a3, float b3, float c3, float d3)
 {
+    r[0] = Vector4(a0, b0, c0, d0);
+    r[1] = Vector4(a1, b1, c1, d1);
+    r[2] = Vector4(a2, b2, c2, d2);
+    r[3] = Vector4(a3, b3, c3, d3);
 }
 
 // TODO: couldn't this be faster with just a single copy?
-Matrix4x4::Matrix4x4(const Matrix4x4& m) :
-    r {
-        m.r[0], 
-        m.r[1], 
-        m.r[2],
-        m.r[3]
-    }
+Matrix4x4::Matrix4x4(const Matrix4x4& m)
 {
+	r[0] = m.r[0];
+	r[1] = m.r[1];
+	r[2] = m.r[2];
+	r[3] = m.r[3];
 }
 
-Matrix4x4::Matrix4x4(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3)  :
-    r {
-        r0,
-        r1,
-        r2,
-        r3
-    }
+Matrix4x4::Matrix4x4(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3)
 {
+	r[0] = r0;
+	r[1] = r1;
+	r[2] = r2;
+	r[3] = r3;
 }
 
-Matrix4x4::Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2) :
-    r {
-        Vector4(r0), 
-        Vector4(r1), 
-        Vector4(r2), 
-        Vector4(0.0f, 0.0f, 0.0f, 1.0f)
-    }
+Matrix4x4::Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2)
 {
+	r[0] = Vector4(r0);
+	r[1] = Vector4(r1);
+	r[2] = Vector4(r2);
+	r[3] = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 Matrix4x4::Matrix4x4(const class Quaternion& q) {
@@ -3379,9 +3414,9 @@ Matrix4x4::Matrix4x4(const class Quaternion& q) {
     float xz2 = q.x * q2.z;
     float yz2 = q.y * q2.z;
 
-    r[0] = { 1.0f - qq2.y - qq2.z,  xy2 + wq2.z,            xz2 - wq2.y,          0.0f};
-    r[1] = { xy2 - wq2.z,           1.0f - qq2.x - qq2.z,   yz2 + wq2.x,          0.0f};
-    r[2] = { xz2 + wq2.y,           yz2 - wq2.x,            1.0f - qq2.x - qq2.y,   0.0f};
+    r[0] = Vector4( 1.0f - qq2.y - qq2.z,  xy2 + wq2.z,            xz2 - wq2.y,          0.0f);
+    r[1] = Vector4( xy2 - wq2.z,           1.0f - qq2.x - qq2.z,   yz2 + wq2.x,          0.0f);
+    r[2] = Vector4( xz2 + wq2.y,           yz2 - wq2.x,            1.0f - qq2.x - qq2.y, 0.0f);
     r[3] = Vector4::UnitW;
 }
 
@@ -3427,82 +3462,82 @@ void Matrix4x4::Scale(float xyz, Matrix4x4& m) {
     // 0 1 0 0
     // 0 0 1 0
     // 0 0 0 1/xyz
-    m = {
-            {xyz,  0.0f, 0.0f, 0.0f},
-            {0.0f, xyz,  0.0f, 0.0f},
-            {0.0f, 0.0f, xyz,  0.0f},
-            {0.0f, 0.0f, 0.0f, 1.0f}
-        };
+    m = Matrix4x4(
+            xyz,  0.0f, 0.0f, 0.0f,
+            0.0f, xyz,  0.0f, 0.0f,
+            0.0f, 0.0f, xyz,  0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
 }
  
 void Matrix4x4::Scale(float x, float y, float z, Matrix4x4& m) {
-    m = {
-            {x,    0.0f, 0.0f, 0.0f},
-            {0.0f, y,    0.0f, 0.0f},
-            {0.0f, 0.0f, z,    0.0f},
-            {0.0f, 0.0f, 0.0f, 1.0f}
-        };
+    m = Matrix4x4(
+            x,    0.0f, 0.0f, 0.0f,
+            0.0f, y,    0.0f, 0.0f,
+            0.0f, 0.0f, z,    0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
 }
 
 void Matrix4x4::Scale(const Vector3& v, Matrix4x4& m) {
-    m = {
-            {v.x,  0.0f, 0.0f, 0.0f},
-            {0.0f, v.y,  0.0f, 0.0f},
-            {0.0f, 0.0f, v.z,  0.0f},
-            {0.0f, 0.0f, 0.0f, 1.0f}
-        };
+    m = Matrix4x4(
+            v.x,  0.0f, 0.0f, 0.0f,
+            0.0f, v.y,  0.0f, 0.0f,
+            0.0f, 0.0f, v.z,  0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
 }
  
 void Matrix4x4::Translation(float x, float y, float z, Matrix4x4& m) {
-    m = {
-            {1.0f, 0.0f, 0.0f, x   },
-            {0.0f, 1.0f, 0.0f, y   },
-            {0.0f, 0.0f, 1.0f, z   },
-            {0.0f, 0.0f, 0.0f, 1.0f}
-        };
+   m = Matrix4x4(
+            1.0f, 0.0f, 0.0f, x   ,
+            0.0f, 1.0f, 0.0f, y   ,
+            0.0f, 0.0f, 1.0f, z   ,
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
 }
 
 void Matrix4x4::Translation(const Vector3& v, Matrix4x4& m) {
-    m = {
-            {1.0f, 0.0f, 0.0f, v.x },
-            {0.0f, 1.0f, 0.0f, v.y },
-            {0.0f, 0.0f, 1.0f, v.z },
-            {0.0f, 0.0f, 0.0f, 1.0f}
-        };
+    m = Matrix4x4(
+            1.0f, 0.0f, 0.0f, v.x ,
+            0.0f, 1.0f, 0.0f, v.y ,
+            0.0f, 0.0f, 1.0f, v.z ,
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
 }
 
 void Matrix4x4::RotationXRadians(float radians, Matrix4x4& m) {
     float cosr = Cos(radians);
     float sinr = Sin(radians);
-    m = {
-            {1.0f, 0.0f, 0.0f, 0.0f},
-            {0.0f, cosr,-sinr, 0.0f},
-            {0.0f, sinr, cosr, 0.0f},
-            {0.0f, 0.0f, 0.0f, 1.0f}
-        };
+    m = Matrix4x4(
+            1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, cosr,-sinr, 0.0f,
+            0.0f, sinr, cosr, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
     
 }
  
 void Matrix4x4::RotationYRadians(float radians, Matrix4x4& m) {
     float cosr = Cos(radians);
     float sinr = Sin(radians);
-    m = {
-            {cosr, 0.0f,-sinr, 0.0f},
-            {0.0f, 1.0f, 0.0f, 0.0f},
-            {sinr, 0.0f, cosr, 0.0f},
-            {0.0f, 0.0f, 0.0f, 1.0f}
-        };
+    m = Matrix4x4(
+            cosr, 0.0f,-sinr, 0.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+            sinr, 0.0f, cosr, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
 }
 
 void Matrix4x4::RotationZRadians(float radians, Matrix4x4& m) {
     float cosr = Cos(radians);
     float sinr = Sin(radians);
-    m = {
-            {cosr,-sinr, 0.0f, 0.0f},
-            {sinr, cosr, 0.0f, 0.0f},
-            {0.0f, 0.0f, 1.0f, 0.0f},
-            {0.0f, 0.0f, 0.0f, 1.0f}
-        };
+    m = Matrix4x4(
+            cosr,-sinr, 0.0f, 0.0f,
+            sinr, cosr, 0.0f, 0.0f,
+            0.0f, 0.0f, 1.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
 }
 
 void Matrix4x4::RotationRadians(float x, float y, float z, Matrix4x4& m) {
@@ -3528,12 +3563,12 @@ void Matrix4x4::AxisAngleRadians(const Vector3& a, float radians, Matrix4x4& m) 
     const float& x = a.x;
     const float& y = a.y;
     const float& z = a.z;
-    m = {
-            { t*x*x+c  ,    t*x*y-z*s,  t*x*z+y*s,  0.0f},
-            { t*x*y+z*s,    t*y*y+c  ,  t*y*z-x*s,  0.0f},
-            { t*x*z-y*s,    t*y*z+x*s,  t*z*z+c  ,  0.0f},
-            { 0.0f,         0.0f,       0.0f,       1.0f}
-        };
+    m = Matrix4x4(
+             t*x*x+c  ,    t*x*y-z*s,  t*x*z+y*s,  0.0f,
+             t*x*y+z*s,    t*y*y+c  ,  t*y*z-x*s,  0.0f,
+             t*x*z-y*s,    t*y*z+x*s,  t*z*z+c  ,  0.0f,
+             0.0f,         0.0f,       0.0f,       1.0f
+        );
 }
 
 void Matrix4x4::RotationXDegrees(float degrees, Matrix4x4& m) {
@@ -3572,22 +3607,22 @@ void Matrix4x4::AxisAngleDegrees(const Vector3& a, float degrees, Matrix4x4& m) 
 void Matrix4x4::OrthographicProjection(float w, float h, float n, float f, Matrix4x4& m) {
     XO_ASSERT(w != 0.0f, _XO_ASSERT_MSG("::OrthographicProjection Width (w) should not be zero."));
     XO_ASSERT(h != 0.0f, _XO_ASSERT_MSG("::OrthographicProjection Height (h) should not be zero."));
-    m = {
-            {1.0f/w,    0.0f,       0.0f,    0.0f},
-            {0.0f,      1.0f/h,     0.0f,    0.0f},
-            {0.0f,      0.0f,       f-n,     0.0f},
-            {0.0f,      0.0f,       n*(f-n), 1.0f}
-        };
+    m = Matrix4x4(
+            1.0f/w,    0.0f,       0.0f,    0.0f,
+            0.0f,      1.0f/h,     0.0f,    0.0f,
+            0.0f,      0.0f,       f-n,     0.0f,
+            0.0f,      0.0f,       n*(f-n), 1.0f
+        );
 }
  
 void Matrix4x4::PerspectiveProjectionRadians(float fovx, float fovy, float n, float f, Matrix4x4& m) {
     XO_ASSERT(n != f, _XO_ASSERT_MSG("::PerspectiveProjectionRadians Near (n) and far (f) values should not be equal."));
-    m = {
-            {ATan(fovx/2.0f),   0.0f,               0.0f,               0.0f},
-            {0.0f,              ATan(fovy/2.0f),    0.0f,               0.0f},
-            {0.0f,              0.0f,               f/(f-n),            1.0f},
-            {0.0f,              0.0f,               -n*(f/-n),          1.0f}
-        };
+    m = Matrix4x4(
+            ATan(fovx/2.0f),   0.0f,               0.0f,               0.0f,
+            0.0f,              ATan(fovy/2.0f),    0.0f,               0.0f,
+            0.0f,              0.0f,               f/(f-n),            1.0f,
+            0.0f,              0.0f,               -n*(f/-n),          1.0f
+        );
 }
 
 void Matrix4x4::PerspectiveProjectionDegrees(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix) {
@@ -3598,12 +3633,12 @@ void Matrix4x4::LookAtFromPosition(const Vector3& from, const Vector3& to, const
     Vector3 zAxis = (to - from).Normalized();
     Vector3 xAxis = Vector3::Cross(up, zAxis).Normalized();
     Vector3 yAxis = Vector3::Cross(zAxis, xAxis);
-    m = {
-            {xAxis.x,           yAxis.x,            zAxis.x,            0.0f},
-            {xAxis.y,           yAxis.y,            zAxis.y,            0.0f},
-            {xAxis.z,           yAxis.z,            zAxis.z,            0.0f},
-            {-xAxis.Dot(from),  -yAxis.Dot(from),   -zAxis.Dot(from),   1.0f}
-        };
+    m = Matrix4x4(
+            xAxis.x,           yAxis.x,            zAxis.x,            0.0f,
+            xAxis.y,           yAxis.y,            zAxis.y,            0.0f,
+            xAxis.z,           yAxis.z,            zAxis.z,            0.0f,
+            -xAxis.Dot(from),  -yAxis.Dot(from),   -zAxis.Dot(from),   1.0f
+        );
 }
 
 void Matrix4x4::LookAtFromPosition(const Vector3& from, const Vector3& to, Matrix4x4& m) {
@@ -3614,12 +3649,12 @@ void Matrix4x4::LookAtFromDirection(const Vector3& direction, const Vector3& up,
     Vector3 zAxis = direction.Normalized();
     Vector3 xAxis = Vector3::Cross(up, zAxis).Normalized();
     Vector3 yAxis = Vector3::Cross(zAxis, xAxis);
-    m = {
-            {xAxis.x,           yAxis.x,            zAxis.x,            0.0f},
-            {xAxis.y,           yAxis.y,            zAxis.y,            0.0f},
-            {xAxis.z,           yAxis.z,            zAxis.z,            0.0f},
-            {0.0f,              0.0f,               0.0f,               1.0f}
-        };
+    m = Matrix4x4(
+            xAxis.x,           yAxis.x,            zAxis.x,            0.0f,
+            xAxis.y,           yAxis.y,            zAxis.y,            0.0f,
+            xAxis.z,           yAxis.z,            zAxis.z,            0.0f,
+            0.0f,              0.0f,               0.0f,               1.0f
+        );
 }
 
 void Matrix4x4::LookAtFromDirection(const Vector3& direction, Matrix4x4& m) {
@@ -3790,7 +3825,7 @@ Quaternion Quaternion::operator * (const Quaternion& q) const {
 
 bool Quaternion::operator == (const Quaternion& q) const {
 #   if XO_SSE
-    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(q.m, m)), sse::Epsilon)) & 0b1111) == 0b1111;
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(q.m, m)), sse::Epsilon)) & 15) == 15;
 #   else
     return 
         CloseEnough(x, q.x, Epsilon) && 
@@ -4545,24 +4580,26 @@ XOMATH_END_XO_NS();
 #undef XOMATH_BEGIN_XO_NS
 #undef XOMATH_END_XO_NS
 
-#undef _XOMATH_INTERNAL_MACRO_WARNING
+#if !defined(XO_EXPORT_ALL)
+#   undef _XOMATH_INTERNAL_MACRO_WARNING
 
-#undef _XOCONSTEXPR
-#undef _XOINL
-#undef _XOTLS
+#   undef _XOCONSTEXPR
+#   undef _XOINL
+#   undef _XOTLS
 
-#undef _XO_TLS_ENGINE
-#undef _XO_TLS_DISTRIBUTION
+#   undef _XO_TLS_ENGINE
+#   undef _XO_TLS_DISTRIBUTION
 
-#undef _XO_OVERLOAD_NEW_DELETE
+#   undef _XO_OVERLOAD_NEW_DELETE
 
-#undef _XO_MIN
-#undef _XO_MAX
+#   undef _XO_MIN
+#   undef _XO_MAX
 
-#undef _XO_ASSIGN_QUAT
-#undef _XO_ASSIGN_QUAT_Q
+#   undef _XO_ASSIGN_QUAT
+#   undef _XO_ASSIGN_QUAT_Q
 
-#undef XOMATH_INTERNAL
+#   undef XOMATH_INTERNAL
+#endif
 
 ////////////////////////////////////////////////////////////////////////// Add external macros
 
