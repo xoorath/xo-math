@@ -366,12 +366,15 @@ public:
         One, //!< \f$\begin{pmatrix}1&1&1\end{pmatrix}\f$
         Zero; //!< \f$\begin{pmatrix}0&0&0\end{pmatrix}\f$
 
-#if XO_SSE
+#if defined(_XONOCONSTEXPR)
+    static const float Epsilon;
+#else
+#   if XO_SSE
     //! Smallest increment from zero that could be assigned to each element of this vector and would still be seen as equal to a zero vector.
     _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 3.0f;
-#else
-    //! Smallest increment from zero that could be assigned to each element of this vector and would still be seen as equal to a zero vector.
+#   else
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 3.0f;
+#   endif
 #endif
 
     ////////////////////////////////////////////////////////////////////////// Members
@@ -406,6 +409,14 @@ private:
     static const __m128 MASK;
 #endif
 };
+
+#if defined(_XONOCONSTEXPR)
+#   if XO_SSE
+const float Vector3::Epsilon = sse::SSEFloatEpsilon * 3.0f;
+#   else
+const float Vector3::Epsilon = FloatEpsilon * 3.0f;
+#   endif
+#endif
 
 #if XO_SSE2
 const __m128 Vector3::MASK = _mm_castsi128_ps(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff));

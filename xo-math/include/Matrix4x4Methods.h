@@ -40,56 +40,45 @@ Matrix4x4::Matrix4x4(float m)
     r[0].m = r[1].m = r[2].m = r[3].m = _mm_set_ps1(m);
 }
 #else
-    : r {
-        Vector4(m),
-        Vector4(m),
-        Vector4(m),
-        Vector4(m)
-    }
 {
+	r[0] = Vector4(m);
+	r[1] = Vector4(m);
+	r[2] = Vector4(m);
+	r[3] = Vector4(m);
 }
 #endif
 
-Matrix4x4::Matrix4x4(float a0, float b0, float c0, float d0, float a1, float b1, float c1, float d1, float a2, float b2, float c2, float d2, float a3, float b3, float c3, float d3) :
-    r {
-        Vector4(a0, b0, c0, d0),
-        Vector4(a1, b1, c1, d1),
-        Vector4(a2, b2, c2, d2),
-        Vector4(a3, b3, c3, d3)
-    }
-
+Matrix4x4::Matrix4x4(float a0, float b0, float c0, float d0, float a1, float b1, float c1, float d1, float a2, float b2, float c2, float d2, float a3, float b3, float c3, float d3)
 {
+    r[0] = Vector4(a0, b0, c0, d0);
+    r[1] = Vector4(a1, b1, c1, d1);
+    r[2] = Vector4(a2, b2, c2, d2);
+    r[3] = Vector4(a3, b3, c3, d3);
 }
 
 // TODO: couldn't this be faster with just a single copy?
-Matrix4x4::Matrix4x4(const Matrix4x4& m) :
-    r {
-        m.r[0], 
-        m.r[1], 
-        m.r[2],
-        m.r[3]
-    }
+Matrix4x4::Matrix4x4(const Matrix4x4& m)
 {
+	r[0] = m.r[0];
+	r[1] = m.r[1];
+	r[2] = m.r[2];
+	r[3] = m.r[3];
 }
 
-Matrix4x4::Matrix4x4(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3)  :
-    r {
-        r0,
-        r1,
-        r2,
-        r3
-    }
+Matrix4x4::Matrix4x4(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3)
 {
+	r[0] = r0;
+	r[1] = r1;
+	r[2] = r2;
+	r[3] = r3;
 }
 
-Matrix4x4::Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2) :
-    r {
-        Vector4(r0), 
-        Vector4(r1), 
-        Vector4(r2), 
-        Vector4(0.0f, 0.0f, 0.0f, 1.0f)
-    }
+Matrix4x4::Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2)
 {
+	r[0] = Vector4(r0);
+	r[1] = Vector4(r1);
+	r[2] = Vector4(r2);
+	r[3] = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 Matrix4x4::Matrix4x4(const class Quaternion& q) {
@@ -103,9 +92,9 @@ Matrix4x4::Matrix4x4(const class Quaternion& q) {
     float xz2 = q.x * q2.z;
     float yz2 = q.y * q2.z;
 
-    r[0] = { 1.0f - qq2.y - qq2.z,  xy2 + wq2.z,            xz2 - wq2.y,          0.0f};
-    r[1] = { xy2 - wq2.z,           1.0f - qq2.x - qq2.z,   yz2 + wq2.x,          0.0f};
-    r[2] = { xz2 + wq2.y,           yz2 - wq2.x,            1.0f - qq2.x - qq2.y,   0.0f};
+    r[0] = Vector4( 1.0f - qq2.y - qq2.z,  xy2 + wq2.z,            xz2 - wq2.y,          0.0f);
+    r[1] = Vector4( xy2 - wq2.z,           1.0f - qq2.x - qq2.z,   yz2 + wq2.x,          0.0f);
+    r[2] = Vector4( xz2 + wq2.y,           yz2 - wq2.x,            1.0f - qq2.x - qq2.y, 0.0f);
     r[3] = Vector4::UnitW;
 }
 
@@ -151,82 +140,82 @@ void Matrix4x4::Scale(float xyz, Matrix4x4& m) {
     // 0 1 0 0
     // 0 0 1 0
     // 0 0 0 1/xyz
-    m = {
-            {xyz,  0.0f, 0.0f, 0.0f},
-            {0.0f, xyz,  0.0f, 0.0f},
-            {0.0f, 0.0f, xyz,  0.0f},
-            {0.0f, 0.0f, 0.0f, 1.0f}
-        };
+    m = Matrix4x4(
+            xyz,  0.0f, 0.0f, 0.0f,
+            0.0f, xyz,  0.0f, 0.0f,
+            0.0f, 0.0f, xyz,  0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
 }
  
 void Matrix4x4::Scale(float x, float y, float z, Matrix4x4& m) {
-    m = {
-            {x,    0.0f, 0.0f, 0.0f},
-            {0.0f, y,    0.0f, 0.0f},
-            {0.0f, 0.0f, z,    0.0f},
-            {0.0f, 0.0f, 0.0f, 1.0f}
-        };
+    m = Matrix4x4(
+            x,    0.0f, 0.0f, 0.0f,
+            0.0f, y,    0.0f, 0.0f,
+            0.0f, 0.0f, z,    0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
 }
 
 void Matrix4x4::Scale(const Vector3& v, Matrix4x4& m) {
-    m = {
-            {v.x,  0.0f, 0.0f, 0.0f},
-            {0.0f, v.y,  0.0f, 0.0f},
-            {0.0f, 0.0f, v.z,  0.0f},
-            {0.0f, 0.0f, 0.0f, 1.0f}
-        };
+    m = Matrix4x4(
+            v.x,  0.0f, 0.0f, 0.0f,
+            0.0f, v.y,  0.0f, 0.0f,
+            0.0f, 0.0f, v.z,  0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
 }
  
 void Matrix4x4::Translation(float x, float y, float z, Matrix4x4& m) {
-    m = {
-            {1.0f, 0.0f, 0.0f, x   },
-            {0.0f, 1.0f, 0.0f, y   },
-            {0.0f, 0.0f, 1.0f, z   },
-            {0.0f, 0.0f, 0.0f, 1.0f}
-        };
+   m = Matrix4x4(
+            1.0f, 0.0f, 0.0f, x   ,
+            0.0f, 1.0f, 0.0f, y   ,
+            0.0f, 0.0f, 1.0f, z   ,
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
 }
 
 void Matrix4x4::Translation(const Vector3& v, Matrix4x4& m) {
-    m = {
-            {1.0f, 0.0f, 0.0f, v.x },
-            {0.0f, 1.0f, 0.0f, v.y },
-            {0.0f, 0.0f, 1.0f, v.z },
-            {0.0f, 0.0f, 0.0f, 1.0f}
-        };
+    m = Matrix4x4(
+            1.0f, 0.0f, 0.0f, v.x ,
+            0.0f, 1.0f, 0.0f, v.y ,
+            0.0f, 0.0f, 1.0f, v.z ,
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
 }
 
 void Matrix4x4::RotationXRadians(float radians, Matrix4x4& m) {
     float cosr = Cos(radians);
     float sinr = Sin(radians);
-    m = {
-            {1.0f, 0.0f, 0.0f, 0.0f},
-            {0.0f, cosr,-sinr, 0.0f},
-            {0.0f, sinr, cosr, 0.0f},
-            {0.0f, 0.0f, 0.0f, 1.0f}
-        };
+    m = Matrix4x4(
+            1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, cosr,-sinr, 0.0f,
+            0.0f, sinr, cosr, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
     
 }
  
 void Matrix4x4::RotationYRadians(float radians, Matrix4x4& m) {
     float cosr = Cos(radians);
     float sinr = Sin(radians);
-    m = {
-            {cosr, 0.0f,-sinr, 0.0f},
-            {0.0f, 1.0f, 0.0f, 0.0f},
-            {sinr, 0.0f, cosr, 0.0f},
-            {0.0f, 0.0f, 0.0f, 1.0f}
-        };
+    m = Matrix4x4(
+            cosr, 0.0f,-sinr, 0.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+            sinr, 0.0f, cosr, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
 }
 
 void Matrix4x4::RotationZRadians(float radians, Matrix4x4& m) {
     float cosr = Cos(radians);
     float sinr = Sin(radians);
-    m = {
-            {cosr,-sinr, 0.0f, 0.0f},
-            {sinr, cosr, 0.0f, 0.0f},
-            {0.0f, 0.0f, 1.0f, 0.0f},
-            {0.0f, 0.0f, 0.0f, 1.0f}
-        };
+    m = Matrix4x4(
+            cosr,-sinr, 0.0f, 0.0f,
+            sinr, cosr, 0.0f, 0.0f,
+            0.0f, 0.0f, 1.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
 }
 
 void Matrix4x4::RotationRadians(float x, float y, float z, Matrix4x4& m) {
@@ -252,12 +241,12 @@ void Matrix4x4::AxisAngleRadians(const Vector3& a, float radians, Matrix4x4& m) 
     const float& x = a.x;
     const float& y = a.y;
     const float& z = a.z;
-    m = {
-            { t*x*x+c  ,    t*x*y-z*s,  t*x*z+y*s,  0.0f},
-            { t*x*y+z*s,    t*y*y+c  ,  t*y*z-x*s,  0.0f},
-            { t*x*z-y*s,    t*y*z+x*s,  t*z*z+c  ,  0.0f},
-            { 0.0f,         0.0f,       0.0f,       1.0f}
-        };
+    m = Matrix4x4(
+             t*x*x+c  ,    t*x*y-z*s,  t*x*z+y*s,  0.0f,
+             t*x*y+z*s,    t*y*y+c  ,  t*y*z-x*s,  0.0f,
+             t*x*z-y*s,    t*y*z+x*s,  t*z*z+c  ,  0.0f,
+             0.0f,         0.0f,       0.0f,       1.0f
+        );
 }
 
 void Matrix4x4::RotationXDegrees(float degrees, Matrix4x4& m) {
@@ -296,22 +285,22 @@ void Matrix4x4::AxisAngleDegrees(const Vector3& a, float degrees, Matrix4x4& m) 
 void Matrix4x4::OrthographicProjection(float w, float h, float n, float f, Matrix4x4& m) {
     XO_ASSERT(w != 0.0f, _XO_ASSERT_MSG("::OrthographicProjection Width (w) should not be zero."));
     XO_ASSERT(h != 0.0f, _XO_ASSERT_MSG("::OrthographicProjection Height (h) should not be zero."));
-    m = {
-            {1.0f/w,    0.0f,       0.0f,    0.0f},
-            {0.0f,      1.0f/h,     0.0f,    0.0f},
-            {0.0f,      0.0f,       f-n,     0.0f},
-            {0.0f,      0.0f,       n*(f-n), 1.0f}
-        };
+    m = Matrix4x4(
+            1.0f/w,    0.0f,       0.0f,    0.0f,
+            0.0f,      1.0f/h,     0.0f,    0.0f,
+            0.0f,      0.0f,       f-n,     0.0f,
+            0.0f,      0.0f,       n*(f-n), 1.0f
+        );
 }
  
 void Matrix4x4::PerspectiveProjectionRadians(float fovx, float fovy, float n, float f, Matrix4x4& m) {
     XO_ASSERT(n != f, _XO_ASSERT_MSG("::PerspectiveProjectionRadians Near (n) and far (f) values should not be equal."));
-    m = {
-            {ATan(fovx/2.0f),   0.0f,               0.0f,               0.0f},
-            {0.0f,              ATan(fovy/2.0f),    0.0f,               0.0f},
-            {0.0f,              0.0f,               f/(f-n),            1.0f},
-            {0.0f,              0.0f,               -n*(f/-n),          1.0f}
-        };
+    m = Matrix4x4(
+            ATan(fovx/2.0f),   0.0f,               0.0f,               0.0f,
+            0.0f,              ATan(fovy/2.0f),    0.0f,               0.0f,
+            0.0f,              0.0f,               f/(f-n),            1.0f,
+            0.0f,              0.0f,               -n*(f/-n),          1.0f
+        );
 }
 
 void Matrix4x4::PerspectiveProjectionDegrees(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix) {
@@ -322,12 +311,12 @@ void Matrix4x4::LookAtFromPosition(const Vector3& from, const Vector3& to, const
     Vector3 zAxis = (to - from).Normalized();
     Vector3 xAxis = Vector3::Cross(up, zAxis).Normalized();
     Vector3 yAxis = Vector3::Cross(zAxis, xAxis);
-    m = {
-            {xAxis.x,           yAxis.x,            zAxis.x,            0.0f},
-            {xAxis.y,           yAxis.y,            zAxis.y,            0.0f},
-            {xAxis.z,           yAxis.z,            zAxis.z,            0.0f},
-            {-xAxis.Dot(from),  -yAxis.Dot(from),   -zAxis.Dot(from),   1.0f}
-        };
+    m = Matrix4x4(
+            xAxis.x,           yAxis.x,            zAxis.x,            0.0f,
+            xAxis.y,           yAxis.y,            zAxis.y,            0.0f,
+            xAxis.z,           yAxis.z,            zAxis.z,            0.0f,
+            -xAxis.Dot(from),  -yAxis.Dot(from),   -zAxis.Dot(from),   1.0f
+        );
 }
 
 void Matrix4x4::LookAtFromPosition(const Vector3& from, const Vector3& to, Matrix4x4& m) {
@@ -338,12 +327,12 @@ void Matrix4x4::LookAtFromDirection(const Vector3& direction, const Vector3& up,
     Vector3 zAxis = direction.Normalized();
     Vector3 xAxis = Vector3::Cross(up, zAxis).Normalized();
     Vector3 yAxis = Vector3::Cross(zAxis, xAxis);
-    m = {
-            {xAxis.x,           yAxis.x,            zAxis.x,            0.0f},
-            {xAxis.y,           yAxis.y,            zAxis.y,            0.0f},
-            {xAxis.z,           yAxis.z,            zAxis.z,            0.0f},
-            {0.0f,              0.0f,               0.0f,               1.0f}
-        };
+    m = Matrix4x4(
+            xAxis.x,           yAxis.x,            zAxis.x,            0.0f,
+            xAxis.y,           yAxis.y,            zAxis.y,            0.0f,
+            xAxis.z,           yAxis.z,            zAxis.z,            0.0f,
+            0.0f,              0.0f,               0.0f,               1.0f
+        );
 }
 
 void Matrix4x4::LookAtFromDirection(const Vector3& direction, Matrix4x4& m) {

@@ -540,26 +540,20 @@ public:
         Zero;
 };
 
-const Matrix4x4 Matrix4x4::Identity = {
-                                        {1.0f, 0.0f, 0.0f, 0.0f},
-                                        {0.0f, 1.0f, 0.0f, 0.0f},
-                                        {0.0f, 0.0f, 1.0f, 0.0f},
-                                        {0.0f, 0.0f, 0.0f, 1.0f}
-                                    };
+const Matrix4x4 Matrix4x4::Identity(Vector4(1.0f, 0.0f, 0.0f, 0.0f),
+                                    Vector4(0.0f, 1.0f, 0.0f, 0.0f),
+                                    Vector4(0.0f, 0.0f, 1.0f, 0.0f),
+                                    Vector4(0.0f, 0.0f, 0.0f, 1.0f));
 
-const Matrix4x4 Matrix4x4::One = {
-                                    {1.0f, 1.0f, 1.0f, 1.0f},
-                                    {1.0f, 1.0f, 1.0f, 1.0f},
-                                    {1.0f, 1.0f, 1.0f, 1.0f},
-                                    {1.0f, 1.0f, 1.0f, 1.0f}
-                                };
+const Matrix4x4 Matrix4x4::One(Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+                               Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+                               Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+                               Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 
-const Matrix4x4 Matrix4x4::Zero = {
-                                    {0.0f, 0.0f, 0.0f, 0.0f},
-                                    {0.0f, 0.0f, 0.0f, 0.0f},
-                                    {0.0f, 0.0f, 0.0f, 0.0f},
-                                    {0.0f, 0.0f, 0.0f, 0.0f}
-                                };
+const Matrix4x4 Matrix4x4::Zero(Vector4(0.0f, 0.0f, 0.0f, 0.0f),
+                                Vector4(0.0f, 0.0f, 0.0f, 0.0f),
+                                Vector4(0.0f, 0.0f, 0.0f, 0.0f),
+                                Vector4(0.0f, 0.0f, 0.0f, 0.0f));
 
 XOMATH_END_XO_NS();
 

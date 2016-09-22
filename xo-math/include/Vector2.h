@@ -207,13 +207,22 @@ public:
         One,
         Zero;
 
+#if defined(_XONOCONSTEXPR)
+    static const float Epsilon;
+#else
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 2.0f;
+#endif
+
 
     union {
         struct { float x, y; };
         float f[2];
     };
 };
+
+#if defined(_XONOCONSTEXPR)
+const float Vector2::Epsilon = FloatEpsilon * 2.0f;
+#endif
 
 const Vector2 Vector2::UnitX(1.0f, 0.0f);
 const Vector2 Vector2::UnitY(0.0f, 1.0f);

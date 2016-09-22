@@ -6,6 +6,9 @@ docs/latex/
 xo-math/.vs
 xo-math/x64
 xo-math/x32
+xo-math/Debug
+xo-math/Release
+xo-math/ARM
 *.sdf
 *opendb
 *.opensdf

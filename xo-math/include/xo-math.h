@@ -93,11 +93,16 @@ _XOMATH_INTERNAL_MACRO_WARNING
 
 #include "DetectSIMD.h"
 
-#if defined(_XOCONSTEXPR)
+#if defined(_XOCONSTEXPR) || defined(_XONOCONSTEXPR)
 _XOMATH_INTERNAL_MACRO_WARNING
 #else
 // todo: remove constexpr in visual studio 2013 and re-test for support
-#   define _XOCONSTEXPR constexpr
+#   if defined(_MSC_VER) && _MSC_VER < 1800
+#       define _XOCONSTEXPR
+#       define _XONOCONSTEXPR
+#    else
+#       define _XOCONSTEXPR constexpr
+#    endif
 #endif
 
 #if defined(_XOINL)
@@ -116,8 +121,10 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #if defined(_XOTLS)
 _XOMATH_INTERNAL_MACRO_WARNING
 #else
-#   if defined(__clang__) && defined(__APPLE__)
+#   if (defined(__clang__) && defined(__APPLE__))
 #       define _XOTLS __thread
+#	elif (defined(_MSC_VER) && _MSC_VER < 1800)
+#       define _XOTLS __declspec(thread)
 #   else
 #       define _XOTLS thread_local
 #   endif
@@ -127,7 +134,7 @@ _XOMATH_INTERNAL_MACRO_WARNING
 _XOMATH_INTERNAL_MACRO_WARNING
 #else
     // apple clang doesn't give us thread_local until xcode 8.
-#   if defined(__clang__) && (__APPLE__)
+#   if (defined(__clang__) && defined(__APPLE__)) || (defined(_MSC_VER) && _MSC_VER < 1800)
 #       define _XO_TLS_ENGINE \
             static _XOTLS std::mt19937* tls_engline; \
             static _XOTLS char mem[sizeof(std::mt19937)];\
@@ -143,7 +150,7 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #if defined(_XO_TLS_DISTRIBUTION)
 _XOMATH_INTERNAL_MACRO_WARNING
 #else
-#   if defined(__clang__) && (__APPLE__)
+#   if defined(__clang__) && defined(__APPLE__) || (defined(_MSC_VER) && _MSC_VER < 1800)
 #       define _XO_TLS_DISTRIBUTION dist(*tls_engline)
 #   else
 #       define _XO_TLS_DISTRIBUTION dist(tls_engline)
@@ -320,24 +327,26 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #undef XOMATH_BEGIN_XO_NS
 #undef XOMATH_END_XO_NS
 
-#undef _XOMATH_INTERNAL_MACRO_WARNING
+#if !defined(XO_EXPORT_ALL)
+#   undef _XOMATH_INTERNAL_MACRO_WARNING
 
-#undef _XOCONSTEXPR
-#undef _XOINL
-#undef _XOTLS
+#   undef _XOCONSTEXPR
+#   undef _XOINL
+#   undef _XOTLS
 
-#undef _XO_TLS_ENGINE
-#undef _XO_TLS_DISTRIBUTION
+#   undef _XO_TLS_ENGINE
+#   undef _XO_TLS_DISTRIBUTION
 
-#undef _XO_OVERLOAD_NEW_DELETE
+#   undef _XO_OVERLOAD_NEW_DELETE
 
-#undef _XO_MIN
-#undef _XO_MAX
+#   undef _XO_MIN
+#   undef _XO_MAX
 
-#undef _XO_ASSIGN_QUAT
-#undef _XO_ASSIGN_QUAT_Q
+#   undef _XO_ASSIGN_QUAT
+#   undef _XO_ASSIGN_QUAT_Q
 
-#undef XOMATH_INTERNAL
+#   undef XOMATH_INTERNAL
+#endif
 
 ////////////////////////////////////////////////////////////////////////// Add external macros
 

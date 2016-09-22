@@ -5,6 +5,7 @@ using std::cout;
 using std::endl;
 
 #define XO_NO_INVERSE_DIVISION // temp hack to fix a couple tests in Vec4
+#define XO_EXPORT_ALL // just to use internal macros below, such as _XOCONSTEXPR, not for a typical use case
 
 #include "include/xo-math.h" // the development version of xo-math
 //#include "../xo-math.h" // the distribution version of xo-math
@@ -314,7 +315,7 @@ void TestVector3Methods() {
         test.ReportSuccessIf(temp.ZYX(), Vector3(3.3f, 2.2f, 1.1f), TEST_MSG("ZYX() did not swizzle correctly."));
         test.ReportSuccessIf(temp.Sum(), 6.6f, TEST_MSG("Sum() did not accumulate correctly."));
         
-        constexpr auto knownMagSq = 1.1f*1.1f + 2.2f*2.2f + 3.3f*3.3f;
+        _XOCONSTEXPR auto knownMagSq = 1.1f*1.1f + 2.2f*2.2f + 3.3f*3.3f;
         const auto knownMag = Sqrt(knownMagSq);
 
         test.ReportSuccessIf(temp.MagnitudeSquared(), knownMagSq, TEST_MSG("Magnitude squared did not match the knownMagSq"));
@@ -659,10 +660,10 @@ void TestVector3Methods() {
 
         test.ReportSuccessIf(Vector3::DistanceSquared(Vector3::One, -Vector3::One), 3.464102f*3.464102f, TEST_MSG("(1,1,1) and (-1,-1,-1) should be 3.464102^2 units apart."));
         test.ReportSuccessIf(Vector3::DistanceSquared(-Vector3::One, Vector3::One), 3.464102f*3.464102f, TEST_MSG("(-1,-1,-1) and (1,1,1) should be 3.464102^2 units apart."));
-        test.ReportSuccessIf(Vector3::DistanceSquared(Vector3::One, Vector3::One), 0, TEST_MSG("(1,1,1) and (1,1,1) should be 0 units apart."));
+        test.ReportSuccessIf(Vector3::DistanceSquared(Vector3::One, Vector3::One), 0.0f, TEST_MSG("(1,1,1) and (1,1,1) should be 0 units apart."));
         test.ReportSuccessIf(Vector3::Distance(Vector3::One, -Vector3::One), 3.464102f, TEST_MSG("(1,1,1) and (-1,-1,-1) should be 3.464102 units apart."));
         test.ReportSuccessIf(Vector3::Distance(-Vector3::One, Vector3::One), 3.464102f, TEST_MSG("(-1,-1,-1) and (1,1,1) should be 3.464102 units apart."));
-        test.ReportSuccessIf(Vector3::Distance(Vector3::One, Vector3::One), 0, TEST_MSG("(1,1,1) and (1,1,1) should be 0 units apart."));
+        test.ReportSuccessIf(Vector3::Distance(Vector3::One, Vector3::One), 0.0f, TEST_MSG("(1,1,1) and (1,1,1) should be 0 units apart."));
 
     });
 }
@@ -803,7 +804,7 @@ void TestVector4Methods() {
 
         test.ReportSuccessIf(temp.Sum(), 11.0f, TEST_MSG("Sum() did not accumulate correctly."));
         
-        constexpr auto knownMagSq = 1.1f*1.1f + 2.2f*2.2f + 3.3f*3.3f + 4.4f*4.4f;
+        _XOCONSTEXPR auto knownMagSq = 1.1f*1.1f + 2.2f*2.2f + 3.3f*3.3f + 4.4f*4.4f;
         const auto knownMag = Sqrt(knownMagSq);
 
         test.ReportSuccessIf(temp.MagnitudeSquared(), knownMagSq, TEST_MSG("Magnitude squared did not match the knownMagSq"));

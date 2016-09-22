@@ -81,10 +81,14 @@ public:
         Identity,
         Zero;
 
-#if XO_SSE
-    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
+#if defined(_XONOCONSTEXPR)
+    static const float Epsilon;
 #else
+#   if XO_SSE
+    _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
+#   else
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
+#   endif
 #endif
 
     union {
@@ -106,8 +110,16 @@ private:
 #endif
 };
 
-const Quaternion Quaternion::Identity = { 0.0f, 0.0f, 0.0f, 1.0f };
-const Quaternion Quaternion::Zero = { 0.0f, 0.0f, 0.0f, 0.0f };
+#if defined(_XONOCONSTEXPR)
+#   if XO_SSE
+const float Quaternion::Epsilon = sse::SSEFloatEpsilon * 4.0f;
+#   else
+const float Quaternion::Epsilon = FloatEpsilon * 4.0f;
+#   endif
+#endif
+
+const Quaternion Quaternion::Identity(0.0f, 0.0f, 0.0f, 1.0f);
+const Quaternion Quaternion::Zero(0.0f, 0.0f, 0.0f, 0.0f);
 
 XOMATH_END_XO_NS();
 

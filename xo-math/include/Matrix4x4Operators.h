@@ -72,12 +72,12 @@ const Matrix4x4& Matrix4x4::operator -= (const Matrix4x4& m) {
 
 const Matrix4x4& Matrix4x4::operator *= (const Matrix4x4& m) {
     auto t = m.Transpose();
-    return (*this) = {
+    return (*this) = Matrix4x4(
         (r[0] * t[0]).Sum(), (r[0] * t[1]).Sum(), (r[0] * t[2]).Sum(), (r[0] * t[3]).Sum(),
         (r[1] * t[0]).Sum(), (r[1] * t[1]).Sum(), (r[1] * t[2]).Sum(), (r[1] * t[3]).Sum(),
         (r[2] * t[0]).Sum(), (r[2] * t[1]).Sum(), (r[2] * t[2]).Sum(), (r[2] * t[3]).Sum(),
         (r[3] * t[0]).Sum(), (r[3] * t[1]).Sum(), (r[3] * t[2]).Sum(), (r[3] * t[3]).Sum()
-    };
+    );
 }
 
 Matrix4x4 Matrix4x4::operator + (const Matrix4x4& m) const { return Matrix4x4(*this) += m; }
@@ -85,11 +85,11 @@ Matrix4x4 Matrix4x4::operator - (const Matrix4x4& m) const { return Matrix4x4(*t
 Matrix4x4 Matrix4x4::operator * (const Matrix4x4& m) const { return Matrix4x4(*this) *= m; }
 
 Vector4 Matrix4x4::operator * (const Vector4& v) const {
-    return { (r[0] * v).Sum(), (r[1] * v).Sum(), (r[2] * v).Sum(), (r[3] * v).Sum() };
+    return Vector4((r[0] * v).Sum(), (r[1] * v).Sum(), (r[2] * v).Sum(), (r[3] * v).Sum());
 }
 
 Vector3 Matrix4x4::operator * (const Vector3& v) const {
-    return{ (r[0] * v).Sum(), (r[1] * v).Sum(), (r[2] * v).Sum() };
+    return Vector3((r[0] * v).Sum(), (r[1] * v).Sum(), (r[2] * v).Sum());
 }
 
 XOMATH_END_XO_NS();

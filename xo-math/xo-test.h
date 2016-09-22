@@ -57,19 +57,25 @@ class Test {
   typedef std::chrono::duration<double> TDuration;
 
 public:
+  Test() :
+    m_CurrentSuccess(0),
+    m_CurrentFailure(0),
+    m_TotalFailure(0)
+  {
+  }
 
   void ReportSuccessIf(bool condition, const char* reason);
   void ReportSuccessIfNot(bool condition, const char* reason);
 
   template<typename T>
-  void ReportSuccessIf(T got, T expected, const char* reason);
+  void ReportSuccessIf(const T& got, const T& expected, const char* reason);
 
   template<typename T>
-  void ReportSuccessIfNot(T got, T expected, const char* reason);
+  void ReportSuccessIfNot(const T& got, const T& expected, const char* reason);
 
   
-  void ReportSuccessIf(float got, float expected, const char* reason);
-  void ReportSuccessIfNot(float got, float expected, const char* reason);
+  //void ReportSuccessIf(float got, float expected, const char* reason);
+  //void ReportSuccessIfNot(float got, float expected, const char* reason);
 
   void ReportSuccess();
   void ReportFailure(const char* reason);
@@ -78,9 +84,9 @@ public:
   int GetTotalFailures() const;
 
 private:
-  int m_CurrentSuccess  = 0;
-  int m_CurrentFailure  = 0;
-  int m_TotalFailure    = 0;
+  int m_CurrentSuccess;
+  int m_CurrentFailure;
+  int m_TotalFailure;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -95,7 +101,7 @@ void Test::ReportSuccessIfNot(bool condition, const char* reason) {
 }
 
 template<typename T>
-void Test::ReportSuccessIf(T got, T expected, const char* reason) {
+void Test::ReportSuccessIf(const T& got, const T& expected, const char* reason) {
   if(got == expected)
     ReportSuccess();
   else {
@@ -105,7 +111,7 @@ void Test::ReportSuccessIf(T got, T expected, const char* reason) {
 }
 
 template<typename T>
-void Test::ReportSuccessIfNot(T got, T expected, const char* reason) {
+void Test::ReportSuccessIfNot(const T& got, const T& expected, const char* reason) {
   if(got != expected)
     ReportSuccess();
   else {
@@ -117,26 +123,26 @@ void Test::ReportSuccessIfNot(T got, T expected, const char* reason) {
 #define _XO_TEST_ABS(f) (f >= 0.0f ? f : -f)
 #define _XO_TEST_EPSILON 0.00001f
 
-void Test::ReportSuccessIf(float got, float expected, const char* reason) {
-  if(_XO_TEST_ABS(got-expected) <= _XO_TEST_EPSILON) {
-    ReportSuccess();
-  }
-  else {
-    ReportFailure(reason);
-    std::cout << "expected: " << expected << " got: " << got << std::endl;
-  }
-}
-
-
-void Test::ReportSuccessIfNot(float got, float expected, const char* reason) {
-  if(_XO_TEST_ABS(got-expected) > _XO_TEST_EPSILON) {
-    ReportSuccess();
-  }
-  else {
-    ReportFailure(reason);
-    std::cout << "mismatch expected: " << expected << " got: " << got << std::endl;
-  }
-}
+//void Test::ReportSuccessIf(float got, float expected, const char* reason) {
+//  if(_XO_TEST_ABS(got - expected) <= _XO_TEST_EPSILON) {
+//    ReportSuccess();
+//  }
+//  else {
+//    ReportFailure(reason);
+//    std::cout << "expected: " << expected << " got: " << got << std::endl;
+//  }
+//}
+//
+//
+//void Test::ReportSuccessIfNot(float got, float expected, const char* reason) {
+//  if(_XO_TEST_ABS(got - expected) > _XO_TEST_EPSILON) {
+//    ReportSuccess();
+//  }
+//  else {
+//    ReportFailure(reason);
+//    std::cout << "mismatch expected: " << expected << " got: " << got << std::endl;
+//  }
+//}
 
 #undef _XO_TEST_ABS
 #undef _XO_TEST_EPSILON
