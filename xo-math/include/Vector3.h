@@ -349,19 +349,15 @@ public:
         UnitX, //!< \f$\begin{pmatrix}1&0&0\end{pmatrix}\f$
         UnitY, //!< \f$\begin{pmatrix}0&1&0\end{pmatrix}\f$
         UnitZ, //!< \f$\begin{pmatrix}0&0&1\end{pmatrix}\f$
-        Up, //!< \f$\begin{pmatrix}0&1&0\end{pmatrix}\f$
-        Down, //!< \f$\begin{pmatrix}0&-1&0\end{pmatrix}\f$
+        //! @sa XO_SPACE_ZUP, XO_SPACE_YUP
+        Up,
+        //! @sa XO_SPACE_ZUP, XO_SPACE_YUP
+        Down,
         Left, //!< \f$\begin{pmatrix}-1&0&0\end{pmatrix}\f$
         Right, //!< \f$\begin{pmatrix}1&0&0\end{pmatrix}\f$
-        //! If XO_SPACE_LEFTHAND is defined: \f$\begin{pmatrix}0&0&1\end{pmatrix}\f$
-        //!
-        //! If XO_SPACE_RIGHTHAND is defined: \f$\begin{pmatrix}0&0&-1\end{pmatrix}\f$
-        //! @sa XO_SPACE_LEFTHAND, XO_SPACE_RIGHTHAND
+        //! @sa XO_SPACE_LEFTHAND, XO_SPACE_RIGHTHAND, XO_SPACE_ZUP, XO_SPACE_YUP
         Forward,
-        //! If XO_SPACE_LEFTHAND is defined: \f$\begin{pmatrix}0&0&-1\end{pmatrix}\f$
-        //!
-        //! If XO_SPACE_RIGHTHAND is defined: \f$\begin{pmatrix}0&0&1\end{pmatrix}\f$
-        //! @sa XO_SPACE_LEFTHAND, XO_SPACE_RIGHTHAND
+        //! @sa XO_SPACE_LEFTHAND, XO_SPACE_RIGHTHAND, XO_SPACE_ZUP, XO_SPACE_YUP
         Backward,
         One, //!< \f$\begin{pmatrix}1&1&1\end{pmatrix}\f$
         Zero; //!< \f$\begin{pmatrix}0&0&0\end{pmatrix}\f$
@@ -430,19 +426,33 @@ const Vector3 Vector3::UnitX(1.0f, 0.0f, 0.0f);
 const Vector3 Vector3::UnitY(0.0f, 1.0f, 0.0f);
 const Vector3 Vector3::UnitZ(0.0f, 0.0f, 1.0f);
 
-const Vector3 Vector3::Up(0.0f, 1.0f, 0.0f);
-const Vector3 Vector3::Down(0.0f, -1.0f, 0.0f);
 const Vector3 Vector3::Left(-1.0f, 0.0f, 0.0f);
 const Vector3 Vector3::Right(1.0f, 0.0f, 0.0f);
 
-#if defined(XO_SPACE_LEFTHAND)
-const Vector3 Vector3::Forward(0.0f, 0.0f, 1.0f);
-const Vector3 Vector3::Backward(0.0f, 0.0f, -1.0f);
+#if defined(XO_SPACE_ZUP)
+const Vector3 Vector3::Up(0.0f, 0.0f, 1.0f);
+const Vector3 Vector3::Down(0.0f, 0.0f, -1.0f);
+#elif defined(XO_SPACE_YUP)
+const Vector3 Vector3::Up(0.0f, 1.0f, 0.0f);
+const Vector3 Vector3::Down(0.0f, -1.0f, 0.0f);
 #endif
 
-#if defined(XO_SPACE_RIGHTHAND)
+#if defined(XO_SPACE_LEFTHAND)
+#   if defined(XO_SPACE_ZUP)
+const Vector3 Vector3::Forward(0.0f, -1.0f, 0.0f);
+const Vector3 Vector3::Backward(0.0f, 1.0f, 0.0f);
+#   elif defined(XO_SPACE_YUP)
+const Vector3 Vector3::Forward(0.0f, 0.0f, 1.0f);
+const Vector3 Vector3::Backward(0.0f, 0.0f, -1.0f);
+#   endif
+#elif defined(XO_SPACE_RIGHTHAND)
+#   if defined(XO_SPACE_ZUP)
+const Vector3 Vector3::Forward(0.0f, 1.0f, 0.0f);
+const Vector3 Vector3::Backward(0.0f, -1.0f, 0.0f);
+#   elif defined(XO_SPACE_YUP)
 const Vector3 Vector3::Forward(0.0f, 0.0f, -1.0f);
 const Vector3 Vector3::Backward(0.0f, 0.0f, 1.0f);
+#   endif
 #endif
 
 const Vector3 Vector3::One(1.0f, 1.0f, 1.0f);

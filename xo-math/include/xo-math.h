@@ -52,6 +52,13 @@ static_assert(false, "xo-math found both XO_SPACE_LEFTHAND and XO_SPACE_RIGHTHAN
 #   define XO_SPACE_RIGHTHAND 1
 #endif
 
+#if defined(XO_SPACE_YUP) && defined(XO_SPACE_ZUP)
+static_assert(false, "xo-math found both XO_SPACE_YUP and XO_SPACE_ZUP defined. These are incompatible");
+#elif !defined(XO_SPACE_YUP) && !defined(XO_SPACE_ZUP)
+    //! Default to z up if no configuration is defined.
+#   define XO_SPACE_ZUP
+#endif
+
 ////////////////////////////////////////////////////////////////////////// Dependencies for xo-math headers
 #include <math.h>
 #include <ostream>
