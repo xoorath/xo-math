@@ -223,7 +223,7 @@ public:
     //! Normalizes this vector to a Magnitude of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
     _XOINL const Vector4& Normalize();
-    //! Returns a copy of this vector with a unit length of 1.
+    //! Returns a copy of this vector with a Magnitude of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
     _XOINL Vector4 Normalized() const;
     //! Returns true when the Magnitude of this vector is <= Vector4::Epsilon

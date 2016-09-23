@@ -26,7 +26,7 @@ static_assert(false, "Don't include Vector3.h directly. Include xo-math.h, which
 XOMATH_BEGIN_XO_NS();
 
 //! A three dimensional euclidean vector, optimized for use in games.
-//! \sa https://en.wikipedia.org/wiki/Euclidean_vector
+//! @sa https://en.wikipedia.org/wiki/Euclidean_vector
 class _MM_ALIGN16 Vector3 {
 public:
     //>See
@@ -57,6 +57,7 @@ public:
     //! Set each. Copies vec int m.
     _XOINL const Vector3& Set(const __m128& vec);
 #endif
+    //! Extract all getter. x, y, and z will be assigned to those values of this vector.
     _XOINL void Get(float& x, float& y, float &z) const;
     //! Extract all getter. f[0], f[1], and f[2] will be assigned to x, y, and z respectively.
     //! @Note When using SSE f must be aligned and at least 4 floats wide. Example: _MM_ALIGN16 float f[4];
@@ -152,7 +153,7 @@ public:
     //! When comparing (<, >, <=, >=) against scalars, the scalar is squared and compared to the SquareMagnitude() of this vector.
     //!
     //! When comparing equality (==, !=) against other vectors, each same name element is compared. If each element has a 
-    //! difference of <= Vector3::Epsilon the vector is considered equal.
+    //! difference of <= Vector2::Epsilon the vector is considered equal.
     //!
     //! When comparing equality (==, !=) against scalars, the scalar is squared and compared to the SquareMagnitude() of this vector.
     //! @{
@@ -222,7 +223,7 @@ public:
     //! Normalizes this vector to a Magnitude of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
     _XOINL const Vector3& Normalize();
-    //! Returns a copy of this vector with a unit length of 1.
+    //! Returns a copy of this vector with a Magnitude of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
     _XOINL Vector3 Normalized() const;
     //! Returns true when the Magnitude of this vector is <= Vector3::Epsilon
@@ -261,6 +262,22 @@ public:
     _XOINL static void RotateRadians(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec);
     //! Calls Vector3::RotateRadians, converting the input angle in degrees to radians.
     _XOINL static void RotateDegrees(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec);
+    //! Returns the angle in radians between vector a and b.
+    _XOINL static float AngleRadians(const Vector3& a, const Vector3& b);
+    // Calls Vector3::AngleRadians, converting the return value to degrees.
+    _XOINL static float AngleDegrees(const Vector3& a, const Vector3& b);
+    //! Returns the square distance between vectors a and b in 3 dimensional space.
+    //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
+    //!
+    //! \f$distance^2 = \lvert\rvert\boldsymbol{b-a}\lvert\rvert^2\f$
+    _XOINL static float DistanceSquared(const Vector3& a, const Vector3& b);
+    //! Returns the distance between vectors a and b in 3 dimensional space.
+    //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
+    //!
+    //! \f$distance = \lvert\rvert\boldsymbol{b-a}\lvert\rvert\f$
+    _XOINL static float Distance(const Vector3&a, const Vector3&b);
+    //! Assigns outVec to a random vector with a magnitude between low and high, inclusively.
+    _XOINL static void RandomInRange(float low, float high, Vector3& outVec);
     //! Return a random vector on edge of a cone with an angle relative to the input forward.
     //! @note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
     //! angles at and beyond PI radians will no longer represent a meaningful cone.
@@ -281,7 +298,7 @@ public:
     _XOINL static void RandomAtDistance(float d, Vector3& outVec);
     //! Return a random vector with a magnitude that does not exceed d.
     _XOINL static void RandomInDistance(float d, Vector3& outVec);
-
+    //! @}
 
     //>See
     //! @name Variants
@@ -291,11 +308,6 @@ public:
     //! Non static variants replace the first Vector3 parameter by 'this' vector.
     //! Static variants return what would have been the outVec param.
     //! @{
-    _XOINL static void RandomInRange(float low, float high, Vector3& outVec);
-    _XOINL static float AngleRadians(const Vector3& a, const Vector3& b);
-    _XOINL static float AngleDegrees(const Vector3& a, const Vector3& b);
-    _XOINL static float DistanceSquared(const Vector3& a, const Vector3& b);
-    _XOINL static float Distance(const Vector3&a, const Vector3&b);
     _XOINL static Vector3 Cross(const Vector3& a, const Vector3& b);
     _XOINL static Vector3 Max(const Vector3& a, const Vector3& b);
     _XOINL static Vector3 Min(const Vector3& a, const Vector3& b);
