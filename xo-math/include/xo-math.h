@@ -22,6 +22,8 @@
 #ifndef XO_MATH_H
 #define XO_MATH_H
 
+#include "xo-math-config.h"
+
 ////////////////////////////////////////////////////////////////////////// Optional defines for configuration
 #ifdef XO_CUSTOM_NS
 #   define XOMATH_BEGIN_XO_NS()  namespace XO_CUSTOM_NS {
@@ -30,7 +32,7 @@
 #   define XOMATH_BEGIN_XO_NS()  namespace xo {
 #   define XOMATH_END_XO_NS()    }
 #elif defined(XO_SIMPLE_NS)
-#   define XOMATH_BEGIN_XO_NS()  namespace xomath {
+#   define XOMATH_BEGIN_XO_NS()  namespace math {
 #   define XOMATH_END_XO_NS()    }
 #elif defined(XO_NO_NS)
 #   define XOMATH_BEGIN_XO_NS()
@@ -176,7 +178,7 @@ _XOCONSTEXPR const float FloatEpsilon = 0.0000001192092896f;
 _XOCONSTEXPR const float Rad2Deg = 360.0f / TAU;
 _XOCONSTEXPR const float Deg2Rad = TAU / 360.0f;
 
-float HexFloat(unsigned u) {
+_XOINL float HexFloat(unsigned u) {
     union {
         unsigned u;
         float f;
@@ -189,7 +191,7 @@ float HexFloat(unsigned u) {
 namespace sse {
     static const __m128 AbsMask = _mm_set1_ps(HexFloat(0x7fffffff));
 
-    __m128 Abs(__m128 v) {
+    _XOINL __m128 Abs(__m128 v) {
         return _mm_and_ps(AbsMask, v);
     }
 
@@ -331,8 +333,11 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #   undef XO_MATH_H
 #endif
 
-#undef XOMATH_BEGIN_XO_NS
-#undef XOMATH_END_XO_NS
+// don't undef the namespace macros inside xo-math cpp files.
+#if !defined(_XO_MATH_OBJ)
+#   undef XOMATH_BEGIN_XO_NS
+#   undef XOMATH_END_XO_NS
+#endif
 
 #if !defined(XO_EXPORT_ALL)
 #   undef _XOMATH_INTERNAL_MACRO_WARNING
@@ -364,10 +369,10 @@ _XOMATH_INTERNAL_MACRO_WARNING
 // r: release, all features broadly tested in various applications.
 // p: patch release, contains fixes for a release version.
 
-#define XO_MATH_VERSION_DATE "Summer 2016"
+#define XO_MATH_VERSION_DATE "Fall 2016"
 #define XO_MATH_VERSION_MAJOR 0
-#define XO_MATH_VERSION_KIND "b"
-#define XO_MATH_VERSION_MINOR 2
+#define XO_MATH_VERSION_KIND "x"
+#define XO_MATH_VERSION_MINOR 3
 #define XO_MATH_VERSION_SUB 0
 #define XO_MATH_VERSION_STR _XO_MATH_STRINGIFY(XO_MATH_VERSION_MAJOR) "." _XO_MATH_STRINGIFY(XO_MATH_VERSION_MINOR) "." XO_MATH_VERSION_KIND _XO_MATH_STRINGIFY(XO_MATH_VERSION_SUB)
 #define XO_MATH_VERSION (XO_MATH_VERSION_MAJOR*10000) + (XO_MATH_VERSION_MINOR*1000) + (XO_MATH_VERSION_SUB*100)

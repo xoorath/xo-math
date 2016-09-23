@@ -21,8 +21,6 @@
 
 #ifndef XOMATH_INTERNAL
 static_assert(false, "Don't include Matrix4x4.h directly. Include xo-math.h, which fully implements this type.");
-#elif defined(_XOMATH_INIT_MATRIX4X4) || defined(_XO_TRANSPOSE_SWAP)
-_XOMATH_INTERNAL_MACRO_WARNING
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();
@@ -521,23 +519,7 @@ public:
         Zero;
 };
 
-const Matrix4x4 Matrix4x4::Identity(Vector4(1.0f, 0.0f, 0.0f, 0.0f),
-                                    Vector4(0.0f, 1.0f, 0.0f, 0.0f),
-                                    Vector4(0.0f, 0.0f, 1.0f, 0.0f),
-                                    Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-
-const Matrix4x4 Matrix4x4::One(Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-                               Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-                               Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-                               Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-
-const Matrix4x4 Matrix4x4::Zero(Vector4(0.0f, 0.0f, 0.0f, 0.0f),
-                                Vector4(0.0f, 0.0f, 0.0f, 0.0f),
-                                Vector4(0.0f, 0.0f, 0.0f, 0.0f),
-                                Vector4(0.0f, 0.0f, 0.0f, 0.0f));
 
 XOMATH_END_XO_NS();
-
-#undef _XOMATH_INIT_MATRIX4X4
 
 #endif // XOMATH_INTERNAL

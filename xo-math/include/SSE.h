@@ -25,29 +25,27 @@ static_assert(false, "Don't include SSE.h directly. Include xo-math.h.");
 
 XOMATH_BEGIN_XO_NS();
 
-_XOINL
-Vector2 Abs(const Vector2& v) {
+//! @todo why is this in sse? is there no fallback?
+_XOINL Vector2 Abs(const Vector2& v) {
     return Vector2(Abs(v.x), Abs(v.y));
 }
 
-#if XO_SSE2 // TODO: check if SSE2 is required
-_XOINL
-Vector3 Abs(const Vector3& v) {
+//! @todo why is this in sse? is there no fallback?
+_XOINL Vector3 Abs(const Vector3& v) {
     return (sse::Abs(v.m));
 }
 
-_XOINL
-Vector4 Abs(const Vector4& v) {
+//! @todo why is this in sse? is there no fallback?
+_XOINL Vector4 Abs(const Vector4& v) {
     return Vector4(sse::Abs(v.m));
 }
-#endif
 
 #if XO_SSE
 
 namespace sse {
 
-    // The control of MXCSR usage is inspired by Agner Fog's use of them in vectormath.
-    // vectormath uses them to optionally speed up subnormal operations.
+    // The control of MXCSR usage is inspired by Agner Fog's use of them in vectorclasses.
+    // vectorclasses uses them to optionally speed up subnormal operations.
     // To achieve this in xomath, call the following once per thread where xo-math is used:
     //      sse::UpdateControlWord();       // updates the thread-local state.
     //      sse::SetDenormalsAreZero(true); // force all denormal values to 0
@@ -66,7 +64,6 @@ namespace sse {
             Precision                       = (1 << 5),
         };
 
-        // TODO: ifdef for whichever sse version this came in on.
         enum class DAZ {
             DenormalsAreZero                = (1 << 6),
         };
@@ -92,262 +89,51 @@ namespace sse {
         enum class FZ {
             FlushToZero                     = (1 << 15)
         };
-
     }
 
-    volatile _XOTLS unsigned LastKnownControlWord = 0;
+    bool GetControlMask(mxcsr::Masks mask, bool withUpdate = false);
+    bool GetControlMask(unsigned mask, bool withUpdate = false);
+    bool GetDenormalExceptionMask(bool withUpdate = false);
+    bool GetDivideByZeroExceptionMask(bool withUpdate = false);
+    bool GetInvalidOperationExceptionMask(bool withUpdate = false);
+    bool GetOverflowExceptionMask(bool withUpdate = false);
+    bool GetPrecisionExceptionMask(bool withUpdate = false);
+    bool GetUnderflowExceptionMask(bool withUpdate = false);
 
-    void UpdateControlWord() {
-        LastKnownControlWord = _mm_getcsr();
-    }
+    bool HasControlFlagBeenSet(mxcsr::Flags flags, bool withUpdate = false, bool thenFlush = false);
+    bool HasControlFlagBeenSet(unsigned flags, bool withUpdate = false, bool thenFlush = false);
+    bool HasDenormalExceptionOccured(bool withUpdate = false, bool thenFlush = false);
+    bool HasDenormalsAreZeroSet(bool withUpdate = false);
+    bool HasDivideByZeroExceptionOccured(bool withUpdate = false, bool thenFlush = false);
+    bool HasFlushToZeroSet(bool withUpdate = false);
+    bool HasInvalidOperationExceptionOccured(bool withUpdate = false, bool thenFlush = false);
+    bool HasOverflowExceptionOccured(bool withUpdate = false, bool thenFlush = false);
+    bool HasPrecisionExceptionOccured(bool withUpdate = false, bool thenFlush = false);
+    bool HasUnderflowExceptionOccured(bool withUpdate = false, bool thenFlush = false);
 
-    void SetControlWord(unsigned control) {
-        _mm_setcsr(LastKnownControlWord = control);
-    }
+    mxcsr::Rounding GetRoundingMode(bool withUpdate = false);
+    void GetAllMXCSRInfo(std::ostream& os, bool withUpdate = false);
 
-    void SetControlWordAddative(unsigned control) {
-        _mm_setcsr(LastKnownControlWord |= control);
-    }
+    void RemoveControlWord(unsigned control);
 
-    void RemoveControlWord(unsigned control) {
-        _mm_setcsr(LastKnownControlWord &= ~control);
-    }
+    void SetControlMask(mxcsr::Masks mask, bool value, bool withUpdate = false);
+    void SetControlMask(unsigned mask, bool value, bool withUpdate = false);
+    void SetControlWord(unsigned control);
+    void SetControlWordAddative(unsigned control);
+    void SetDenormalExceptionMask(bool value, bool withUpdate = false);
+    void SetDenormalsAreZero(bool value, bool withUpdate = false);
+    void SetDivideByZeroExceptionMask(bool value, bool withUpdate = false);
+    void SetFlushToZero(bool value, bool withUpdate = false);
+    void SetInvalidOperationExceptionMask(bool value, bool withUpdate = false);
+    void SetOverflowExceptionMask(bool value, bool withUpdate = false);
+    void SetPrecisionExceptionMask(bool value, bool withUpdate = false);
+    void SetRoundingMode(mxcsr::Rounding mode, bool withUpdate = false);
+    void SetRoundingMode(unsigned mode, bool withUpdate = false);
+    void SetUnderflowExceptionMask(bool value, bool withUpdate = false);
 
-    bool HasControlFlagBeenSet(unsigned flags, bool withUpdate = false, bool thenFlush = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        if((LastKnownControlWord & flags) == flags) {
-            if(thenFlush) {
-                RemoveControlWord(flags);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    bool HasControlFlagBeenSet(mxcsr::Flags flags, bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet((unsigned)flags, withUpdate, thenFlush);
-    }
-
-    bool HasInvalidOperationExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(mxcsr::Flags::InvalidOperation, withUpdate, thenFlush);
-    }
-
-    bool HasDenormalExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(mxcsr::Flags::Denormal, withUpdate, thenFlush);
-    }
-
-    bool HasDivideByZeroExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(mxcsr::Flags::DivideByZero, withUpdate, thenFlush);
-    }
-
-    bool HasOverflowExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(mxcsr::Flags::Overflow, withUpdate, thenFlush);
-    }
-
-    bool HasUnderflowExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(mxcsr::Flags::Underflow, withUpdate, thenFlush);
-    }
-
-    bool HasPrecisionExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(mxcsr::Flags::Precision, withUpdate, thenFlush);
-    }
-
-    void SetControlMask(unsigned mask, bool value, bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        if(value) {
-            SetControlWordAddative(mask);
-        }
-        else {
-            RemoveControlWord(mask);
-        }
-    }
-
-    void SetControlMask(mxcsr::Masks mask, bool value, bool withUpdate = false) {
-        SetControlMask((unsigned)mask, value, withUpdate);
-    }
-
-    bool GetControlMask(unsigned mask, bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        return (LastKnownControlWord & mask) == mask;
-    }
-
-    bool GetControlMask(mxcsr::Masks mask, bool withUpdate = false) {
-        return GetControlMask((unsigned)mask, withUpdate);
-    }
-
-    void SetInvalidOperationExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(mxcsr::Masks::InvalidOperation, value, withUpdate);
-    }
-
-    void SetDenormalExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(mxcsr::Masks::Denormal, value, withUpdate);
-    }
-
-    void SetDivideByZeroExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(mxcsr::Masks::DivideByZero, value, withUpdate);
-    }
-
-    void SetOverflowExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(mxcsr::Masks::Overflow, value, withUpdate);
-    }
-
-    void SetUnderflowExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(mxcsr::Masks::Underflow, value, withUpdate);
-    }
-
-    void SetPrecisionExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(mxcsr::Masks::Precision, value, withUpdate);
-    }
-
-    void ThrowAllExceptions(bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        SetInvalidOperationExceptionMask(false);
-        SetDenormalExceptionMask(false);
-        SetDivideByZeroExceptionMask(false);
-        SetOverflowExceptionMask(false);
-        SetUnderflowExceptionMask(false);
-        SetPrecisionExceptionMask(false);
-    }
-
-    void ThrowNoExceptions(bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        SetInvalidOperationExceptionMask(true);
-        SetDenormalExceptionMask(true);
-        SetDivideByZeroExceptionMask(true);
-        SetOverflowExceptionMask(true);
-        SetUnderflowExceptionMask(true);
-        SetPrecisionExceptionMask(true);
-    }
-
-    bool GetInvalidOperationExceptionMask(bool withUpdate = false) {
-        return GetControlMask(mxcsr::Masks::InvalidOperation, withUpdate);
-    }
-
-    bool GetDenormalExceptionMask(bool withUpdate = false) {
-        return GetControlMask(mxcsr::Masks::Denormal, withUpdate);
-    }
-
-    bool GetDivideByZeroExceptionMask(bool withUpdate = false) {
-        return GetControlMask(mxcsr::Masks::DivideByZero, withUpdate);
-    }
-
-    bool GetOverflowExceptionMask(bool withUpdate = false) {
-        return GetControlMask(mxcsr::Masks::Overflow, withUpdate);
-    }
-
-    bool GetUnderflowExceptionMask(bool withUpdate = false) {
-        return GetControlMask(mxcsr::Masks::Underflow, withUpdate);
-    }
-
-    bool GetPrecisionExceptionMask(bool withUpdate = false) {
-        return GetControlMask(mxcsr::Masks::Precision, withUpdate);
-    }
-
-    mxcsr::Rounding GetRoundingMode(bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        return (mxcsr::Rounding)(LastKnownControlWord & (unsigned)mxcsr::Rounding::Bits);
-    }
-
-    void SetRoundingMode(unsigned mode, bool withUpdate = false) {
-        mode &= (unsigned)mxcsr::Rounding::Bits;
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        SetControlWordAddative(mode);
-    }
-
-    void SetRoundingMode(mxcsr::Rounding mode, bool withUpdate = false) {
-        SetRoundingMode((unsigned)mode, withUpdate);
-    }
-
-    bool HasDenormalsAreZeroSet(bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        return (LastKnownControlWord & (unsigned)mxcsr::DAZ::DenormalsAreZero) == (unsigned)mxcsr::DAZ::DenormalsAreZero;
-    }
-
-    void SetDenormalsAreZero(bool value, bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        if(value) {
-            SetControlWordAddative((unsigned)mxcsr::DAZ::DenormalsAreZero);
-        }
-        else {
-            RemoveControlWord((unsigned)mxcsr::DAZ::DenormalsAreZero);
-        }
-    }
-
-    bool HasFlushToZeroSet(bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        return (LastKnownControlWord & (unsigned)mxcsr::FZ::FlushToZero) == (unsigned)mxcsr::FZ::FlushToZero;
-    }
-
-    void SetFlushToZero(bool value, bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        if(value) {
-            SetControlWordAddative((unsigned)mxcsr::FZ::FlushToZero);
-        }
-        else {
-            RemoveControlWord((unsigned)mxcsr::FZ::FlushToZero);
-        }
-    }
-
-    void GetAllMXCSRInfo(std::ostream& os, bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        os << "MXCSR rounding:\n";
-        os << "\t";
-        switch(GetRoundingMode()) {
-            case mxcsr::Rounding::Nearest:
-                os << "Nearest";
-                break;
-            case mxcsr::Rounding::Positive:
-                os << "Positive";
-                break;
-            case mxcsr::Rounding::Negative:
-                os << "Negative";
-                break;
-            case mxcsr::Rounding::Zero:
-                os << "Zero";
-                break;
-        }
-        os << "\n";
-        os << "MXCSR masks:\n";
-        os << "\t" << "InvalidOperationException: " << GetInvalidOperationExceptionMask() << "\n"; 
-        os << "\t" << "DenormalException: " << GetDenormalExceptionMask() << "\n"; 
-        os << "\t" << "DivideByZeroException: " << GetDivideByZeroExceptionMask() << "\n"; 
-        os << "\t" << "OverflowException: " << GetOverflowExceptionMask() << "\n"; 
-        os << "\t" << "UnderflowException: " << GetUnderflowExceptionMask() << "\n"; 
-        os << "\t" << "PrecisionException: " << GetPrecisionExceptionMask() << "\n"; 
-        os << "\t" << "DenormalsAreZero: " << HasDenormalsAreZeroSet() << "\n";
-        os << "\t" << "FlushToZero: " << HasFlushToZeroSet() << "\n";
-        os << "MXCSR flags:\n";
-        os << "\t" << "InvalidOperationException: " << HasInvalidOperationExceptionOccured() << "\n"; 
-        os << "\t" << "DenormalException: " << HasDenormalExceptionOccured() << "\n"; 
-        os << "\t" << "DivideByZeroException: " << HasDivideByZeroExceptionOccured() << "\n"; 
-        os << "\t" << "OverflowException: " << HasOverflowExceptionOccured() << "\n"; 
-        os << "\t" << "UnderflowException: " << HasUnderflowExceptionOccured() << "\n"; 
-        os << "\t" << "PrecisionException: " << HasPrecisionExceptionOccured() << "\n";
-    }
+    void ThrowAllExceptions(bool withUpdate = false);
+    void ThrowNoExceptions(bool withUpdate = false);
+    void UpdateControlWord();
 }
 #endif
 

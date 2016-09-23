@@ -103,17 +103,6 @@ private:
 #endif
 };
 
-#if defined(_XONOCONSTEXPR)
-#   if XO_SSE
-const float Quaternion::Epsilon = sse::SSEFloatEpsilon * 4.0f;
-#   else
-const float Quaternion::Epsilon = FloatEpsilon * 4.0f;
-#   endif
-#endif
-
-const Quaternion Quaternion::Identity(0.0f, 0.0f, 0.0f, 1.0f);
-const Quaternion Quaternion::Zero(0.0f, 0.0f, 0.0f, 0.0f);
-
 XOMATH_END_XO_NS();
 
 #endif // XOMATH_INTERNAL

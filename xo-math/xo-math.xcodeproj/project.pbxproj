@@ -8,6 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		812D15DB1D49679300195264 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 812D15DA1D49679300195264 /* Main.cpp */; };
+		81EE87091D95E1C300ECCDB4 /* Matrix4x4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81EE87021D95E1C200ECCDB4 /* Matrix4x4.cpp */; };
+		81EE870A1D95E1C300ECCDB4 /* Quaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81EE87031D95E1C200ECCDB4 /* Quaternion.cpp */; };
+		81EE870B1D95E1C300ECCDB4 /* sse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81EE87041D95E1C200ECCDB4 /* sse.cpp */; };
+		81EE870C1D95E1C300ECCDB4 /* Vector2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81EE87051D95E1C200ECCDB4 /* Vector2.cpp */; };
+		81EE870D1D95E1C300ECCDB4 /* Vector3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81EE87061D95E1C200ECCDB4 /* Vector3.cpp */; };
+		81EE870E1D95E1C300ECCDB4 /* Vector4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81EE87071D95E1C300ECCDB4 /* Vector4.cpp */; };
+		81EE870F1D95E1C300ECCDB4 /* xo-math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81EE87081D95E1C300ECCDB4 /* xo-math.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -43,6 +50,14 @@
 		81EE86FF1D8F1EB300ECCDB4 /* Vector4Methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector4Methods.h; path = include/Vector4Methods.h; sourceTree = SOURCE_ROOT; };
 		81EE87001D8F1EB300ECCDB4 /* Vector4Operators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vector4Operators.h; path = include/Vector4Operators.h; sourceTree = SOURCE_ROOT; };
 		81EE87011D8F1EB300ECCDB4 /* xo-math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xo-math.h"; path = "include/xo-math.h"; sourceTree = SOURCE_ROOT; };
+		81EE87021D95E1C200ECCDB4 /* Matrix4x4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Matrix4x4.cpp; path = src/Matrix4x4.cpp; sourceTree = SOURCE_ROOT; };
+		81EE87031D95E1C200ECCDB4 /* Quaternion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Quaternion.cpp; path = src/Quaternion.cpp; sourceTree = SOURCE_ROOT; };
+		81EE87041D95E1C200ECCDB4 /* sse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sse.cpp; path = src/sse.cpp; sourceTree = SOURCE_ROOT; };
+		81EE87051D95E1C200ECCDB4 /* Vector2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Vector2.cpp; path = src/Vector2.cpp; sourceTree = SOURCE_ROOT; };
+		81EE87061D95E1C200ECCDB4 /* Vector3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Vector3.cpp; path = src/Vector3.cpp; sourceTree = SOURCE_ROOT; };
+		81EE87071D95E1C300ECCDB4 /* Vector4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Vector4.cpp; path = src/Vector4.cpp; sourceTree = SOURCE_ROOT; };
+		81EE87081D95E1C300ECCDB4 /* xo-math.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "xo-math.cpp"; path = "src/xo-math.cpp"; sourceTree = SOURCE_ROOT; };
+		81EE87101D95E1CE00ECCDB4 /* xo-math-config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xo-math-config.h"; path = "include/xo-math-config.h"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +90,14 @@
 		812D15CC1D49669A00195264 /* xo-math */ = {
 			isa = PBXGroup;
 			children = (
+				81EE87101D95E1CE00ECCDB4 /* xo-math-config.h */,
+				81EE87021D95E1C200ECCDB4 /* Matrix4x4.cpp */,
+				81EE87031D95E1C200ECCDB4 /* Quaternion.cpp */,
+				81EE87041D95E1C200ECCDB4 /* sse.cpp */,
+				81EE87051D95E1C200ECCDB4 /* Vector2.cpp */,
+				81EE87061D95E1C200ECCDB4 /* Vector3.cpp */,
+				81EE87071D95E1C300ECCDB4 /* Vector4.cpp */,
+				81EE87081D95E1C300ECCDB4 /* xo-math.cpp */,
 				81EE86F01D8F1EB300ECCDB4 /* DetectSIMD.h */,
 				81EE86F11D8F1EB300ECCDB4 /* Matrix4x4.h */,
 				81EE86F21D8F1EB300ECCDB4 /* Matrix4x4Methods.h */,
@@ -154,7 +177,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81EE870E1D95E1C300ECCDB4 /* Vector4.cpp in Sources */,
 				812D15DB1D49679300195264 /* Main.cpp in Sources */,
+				81EE870F1D95E1C300ECCDB4 /* xo-math.cpp in Sources */,
+				81EE87091D95E1C300ECCDB4 /* Matrix4x4.cpp in Sources */,
+				81EE870C1D95E1C300ECCDB4 /* Vector2.cpp in Sources */,
+				81EE870A1D95E1C300ECCDB4 /* Quaternion.cpp in Sources */,
+				81EE870D1D95E1C300ECCDB4 /* Vector3.cpp in Sources */,
+				81EE870B1D95E1C300ECCDB4 /* sse.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
