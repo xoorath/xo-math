@@ -2,6 +2,7 @@
 [![Documentation Status](https://readthedocs.org/projects/xo-math/badge/?version=latest)](http://xo-math.readthedocs.io/en/latest/?badge=latest)
 [![Maintenance](https://img.shields.io/maintenance/yes/2016.svg?maxAge=2592000)](https://github.com/xoorath/xo-math)
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.png?v=103)](https://tldrlegal.com/license/mit-license) 
+[![Gitter](https://img.shields.io/gitter/room/gitterHQ/gitter.svg)](https://gitter.im/xo-math/Lobby)
 
 :warning: **xo-math is currently in progress and not ready for production use.**
 
