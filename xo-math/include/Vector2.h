@@ -204,16 +204,18 @@ public:
     //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert^2 = (x\times x)+(y\times y)\f$
     //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
     _XOINL float MagnitudeSquared() const;
-    //! Normalizes this vector to a Magnitude of 1.
-    //! @sa https://en.wikipedia.org/wiki/Unit_vector
-    _XOINL const Vector2& Normalize();
-    //! Returns a copy of this vector with a Magnitude of 1.
-    //! @sa https://en.wikipedia.org/wiki/Unit_vector
-    _XOINL Vector2 Normalized() const;
     //! The sum of all vector elements.
     //!
     //! \f$x+y\f$
     _XOINL float Sum() const;
+
+    //! Normalizes this vector to a Magnitude of 1.
+    //! @sa https://en.wikipedia.org/wiki/Unit_vector
+    _XOINL const Vector2& Normalize();
+
+    //! Returns a copy of this vector with a Magnitude of 1.
+    //! @sa https://en.wikipedia.org/wiki/Unit_vector
+    _XOINL Vector2 Normalized() const;
     //! @}
 
     //>See

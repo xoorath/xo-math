@@ -200,16 +200,16 @@ Vector2 Vector2::Midpoint(const Vector2& a, const Vector2& b) {
     return tempVec;
 }
 
-float Vector2::Dot(const Vector2& v) const                  { return Dot(*this, v); }
-float Vector2::Cross(const Vector2& v) const                { return Cross(*this, v); }
-Vector2 Vector2::OrthogonalCCW() const                      { return OrthogonalCCW(*this); }
-Vector2 Vector2::OrthogonalCW() const                       { return OrthogonalCW(*this); }
-float Vector2::AngleRadians(const Vector2& v) const         { return AngleRadians(*this, v); }
 float Vector2::AngleDegrees(const Vector2& v) const         { return AngleDegrees(*this, v); }
+float Vector2::AngleRadians(const Vector2& v) const         { return AngleRadians(*this, v); }
+float Vector2::Cross(const Vector2& v) const                { return Cross(*this, v); }
 float Vector2::Distance(const Vector2& v) const             { return Distance(*this, v); }
 float Vector2::DistanceSquared(const Vector2& v) const      { return DistanceSquared(*this, v); }
+float Vector2::Dot(const Vector2& v) const                  { return Dot(*this, v); }
 Vector2 Vector2::Lerp(const Vector2& v, float t) const      { return Lerp(*this, v, t); }
 Vector2 Vector2::Midpoint(const Vector2& v) const           { return Midpoint(*this, v); }
+Vector2 Vector2::OrthogonalCCW() const                      { return OrthogonalCCW(*this); }
+Vector2 Vector2::OrthogonalCW() const                       { return OrthogonalCW(*this); }
 
 XOMATH_END_XO_NS();
 

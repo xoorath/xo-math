@@ -98,7 +98,7 @@ Matrix4x4::Matrix4x4(const class Quaternion& q) {
     r[3] = Vector4::UnitW;
 }
 
-const Matrix4x4& Matrix4x4::MakeTranspose() {
+const Matrix4x4& Matrix4x4::Transpose() {
 #if XO_SSE
     _MM_TRANSPOSE4_PS(r[0].m, r[1].m, r[2].m, r[3].m);
 #else
@@ -119,9 +119,9 @@ const Matrix4x4& Matrix4x4::MakeTranspose() {
     return *this;
 }
 
-Matrix4x4 Matrix4x4::Transpose() const {
-    auto m = *this;
-    return m.MakeTranspose();
+Matrix4x4 Matrix4x4::Transposed() const {
+    Matrix4x4 m(*this);
+    return m.Transpose();
 }
 
 const Matrix4x4& Matrix4x4::Transform(Vector3& v) const {

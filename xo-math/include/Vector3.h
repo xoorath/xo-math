@@ -200,42 +200,51 @@ public:
     //! @name Methods
     //! @{
 
-    //! Returns this vector swizzled so elements appear in reverse order. Vector3::operator~() provides the same functionality.
-    //!
-    //! \f$\begin{pmatrix}z,&y,&x\end{pmatrix}\f$
-    _XOINL Vector3 ZYX() const;
-    //! The sum of all vector elements.
-    //!
-    //! \f$x+y+z\f$
-    _XOINL float Sum() const;
-    //! The square length of this vector.
-    //! It's preferred to use Vector3::MagnitudeSquared when possible, as Vector3::Magnitude requires a call to Sqrt.
-    //!
-    //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert^2 = (x\times x)+(y\times y)+(z\times z)\f$
-    //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
-    _XOINL float MagnitudeSquared() const;
+    //! Returns true when the Magnitude of this vector is within Vector3::Epsilon of being 1.0
+    _XOINL bool IsNormalized() const;
+    //! Returns true when the Magnitude of this vector is <= Vector3::Epsilon
+    _XOINL bool IsZero() const;
     //! The length of this vector
     //! It's preferred to use Vector3::MagnitudeSquared when possible, as Vector3::Magnitude requires a call to Sqrt.
     //!
     //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert = \sqrt{(x\times x)+(y\times y)+(z\times z)}\f$
     //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
     _XOINL float Magnitude() const;
+    //! The square length of this vector.
+    //! It's preferred to use Vector3::MagnitudeSquared when possible, as Vector3::Magnitude requires a call to Sqrt.
+    //!
+    //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert^2 = (x\times x)+(y\times y)+(z\times z)\f$
+    //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
+    _XOINL float MagnitudeSquared() const;
+    //! The sum of all vector elements.
+    //!
+    //! \f$x+y+z\f$
+    _XOINL float Sum() const;
+
     //! Normalizes this vector to a Magnitude of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
     _XOINL const Vector3& Normalize();
+
     //! Returns a copy of this vector with a Magnitude of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
     _XOINL Vector3 Normalized() const;
-    //! Returns true when the Magnitude of this vector is <= Vector3::Epsilon
-    _XOINL bool IsZero() const;
-    //! Returns true when the Magnitude of this vector is within Vector3::Epsilon of being 1.0
-    _XOINL bool IsNormalized() const;
+    //! Returns this vector swizzled so elements appear in reverse order. Vector3::operator~() provides the same functionality.
+    //!
+    //! \f$\begin{pmatrix}z,&y,&x\end{pmatrix}\f$
+    _XOINL Vector3 ZYX() const;
+    
     //! @}
 
     //>See
     //! @name Static Methods
     //! @{
 
+    //! Returns the cross product (vector product) of vectors a and b.
+    //! @sa https://en.wikipedia.org/wiki/Cross_product
+    _XOINL static void Cross(const Vector3& a, const Vector3& b, Vector3& outVec);
+    //! Sets outVec to a vector interpolated between a and b by a scalar amount t.
+    //! @sa https://en.wikipedia.org/wiki/Linear_interpolation
+    _XOINL static void Lerp(const Vector3& a, const Vector3& b, float t, Vector3& outVec);
     //! Set outVec to have elements equal to the max of each element in a and b.
     //!
     //! \f$\begin{pmatrix}\max(a.x, b.x)&\max(a.y, b.y)&\max(a.z, b.z)\end{pmatrix}\f$
@@ -244,9 +253,46 @@ public:
     //!
     //! \f$\begin{pmatrix}\min(a.x, b.x)&\min(a.y, b.y)&\min(a.z, b.z)\end{pmatrix}\f$
     _XOINL static void Min(const Vector3& a, const Vector3& b, Vector3& outVec);
-    //! Sets outVec to a vector interpolated between a and b by a scalar amount t.
-    //! @sa https://en.wikipedia.org/wiki/Linear_interpolation
-    _XOINL static void Lerp(const Vector3& a, const Vector3& b, float t, Vector3& outVec);
+    //! Return a random vector with a magnitude of d.
+    _XOINL static void RandomAtDistance(float d, Vector3& outVec);
+    //! Calls Vector3::RandomInConeRadians, converting the input angle in degrees to radians.
+    _XOINL static void RandomInConeDegrees(const Vector3& forward, float angle, Vector3& outVec);
+    //! Return a random vector inside a cone with an angle relative to the input forward.
+    //! @note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
+    //! angles at and beyond PI radians will no longer represent a meaningful cone.
+    _XOINL static void RandomInConeRadians(const Vector3& forward, float angle, Vector3& outVec);
+    //! Return a random vector with a magnitude that does not exceed d.
+    _XOINL static void RandomInDistance(float d, Vector3& outVec);
+    //! Assigns outVec to a random vector with a magnitude between low and high, inclusively.
+    _XOINL static void RandomInRange(float low, float high, Vector3& outVec);
+    //! Return a random vector with a magnitude that does not exceed 1.
+    _XOINL static void RandomInSphere(Vector3& outVec);
+    //! Calls Vector3::RandomOnConeRadians, converting the input angle in degrees to radians.
+    _XOINL static void RandomOnConeDegrees(const Vector3& forward, float angle, Vector3& outVec);
+    //! Return a random vector on edge of a cone with an angle relative to the input forward.
+    //! @note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
+    //! angles at and beyond PI radians will no longer represent a meaningful cone.
+    _XOINL static void RandomOnConeRadians(const Vector3& forward, float angle, Vector3& outVec);
+    //! Return a random vector with a length of 1.0f.
+    _XOINL static void RandomOnSphere(Vector3& outVec);
+    //! Calls Vector3::RotateRadians, converting the input angle in degrees to radians.
+    _XOINL static void RotateDegrees(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec);
+    //! Assign outVec to v rotated along an axis by a specified angle in radians.
+    _XOINL static void RotateRadians(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec);
+    // Calls Vector3::AngleRadians, converting the return value to degrees.
+    _XOINL static float AngleDegrees(const Vector3& a, const Vector3& b);
+    //! Returns the angle in radians between vector a and b.
+    _XOINL static float AngleRadians(const Vector3& a, const Vector3& b);
+    //! Returns the distance between vectors a and b in 3 dimensional space.
+    //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
+    //!
+    //! \f$distance = \lvert\rvert\boldsymbol{b-a}\lvert\rvert\f$
+    _XOINL static float Distance(const Vector3&a, const Vector3&b);
+    //! Returns the square distance between vectors a and b in 3 dimensional space.
+    //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
+    //!
+    //! \f$distance^2 = \lvert\rvert\boldsymbol{b-a}\lvert\rvert^2\f$
+    _XOINL static float DistanceSquared(const Vector3& a, const Vector3& b);
     //! Returns a single number representing a product of magnitudes. Commonly used with two normalized 
     //! vectors to determine if they are pointed the same way. In this case: 1.0 represents same-facing vectors
     //! 0 represents perpendicular vectors, and -1 will be facing away
@@ -255,49 +301,7 @@ public:
     //!
     //! @sa https://en.wikipedia.org/wiki/Dot_product
     _XOINL static float Dot(const Vector3& a, const Vector3& b);
-    //! Returns the cross product (vector product) of vectors a and b.
-    //! @sa https://en.wikipedia.org/wiki/Cross_product
-    _XOINL static void Cross(const Vector3& a, const Vector3& b, Vector3& outVec);
-    //! Assign outVec to v rotated along an axis by a specified angle in radians.
-    _XOINL static void RotateRadians(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec);
-    //! Calls Vector3::RotateRadians, converting the input angle in degrees to radians.
-    _XOINL static void RotateDegrees(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec);
-    //! Returns the angle in radians between vector a and b.
-    _XOINL static float AngleRadians(const Vector3& a, const Vector3& b);
-    // Calls Vector3::AngleRadians, converting the return value to degrees.
-    _XOINL static float AngleDegrees(const Vector3& a, const Vector3& b);
-    //! Returns the square distance between vectors a and b in 3 dimensional space.
-    //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
-    //!
-    //! \f$distance^2 = \lvert\rvert\boldsymbol{b-a}\lvert\rvert^2\f$
-    _XOINL static float DistanceSquared(const Vector3& a, const Vector3& b);
-    //! Returns the distance between vectors a and b in 3 dimensional space.
-    //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
-    //!
-    //! \f$distance = \lvert\rvert\boldsymbol{b-a}\lvert\rvert\f$
-    _XOINL static float Distance(const Vector3&a, const Vector3&b);
-    //! Assigns outVec to a random vector with a magnitude between low and high, inclusively.
-    _XOINL static void RandomInRange(float low, float high, Vector3& outVec);
-    //! Return a random vector on edge of a cone with an angle relative to the input forward.
-    //! @note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
-    //! angles at and beyond PI radians will no longer represent a meaningful cone.
-    _XOINL static void RandomOnConeRadians(const Vector3& forward, float angle, Vector3& outVec);
-    //! Return a random vector inside a cone with an angle relative to the input forward.
-    //! @note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
-    //! angles at and beyond PI radians will no longer represent a meaningful cone.
-    _XOINL static void RandomInConeRadians(const Vector3& forward, float angle, Vector3& outVec);
-    //! Calls Vector3::RandomOnConeRadians, converting the input angle in degrees to radians.
-    _XOINL static void RandomOnConeDegrees(const Vector3& forward, float angle, Vector3& outVec);
-    //! Calls Vector3::RandomInConeRadians, converting the input angle in degrees to radians.
-    _XOINL static void RandomInConeDegrees(const Vector3& forward, float angle, Vector3& outVec);
-    //! Return a random vector with a length of 1.0f.
-    _XOINL static void RandomOnSphere(Vector3& outVec);
-    //! Return a random vector with a magnitude that does not exceed 1.
-    _XOINL static void RandomInSphere(Vector3& outVec);
-    //! Return a random vector with a magnitude of d.
-    _XOINL static void RandomAtDistance(float d, Vector3& outVec);
-    //! Return a random vector with a magnitude that does not exceed d.
-    _XOINL static void RandomInDistance(float d, Vector3& outVec);
+    
     //! @}
 
     //>See
@@ -309,33 +313,34 @@ public:
     //! Static variants return what would have been the outVec param.
     //! @{
     _XOINL static Vector3 Cross(const Vector3& a, const Vector3& b);
+    _XOINL static Vector3 Lerp(const Vector3& a, const Vector3& b, float t);
     _XOINL static Vector3 Max(const Vector3& a, const Vector3& b);
     _XOINL static Vector3 Min(const Vector3& a, const Vector3& b);
-    _XOINL static Vector3 Lerp(const Vector3& a, const Vector3& b, float t);
-    _XOINL static Vector3 RotateRadians(const Vector3& v, const Vector3& axis, float angle);
-    _XOINL static Vector3 RotateDegrees(const Vector3& v, const Vector3& axis, float angle);
-    _XOINL static Vector3 RandomOnConeRadians(const Vector3& forward, float angle);
-    _XOINL static Vector3 RandomInConeRadians(const Vector3& forward, float angle);
-    _XOINL static Vector3 RandomOnConeDegrees(const Vector3& forward, float angle);
-    _XOINL static Vector3 RandomInConeDegrees(const Vector3& forward, float angle);
-    _XOINL static Vector3 RandomOnSphere();
-    _XOINL static Vector3 RandomInSphere();
     _XOINL static Vector3 RandomAtDistance(float d);
+    _XOINL static Vector3 RandomInConeDegrees(const Vector3& forward, float angle);
+    _XOINL static Vector3 RandomInConeRadians(const Vector3& forward, float angle);
     _XOINL static Vector3 RandomInDistance(float d);
     _XOINL static Vector3 RandomInRange(float low, float high);
+    _XOINL static Vector3 RandomInSphere();
+    _XOINL static Vector3 RandomOnConeDegrees(const Vector3& forward, float angle);
+    _XOINL static Vector3 RandomOnConeRadians(const Vector3& forward, float angle);
+    _XOINL static Vector3 RandomOnSphere();
+    _XOINL static Vector3 RotateDegrees(const Vector3& v, const Vector3& axis, float angle);
+    _XOINL static Vector3 RotateRadians(const Vector3& v, const Vector3& axis, float angle);
+
+    _XOINL float AngleDegrees(const Vector3& v) const;
+    _XOINL float AngleRadians(const Vector3& v) const;
+    _XOINL float Distance(const Vector3& v) const;
+    _XOINL float DistanceSquared(const Vector3& v) const;
     _XOINL float Dot(const Vector3& v) const;
     _XOINL Vector3 Cross(const Vector3& v) const;
-    _XOINL float AngleRadians(const Vector3& v) const;
-    _XOINL float AngleDegrees(const Vector3& v) const;
-    _XOINL float DistanceSquared(const Vector3& v) const;
-    _XOINL float Distance(const Vector3& v) const;
     _XOINL Vector3 Lerp(const Vector3& v, float t) const;
-    _XOINL Vector3 RotateRadians(const Vector3& axis, float angle) const;
-    _XOINL Vector3 RotateDegrees(const Vector3& axis, float angle) const;
-    _XOINL Vector3 RandomOnConeRadians(float angle) const;
+    _XOINL Vector3 RandomInConeDegrees(float angle) const;
     _XOINL Vector3 RandomInConeRadians(float angle) const;
     _XOINL Vector3 RandomOnConeDegrees(float angle) const;
-    _XOINL Vector3 RandomInConeDegrees(float angle) const;
+    _XOINL Vector3 RandomOnConeRadians(float angle) const;
+    _XOINL Vector3 RotateDegrees(const Vector3& axis, float angle) const;
+    _XOINL Vector3 RotateRadians(const Vector3& axis, float angle) const;
     //! @}
 
     //>See

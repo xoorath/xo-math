@@ -51,7 +51,7 @@ Vector4 Matrix4x4::GetColumn(int i) const {
 
 Matrix4x4 Matrix4x4::operator ~() const {
     auto m = *this;
-    return m.MakeTranspose();
+    return m.Transpose();
 }
 
 const Matrix4x4& Matrix4x4::operator += (const Matrix4x4& m) {
@@ -71,7 +71,7 @@ const Matrix4x4& Matrix4x4::operator -= (const Matrix4x4& m) {
 }
 
 const Matrix4x4& Matrix4x4::operator *= (const Matrix4x4& m) {
-    auto t = m.Transpose();
+    auto t = m.Transposed();
     return (*this) = Matrix4x4(
         (r[0] * t[0]).Sum(), (r[0] * t[1]).Sum(), (r[0] * t[2]).Sum(), (r[0] * t[3]).Sum(),
         (r[1] * t[0]).Sum(), (r[1] * t[1]).Sum(), (r[1] * t[2]).Sum(), (r[1] * t[3]).Sum(),

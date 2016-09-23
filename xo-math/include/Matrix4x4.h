@@ -197,9 +197,16 @@ public:
 
     //! @}
 
+    //>See
+    //! @name Static Methods
+    //! @{
 
-    ////////////////////////////////////////////////////////////////////////// Public Functions
-    // See: http://xo-math.rtfd.io/en/latest/classes/matrix4x4.html#public_functions
+    //! @note If the matrix is a simple transform, you can build it with the inverse of it's parameters. 
+    //! for example: RotationYRadians(x).MakeInverse() is equal to RotationYRadians(-x). Furthermore if
+    //! the matrix you're trying to build is a result of multiple simple transforms, the inverse can instead
+    //! be built as the order of multiplication reversed also using negative input params. for example: 
+    //! (Scale(s) * Translation(Vector3(x, y, z))).MakeInverse() is equal to Translation(-Vector3(x, y, z)) * Scale(-s)
+    _XOINL const Matrix4x4& Inverse();
     //! Sets this matrix as a transpose of itself
     /*!
         \f[
@@ -219,40 +226,21 @@ public:
         \f]
     */
     //! @sa https://en.wikipedia.org/wiki/Transpose
-    _XOINL const Matrix4x4& MakeTranspose();
-    //! Returns a transpose of this matrix
-    /*!
-        \f[
-            \begin{bmatrix}
-            m00&m01&m02&m03\\
-            m10&m11&m12&m13\\
-            m20&m21&m22&m23\\
-            m30&m31&m32&m33
-            \end{bmatrix}
-            \Rightarrow
-            \begin{bmatrix}
-            m00&m10&m20&m30\\
-            m01&m11&m21&m31\\
-            m02&m12&m22&m32\\
-            m03&m13&m32&m33
-            \end{bmatrix}
-        \f]
-    */
-    //! @sa https://en.wikipedia.org/wiki/Transpose
-    _XOINL Matrix4x4 Transpose() const;
-
-    //! @note If the matrix is a simple transform, you can build it with the inverse of it's parameters. 
-    //! for example: RotationYRadians(x).MakeInverse() is equal to RotationYRadians(-x). Furthermore if
-    //! the matrix you're trying to build is a result of multiple simple transforms, the inverse can instead
-    //! be built as the order of multiplication reversed also using negative input params. for example: 
-    //! (Scale(s) * Translation(Vector3(x, y, z))).MakeInverse() is equal to Translation(-Vector3(x, y, z)) * Scale(-s)
-    _XOINL const Matrix4x4& MakeInverse();
-    _XOINL const Matrix4x4& MakeInverseKnownOrthogonal();
-
+    _XOINL const Matrix4x4& Transpose();
     //! Transforms vector v in place by this matrix.
     _XOINL const Matrix4x4& Transform(Vector3& v) const;
     //! Transforms vector v in place by this matrix.
     _XOINL const Matrix4x4& Transform(Vector4& v) const;
+
+    //! Returns a copy of this matrix transposed. See Matrix4x4::Transposed
+    //! @sa https://en.wikipedia.org/wiki/Transpose
+    _XOINL Matrix4x4 Transposed() const;
+    //! @}
+
+    //>See
+    //! @name Static Methods
+    //! @{
+
     //! Assigns outMatrix to a scale matrix, where each of x y and z scale values are equal to xyz.
     /*!
     \f[
@@ -264,11 +252,6 @@ public:
         \end{bmatrix}
     \f]
     */
-
-    //>See
-    //! @name Static Methods
-    //! @{
-
     _XOINL static void Scale(float xyz, Matrix4x4& outMatrix);
     //! Assigns outMatrix to a scale matrix, where each of x y and z scale values are their same-named parameters.
     /*!
@@ -318,8 +301,6 @@ public:
     \f]
     */
     _XOINL static void Translation(const Vector3& v, Matrix4x4& outMatrix);
-    
-
     //! Assigns outMatrix to a pitch matrix, where theta \f$\theta\f$ is the parameter radians.
     /*!
     \f[
