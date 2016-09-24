@@ -303,8 +303,8 @@ void Matrix4x4::PerspectiveProjectionRadians(float fovx, float fovy, float n, fl
         );
 }
 
-void Matrix4x4::PerspectiveProjectionDegrees(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix) {
-    Matrix4x4::PerspectiveProjectionRadians(fovx * Deg2Rad, fovy * Deg2Rad, near, far, outMatrix);
+void Matrix4x4::PerspectiveProjectionDegrees(float fovx, float fovy, float n, float f, Matrix4x4& outMatrix) {
+    Matrix4x4::PerspectiveProjectionRadians(fovx * Deg2Rad, fovy * Deg2Rad, n, f, outMatrix);
 }
 
 void Matrix4x4::LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up, Matrix4x4& m) {

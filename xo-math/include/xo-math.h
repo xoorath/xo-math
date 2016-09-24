@@ -62,6 +62,11 @@ static_assert(false, "xo-math found both XO_SPACE_YUP and XO_SPACE_ZUP defined. 
 #endif
 
 ////////////////////////////////////////////////////////////////////////// Dependencies for xo-math headers
+#if _MSC_VER 
+#pragma warning(push) 
+#pragma warning(disable:4265) 
+#endif 
+
 #include <math.h>
 #include <ostream>
 #include <random>
@@ -72,6 +77,10 @@ static_assert(false, "xo-math found both XO_SPACE_YUP and XO_SPACE_ZUP defined. 
 #else
 #   include <x86intrin.h>
 #endif
+
+#if _MSC_VER 
+#pragma warning(pop) 
+#endif 
 
 // Not available in clang, so far as I can tell.
 #ifndef _MM_ALIGN16

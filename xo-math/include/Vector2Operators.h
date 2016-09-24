@@ -73,8 +73,8 @@ const Vector2& Vector2::operator *= (float v) {
 }
 const Vector2& Vector2::operator *= (double v)                  { return *this *= (float)v; }
 const Vector2& Vector2::operator *= (int v)                     { return *this *= (float)v; }
-const Vector2& Vector2::operator *= (const class Vector3& v)    { return *this; }
-const Vector2& Vector2::operator *= (const class Vector4& v)    { return *this; }
+const Vector2& Vector2::operator *= (const class Vector3& v)    { return *this *= Vector2(v); }
+const Vector2& Vector2::operator *= (const class Vector4& v)    { return *this *= Vector2(v); }
 
 const Vector2& Vector2::operator /= (const Vector2& v) {
     x /= v.x;

@@ -225,7 +225,7 @@ void Quaternion::LookAtFromPosition(const Vector3& from, const Vector3& to, Quat
     LookAtFromPosition(from, to, Vector3::Up, outQuat);
 }
 
-void Quaternion::LookAtFromDirection(const Vector3& direction, const Vector3& up, Quaternion& outQuat) {
+void Quaternion::LookAtFromDirection(const Vector3&, const Vector3&, Quaternion&) {
     // Todo
 }
 
