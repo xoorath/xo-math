@@ -2,6 +2,27 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="src\Quaternion.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SSE.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Vector2.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Vector3.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Vector4.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\xo-math.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Matrix4x4.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="xo-test.h" />
@@ -59,10 +80,16 @@
     <ClInclude Include="include\DetectSIMD.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\xo-math-config.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
       <UniqueIdentifier>{4e1655c3-1a2d-4766-b233-071e54e24f4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{4f07cdff-803a-4e5e-a655-f76e002a0b2c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

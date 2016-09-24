@@ -68,7 +68,18 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(ProjectDir)include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(ProjectDir)include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(ProjectDir)include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(ProjectDir)include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -126,6 +137,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="src\Matrix4x4.cpp" />
+    <ClCompile Include="src\Quaternion.cpp" />
+    <ClCompile Include="src\SSE.cpp" />
+    <ClCompile Include="src\Vector2.cpp" />
+    <ClCompile Include="src\Vector3.cpp" />
+    <ClCompile Include="src\Vector4.cpp" />
+    <ClCompile Include="src\xo-math.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\DetectSIMD.h" />
@@ -145,6 +163,7 @@
     <ClInclude Include="include\Vector4.h" />
     <ClInclude Include="include\Vector4Methods.h" />
     <ClInclude Include="include\Vector4Operators.h" />
+    <ClInclude Include="include\xo-math-config.h" />
     <ClInclude Include="include\xo-math.h" />
     <ClInclude Include="xo-test.h" />
   </ItemGroup>
