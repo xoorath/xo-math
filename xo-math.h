@@ -22,6 +22,8 @@
 #ifndef XO_MATH_H
 #define XO_MATH_H
 
+#include "xo-math-config.h"
+
 ////////////////////////////////////////////////////////////////////////// Optional defines for configuration
 #ifdef XO_CUSTOM_NS
 #   define XOMATH_BEGIN_XO_NS()  namespace XO_CUSTOM_NS {
@@ -30,7 +32,7 @@
 #   define XOMATH_BEGIN_XO_NS()  namespace xo {
 #   define XOMATH_END_XO_NS()    }
 #elif defined(XO_SIMPLE_NS)
-#   define XOMATH_BEGIN_XO_NS()  namespace xomath {
+#   define XOMATH_BEGIN_XO_NS()  namespace math {
 #   define XOMATH_END_XO_NS()    }
 #elif defined(XO_NO_NS)
 #   define XOMATH_BEGIN_XO_NS()
@@ -367,7 +369,7 @@ _XOCONSTEXPR const float FloatEpsilon = 0.0000001192092896f;
 _XOCONSTEXPR const float Rad2Deg = 360.0f / TAU;
 _XOCONSTEXPR const float Deg2Rad = TAU / 360.0f;
 
-float HexFloat(unsigned u) {
+_XOINL float HexFloat(unsigned u) {
     union {
         unsigned u;
         float f;
@@ -380,7 +382,7 @@ float HexFloat(unsigned u) {
 namespace sse {
     static const __m128 AbsMask = _mm_set1_ps(HexFloat(0x7fffffff));
 
-    __m128 Abs(__m128 v) {
+    _XOINL __m128 Abs(__m128 v) {
         return _mm_and_ps(AbsMask, v);
     }
 
@@ -698,21 +700,6 @@ public:
     };
 };
 
-#if defined(_XONOCONSTEXPR)
-const float Vector2::Epsilon = FloatEpsilon * 2.0f;
-#endif
-
-const Vector2 Vector2::UnitX(1.0f, 0.0f);
-const Vector2 Vector2::UnitY(0.0f, 1.0f);
-
-const Vector2 Vector2::Up(0.0f, 1.0f);
-const Vector2 Vector2::Down(0.0f, -1.0f);
-const Vector2 Vector2::Left(-1.0f, 0.0f);
-const Vector2 Vector2::Right(1.0f, 0.0f);
-
-const Vector2 Vector2::One(1.0f, 1.0f);
-const Vector2 Vector2::Zero(0.0f, 0.0f);
-
 XOMATH_END_XO_NS();
 
 #endif // XOMATH_INTERNAL
@@ -987,58 +974,6 @@ private:
 #endif
 };
 
-#if defined(_XONOCONSTEXPR)
-#   if XO_SSE
-const float Vector3::Epsilon = sse::SSEFloatEpsilon * 3.0f;
-#   else
-const float Vector3::Epsilon = FloatEpsilon * 3.0f;
-#   endif
-#endif
-
-#if XO_SSE2
-const __m128 Vector3::MASK = _mm_castsi128_ps(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff));
-#elif XO_SSE
-const __m128 Vector3::MASK = {-1, -1, -1, 0};
-#endif
-
-const Vector3 Vector3::Origin(0.0f, 0.0f, 0.0f);
-
-const Vector3 Vector3::UnitX(1.0f, 0.0f, 0.0f);
-const Vector3 Vector3::UnitY(0.0f, 1.0f, 0.0f);
-const Vector3 Vector3::UnitZ(0.0f, 0.0f, 1.0f);
-
-const Vector3 Vector3::Left(-1.0f, 0.0f, 0.0f);
-const Vector3 Vector3::Right(1.0f, 0.0f, 0.0f);
-
-#if defined(XO_SPACE_ZUP)
-const Vector3 Vector3::Up(0.0f, 0.0f, 1.0f);
-const Vector3 Vector3::Down(0.0f, 0.0f, -1.0f);
-#elif defined(XO_SPACE_YUP)
-const Vector3 Vector3::Up(0.0f, 1.0f, 0.0f);
-const Vector3 Vector3::Down(0.0f, -1.0f, 0.0f);
-#endif
-
-#if defined(XO_SPACE_LEFTHAND)
-#   if defined(XO_SPACE_ZUP)
-const Vector3 Vector3::Forward(0.0f, -1.0f, 0.0f);
-const Vector3 Vector3::Backward(0.0f, 1.0f, 0.0f);
-#   elif defined(XO_SPACE_YUP)
-const Vector3 Vector3::Forward(0.0f, 0.0f, 1.0f);
-const Vector3 Vector3::Backward(0.0f, 0.0f, -1.0f);
-#   endif
-#elif defined(XO_SPACE_RIGHTHAND)
-#   if defined(XO_SPACE_ZUP)
-const Vector3 Vector3::Forward(0.0f, 1.0f, 0.0f);
-const Vector3 Vector3::Backward(0.0f, -1.0f, 0.0f);
-#   elif defined(XO_SPACE_YUP)
-const Vector3 Vector3::Forward(0.0f, 0.0f, -1.0f);
-const Vector3 Vector3::Backward(0.0f, 0.0f, 1.0f);
-#   endif
-#endif
-
-const Vector3 Vector3::One(1.0f, 1.0f, 1.0f);
-const Vector3 Vector3::Zero(0.0f, 0.0f, 0.0f);
-
 XOMATH_END_XO_NS();
 
 #endif // XOMATH_INTERNAL
@@ -1252,30 +1187,12 @@ public:
     };
 };
 
-#if defined(_XONOCONSTEXPR)
-#   if XO_SSE
-const float Vector4::Epsilon = sse::SSEFloatEpsilon * 4.0f;
-#   else
-const float Vector4::Epsilon = FloatEpsilon * 4.0f;
-#   endif
-#endif
-
-const Vector4 Vector4::One(1.0f, 1.0f, 1.0f, 1.0f);
-const Vector4 Vector4::Zero(0.0f, 0.0f, 0.0f, 0.0f);
-
-const Vector4 Vector4::UnitX(1.0f, 0.0f, 0.0f, 0.0f);
-const Vector4 Vector4::UnitY(0.0f, 1.0f, 0.0f, 0.0f);
-const Vector4 Vector4::UnitZ(0.0f, 0.0f, 1.0f, 0.0f);
-const Vector4 Vector4::UnitW(0.0f, 0.0f, 0.0f, 1.0f);
-
 XOMATH_END_XO_NS();
 
 #endif // XOMATH_INTERNAL
 
 #ifndef XOMATH_INTERNAL
 static_assert(false, "Don't include Matrix4x4.h directly. Include xo-math.h, which fully implements this type.");
-#elif defined(_XOMATH_INIT_MATRIX4X4) || defined(_XO_TRANSPOSE_SWAP)
-_XOMATH_INTERNAL_MACRO_WARNING
 #else // XOMATH_INTERNAL
 
 XOMATH_BEGIN_XO_NS();
@@ -1403,24 +1320,8 @@ public:
         Zero;
 };
 
-const Matrix4x4 Matrix4x4::Identity(Vector4(1.0f, 0.0f, 0.0f, 0.0f),
-                                    Vector4(0.0f, 1.0f, 0.0f, 0.0f),
-                                    Vector4(0.0f, 0.0f, 1.0f, 0.0f),
-                                    Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-
-const Matrix4x4 Matrix4x4::One(Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-                               Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-                               Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-                               Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-
-const Matrix4x4 Matrix4x4::Zero(Vector4(0.0f, 0.0f, 0.0f, 0.0f),
-                                Vector4(0.0f, 0.0f, 0.0f, 0.0f),
-                                Vector4(0.0f, 0.0f, 0.0f, 0.0f),
-                                Vector4(0.0f, 0.0f, 0.0f, 0.0f));
 
 XOMATH_END_XO_NS();
-
-#undef _XOMATH_INIT_MATRIX4X4
 
 #endif // XOMATH_INTERNAL
 
@@ -1507,17 +1408,6 @@ private:
     static const unsigned IDX_W = 3;
 #endif
 };
-
-#if defined(_XONOCONSTEXPR)
-#   if XO_SSE
-const float Quaternion::Epsilon = sse::SSEFloatEpsilon * 4.0f;
-#   else
-const float Quaternion::Epsilon = FloatEpsilon * 4.0f;
-#   endif
-#endif
-
-const Quaternion Quaternion::Identity(0.0f, 0.0f, 0.0f, 1.0f);
-const Quaternion Quaternion::Zero(0.0f, 0.0f, 0.0f, 0.0f);
 
 XOMATH_END_XO_NS();
 
@@ -4257,29 +4147,24 @@ static_assert(false, "Don't include SSE.h directly. Include xo-math.h.");
 
 XOMATH_BEGIN_XO_NS();
 
-_XOINL
-Vector2 Abs(const Vector2& v) {
+_XOINL Vector2 Abs(const Vector2& v) {
     return Vector2(Abs(v.x), Abs(v.y));
 }
 
-#if XO_SSE2 // TODO: check if SSE2 is required
-_XOINL
-Vector3 Abs(const Vector3& v) {
+_XOINL Vector3 Abs(const Vector3& v) {
     return (sse::Abs(v.m));
 }
 
-_XOINL
-Vector4 Abs(const Vector4& v) {
+_XOINL Vector4 Abs(const Vector4& v) {
     return Vector4(sse::Abs(v.m));
 }
-#endif
 
 #if XO_SSE
 
 namespace sse {
 
-    // The control of MXCSR usage is inspired by Agner Fog's use of them in vectormath.
-    // vectormath uses them to optionally speed up subnormal operations.
+    // The control of MXCSR usage is inspired by Agner Fog's use of them in vectorclasses.
+    // vectorclasses uses them to optionally speed up subnormal operations.
     // To achieve this in xomath, call the following once per thread where xo-math is used:
     //      sse::UpdateControlWord();       // updates the thread-local state.
     //      sse::SetDenormalsAreZero(true); // force all denormal values to 0
@@ -4298,7 +4183,6 @@ namespace sse {
             Precision                       = (1 << 5),
         };
 
-        // TODO: ifdef for whichever sse version this came in on.
         enum class DAZ {
             DenormalsAreZero                = (1 << 6),
         };
@@ -4324,262 +4208,51 @@ namespace sse {
         enum class FZ {
             FlushToZero                     = (1 << 15)
         };
-
     }
 
-    volatile _XOTLS unsigned LastKnownControlWord = 0;
+    bool GetControlMask(mxcsr::Masks mask, bool withUpdate = false);
+    bool GetControlMask(unsigned mask, bool withUpdate = false);
+    bool GetDenormalExceptionMask(bool withUpdate = false);
+    bool GetDivideByZeroExceptionMask(bool withUpdate = false);
+    bool GetInvalidOperationExceptionMask(bool withUpdate = false);
+    bool GetOverflowExceptionMask(bool withUpdate = false);
+    bool GetPrecisionExceptionMask(bool withUpdate = false);
+    bool GetUnderflowExceptionMask(bool withUpdate = false);
 
-    void UpdateControlWord() {
-        LastKnownControlWord = _mm_getcsr();
-    }
+    bool HasControlFlagBeenSet(mxcsr::Flags flags, bool withUpdate = false, bool thenFlush = false);
+    bool HasControlFlagBeenSet(unsigned flags, bool withUpdate = false, bool thenFlush = false);
+    bool HasDenormalExceptionOccured(bool withUpdate = false, bool thenFlush = false);
+    bool HasDenormalsAreZeroSet(bool withUpdate = false);
+    bool HasDivideByZeroExceptionOccured(bool withUpdate = false, bool thenFlush = false);
+    bool HasFlushToZeroSet(bool withUpdate = false);
+    bool HasInvalidOperationExceptionOccured(bool withUpdate = false, bool thenFlush = false);
+    bool HasOverflowExceptionOccured(bool withUpdate = false, bool thenFlush = false);
+    bool HasPrecisionExceptionOccured(bool withUpdate = false, bool thenFlush = false);
+    bool HasUnderflowExceptionOccured(bool withUpdate = false, bool thenFlush = false);
 
-    void SetControlWord(unsigned control) {
-        _mm_setcsr(LastKnownControlWord = control);
-    }
+    mxcsr::Rounding GetRoundingMode(bool withUpdate = false);
+    void GetAllMXCSRInfo(std::ostream& os, bool withUpdate = false);
 
-    void SetControlWordAddative(unsigned control) {
-        _mm_setcsr(LastKnownControlWord |= control);
-    }
+    void RemoveControlWord(unsigned control);
 
-    void RemoveControlWord(unsigned control) {
-        _mm_setcsr(LastKnownControlWord &= ~control);
-    }
+    void SetControlMask(mxcsr::Masks mask, bool value, bool withUpdate = false);
+    void SetControlMask(unsigned mask, bool value, bool withUpdate = false);
+    void SetControlWord(unsigned control);
+    void SetControlWordAddative(unsigned control);
+    void SetDenormalExceptionMask(bool value, bool withUpdate = false);
+    void SetDenormalsAreZero(bool value, bool withUpdate = false);
+    void SetDivideByZeroExceptionMask(bool value, bool withUpdate = false);
+    void SetFlushToZero(bool value, bool withUpdate = false);
+    void SetInvalidOperationExceptionMask(bool value, bool withUpdate = false);
+    void SetOverflowExceptionMask(bool value, bool withUpdate = false);
+    void SetPrecisionExceptionMask(bool value, bool withUpdate = false);
+    void SetRoundingMode(mxcsr::Rounding mode, bool withUpdate = false);
+    void SetRoundingMode(unsigned mode, bool withUpdate = false);
+    void SetUnderflowExceptionMask(bool value, bool withUpdate = false);
 
-    bool HasControlFlagBeenSet(unsigned flags, bool withUpdate = false, bool thenFlush = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        if((LastKnownControlWord & flags) == flags) {
-            if(thenFlush) {
-                RemoveControlWord(flags);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    bool HasControlFlagBeenSet(mxcsr::Flags flags, bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet((unsigned)flags, withUpdate, thenFlush);
-    }
-
-    bool HasInvalidOperationExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(mxcsr::Flags::InvalidOperation, withUpdate, thenFlush);
-    }
-
-    bool HasDenormalExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(mxcsr::Flags::Denormal, withUpdate, thenFlush);
-    }
-
-    bool HasDivideByZeroExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(mxcsr::Flags::DivideByZero, withUpdate, thenFlush);
-    }
-
-    bool HasOverflowExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(mxcsr::Flags::Overflow, withUpdate, thenFlush);
-    }
-
-    bool HasUnderflowExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(mxcsr::Flags::Underflow, withUpdate, thenFlush);
-    }
-
-    bool HasPrecisionExceptionOccured(bool withUpdate = false, bool thenFlush = false) {
-        return HasControlFlagBeenSet(mxcsr::Flags::Precision, withUpdate, thenFlush);
-    }
-
-    void SetControlMask(unsigned mask, bool value, bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        if(value) {
-            SetControlWordAddative(mask);
-        }
-        else {
-            RemoveControlWord(mask);
-        }
-    }
-
-    void SetControlMask(mxcsr::Masks mask, bool value, bool withUpdate = false) {
-        SetControlMask((unsigned)mask, value, withUpdate);
-    }
-
-    bool GetControlMask(unsigned mask, bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        return (LastKnownControlWord & mask) == mask;
-    }
-
-    bool GetControlMask(mxcsr::Masks mask, bool withUpdate = false) {
-        return GetControlMask((unsigned)mask, withUpdate);
-    }
-
-    void SetInvalidOperationExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(mxcsr::Masks::InvalidOperation, value, withUpdate);
-    }
-
-    void SetDenormalExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(mxcsr::Masks::Denormal, value, withUpdate);
-    }
-
-    void SetDivideByZeroExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(mxcsr::Masks::DivideByZero, value, withUpdate);
-    }
-
-    void SetOverflowExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(mxcsr::Masks::Overflow, value, withUpdate);
-    }
-
-    void SetUnderflowExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(mxcsr::Masks::Underflow, value, withUpdate);
-    }
-
-    void SetPrecisionExceptionMask(bool value, bool withUpdate = false) {
-        SetControlMask(mxcsr::Masks::Precision, value, withUpdate);
-    }
-
-    void ThrowAllExceptions(bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        SetInvalidOperationExceptionMask(false);
-        SetDenormalExceptionMask(false);
-        SetDivideByZeroExceptionMask(false);
-        SetOverflowExceptionMask(false);
-        SetUnderflowExceptionMask(false);
-        SetPrecisionExceptionMask(false);
-    }
-
-    void ThrowNoExceptions(bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        SetInvalidOperationExceptionMask(true);
-        SetDenormalExceptionMask(true);
-        SetDivideByZeroExceptionMask(true);
-        SetOverflowExceptionMask(true);
-        SetUnderflowExceptionMask(true);
-        SetPrecisionExceptionMask(true);
-    }
-
-    bool GetInvalidOperationExceptionMask(bool withUpdate = false) {
-        return GetControlMask(mxcsr::Masks::InvalidOperation, withUpdate);
-    }
-
-    bool GetDenormalExceptionMask(bool withUpdate = false) {
-        return GetControlMask(mxcsr::Masks::Denormal, withUpdate);
-    }
-
-    bool GetDivideByZeroExceptionMask(bool withUpdate = false) {
-        return GetControlMask(mxcsr::Masks::DivideByZero, withUpdate);
-    }
-
-    bool GetOverflowExceptionMask(bool withUpdate = false) {
-        return GetControlMask(mxcsr::Masks::Overflow, withUpdate);
-    }
-
-    bool GetUnderflowExceptionMask(bool withUpdate = false) {
-        return GetControlMask(mxcsr::Masks::Underflow, withUpdate);
-    }
-
-    bool GetPrecisionExceptionMask(bool withUpdate = false) {
-        return GetControlMask(mxcsr::Masks::Precision, withUpdate);
-    }
-
-    mxcsr::Rounding GetRoundingMode(bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        return (mxcsr::Rounding)(LastKnownControlWord & (unsigned)mxcsr::Rounding::Bits);
-    }
-
-    void SetRoundingMode(unsigned mode, bool withUpdate = false) {
-        mode &= (unsigned)mxcsr::Rounding::Bits;
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        SetControlWordAddative(mode);
-    }
-
-    void SetRoundingMode(mxcsr::Rounding mode, bool withUpdate = false) {
-        SetRoundingMode((unsigned)mode, withUpdate);
-    }
-
-    bool HasDenormalsAreZeroSet(bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        return (LastKnownControlWord & (unsigned)mxcsr::DAZ::DenormalsAreZero) == (unsigned)mxcsr::DAZ::DenormalsAreZero;
-    }
-
-    void SetDenormalsAreZero(bool value, bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        if(value) {
-            SetControlWordAddative((unsigned)mxcsr::DAZ::DenormalsAreZero);
-        }
-        else {
-            RemoveControlWord((unsigned)mxcsr::DAZ::DenormalsAreZero);
-        }
-    }
-
-    bool HasFlushToZeroSet(bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        return (LastKnownControlWord & (unsigned)mxcsr::FZ::FlushToZero) == (unsigned)mxcsr::FZ::FlushToZero;
-    }
-
-    void SetFlushToZero(bool value, bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        if(value) {
-            SetControlWordAddative((unsigned)mxcsr::FZ::FlushToZero);
-        }
-        else {
-            RemoveControlWord((unsigned)mxcsr::FZ::FlushToZero);
-        }
-    }
-
-    void GetAllMXCSRInfo(std::ostream& os, bool withUpdate = false) {
-        if(withUpdate) {
-            UpdateControlWord();
-        }
-        os << "MXCSR rounding:\n";
-        os << "\t";
-        switch(GetRoundingMode()) {
-            case mxcsr::Rounding::Nearest:
-                os << "Nearest";
-                break;
-            case mxcsr::Rounding::Positive:
-                os << "Positive";
-                break;
-            case mxcsr::Rounding::Negative:
-                os << "Negative";
-                break;
-            case mxcsr::Rounding::Zero:
-                os << "Zero";
-                break;
-        }
-        os << "\n";
-        os << "MXCSR masks:\n";
-        os << "\t" << "InvalidOperationException: " << GetInvalidOperationExceptionMask() << "\n"; 
-        os << "\t" << "DenormalException: " << GetDenormalExceptionMask() << "\n"; 
-        os << "\t" << "DivideByZeroException: " << GetDivideByZeroExceptionMask() << "\n"; 
-        os << "\t" << "OverflowException: " << GetOverflowExceptionMask() << "\n"; 
-        os << "\t" << "UnderflowException: " << GetUnderflowExceptionMask() << "\n"; 
-        os << "\t" << "PrecisionException: " << GetPrecisionExceptionMask() << "\n"; 
-        os << "\t" << "DenormalsAreZero: " << HasDenormalsAreZeroSet() << "\n";
-        os << "\t" << "FlushToZero: " << HasFlushToZeroSet() << "\n";
-        os << "MXCSR flags:\n";
-        os << "\t" << "InvalidOperationException: " << HasInvalidOperationExceptionOccured() << "\n"; 
-        os << "\t" << "DenormalException: " << HasDenormalExceptionOccured() << "\n"; 
-        os << "\t" << "DivideByZeroException: " << HasDivideByZeroExceptionOccured() << "\n"; 
-        os << "\t" << "OverflowException: " << HasOverflowExceptionOccured() << "\n"; 
-        os << "\t" << "UnderflowException: " << HasUnderflowExceptionOccured() << "\n"; 
-        os << "\t" << "PrecisionException: " << HasPrecisionExceptionOccured() << "\n";
-    }
+    void ThrowAllExceptions(bool withUpdate = false);
+    void ThrowNoExceptions(bool withUpdate = false);
+    void UpdateControlWord();
 }
 #endif
 
@@ -4595,8 +4268,11 @@ XOMATH_END_XO_NS();
 #   undef XO_MATH_H
 #endif
 
-#undef XOMATH_BEGIN_XO_NS
-#undef XOMATH_END_XO_NS
+// don't undef the namespace macros inside xo-math cpp files.
+#if !defined(_XO_MATH_OBJ)
+#   undef XOMATH_BEGIN_XO_NS
+#   undef XOMATH_END_XO_NS
+#endif
 
 #if !defined(XO_EXPORT_ALL)
 #   undef _XOMATH_INTERNAL_MACRO_WARNING
@@ -4628,10 +4304,10 @@ XOMATH_END_XO_NS();
 // r: release, all features broadly tested in various applications.
 // p: patch release, contains fixes for a release version.
 
-#define XO_MATH_VERSION_DATE "Summer 2016"
+#define XO_MATH_VERSION_DATE "Fall 2016"
 #define XO_MATH_VERSION_MAJOR 0
-#define XO_MATH_VERSION_KIND "b"
-#define XO_MATH_VERSION_MINOR 2
+#define XO_MATH_VERSION_KIND "x"
+#define XO_MATH_VERSION_MINOR 3
 #define XO_MATH_VERSION_SUB 0
 #define XO_MATH_VERSION_STR _XO_MATH_STRINGIFY(XO_MATH_VERSION_MAJOR) "." _XO_MATH_STRINGIFY(XO_MATH_VERSION_MINOR) "." XO_MATH_VERSION_KIND _XO_MATH_STRINGIFY(XO_MATH_VERSION_SUB)
 #define XO_MATH_VERSION (XO_MATH_VERSION_MAJOR*10000) + (XO_MATH_VERSION_MINOR*1000) + (XO_MATH_VERSION_SUB*100)
