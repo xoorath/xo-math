@@ -19,6 +19,22 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
+// xo-math:
+// TODO:
+//  * Ensure macros are consistently named.
+//  * Remove internal macro warning. Users are probably not stupid.
+//  * Selectively start moving methods away from inline, rather than using it everywhere.
+//  * Support NEON
+//  * Add transformation object.
+//  * Matrix
+//  *   IsUnitary()
+//  *   HasOrthonormalBases()
+//  *   HasInverse()
+//  *   SafeInverse() or TryInverse()
+//  * xo-math
+//  *   fast sin/cos, sincos, _x2 _x2 _x3
+
 #ifndef XO_MATH_H
 #define XO_MATH_H
 
@@ -62,6 +78,11 @@ static_assert(false, "xo-math found both XO_SPACE_YUP and XO_SPACE_ZUP defined. 
 #endif
 
 ////////////////////////////////////////////////////////////////////////// Dependencies for xo-math headers
+#if _MSC_VER 
+#pragma warning(push) 
+#pragma warning(disable:4265) 
+#endif 
+
 #include <math.h>
 #include <ostream>
 #include <random>
@@ -72,6 +93,10 @@ static_assert(false, "xo-math found both XO_SPACE_YUP and XO_SPACE_ZUP defined. 
 #else
 #   include <x86intrin.h>
 #endif
+
+#if _MSC_VER 
+#pragma warning(pop) 
+#endif 
 
 // Not available in clang, so far as I can tell.
 #ifndef _MM_ALIGN16
@@ -299,7 +324,9 @@ _XOMATH_INTERNAL_MACRO_WARNING
 // todo: remove constexpr in visual studio 2013 and re-test for support
 #   if defined(_MSC_VER) && _MSC_VER < 1800
 #       define _XOCONSTEXPR
-#       define _XONOCONSTEXPR
+#       if !defined(_XONOCONSTEXPR)
+#           define _XONOCONSTEXPR
+#       endif
 #    else
 #       define _XOCONSTEXPR constexpr
 #    endif
@@ -361,13 +388,29 @@ XOMATH_BEGIN_XO_NS();
 
 _XOCONSTEXPR const float PI = 3.141592653589793238462643383279502884197169399375105820f;
 _XOCONSTEXPR const float PIx2 = 2.0f * PI;
+_XOCONSTEXPR const float InversePIx2 = 1.0f / PIx2;
 _XOCONSTEXPR const float TAU = PIx2;
-_XOCONSTEXPR const float HalfPI = PI / 2.0f;
+_XOCONSTEXPR const float HalfPI = PI/2.0f;
+_XOCONSTEXPR const float HalfPIx3 = HalfPI*3.0f;
+_XOCONSTEXPR const float QuarterPI = PI/4.0f;
 
 _XOCONSTEXPR const float FloatEpsilon = 0.0000001192092896f;
 
 _XOCONSTEXPR const float Rad2Deg = 360.0f / TAU;
 _XOCONSTEXPR const float Deg2Rad = TAU / 360.0f;
+
+#if _MSC_VER 
+#pragma warning(push) 
+#pragma warning(disable:4311)
+#pragma warning(disable:4302)
+#endif 
+_XOINL bool IsAligned16(const void* v) {
+    return ((unsigned)v & 15) == 0;
+}
+#if _MSC_VER 
+#pragma warning(pop)
+#endif 
+
 
 _XOINL float HexFloat(unsigned u) {
     union {
@@ -378,9 +421,10 @@ _XOINL float HexFloat(unsigned u) {
     return Converter.f;
 }
 
-#if XO_SSE
+#if defined(XO_SSE)
 namespace sse {
     static const __m128 AbsMask = _mm_set1_ps(HexFloat(0x7fffffff));
+    static const __m128 SignMask = _mm_set1_ps(HexFloat(0x80000000));
 
     _XOINL __m128 Abs(__m128 v) {
         return _mm_and_ps(AbsMask, v);
@@ -439,15 +483,83 @@ _XOMATH_INTERNAL_MACRO_WARNING
 _XOINL float Min(float x, float y)      { return _XO_MIN(x, y); }
 _XOINL float Max(float x, float y)      { return _XO_MAX(x, y); }
 _XOINL float Abs(float f)               { return f > 0.0f ? f : -f; }
-_XOINL float Sqrt(float f)              { return sqrtf(f); }
-_XOINL float Sin(float f)               { return sinf(f); }
-_XOINL float Cos(float f)               { return cosf(f); }
+_XOINL float Sqrt(float f)              { return sqrtf(f); } 
+_XOINL float Sin(float f)               { return sinf(f); } 
+_XOINL float Cos(float f)               { return cosf(f); } 
 _XOINL float Tan(float f)               { return tanf(f); }
 _XOINL float ASin(float f)              { return asinf(f); }
 _XOINL float ACos(float f)              { return acosf(f); }
-_XOINL float ATan(float f)              { return atanf(f); }
-_XOINL float ATan2(float y, float x)    { return atan2f(y, x); }
+_XOINL float ATan(float f)              { return atanf(f); } 
+_XOINL float ATan2(float y, float x)    { return atan2f(y, x); } 
+
 _XOINL float Difference(float x, float y) { return Abs(x-y); }
+
+_XOINL
+void Sin_x2(const float* f, float* s) {
+    s[0] = Sin(f[0]);
+    s[1] = Sin(f[1]);
+}
+
+_XOINL
+void Sin_x3(const float* f, float* s) {
+    s[0] = Sin(f[0]);
+    s[1] = Sin(f[1]);
+    s[2] = Sin(f[2]);
+}
+
+_XOINL
+void Sin_x4(const float* f, float* s) {
+    s[0] = Sin(f[0]);
+    s[1] = Sin(f[1]);
+    s[2] = Sin(f[2]);
+    s[3] = Sin(f[3]);
+}
+
+_XOINL
+void Cos_x2(const float* f, float* c) {
+    c[0] = Cos(f[0]);
+    c[1] = Cos(f[1]);
+}
+
+_XOINL
+void Cos_x3(const float* f, float* c) {
+    c[0] = Cos(f[0]);
+    c[1] = Cos(f[1]);
+    c[2] = Cos(f[2]);
+}
+
+_XOINL
+void Cos_x4(const float* f, float* c) {
+    c[0] = Cos(f[0]);
+    c[1] = Cos(f[1]);
+    c[2] = Cos(f[2]);
+    c[3] = Cos(f[3]);
+}
+
+_XOINL
+void SinCos(float f, float& s, float& c) { 
+    s = Sin(f);
+    c = Cos(f);
+}
+
+_XOINL
+void SinCos_x2(const float* f, float* s, float* c) {
+    Sin_x2(f, s);
+    Cos_x2(f, c);
+}
+
+_XOINL
+void SinCos_x3(const float* f, float* s, float* c) {
+    Sin_x3(f, s);
+    Cos_x3(f, c);
+}
+
+_XOINL
+void SinCos_x4(const float* f, float* s, float* c) {
+    Sin_x4(f, s);
+    Cos_x4(f, c);
+}
+
 _XOINL
 bool CloseEnough(float x, float y, float tolerance = FloatEpsilon) {
     return Difference(x, y) * (1.0f/tolerance) <= Min(Abs(x), Abs(y));
@@ -489,7 +601,7 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #   undef _XO_ASSIGN_QUAT_Q
 #endif
 
-#if XO_SSE
+#if defined(XO_SSE)
 #define _XO_ASSIGN_QUAT(W, X, Y, Z) m = _mm_set_ps(W, Z, Y, X);
 #define _XO_ASSIGN_QUAT_Q(Q, W, X, Y, Z) Q.m = _mm_set_ps(W, Z, Y, X);
 #else
@@ -719,7 +831,7 @@ public:
     _XOINL Vector3(float f); 
     _XOINL Vector3(float x, float y, float z); 
     _XOINL Vector3(const Vector3& vec); 
-#if XO_SSE
+#if defined(XO_SSE)
     _XOINL Vector3(const __m128& vec); 
 #endif
     _XOINL Vector3(const class Vector2& v); 
@@ -730,7 +842,7 @@ public:
     _XOINL const Vector3& Set(float x, float y, float z);
     _XOINL const Vector3& Set(float f);
     _XOINL const Vector3& Set(const Vector3& vec);
-#if XO_SSE
+#if defined(XO_SSE)
     _XOINL const Vector3& Set(const __m128& vec);
 #endif
     _XOINL void Get(float& x, float& y, float &z) const;
@@ -739,7 +851,7 @@ public:
     ////////////////////////////////////////////////////////////////////////// Special Operators
     // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#special_operators
     _XO_OVERLOAD_NEW_DELETE();
-#if XO_SSE
+#if defined(XO_SSE)
     _XOINL operator __m128() const;
 #endif
     _XOINL float& operator [](int i);
@@ -912,7 +1024,7 @@ public:
     ////////////////////////////////////////////////////////////////////////// Extras
     // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#extras
     friend std::ostream& operator <<(std::ostream& os, const Vector3& v) {
-#if XO_SSE
+#if defined(XO_SSE)
         os << "(x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", w:" << v.w << ", mag:" << v.Magnitude() << ")";
 #else
         os << "(x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", mag:" << v.Magnitude() << ")";
@@ -939,7 +1051,7 @@ public:
 #if defined(_XONOCONSTEXPR)
     static const float Epsilon;
 #else
-#   if XO_SSE
+#   if defined(XO_SSE)
     _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 3.0f;
 #   else
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 3.0f;
@@ -948,7 +1060,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////// Members
     // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#public_members
-#if XO_SSE
+#if defined(XO_SSE)
     union {
         struct {
             float x;
@@ -969,7 +1081,7 @@ public:
 #endif
 
 private:
-#if XO_SSE
+#if defined(XO_SSE)
     static const __m128 MASK;
 #endif
 };
@@ -992,18 +1104,24 @@ public:
     _XOINL Vector4(float f); 
     _XOINL Vector4(float x, float y, float z, float w); 
     _XOINL Vector4(const Vector4& vec); 
-#if XO_SSE
+#if defined(XO_SSE)
     _XOINL Vector4(const __m128& vec); 
 #endif
     _XOINL Vector4(const class Vector2& v); 
+    _XOINL Vector4(const class Vector2& v, float z, float w); 
     _XOINL Vector4(const class Vector3& v); 
+    _XOINL Vector4(const class Vector3& v, float w); 
 
     ////////////////////////////////////////////////////////////////////////// Set / Get Methods
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#set_get_methods
     _XOINL const Vector4& Set(float x, float y, float z, float w);
     _XOINL const Vector4& Set(float f);
     _XOINL const Vector4& Set(const Vector4& vec);
-#if XO_SSE
+    _XOINL const Vector4& Set(const Vector2& vec);
+    _XOINL const Vector4& Set(const Vector2& vec, float z, float w);
+    _XOINL const Vector4& Set(const Vector3& vec);
+    _XOINL const Vector4& Set(const Vector3& vec, float w);
+#if defined(XO_SSE)
     _XOINL const Vector4& Set(const __m128& vec);
 #endif
     _XOINL void Get(float& x, float& y, float& z, float& w) const;
@@ -1012,9 +1130,10 @@ public:
     ////////////////////////////////////////////////////////////////////////// Special Operators
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#special_operators
     _XO_OVERLOAD_NEW_DELETE();
-#if XO_SSE
+#if defined(XO_SSE)
     _XOINL operator const __m128&() const;
 #endif
+    _XOINL operator float*() const { return (float*)f; }
     _XOINL float& operator [](int i);
     _XOINL const float& operator [](int i) const;
     _XOINL Vector4 operator -() const;
@@ -1164,7 +1283,7 @@ public:
 #if defined(_XONOCONSTEXPR)
     static const float Epsilon;
 #else
-#   if XO_SSE
+#   if defined(XO_SSE)
     _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
 #   else
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
@@ -1181,7 +1300,7 @@ public:
             float w;
         };
         float f[4]; 
-#if XO_SSE
+#if defined(XO_SSE)
         __m128 m;
 #endif
     };
@@ -1220,6 +1339,7 @@ public:
     ////////////////////////////////////////////////////////////////////////// Special Operators
     // See: http://xo-math.rtfd.io/en/latest/classes/matrix4x4.html#special_operators
     _XO_OVERLOAD_NEW_DELETE();
+    _XOINL operator float*() const { return (float*)this; }
     _XOINL const Vector4& operator [](int i) const;
     _XOINL Vector4& operator [](int i);
     _XOINL const float& operator ()(int r, int c) const;
@@ -1383,7 +1503,7 @@ public:
 #if defined(_XONOCONSTEXPR)
     static const float Epsilon;
 #else
-#   if XO_SSE
+#   if defined(XO_SSE)
     _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
 #   else
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
@@ -1395,13 +1515,13 @@ public:
             float x, y, z, w;
         };
         float f[4];
-#if XO_SSE
+#if defined(XO_SSE)
         __m128 m;
 #endif
     };
 
 private:
-#if XO_SSE
+#if defined(XO_SSE)
     static const unsigned IDX_X = 0;
     static const unsigned IDX_Y = 1;
     static const unsigned IDX_Z = 2;
@@ -1468,8 +1588,8 @@ const Vector2& Vector2::operator *= (float v) {
 }
 const Vector2& Vector2::operator *= (double v)                  { return *this *= (float)v; }
 const Vector2& Vector2::operator *= (int v)                     { return *this *= (float)v; }
-const Vector2& Vector2::operator *= (const class Vector3& v)    { return *this; }
-const Vector2& Vector2::operator *= (const class Vector4& v)    { return *this; }
+const Vector2& Vector2::operator *= (const class Vector3& v)    { return *this *= Vector2(v); }
+const Vector2& Vector2::operator *= (const class Vector4& v)    { return *this *= Vector2(v); }
 
 const Vector2& Vector2::operator /= (const Vector2& v) {
     x /= v.x;
@@ -1554,14 +1674,14 @@ bool Vector2::operator == (float v) const                   { return CloseEnough
 bool Vector2::operator == (double v) const                  { return *this == (float)(v*v); }
 bool Vector2::operator == (int v) const                     { return *this == (float)(v*v); }
 bool Vector2::operator == (const class Vector3& v) const {
-#   if XO_SSE2
+#   if defined(XO_SSE2)
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, y, x), v.m)), sse::Epsilon)) & 3) == 3;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
 #   endif
 }
 bool Vector2::operator == (const class Vector4& v) const {
-#   if XO_SSE
+#   if defined(XO_SSE)
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, y, x), v.m)), sse::Epsilon)) & 3) == 3;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
@@ -1781,7 +1901,7 @@ static_assert(false, "Don't include Vector3Operators.h directly. Include xo-math
 
 XOMATH_BEGIN_XO_NS();
 
-#if XO_SSE
+#if defined(XO_SSE)
 Vector3::operator __m128() const {
     return m;
 }
@@ -1796,7 +1916,7 @@ const float& Vector3::operator [](int i) const {
 }
 
 Vector3 Vector3::operator -() const {
-#if XO_SSE
+#if defined(XO_SSE)
     return Vector3(_mm_mul_ps(m, sse::NegativeOne));
 #else
     return Vector3(-x, -y, -z);
@@ -1808,7 +1928,7 @@ Vector3 Vector3::operator ~() const {
 }
 
 const Vector3& Vector3::operator += (const Vector3& v) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_add_ps(m, v);
 #else
     x += v.x;
@@ -1819,7 +1939,7 @@ const Vector3& Vector3::operator += (const Vector3& v) {
 }
 
 const Vector3& Vector3::operator += (float v) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_add_ps(m, _mm_set_ps1(v));
 #else
     x += v;
@@ -1835,7 +1955,7 @@ const Vector3& Vector3::operator += (const class Vector2& v)    { return (*this)
 const Vector3& Vector3::operator += (const class Vector4& v)    { return (*this) += Vector3(v); }
 
 const Vector3& Vector3::operator -= (const Vector3& v) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_sub_ps(m, v);
 #else
     x -= v.x;
@@ -1846,7 +1966,7 @@ const Vector3& Vector3::operator -= (const Vector3& v) {
 }
 
 const Vector3& Vector3::operator -= (float v) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_sub_ps(m, _mm_set_ps1(v));
 #else
     x -= v;
@@ -1862,7 +1982,7 @@ const Vector3& Vector3::operator -= (const class Vector2& v)    { return (*this)
 const Vector3& Vector3::operator -= (const class Vector4& v)    { return (*this) -= Vector3(v); }
 
 const Vector3& Vector3::operator *= (const Vector3& v) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_mul_ps(m, v);
 #else
     x *= v.x;
@@ -1873,7 +1993,7 @@ const Vector3& Vector3::operator *= (const Vector3& v) {
 }
 
 const Vector3& Vector3::operator *= (float v) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_mul_ps(m, _mm_set_ps1(v));
 #else
     x *= v;
@@ -1890,7 +2010,7 @@ const Vector3& Vector3::operator *= (const class Vector4& v)    { return (*this)
 
 #if defined(XO_NO_INVERSE_DIVISION)
 const Vector3& Vector3::operator /= (const Vector3& v) {
-#if XO_SSE
+#if defined(XO_SSE)
     // see: https://software.intel.com/sites/landingpage/IntrinsicsGuide
     // see: https://software.intel.com/en-us/articles/measuring-instruction-latency-and-throughput
 
@@ -1913,7 +2033,7 @@ const Vector3& Vector3::operator /= (const Vector3& v) {
 }
 
 const Vector3& Vector3::operator /= (float v) {
-#   if XO_SSE
+#   if defined(XO_SSE)
     m = _mm_div_ps(m, _mm_set_ps1(v));
 #   else
     x /= v;
@@ -1925,7 +2045,7 @@ const Vector3& Vector3::operator /= (float v) {
 #else
 
 const Vector3& Vector3::operator /= (const Vector3& v) {
-#   if XO_SSE
+#   if defined(XO_SSE)
     // see: https://software.intel.com/sites/landingpage/IntrinsicsGuide
     // see: https://software.intel.com/en-us/articles/measuring-instruction-latency-and-throughput
 
@@ -1957,7 +2077,7 @@ const Vector3& Vector3::operator /= (const Vector3& v) {
 }
 
 const Vector3& Vector3::operator /= (float v) { 
-#   if XO_SSE
+#   if defined(XO_SSE)
     m = _mm_mul_ps(m, _mm_set_ps1(1.0f/v));
 #   else
     v = 1.0f / v;
@@ -2031,7 +2151,7 @@ bool Vector3::operator >= (const class Vector2& v) const    { return MagnitudeSq
 bool Vector3::operator >= (const class Vector4& v) const    { return MagnitudeSquared() >= v.MagnitudeSquared(); }
 
 bool Vector3::operator == (const Vector3& v) const {
-#   if XO_SSE2
+#   if defined(XO_SSE2)
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v, m)), sse::Epsilon)) & 7) == 7;
 #   elif XO_SSE
     // TODO: find a faster way with SSE to do a 'close enough' check.
@@ -2046,14 +2166,14 @@ bool Vector3::operator == (float v) const                   { return CloseEnough
 bool Vector3::operator == (double v) const                  { return CloseEnough(MagnitudeSquared(), (float)(v*v), Epsilon);}
 bool Vector3::operator == (int v) const                     { return CloseEnough(MagnitudeSquared(), (float)(v*v), Epsilon);}
 bool Vector3::operator == (const class Vector2& v) const {
-#   if XO_SSE
+#   if defined(XO_SSE)
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, v.y, v.x), m)), sse::Epsilon)) & 3) == 3;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
 #   endif
 }
 bool Vector3::operator == (const class Vector4& v) const {
-#   if XO_SSE
+#   if defined(XO_SSE)
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 7) == 7;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon) && CloseEnough(z, v.z, Epsilon);
@@ -2077,7 +2197,7 @@ static_assert(false, "Don't include Vector3Methods.h directly. Include xo-math.h
 
 XOMATH_BEGIN_XO_NS();
 
-#if XO_SSE
+#if defined(XO_SSE)
 
 #if defined IDX_X
 _XOMATH_INTERNAL_MACRO_WARNING
@@ -2106,7 +2226,7 @@ Vector3::Vector3() {
 }
 
 Vector3::Vector3(float f) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(_mm_set1_ps(f))
 #else
     x(f), y(f), z(f)
@@ -2115,7 +2235,7 @@ Vector3::Vector3(float f) :
 }
 
 Vector3::Vector3(float x, float y, float z) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(_mm_set_ps(0.0f, z, y, x))
 #else
     x(x), y(y), z(z)
@@ -2124,7 +2244,7 @@ Vector3::Vector3(float x, float y, float z) :
 }
 
 Vector3::Vector3(const Vector3& vec) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(vec) 
 #else
     x(vec.x), y(vec.y), z(vec.z) 
@@ -2132,7 +2252,7 @@ Vector3::Vector3(const Vector3& vec) :
 {
 }
 
-#if XO_SSE
+#if defined(XO_SSE)
 Vector3::Vector3(const __m128& vec) : 
     m(vec) 
 {
@@ -2140,7 +2260,7 @@ Vector3::Vector3(const __m128& vec) :
 #endif
 
 Vector3::Vector3(const class Vector2& v) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(_mm_set_ps(0.0f, 0.0f, v.y, v.x))
 #else
     x(v.x), y(v.y), z(0.0f)
@@ -2149,7 +2269,7 @@ Vector3::Vector3(const class Vector2& v) :
 }
 
 Vector3::Vector3(const class Vector4& v) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(v.m)
 #else
     x(v.x), y(v.y), z(v.z)
@@ -2158,7 +2278,7 @@ Vector3::Vector3(const class Vector4& v) :
 }
 
 const Vector3& Vector3::Set(float x, float y, float z) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_set_ps(0.0f, z, y, x);
 #else
     this->x = x;
@@ -2169,7 +2289,7 @@ const Vector3& Vector3::Set(float x, float y, float z) {
 }
 
 const Vector3& Vector3::Set(float f) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_set1_ps(f);
 #else
     this->x = f;
@@ -2180,7 +2300,7 @@ const Vector3& Vector3::Set(float f) {
 }
 
 const Vector3& Vector3::Set(const Vector3& vec) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = vec.m;
 #else
     this->x = vec.x;
@@ -2190,7 +2310,7 @@ const Vector3& Vector3::Set(const Vector3& vec) {
     return *this;
 }
 
-#if XO_SSE
+#if defined(XO_SSE)
 const Vector3& Vector3::Set(const __m128& vec) {
     m = vec;
     return *this;
@@ -2204,7 +2324,7 @@ void Vector3::Get(float& x, float& y, float &z) const {
 }
 
 void Vector3::Get(float* f) const {
-#if XO_SSE
+#if defined(XO_SSE)
     _mm_store_ps(f, m);
 #else
     f[0] = this->x;
@@ -2214,7 +2334,7 @@ void Vector3::Get(float* f) const {
 }
 
 Vector3 Vector3::ZYX() const {
-#if XO_SSE
+#if defined(XO_SSE)
     return Vector3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Y, IDX_Z)));
 #else
     return Vector3(z, y, x);
@@ -2222,7 +2342,7 @@ Vector3 Vector3::ZYX() const {
 }
 
 _XOINL float Vector3::Sum() const {
-#if XO_SSE3
+#if defined(XO_SSE3)
     __m128 x = _mm_and_ps(m, MASK);
     x = _mm_hadd_ps(x, x);
     x = _mm_hadd_ps(x, x);
@@ -2271,14 +2391,14 @@ bool Vector3::IsNormalized() const {
 }
  
 float Vector3::Dot(const Vector3& a, const Vector3& b) {
-#if XO_SSE4_1
+#if defined(XO_SSE4_1)
     return _mm_cvtss_f32(_mm_dp_ps(a, b, 0x7f));
-#elif XO_SSE3
+#elif defined(XO_SSE3)
     auto d = _mm_and_ps(_mm_mul_ps(a.m, b.m), MASK);
     d = _mm_hadd_ps(d, d);
     d = _mm_hadd_ps(d, d);
     return _mm_cvtss_f32(d);
-#elif XO_SSE
+#elif defined(XO_SSE)
     auto d = _mm_mul_ps(a.m, b.m);
     _MM_ALIGN16 float t[4];
     _mm_store_ps(t, d);
@@ -2289,7 +2409,7 @@ float Vector3::Dot(const Vector3& a, const Vector3& b) {
 }
  
 void Vector3::Cross(const Vector3& a, const Vector3& b, Vector3& outVec) {
-#if XO_SSE
+#if defined(XO_SSE)
     // Todo: There's a trick to do this with three shuffles. Look into that.
     __m128 l = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)));
     __m128 r = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)));
@@ -2541,7 +2661,7 @@ static_assert(false, "Don't include Vector4Operators.h directly. Include xo-math
 
 XOMATH_BEGIN_XO_NS();
 
-#if XO_SSE
+#if defined(XO_SSE)
 
 #if defined IDX_X
 _XOMATH_INTERNAL_MACRO_WARNING
@@ -2566,7 +2686,7 @@ _XOMATH_INTERNAL_MACRO_WARNING
 
 #endif
 
-#if XO_SSE
+#if defined(XO_SSE)
 Vector4::operator const __m128&() const {
     return m;
 }
@@ -2581,7 +2701,7 @@ const float& Vector4::operator [](int i) const {
 }
 
 Vector4 Vector4::operator -() const {
-#if XO_SSE
+#if defined(XO_SSE)
     return Vector4(_mm_mul_ps(m, sse::NegativeOne));
 #else
     return Vector4(-x, -y, -z, -w);
@@ -2589,7 +2709,7 @@ Vector4 Vector4::operator -() const {
 }
 
 Vector4 Vector4::operator ~() const {
-#if XO_SSE
+#if defined(XO_SSE)
     return Vector3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(IDX_X, IDX_Y, IDX_Z, IDX_W)));
 #else
     return Vector4(w, z, y, x);
@@ -2597,7 +2717,7 @@ Vector4 Vector4::operator ~() const {
 }
 
 const Vector4& Vector4::operator += (const Vector4& v) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_add_ps(m, v.m);
 #else
     x += v.x;
@@ -2609,7 +2729,7 @@ const Vector4& Vector4::operator += (const Vector4& v) {
 }
 
 const Vector4& Vector4::operator += (float v) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_add_ps(m, _mm_set_ps1(v));
 #else
     x += v;
@@ -2626,7 +2746,7 @@ const Vector4& Vector4::operator += (const class Vector2& v)  { return (*this) +
 const Vector4& Vector4::operator += (const class Vector3& v)  { return (*this) += Vector4(v); }
 
 const Vector4& Vector4::operator -= (const Vector4& v) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_sub_ps(m, v.m);
 #else
     x -= v.x;
@@ -2638,7 +2758,7 @@ const Vector4& Vector4::operator -= (const Vector4& v) {
 }
 
 const Vector4& Vector4::operator -= (float v) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_sub_ps(m, _mm_set_ps1(v));
 #else
     x -= v;
@@ -2655,7 +2775,7 @@ const Vector4& Vector4::operator -= (const class Vector2& v)  { return (*this) -
 const Vector4& Vector4::operator -= (const class Vector3& v)  { return (*this) -= Vector4(v); }
 
 const Vector4& Vector4::operator *= (const Vector4& v) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_mul_ps(m, v.m);
 #else
     x *= v.x;
@@ -2667,7 +2787,7 @@ const Vector4& Vector4::operator *= (const Vector4& v) {
 }
 
 const Vector4& Vector4::operator *= (float v) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_mul_ps(m, _mm_set_ps1(v));
 #else
     x *= v;
@@ -2685,7 +2805,7 @@ const Vector4& Vector4::operator *= (const class Vector3& v)  { return (*this) *
 
 #if defined(XO_NO_INVERSE_DIVISION)
 const Vector4& Vector4::operator /= (const Vector4& v) {
-#   if XO_SSE
+#   if defined(XO_SSE)
     // see: https://software.intel.com/sites/landingpage/IntrinsicsGuide
     // see: https://software.intel.com/en-us/articles/measuring-instruction-latency-and-throughput
 
@@ -2708,7 +2828,7 @@ const Vector4& Vector4::operator /= (const Vector4& v) {
 }
 
 const Vector4& Vector4::operator /= (float v) {
-#   if XO_SSE
+#   if defined(XO_SSE)
     m = _mm_div_ps(m, _mm_set_ps1(v));
 #   else
     x /= v;
@@ -2721,7 +2841,7 @@ const Vector4& Vector4::operator /= (float v) {
 #else
 
 const Vector4& Vector4::operator /= (const Vector4& v) {
-#   if XO_SSE
+#   if defined(XO_SSE)
     // see: https://software.intel.com/sites/landingpage/IntrinsicsGuide
     // see: https://software.intel.com/en-us/articles/measuring-instruction-latency-and-throughput
 
@@ -2753,7 +2873,7 @@ const Vector4& Vector4::operator /= (const Vector4& v) {
 }
 
 const Vector4& Vector4::operator /= (float v) { 
-#   if XO_SSE
+#   if defined(XO_SSE)
     m = _mm_mul_ps(m, _mm_set_ps1(1.0f/v));
 #   else
     v = 1.0f / v;
@@ -2827,7 +2947,7 @@ bool Vector4::operator >= (const class Vector2& v) const      { return Magnitude
 bool Vector4::operator >= (const class Vector3& v) const      { return MagnitudeSquared() >= v.MagnitudeSquared(); }
 
 bool Vector4::operator == (const Vector4& v) const {
-#   if XO_SSE2
+#   if defined(XO_SSE2)
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 15) == 15;
 #   elif XO_SSE
     // TODO: find a faster way with SSE to do a 'close enough' check.
@@ -2851,7 +2971,7 @@ bool Vector4::operator == (double v) const          { return CloseEnough(Magnitu
 bool Vector4::operator == (int v) const             { return CloseEnough(MagnitudeSquared(), (float)(v * v), Epsilon); }
 
 bool Vector4::operator == (const class Vector2& v) const {
-#   if XO_SSE
+#   if defined(XO_SSE)
     // Todo: check that this is actually faster.
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(m, _mm_set_ps(0.0f, 0.0f, v.y, v.x))), sse::Epsilon)) & 3) == 3;
 #   else
@@ -2860,7 +2980,7 @@ bool Vector4::operator == (const class Vector2& v) const {
 }
 
 bool Vector4::operator == (const class Vector3& v) const {
-#   if XO_SSE
+#   if defined(XO_SSE)
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 7) == 7;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon) && CloseEnough(z, v.z, Epsilon);
@@ -2914,7 +3034,7 @@ Vector4::Vector4() {
 }
 
 Vector4::Vector4(float f) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(_mm_set1_ps(f))
 {
 }
@@ -2925,7 +3045,7 @@ Vector4::Vector4(float f) :
 #endif
 
 Vector4::Vector4(float x, float y, float z, float w) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(_mm_set_ps(w, z, y, x))
 {
 }
@@ -2935,7 +3055,7 @@ Vector4::Vector4(float x, float y, float z, float w) :
 }
 #endif
 Vector4::Vector4(const Vector4& vec) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(vec.m)
 {
 }
@@ -2946,7 +3066,7 @@ Vector4::Vector4(const Vector4& vec) :
 #endif
 
 
-#if XO_SSE
+#if defined(XO_SSE)
 Vector4::Vector4(const __m128& vec) : 
     m(vec)
 {
@@ -2954,7 +3074,7 @@ Vector4::Vector4(const __m128& vec) :
 #endif
 
 Vector4::Vector4(const class Vector2& vec) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(_mm_set_ps(0.0f, 0.0f, vec.y, vec.x)) 
 {
 }
@@ -2964,8 +3084,19 @@ Vector4::Vector4(const class Vector2& vec) :
 }
 #endif
 
+Vector4::Vector4(const class Vector2& vec, float z, float w) :
+#if defined(XO_SSE)
+    m(_mm_set_ps(w, z, vec.y, vec.x))
+{
+}
+#else
+    x(vec.x), y(vec.y), z(z), w(w)
+{
+}
+#endif
+
 Vector4::Vector4(const class Vector3& vec) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(vec.m)
 {
 }
@@ -2975,8 +3106,20 @@ Vector4::Vector4(const class Vector3& vec) :
 }
 #endif
 
+Vector4::Vector4(const class Vector3& vec, float w) :
+#if defined(XO_SSE)
+    m(vec.m)
+{
+    w = w;
+}
+#else
+    x(vec.x), y(vec.y), z(vec.z), w(w)
+{
+}
+#endif
+
 const Vector4& Vector4::Set(float x, float y, float z, float w) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_set_ps(w, z, y, x);
 #else
     this->x = x;
@@ -2988,7 +3131,7 @@ const Vector4& Vector4::Set(float x, float y, float z, float w) {
 }
 
 const Vector4& Vector4::Set(float f) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_set1_ps(f);
 #else
     this->x = f;
@@ -3000,7 +3143,7 @@ const Vector4& Vector4::Set(float f) {
 }
 
 const Vector4& Vector4::Set(const Vector4& vec) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = vec.m;
 #else
     this->x = vec.x;
@@ -3011,7 +3154,57 @@ const Vector4& Vector4::Set(const Vector4& vec) {
     return *this;
 }
 
-#if XO_SSE
+const Vector4& Vector4::Set(const Vector2& vec) {
+#if defined(XO_SSE)
+    m = _mm_set_ps(0.0f, 0.0f, vec.y, vec.x);
+#else
+    this->x = vec.x;
+    this->y = vec.y;
+    this->z = 0.0f;
+    this->w = 0.0f;
+#endif
+    return *this;
+}
+
+const Vector4& Vector4::Set(const Vector2& vec, float z, float w) {
+#if defined(XO_SSE)
+    m = _mm_set_ps(w, z, vec.y, vec.x);
+#else
+    this->x = vec.x;
+    this->y = vec.y;
+    this->z = z;
+    this->w = w;
+#endif
+    return *this;
+}
+
+const Vector4& Vector4::Set(const Vector3& vec) {
+#if defined(XO_SSE)
+    this->m = vec.m;
+    this->w = 0.0f;
+#else
+    this->x = vec.x;
+    this->y = vec.y;
+    this->z = vec.z;
+    this->w = 0.0f;
+#endif
+    return *this;
+}
+
+const Vector4& Vector4::Set(const Vector3& vec, float w) {
+#if defined(XO_SSE)
+    this->m = vec.m;
+    this->w = w;
+#else
+    this->x = vec.x;
+    this->y = vec.y;
+    this->z = vec.z;
+    this->w = w;
+#endif
+    return *this;
+}
+
+#if defined(XO_SSE)
 const Vector4& Vector4::Set(const __m128& vec) {
     m = vec;
     return *this;
@@ -3026,7 +3219,7 @@ void Vector4::Get(float& x, float& y, float& z, float& w) const {
 }
 
 void Vector4::Get(float* f) const {
-#if XO_SSE
+#if defined(XO_SSE)
     _mm_store_ps(f, m);
 #else
     f[0] = this->x;
@@ -3037,7 +3230,7 @@ void Vector4::Get(float* f) const {
 }
  
 float Vector4::Sum() const {
-#if XO_SSE
+#if defined(XO_SSE)
     auto s = _mm_hadd_ps(m, m);
     s = _mm_hadd_ps(s, s);
     return _mm_cvtss_f32(s);
@@ -3047,7 +3240,7 @@ float Vector4::Sum() const {
 }
  
 float Vector4::MagnitudeSquared() const {
-#if XO_SSE
+#if defined(XO_SSE)
     auto square = _mm_mul_ps(m, m);
     square = _mm_hadd_ps(square, square);
     square = _mm_hadd_ps(square, square);
@@ -3115,7 +3308,7 @@ float Vector4::Dot(const Vector4& a, const Vector4& b) {
     d = _mm_hadd_ps(d, d);
     d = _mm_hadd_ps(d, d);
     return _mm_cvtss_f32(d);
-#elif XO_SSE
+#elif defined(XO_SSE)
     __m128 d = _mm_mul_ps(a.m, b.m);
     _MM_ALIGN16 float t[4];
     _mm_store_ps(t, d);
@@ -3265,7 +3458,7 @@ Matrix4x4::Matrix4x4() {
 }
 
 Matrix4x4::Matrix4x4(float m)
-#if XO_SSE
+#if defined(XO_SSE)
 { 
     r[0].m = r[1].m = r[2].m = r[3].m = _mm_set_ps1(m);
 }
@@ -3329,7 +3522,7 @@ Matrix4x4::Matrix4x4(const class Quaternion& q) {
 }
 
 const Matrix4x4& Matrix4x4::Transpose() {
-#if XO_SSE
+#if defined(XO_SSE)
     _MM_TRANSPOSE4_PS(r[0].m, r[1].m, r[2].m, r[3].m);
 #else
     float t;
@@ -3365,108 +3558,94 @@ const Matrix4x4& Matrix4x4::Transform(Vector4& v) const {
 }
 
 void Matrix4x4::Scale(float xyz, Matrix4x4& m) {
-    // Also valid but requires division or recip:
-    // 1 0 0 0
-    // 0 1 0 0
-    // 0 0 1 0
-    // 0 0 0 1/xyz
-    m = Matrix4x4(
-            xyz,  0.0f, 0.0f, 0.0f,
-            0.0f, xyz,  0.0f, 0.0f,
-            0.0f, 0.0f, xyz,  0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
+    m[0].Set(xyz,  0.0f, 0.0f, 0.0f);
+    m[1].Set(0.0f, xyz,  0.0f, 0.0f);
+    m[2].Set(0.0f, 0.0f, xyz,  0.0f);
+    m[3].Set(0.0f, 0.0f, 0.0f, 1.0f);
 }
  
 void Matrix4x4::Scale(float x, float y, float z, Matrix4x4& m) {
-    m = Matrix4x4(
-            x,    0.0f, 0.0f, 0.0f,
-            0.0f, y,    0.0f, 0.0f,
-            0.0f, 0.0f, z,    0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
+    m[0].Set(x,    0.0f, 0.0f, 0.0f);
+    m[1].Set(0.0f, y,    0.0f, 0.0f);
+    m[2].Set(0.0f, 0.0f, z,    0.0f);
+    m[3].Set(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void Matrix4x4::Scale(const Vector3& v, Matrix4x4& m) {
-    m = Matrix4x4(
-            v.x,  0.0f, 0.0f, 0.0f,
-            0.0f, v.y,  0.0f, 0.0f,
-            0.0f, 0.0f, v.z,  0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
+    m[0].Set(v.x,  0.0f, 0.0f, 0.0f);
+    m[1].Set(0.0f, v.y,  0.0f, 0.0f);
+    m[2].Set(0.0f, 0.0f, v.z,  0.0f);
+    m[3].Set(0.0f, 0.0f, 0.0f, 1.0f);
 }
  
 void Matrix4x4::Translation(float x, float y, float z, Matrix4x4& m) {
-   m = Matrix4x4(
-            1.0f, 0.0f, 0.0f, x   ,
-            0.0f, 1.0f, 0.0f, y   ,
-            0.0f, 0.0f, 1.0f, z   ,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
+    m[0].Set(1.0f, 0.0f, 0.0f, 0.0f);
+    m[1].Set(0.0f, 1.0f, 0.0f, 0.0f);
+    m[2].Set(0.0f, 0.0f, 1.0f, 0.0f);
+    m[3].Set(x,    y,    z,    1.0f);
 }
 
 void Matrix4x4::Translation(const Vector3& v, Matrix4x4& m) {
-    m = Matrix4x4(
-            1.0f, 0.0f, 0.0f, v.x ,
-            0.0f, 1.0f, 0.0f, v.y ,
-            0.0f, 0.0f, 1.0f, v.z ,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
+    m[0].Set(1.0f, 0.0f, 0.0f, 0.0f);
+    m[1].Set(0.0f, 1.0f, 0.0f, 0.0f);
+    m[2].Set(0.0f, 0.0f, 1.0f, 0.0f);
+    m[3].Set(v,                1.0f);
 }
 
 void Matrix4x4::RotationXRadians(float radians, Matrix4x4& m) {
-    float cosr = Cos(radians);
-    float sinr = Sin(radians);
-    m = Matrix4x4(
-            1.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, cosr,-sinr, 0.0f,
-            0.0f, sinr, cosr, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
-    
+    float sinr, cosr;
+
+    SinCos(radians, sinr, cosr);
+    m[0].Set(1.0f, 0.0f, 0.0f, 0.0f);
+    m[1].Set(0.0f, cosr,-sinr, 0.0f);
+    m[2].Set(0.0f, sinr, cosr, 0.0f);
+    m[3].Set(0.0f, 0.0f, 0.0f, 1.0f);
 }
  
 void Matrix4x4::RotationYRadians(float radians, Matrix4x4& m) {
-    float cosr = Cos(radians);
-    float sinr = Sin(radians);
-    m = Matrix4x4(
-            cosr, 0.0f,-sinr, 0.0f,
-            0.0f, 1.0f, 0.0f, 0.0f,
-            sinr, 0.0f, cosr, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
+    float sinr, cosr;
+    SinCos(radians, sinr, cosr);
+    m[0].Set(cosr, 0.0f,-sinr, 0.0f);
+    m[1].Set(0.0f, 1.0f, 0.0f, 0.0f);
+    m[2].Set(sinr, 0.0f, cosr, 0.0f);
+    m[3].Set(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void Matrix4x4::RotationZRadians(float radians, Matrix4x4& m) {
-    float cosr = Cos(radians);
-    float sinr = Sin(radians);
-    m = Matrix4x4(
-            cosr,-sinr, 0.0f, 0.0f,
-            sinr, cosr, 0.0f, 0.0f,
-            0.0f, 0.0f, 1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
+    float sinr, cosr;
+    SinCos(radians, sinr, cosr);
+    m[0].Set(cosr,-sinr, 0.0f, 0.0f);
+    m[1].Set(sinr, cosr, 0.0f, 0.0f);
+    m[2].Set(0.0f, 0.0f, 1.0f, 0.0f);
+    m[3].Set(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void Matrix4x4::RotationRadians(float x, float y, float z, Matrix4x4& m) {
-    Matrix4x4 mx, mz;
-    RotationXRadians(x, mx);
-    RotationYRadians(y, m);
-    RotationZRadians(z, mz);
-    m *= mx * mz;
+    _MM_ALIGN16 float c[4];
+    _MM_ALIGN16 float s[4];
+    Vector4 v(x, y, z, 0.0f);
+    SinCos_x4(v.f, s, c);
+
+    m[0].Set(c[1]*c[2],                     -c[1]*s[2],                 s[1],           0.0f);
+    m[1].Set(c[2]*s[0]*s[1]+c[0]*s[2],      c[0]*c[2]-s[0]*s[1]*s[2],   -c[1]*s[0],     0.0f);
+    m[2].Set(-c[0]*c[2]*s[1]+s[0]*s[2],     c[2]*s[0]+c[0]*s[1]*s[2],   c[0]*c[1],      0.0f);
+    m[3].Set(0.0f,                          0.0f,                       0.0f,           1.0f);
 }
 
 void Matrix4x4::RotationRadians(const Vector3& v, Matrix4x4& m) {
-    Matrix4x4 mx, mz;
-    RotationXRadians(v.x, mx);
-    RotationYRadians(v.y, m);
-    RotationZRadians(v.z, mz);
-    m *= mx * mz;
+    _MM_ALIGN16 float c[4];
+    _MM_ALIGN16 float s[4];
+    SinCos_x4(v.f, s, c);
+
+    m[0].Set(c[1]*c[2],                     -c[1]*s[2],                 s[1],           0.0f);
+    m[1].Set(c[2]*s[0]*s[1]+c[0]*s[2],      c[0]*c[2]-s[0]*s[1]*s[2],   -c[1]*s[0],     0.0f);
+    m[2].Set(-c[0]*c[2]*s[1]+s[0]*s[2],     c[2]*s[0]+c[0]*s[1]*s[2],   c[0]*c[1],      0.0f);
+    m[3].Set(0.0f,                          0.0f,                       0.0f,           1.0f);
 }
 
 void Matrix4x4::AxisAngleRadians(const Vector3& a, float radians, Matrix4x4& m) {
-    float c = Cos(radians);
-    float s = Sin(radians);
+    float s, c;
+    SinCos(radians, s, c);
     float t = 1.0f - c;
     const float& x = a.x;
     const float& y = a.y;
@@ -3533,8 +3712,8 @@ void Matrix4x4::PerspectiveProjectionRadians(float fovx, float fovy, float n, fl
         );
 }
 
-void Matrix4x4::PerspectiveProjectionDegrees(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix) {
-    Matrix4x4::PerspectiveProjectionRadians(fovx * Deg2Rad, fovy * Deg2Rad, near, far, outMatrix);
+void Matrix4x4::PerspectiveProjectionDegrees(float fovx, float fovy, float n, float f, Matrix4x4& outMatrix) {
+    Matrix4x4::PerspectiveProjectionRadians(fovx * Deg2Rad, fovy * Deg2Rad, n, f, outMatrix);
 }
 
 void Matrix4x4::LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up, Matrix4x4& m) {
@@ -3574,11 +3753,13 @@ Matrix4x4 Matrix4x4::Scale(float xyz) {
     Scale(xyz, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::Scale(float x, float y, float z) {
     Matrix4x4 m;
     Scale(x, y, z, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::Scale(const Vector3& v) {
     Matrix4x4 m;
     Scale(v, m);
@@ -3590,6 +3771,7 @@ Matrix4x4 Matrix4x4::Translation(float x, float y, float z) {
     Translation(x, y, z, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::Translation(const Vector3& v) {
     Matrix4x4 m;
     Translation(v, m);
@@ -3601,26 +3783,31 @@ Matrix4x4 Matrix4x4::RotationXRadians(float radians) {
     RotationXRadians(radians, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::RotationYRadians(float radians) {
     Matrix4x4 m;
     RotationYRadians(radians, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::RotationZRadians(float radians) {
     Matrix4x4 m;
     RotationZRadians(radians, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::RotationRadians(float x, float y, float z) {
     Matrix4x4 m;
     RotationRadians(x, y, z, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::RotationRadians(const Vector3& v) {
     Matrix4x4 m;
     RotationRadians(v, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::AxisAngleRadians(const Vector3& axis, float radians) {
     Matrix4x4 m;
     AxisAngleRadians(axis, radians, m);
@@ -3632,26 +3819,31 @@ Matrix4x4 Matrix4x4::RotationXDegrees(float degrees) {
     RotationXDegrees(degrees, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::RotationYDegrees(float degrees) {
     Matrix4x4 m;
     RotationYDegrees(degrees, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::RotationZDegrees(float degrees) {
     Matrix4x4 m;
     RotationZDegrees(degrees, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::RotationDegrees(float x, float y, float z) {
     Matrix4x4 m;
     RotationDegrees(x, y, z, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::RotationDegrees(const Vector3& v) {
     Matrix4x4 m;
     RotationDegrees(v, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::AxisAngleDegrees(const Vector3& axis, float degrees) {
     Matrix4x4 m;
     AxisAngleDegrees(axis, degrees, m);
@@ -3732,7 +3924,7 @@ Quaternion Quaternion::operator * (const Quaternion& q) const {
 }
 
 bool Quaternion::operator == (const Quaternion& q) const {
-#   if XO_SSE
+#   if defined(XO_SSE)
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(q.m, m)), sse::Epsilon)) & 15) == 15;
 #   else
     return 
@@ -3759,7 +3951,7 @@ XOMATH_BEGIN_XO_NS();
 
 namespace xo_internal {
     _XOINL float QuaternionSquareSum(const Quaternion& q) {
-#if XO_SSE
+#if defined(XO_SSE)
         __m128 square = _mm_mul_ps(q.m, q.m);
         square = _mm_hadd_ps(square, square);
         square = _mm_hadd_ps(square, square);
@@ -3782,7 +3974,7 @@ Quaternion::Quaternion(const Matrix4x4& mat) {
 
     // don't use close enough, skip the abs since we're all positive value.
     if(scale.x <= FloatEpsilon || scale.y <= FloatEpsilon || scale.z <= FloatEpsilon) {
-#if XO_SSE
+#if defined(XO_SSE)
 
 #else
         w = 1.0f;
@@ -3791,7 +3983,7 @@ Quaternion::Quaternion(const Matrix4x4& mat) {
         return; // too close.
     }
 
-#if XO_SSE
+#if defined(XO_SSE)
 #   if defined(XO_NO_INVERSE_DIVISION)
     Vector3 recipScale = Vector3(_mm_div_ps(Vector4::One.m, scale.m));
 #   else
@@ -3849,7 +4041,7 @@ Quaternion::Quaternion(const Matrix4x4& mat) {
 }
 
 Quaternion::Quaternion(float x, float y, float z, float w)  :
-#if XO_SSE
+#if defined(XO_SSE)
     m(_mm_set_ps(w, z, y, x))
 #else
     x(x), y(y), z(z), w(w)
@@ -3907,7 +4099,7 @@ const Quaternion& Quaternion::MakeConjugate() {
 void Quaternion::GetAxisAngleRadians(Vector3& axis, float& radians) const {
     Quaternion q = Normalized();
 
-#if XO_SSE
+#if defined(XO_SSE)
     axis.m = q.m;
 #else
     axis.x = q.x;
@@ -3924,20 +4116,15 @@ void Quaternion::RotationRadians(float x, float y, float z, Quaternion& outQuat)
 
 void Quaternion::RotationRadians(const Vector3& v, Quaternion& outQuat) {
     Vector3 hv = v * 0.5f;
+    _MM_ALIGN16 float s[3];
+    _MM_ALIGN16 float c[3];
+    SinCos_x3(hv.f, s, c);
 
-#if XO_SSE && defined(__INTEL_COMPILER)
-    Vector3 vs(_mm_sin_ps(hv));
-    Vector3 vc(_mm_cos_ps(hv));
-#else
-    // agner fog has a portable vector trig.... see if the licence is usable.
-    Vector3 vs(Sin(hv.x), Sin(hv.y), Sin(hv.z));
-    Vector3 vc(Cos(hv.x), Cos(hv.y), Cos(hv.z));
-#endif
     _XO_ASSIGN_QUAT_Q(outQuat,
-        vc.x * vc.y * vc.z + vs.x * vs.y * vs.z,
-        vs.x * vc.y * vc.z - vc.x * vs.y * vs.z,
-        vc.x * vs.y * vc.z + vs.x * vc.y * vs.z,
-        vc.x * vc.y * vs.z - vs.x * vs.y * vc.z);
+        c[0] * c[1] * c[2] + s[0] * s[1] * s[2],
+        s[0] * c[1] * c[2] - c[0] * s[1] * s[2],
+        c[0] * s[1] * c[2] + s[0] * c[1] * s[2],
+        c[0] * c[1] * s[2] - s[0] * s[1] * c[2]);
 }
 
 void Quaternion::AxisAngleRadians(const Vector3& axis, float radians, Quaternion& outQuat) {
@@ -3957,7 +4144,7 @@ void Quaternion::LookAtFromPosition(const Vector3& from, const Vector3& to, Quat
     LookAtFromPosition(from, to, Vector3::Up, outQuat);
 }
 
-void Quaternion::LookAtFromDirection(const Vector3& direction, const Vector3& up, Quaternion& outQuat) {
+void Quaternion::LookAtFromDirection(const Vector3&, const Vector3&, Quaternion&) {
     // Todo
 }
 
@@ -4159,7 +4346,7 @@ _XOINL Vector4 Abs(const Vector4& v) {
     return Vector4(sse::Abs(v.m));
 }
 
-#if XO_SSE
+#if defined(XO_SSE)
 
 namespace sse {
 

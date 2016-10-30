@@ -22,11 +22,12 @@
 #if !defined(XO_MATH_CONFIG_H_)
 #define XO_MATH_CONFIG_H_
 
-//! Not recomended, used for the development of xo-math. 
+//! Not recommended, used for the development of xo-math. 
 //! This option doesn't undef the internal macros in xo-math.h
 #define XO_EXPORT_ALL
 
-#define XO_ASSERT(condition, message) //if(condition) { std::cout << message << std::endl; }
+#include <iostream>
+#define XO_ASSERT(condition, message) if(condition) { std::cout << message << std::endl; }
 
 //! Use left hand space for xo-math.
 //! Variants: XO_SPACE_RIGHTHAND
@@ -35,5 +36,11 @@
 //! Use the positive y axis to represent up in xo-math.
 //! Variants: XO_SPACE_ZUP
 #define XO_SPACE_YUP
+
+//#define XO_SSE
+//#define XO_SSE2
+//#define XO_SSE3
+//#define XO_SSE4_1
+//#define XO_SSE4_2
 
 #endif // XO_MATH_CONFIG_H_
