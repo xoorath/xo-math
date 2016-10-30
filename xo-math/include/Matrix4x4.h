@@ -198,15 +198,45 @@ public:
     //! @}
 
     //>See
-    //! @name Static Methods
+    //! @name Methods
     //! @{
 
+    //! Returns true if the dot between any two columns is 1 or 0.
+    _XOINL bool HasOrthonormalBasis() const;
+    //! Returns true if this matrix is unitary. A matrix is unitary when the following is true: (m.Transposed() * m) == Identity
+    _XOINL bool IsUnitary() const;
+    //! Gets the determinant of this matrix.
+    _XOINL float Determinant() const;
+    //! Returns true if the matrix has an inverse. This happens for non-zero determinant values.
+    //! @note This method is expensive.
+    _XOINL bool HasInverse() const;
+
+    //! Sets m to this matrix inverted if possible. Returns true on success.
+    _XOINL bool TryGetInverse(Matrix4x4& m) const;
+    //! Sets m to this matrix inverted if possible. Returns true on success. Also provides the necessary determinant value as an out param, for when that's helpful.
+    _XOINL bool TryGetInverse(Matrix4x4& m, float& outDeterminant) const;
+    //! Same as TryGetInverse but fails silently for determinant values of 0.
+    _XOINL void GetInverse(Matrix4x4& m) const;
+    //! Same as TryGetInverse with an outDeterminant param, but fails silently for determinant values of 0.
+    _XOINL void GetInverse(Matrix4x4& m, float& outDeterminant) const;
+    //! Calls Matrix4x4::GetInverse, but returning a copy of the input param.
+    _XOINL Matrix4x4 GetInverse() const;
+    //! Calls Matrix4x4::GetInverse, but returning a copy of the input param.
+    _XOINL Matrix4x4 GetInverse(float& outDeterminant) const;
+
+    //! Sets this matrix to its own inverse, returning true if successful.
     //! @note If the matrix is a simple transform, you can build it with the inverse of it's parameters. 
     //! for example: RotationYRadians(x).MakeInverse() is equal to RotationYRadians(-x). Furthermore if
     //! the matrix you're trying to build is a result of multiple simple transforms, the inverse can instead
     //! be built as the order of multiplication reversed also using negative input params. for example: 
     //! (Scale(s) * Translation(Vector3(x, y, z))).MakeInverse() is equal to Translation(-Vector3(x, y, z)) * Scale(-s)
-    _XOINL const Matrix4x4& Inverse();
+    _XOINL bool TryMakeInverse();
+    //! Same as TryMakeInverse with no parameter, but provides the necessary determinant value as an out param, for when that's helpful.
+    _XOINL bool TryMakeInverse(float& outDeterminant);
+    // Same as TryMakeInverse but fails silently for determinant values of 0.
+    _XOINL const Matrix4x4& MakeInverse();
+    // Same as TryMakeInverse with an out param, but fails silently for determinant values of 0.
+    _XOINL const Matrix4x4& MakeInverse(float& outDeterminant);
     //! Sets this matrix as a transpose of itself
     /*!
         \f[
@@ -483,7 +513,16 @@ public:
     //! @}
 
     //! Matrix rows
-    Vector4 r[4];
+    union {
+        Vector4 r[4];
+        float m[16];
+        struct {
+            float   m00, m01, m02, m03,
+                    m10, m11, m12, m13,
+                    m20, m21, m22, m23,
+                    m30, m31, m32, m33;
+        };
+    };
 
     static const Matrix4x4
         /*!
