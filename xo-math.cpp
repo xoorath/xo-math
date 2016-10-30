@@ -46,7 +46,7 @@ const Matrix4x4 Matrix4x4::Zero(Vector4(0.0f, 0.0f, 0.0f, 0.0f),
 ////////////////////////////////////////////////////////////////////////// Quaternion.cpp
 
 #if defined(_XONOCONSTEXPR)
-#   if XO_SSE
+#   if defined(XO_SSE)
 const float Quaternion::Epsilon = sse::SSEFloatEpsilon * 4.0f;
 #   else
 const float Quaternion::Epsilon = FloatEpsilon * 4.0f;
@@ -59,7 +59,7 @@ const Quaternion Quaternion::Zero(0.0f, 0.0f, 0.0f, 0.0f);
 
 ////////////////////////////////////////////////////////////////////////// SSE.cpp
 
-#if XO_SSE
+#if defined(XO_SSE)
 namespace sse {
 
     volatile _XOTLS unsigned LastKnownControlWord = 0;
@@ -340,16 +340,16 @@ const Vector2 Vector2::Zero(0.0f, 0.0f);
 ////////////////////////////////////////////////////////////////////////// Vector3.cpp
 
 #if defined(_XONOCONSTEXPR)
-#   if XO_SSE
+#   if defined(XO_SSE)
 const float Vector3::Epsilon = sse::SSEFloatEpsilon * 3.0f;
 #   else
 const float Vector3::Epsilon = FloatEpsilon * 3.0f;
 #   endif
 #endif
 
-#if XO_SSE2
+#if defined(XO_SSE2)
 const __m128 Vector3::MASK = _mm_castsi128_ps(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff));
-#elif XO_SSE
+#elif defined(XO_SSE)
 const __m128 Vector3::MASK = {-1, -1, -1, 0};
 #endif
 
@@ -395,7 +395,7 @@ const Vector3 Vector3::Zero(0.0f, 0.0f, 0.0f);
 ////////////////////////////////////////////////////////////////////////// Vector4.cpp
 
 #if defined(_XONOCONSTEXPR)
-#   if XO_SSE
+#   if defined(XO_SSE)
 const float Vector4::Epsilon = sse::SSEFloatEpsilon * 4.0f;
 #   else
 const float Vector4::Epsilon = FloatEpsilon * 4.0f;
