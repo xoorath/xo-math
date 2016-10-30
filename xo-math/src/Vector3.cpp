@@ -25,16 +25,16 @@
 XOMATH_BEGIN_XO_NS();
 
 #if defined(_XONOCONSTEXPR)
-#   if XO_SSE
+#   if defined(XO_SSE)
 const float Vector3::Epsilon = sse::SSEFloatEpsilon * 3.0f;
 #   else
 const float Vector3::Epsilon = FloatEpsilon * 3.0f;
 #   endif
 #endif
 
-#if XO_SSE2
+#if defined(XO_SSE2)
 const __m128 Vector3::MASK = _mm_castsi128_ps(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff));
-#elif XO_SSE
+#elif defined(XO_SSE)
 const __m128 Vector3::MASK = {-1, -1, -1, 0};
 #endif
 

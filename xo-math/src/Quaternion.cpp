@@ -25,7 +25,7 @@
 XOMATH_BEGIN_XO_NS();
 
 #if defined(_XONOCONSTEXPR)
-#   if XO_SSE
+#   if defined(XO_SSE)
 const float Quaternion::Epsilon = sse::SSEFloatEpsilon * 4.0f;
 #   else
 const float Quaternion::Epsilon = FloatEpsilon * 4.0f;

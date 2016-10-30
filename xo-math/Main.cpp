@@ -267,7 +267,7 @@ void TestVector3Operators() {
         test.ReportSuccessIf(left == rightKnownMag, false, TEST_MSG("Vec==float failed. Left should not be equal to the right magnitude."));
         test.ReportSuccessIf(left != rightKnownMag, true, TEST_MSG("Vec!=float failed. Left should not be equal to the right magnitude."));
 
-#if XO_SSE
+#if defined(XO_SSE)
         __m128 m = left; // will generate a compiler error if the __m128 cast operator doesn't exist.
 
         // failure in the following could indicate a problem with the Vector3 constructor, the cast or the comparison.
@@ -284,7 +284,7 @@ void TestVector3Methods() {
         test.ReportSuccessIf(Vector3(1.1f), Vector3(1.1f, 1.1f, 1.1f), TEST_MSG("Constructor (float) did not set all elements."));
         test.ReportSuccessIf(Vector3(1.0f, 1.0f, 1.0f), Vector3::One, TEST_MSG("Constructor (x, y, z) did not set all elements."));
         test.ReportSuccessIf(Vector3(Vector3(1.0f, 1.0f, 1.0f)), Vector3::One, TEST_MSG("Copy constructor (Vector3) did not copy as expected."));
-#if XO_SSE
+#if defined(XO_SSE)
         __m128 m = _mm_set_ps1(1.1f);
         test.ReportSuccessIf(Vector3(m), Vector3(1.1f, 1.1f, 1.1f), TEST_MSG("Constructor (__m128) did not set all elements."));
 #endif
@@ -296,7 +296,7 @@ void TestVector3Methods() {
         test.ReportSuccessIf(temp.Set(1.1f), Vector3(1.1f, 1.1f, 1.1f), TEST_MSG("Set(float) did not set all elements."));
         test.ReportSuccessIf(temp.Set(Vector3::One), Vector3::One, TEST_MSG("Set(Vector3) did not set all elements."));
 
-#if XO_SSE
+#if defined(XO_SSE)
         test.ReportSuccessIf(temp.Set(_mm_set_ps1(1.1f)), Vector3(1.1f, 1.1f, 1.1f), TEST_MSG("Set(__m128) did not set all elements."));
 #endif
         temp.Set(1.1f, 2.2f, 3.3f);
@@ -755,7 +755,7 @@ void TestVector4Operators() {
         test.ReportSuccessIf(left == rightKnownMag, false, TEST_MSG("Vec==float failed. Left should not be equal to the right magnitude."));
         test.ReportSuccessIf(left != rightKnownMag, true, TEST_MSG("Vec!=float failed. Left should not be equal to the right magnitude."));
 
-#if XO_SSE
+#if defined(XO_SSE)
         __m128 m = left; // will generate a compiler error if the __m128 cast operator doesn't exist.
 
         // failure in the following could indicate a problem with the constructor, the cast or the comparison.
@@ -772,7 +772,7 @@ void TestVector4Methods() {
         test.ReportSuccessIf(Vector4(1.1f), Vector4(1.1f, 1.1f, 1.1f, 1.1f), TEST_MSG("Constructor (float) did not set all elements."));
         test.ReportSuccessIf(Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector4::One, TEST_MSG("Constructor (x, y, z, w) did not set all elements."));
         test.ReportSuccessIf(Vector4(Vector4(1.0f, 1.0f, 1.0f, 1.0f)), Vector4::One, TEST_MSG("Copy constructor (Vector3) did not copy as expected."));
-#if XO_SSE
+#if defined(XO_SSE)
         __m128 m = _mm_set_ps1(1.1f);
         test.ReportSuccessIf(Vector4(m), Vector4(1.1f, 1.1f, 1.1f, 1.1f), TEST_MSG("Constructor (__m128) did not set all elements."));
 #endif
@@ -784,7 +784,7 @@ void TestVector4Methods() {
         test.ReportSuccessIf(temp.Set(1.1f), Vector4(1.1f, 1.1f, 1.1f, 1.1f), TEST_MSG("Set(float) did not set all elements."));
         test.ReportSuccessIf(temp.Set(Vector4::One), Vector4::One, TEST_MSG("Set(Vector3) did not set all elements."));
 
-#if XO_SSE
+#if defined(XO_SSE)
         test.ReportSuccessIf(temp.Set(_mm_set_ps1(1.1f)), Vector4(1.1f, 1.1f, 1.1f, 1.1f), TEST_MSG("Set(__m128) did not set all elements."));
 #endif
         temp.Set(1.1f, 2.2f, 3.3f, 4.4f);

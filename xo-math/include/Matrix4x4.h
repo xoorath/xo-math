@@ -101,6 +101,8 @@ public:
     //! Overloads the new and delete operators for Matrix4x4 when memory alignment is required (such as with SSE).
     //! @sa XO_16ALIGNED_MALLOC, XO_16ALIGNED_FREE
     _XO_OVERLOAD_NEW_DELETE();
+    //! Type cast operator. Allows Matrix4x4 to be used implicitly wherever a float* can be.
+    _XOINL operator float*() const { return (float*)this; }
     //! Extracts a const reference of a row, useful for getting rows by index.
     _XOINL const Vector4& operator [](int i) const;
     //! Extracts a reference of a row, useful for setting rows by index.

@@ -25,7 +25,7 @@ static_assert(false, "Don't include Vector4Operators.h directly. Include xo-math
 
 XOMATH_BEGIN_XO_NS();
 
-#if XO_SSE
+#if defined(XO_SSE)
 
 #if defined IDX_X
 _XOMATH_INTERNAL_MACRO_WARNING
@@ -50,7 +50,7 @@ _XOMATH_INTERNAL_MACRO_WARNING
 
 #endif
 
-#if XO_SSE
+#if defined(XO_SSE)
 Vector4::operator const __m128&() const {
     return m;
 }
@@ -65,7 +65,7 @@ const float& Vector4::operator [](int i) const {
 }
 
 Vector4 Vector4::operator -() const {
-#if XO_SSE
+#if defined(XO_SSE)
     return Vector4(_mm_mul_ps(m, sse::NegativeOne));
 #else
     return Vector4(-x, -y, -z, -w);
@@ -73,7 +73,7 @@ Vector4 Vector4::operator -() const {
 }
 
 Vector4 Vector4::operator ~() const {
-#if XO_SSE
+#if defined(XO_SSE)
     return Vector3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(IDX_X, IDX_Y, IDX_Z, IDX_W)));
 #else
     return Vector4(w, z, y, x);
@@ -81,7 +81,7 @@ Vector4 Vector4::operator ~() const {
 }
 
 const Vector4& Vector4::operator += (const Vector4& v) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_add_ps(m, v.m);
 #else
     x += v.x;
@@ -93,7 +93,7 @@ const Vector4& Vector4::operator += (const Vector4& v) {
 }
 
 const Vector4& Vector4::operator += (float v) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_add_ps(m, _mm_set_ps1(v));
 #else
     x += v;
@@ -110,7 +110,7 @@ const Vector4& Vector4::operator += (const class Vector2& v)  { return (*this) +
 const Vector4& Vector4::operator += (const class Vector3& v)  { return (*this) += Vector4(v); }
 
 const Vector4& Vector4::operator -= (const Vector4& v) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_sub_ps(m, v.m);
 #else
     x -= v.x;
@@ -122,7 +122,7 @@ const Vector4& Vector4::operator -= (const Vector4& v) {
 }
 
 const Vector4& Vector4::operator -= (float v) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_sub_ps(m, _mm_set_ps1(v));
 #else
     x -= v;
@@ -139,7 +139,7 @@ const Vector4& Vector4::operator -= (const class Vector2& v)  { return (*this) -
 const Vector4& Vector4::operator -= (const class Vector3& v)  { return (*this) -= Vector4(v); }
 
 const Vector4& Vector4::operator *= (const Vector4& v) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_mul_ps(m, v.m);
 #else
     x *= v.x;
@@ -151,7 +151,7 @@ const Vector4& Vector4::operator *= (const Vector4& v) {
 }
 
 const Vector4& Vector4::operator *= (float v) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_mul_ps(m, _mm_set_ps1(v));
 #else
     x *= v;
@@ -169,7 +169,7 @@ const Vector4& Vector4::operator *= (const class Vector3& v)  { return (*this) *
 
 #if defined(XO_NO_INVERSE_DIVISION)
 const Vector4& Vector4::operator /= (const Vector4& v) {
-#   if XO_SSE
+#   if defined(XO_SSE)
     // see: https://software.intel.com/sites/landingpage/IntrinsicsGuide
     // see: https://software.intel.com/en-us/articles/measuring-instruction-latency-and-throughput
 
@@ -192,7 +192,7 @@ const Vector4& Vector4::operator /= (const Vector4& v) {
 }
 
 const Vector4& Vector4::operator /= (float v) {
-#   if XO_SSE
+#   if defined(XO_SSE)
     m = _mm_div_ps(m, _mm_set_ps1(v));
 #   else
     x /= v;
@@ -205,7 +205,7 @@ const Vector4& Vector4::operator /= (float v) {
 #else
 
 const Vector4& Vector4::operator /= (const Vector4& v) {
-#   if XO_SSE
+#   if defined(XO_SSE)
     // see: https://software.intel.com/sites/landingpage/IntrinsicsGuide
     // see: https://software.intel.com/en-us/articles/measuring-instruction-latency-and-throughput
 
@@ -237,7 +237,7 @@ const Vector4& Vector4::operator /= (const Vector4& v) {
 }
 
 const Vector4& Vector4::operator /= (float v) { 
-#   if XO_SSE
+#   if defined(XO_SSE)
     m = _mm_mul_ps(m, _mm_set_ps1(1.0f/v));
 #   else
     v = 1.0f / v;
@@ -311,7 +311,7 @@ bool Vector4::operator >= (const class Vector2& v) const      { return Magnitude
 bool Vector4::operator >= (const class Vector3& v) const      { return MagnitudeSquared() >= v.MagnitudeSquared(); }
 
 bool Vector4::operator == (const Vector4& v) const {
-#   if XO_SSE2
+#   if defined(XO_SSE2)
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 15) == 15;
 #   elif XO_SSE
     // TODO: find a faster way with SSE to do a 'close enough' check.
@@ -335,7 +335,7 @@ bool Vector4::operator == (double v) const          { return CloseEnough(Magnitu
 bool Vector4::operator == (int v) const             { return CloseEnough(MagnitudeSquared(), (float)(v * v), Epsilon); }
 
 bool Vector4::operator == (const class Vector2& v) const {
-#   if XO_SSE
+#   if defined(XO_SSE)
     // Todo: check that this is actually faster.
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(m, _mm_set_ps(0.0f, 0.0f, v.y, v.x))), sse::Epsilon)) & 3) == 3;
 #   else
@@ -344,7 +344,7 @@ bool Vector4::operator == (const class Vector2& v) const {
 }
 
 bool Vector4::operator == (const class Vector3& v) const {
-#   if XO_SSE
+#   if defined(XO_SSE)
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 7) == 7;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon) && CloseEnough(z, v.z, Epsilon);

@@ -159,14 +159,14 @@ bool Vector2::operator == (float v) const                   { return CloseEnough
 bool Vector2::operator == (double v) const                  { return *this == (float)(v*v); }
 bool Vector2::operator == (int v) const                     { return *this == (float)(v*v); }
 bool Vector2::operator == (const class Vector3& v) const {
-#   if XO_SSE2
+#   if defined(XO_SSE2)
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, y, x), v.m)), sse::Epsilon)) & 3) == 3;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
 #   endif
 }
 bool Vector2::operator == (const class Vector4& v) const {
-#   if XO_SSE
+#   if defined(XO_SSE)
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, y, x), v.m)), sse::Epsilon)) & 3) == 3;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);

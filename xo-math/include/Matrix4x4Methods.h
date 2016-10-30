@@ -35,7 +35,7 @@ Matrix4x4::Matrix4x4() {
 }
 
 Matrix4x4::Matrix4x4(float m)
-#if XO_SSE
+#if defined(XO_SSE)
 { 
     r[0].m = r[1].m = r[2].m = r[3].m = _mm_set_ps1(m);
 }
@@ -99,7 +99,7 @@ Matrix4x4::Matrix4x4(const class Quaternion& q) {
 }
 
 const Matrix4x4& Matrix4x4::Transpose() {
-#if XO_SSE
+#if defined(XO_SSE)
     _MM_TRANSPOSE4_PS(r[0].m, r[1].m, r[2].m, r[3].m);
 #else
     float t;
@@ -135,108 +135,94 @@ const Matrix4x4& Matrix4x4::Transform(Vector4& v) const {
 }
 
 void Matrix4x4::Scale(float xyz, Matrix4x4& m) {
-    // Also valid but requires division or recip:
-    // 1 0 0 0
-    // 0 1 0 0
-    // 0 0 1 0
-    // 0 0 0 1/xyz
-    m = Matrix4x4(
-            xyz,  0.0f, 0.0f, 0.0f,
-            0.0f, xyz,  0.0f, 0.0f,
-            0.0f, 0.0f, xyz,  0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
+    m[0].Set(xyz,  0.0f, 0.0f, 0.0f);
+    m[1].Set(0.0f, xyz,  0.0f, 0.0f);
+    m[2].Set(0.0f, 0.0f, xyz,  0.0f);
+    m[3].Set(0.0f, 0.0f, 0.0f, 1.0f);
 }
  
 void Matrix4x4::Scale(float x, float y, float z, Matrix4x4& m) {
-    m = Matrix4x4(
-            x,    0.0f, 0.0f, 0.0f,
-            0.0f, y,    0.0f, 0.0f,
-            0.0f, 0.0f, z,    0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
+    m[0].Set(x,    0.0f, 0.0f, 0.0f);
+    m[1].Set(0.0f, y,    0.0f, 0.0f);
+    m[2].Set(0.0f, 0.0f, z,    0.0f);
+    m[3].Set(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void Matrix4x4::Scale(const Vector3& v, Matrix4x4& m) {
-    m = Matrix4x4(
-            v.x,  0.0f, 0.0f, 0.0f,
-            0.0f, v.y,  0.0f, 0.0f,
-            0.0f, 0.0f, v.z,  0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
+    m[0].Set(v.x,  0.0f, 0.0f, 0.0f);
+    m[1].Set(0.0f, v.y,  0.0f, 0.0f);
+    m[2].Set(0.0f, 0.0f, v.z,  0.0f);
+    m[3].Set(0.0f, 0.0f, 0.0f, 1.0f);
 }
  
 void Matrix4x4::Translation(float x, float y, float z, Matrix4x4& m) {
-   m = Matrix4x4(
-            1.0f, 0.0f, 0.0f, x   ,
-            0.0f, 1.0f, 0.0f, y   ,
-            0.0f, 0.0f, 1.0f, z   ,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
+    m[0].Set(1.0f, 0.0f, 0.0f, 0.0f);
+    m[1].Set(0.0f, 1.0f, 0.0f, 0.0f);
+    m[2].Set(0.0f, 0.0f, 1.0f, 0.0f);
+    m[3].Set(x,    y,    z,    1.0f);
 }
 
 void Matrix4x4::Translation(const Vector3& v, Matrix4x4& m) {
-    m = Matrix4x4(
-            1.0f, 0.0f, 0.0f, v.x ,
-            0.0f, 1.0f, 0.0f, v.y ,
-            0.0f, 0.0f, 1.0f, v.z ,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
+    m[0].Set(1.0f, 0.0f, 0.0f, 0.0f);
+    m[1].Set(0.0f, 1.0f, 0.0f, 0.0f);
+    m[2].Set(0.0f, 0.0f, 1.0f, 0.0f);
+    m[3].Set(v,                1.0f);
 }
 
 void Matrix4x4::RotationXRadians(float radians, Matrix4x4& m) {
-    float cosr = Cos(radians);
-    float sinr = Sin(radians);
-    m = Matrix4x4(
-            1.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, cosr,-sinr, 0.0f,
-            0.0f, sinr, cosr, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
-    
+    float sinr, cosr;
+
+    SinCos(radians, sinr, cosr);
+    m[0].Set(1.0f, 0.0f, 0.0f, 0.0f);
+    m[1].Set(0.0f, cosr,-sinr, 0.0f);
+    m[2].Set(0.0f, sinr, cosr, 0.0f);
+    m[3].Set(0.0f, 0.0f, 0.0f, 1.0f);
 }
  
 void Matrix4x4::RotationYRadians(float radians, Matrix4x4& m) {
-    float cosr = Cos(radians);
-    float sinr = Sin(radians);
-    m = Matrix4x4(
-            cosr, 0.0f,-sinr, 0.0f,
-            0.0f, 1.0f, 0.0f, 0.0f,
-            sinr, 0.0f, cosr, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
+    float sinr, cosr;
+    SinCos(radians, sinr, cosr);
+    m[0].Set(cosr, 0.0f,-sinr, 0.0f);
+    m[1].Set(0.0f, 1.0f, 0.0f, 0.0f);
+    m[2].Set(sinr, 0.0f, cosr, 0.0f);
+    m[3].Set(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void Matrix4x4::RotationZRadians(float radians, Matrix4x4& m) {
-    float cosr = Cos(radians);
-    float sinr = Sin(radians);
-    m = Matrix4x4(
-            cosr,-sinr, 0.0f, 0.0f,
-            sinr, cosr, 0.0f, 0.0f,
-            0.0f, 0.0f, 1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
+    float sinr, cosr;
+    SinCos(radians, sinr, cosr);
+    m[0].Set(cosr,-sinr, 0.0f, 0.0f);
+    m[1].Set(sinr, cosr, 0.0f, 0.0f);
+    m[2].Set(0.0f, 0.0f, 1.0f, 0.0f);
+    m[3].Set(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void Matrix4x4::RotationRadians(float x, float y, float z, Matrix4x4& m) {
-    Matrix4x4 mx, mz;
-    RotationXRadians(x, mx);
-    RotationYRadians(y, m);
-    RotationZRadians(z, mz);
-    m *= mx * mz;
+    _MM_ALIGN16 float c[4];
+    _MM_ALIGN16 float s[4];
+    Vector4 v(x, y, z, 0.0f);
+    SinCos_x4(v.f, s, c);
+
+    m[0].Set(c[1]*c[2],                     -c[1]*s[2],                 s[1],           0.0f);
+    m[1].Set(c[2]*s[0]*s[1]+c[0]*s[2],      c[0]*c[2]-s[0]*s[1]*s[2],   -c[1]*s[0],     0.0f);
+    m[2].Set(-c[0]*c[2]*s[1]+s[0]*s[2],     c[2]*s[0]+c[0]*s[1]*s[2],   c[0]*c[1],      0.0f);
+    m[3].Set(0.0f,                          0.0f,                       0.0f,           1.0f);
 }
 
 void Matrix4x4::RotationRadians(const Vector3& v, Matrix4x4& m) {
-    Matrix4x4 mx, mz;
-    RotationXRadians(v.x, mx);
-    RotationYRadians(v.y, m);
-    RotationZRadians(v.z, mz);
-    m *= mx * mz;
+    _MM_ALIGN16 float c[4];
+    _MM_ALIGN16 float s[4];
+    SinCos_x4(v.f, s, c);
+
+    m[0].Set(c[1]*c[2],                     -c[1]*s[2],                 s[1],           0.0f);
+    m[1].Set(c[2]*s[0]*s[1]+c[0]*s[2],      c[0]*c[2]-s[0]*s[1]*s[2],   -c[1]*s[0],     0.0f);
+    m[2].Set(-c[0]*c[2]*s[1]+s[0]*s[2],     c[2]*s[0]+c[0]*s[1]*s[2],   c[0]*c[1],      0.0f);
+    m[3].Set(0.0f,                          0.0f,                       0.0f,           1.0f);
 }
 
 void Matrix4x4::AxisAngleRadians(const Vector3& a, float radians, Matrix4x4& m) {
-    float c = Cos(radians);
-    float s = Sin(radians);
+    float s, c;
+    SinCos(radians, s, c);
     float t = 1.0f - c;
     const float& x = a.x;
     const float& y = a.y;
@@ -344,11 +330,13 @@ Matrix4x4 Matrix4x4::Scale(float xyz) {
     Scale(xyz, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::Scale(float x, float y, float z) {
     Matrix4x4 m;
     Scale(x, y, z, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::Scale(const Vector3& v) {
     Matrix4x4 m;
     Scale(v, m);
@@ -360,6 +348,7 @@ Matrix4x4 Matrix4x4::Translation(float x, float y, float z) {
     Translation(x, y, z, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::Translation(const Vector3& v) {
     Matrix4x4 m;
     Translation(v, m);
@@ -371,26 +360,31 @@ Matrix4x4 Matrix4x4::RotationXRadians(float radians) {
     RotationXRadians(radians, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::RotationYRadians(float radians) {
     Matrix4x4 m;
     RotationYRadians(radians, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::RotationZRadians(float radians) {
     Matrix4x4 m;
     RotationZRadians(radians, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::RotationRadians(float x, float y, float z) {
     Matrix4x4 m;
     RotationRadians(x, y, z, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::RotationRadians(const Vector3& v) {
     Matrix4x4 m;
     RotationRadians(v, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::AxisAngleRadians(const Vector3& axis, float radians) {
     Matrix4x4 m;
     AxisAngleRadians(axis, radians, m);
@@ -402,26 +396,31 @@ Matrix4x4 Matrix4x4::RotationXDegrees(float degrees) {
     RotationXDegrees(degrees, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::RotationYDegrees(float degrees) {
     Matrix4x4 m;
     RotationYDegrees(degrees, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::RotationZDegrees(float degrees) {
     Matrix4x4 m;
     RotationZDegrees(degrees, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::RotationDegrees(float x, float y, float z) {
     Matrix4x4 m;
     RotationDegrees(x, y, z, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::RotationDegrees(const Vector3& v) {
     Matrix4x4 m;
     RotationDegrees(v, m);
     return m;
 }
+
 Matrix4x4 Matrix4x4::AxisAngleDegrees(const Vector3& axis, float degrees) {
     Matrix4x4 m;
     AxisAngleDegrees(axis, degrees, m);

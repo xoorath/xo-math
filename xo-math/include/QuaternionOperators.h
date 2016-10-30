@@ -48,7 +48,7 @@ Quaternion Quaternion::operator * (const Quaternion& q) const {
 }
 
 bool Quaternion::operator == (const Quaternion& q) const {
-#   if XO_SSE
+#   if defined(XO_SSE)
     return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(q.m, m)), sse::Epsilon)) & 15) == 15;
 #   else
     return 

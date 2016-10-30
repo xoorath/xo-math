@@ -27,7 +27,7 @@ XOMATH_BEGIN_XO_NS();
 
 namespace xo_internal {
     _XOINL float QuaternionSquareSum(const Quaternion& q) {
-#if XO_SSE
+#if defined(XO_SSE)
         __m128 square = _mm_mul_ps(q.m, q.m);
         square = _mm_hadd_ps(square, square);
         square = _mm_hadd_ps(square, square);
@@ -50,7 +50,7 @@ Quaternion::Quaternion(const Matrix4x4& mat) {
 
     // don't use close enough, skip the abs since we're all positive value.
     if(scale.x <= FloatEpsilon || scale.y <= FloatEpsilon || scale.z <= FloatEpsilon) {
-#if XO_SSE
+#if defined(XO_SSE)
 
 #else
         w = 1.0f;
@@ -59,7 +59,7 @@ Quaternion::Quaternion(const Matrix4x4& mat) {
         return; // too close.
     }
 
-#if XO_SSE
+#if defined(XO_SSE)
 #   if defined(XO_NO_INVERSE_DIVISION)
     Vector3 recipScale = Vector3(_mm_div_ps(Vector4::One.m, scale.m));
 #   else
@@ -117,7 +117,7 @@ Quaternion::Quaternion(const Matrix4x4& mat) {
 }
 
 Quaternion::Quaternion(float x, float y, float z, float w)  :
-#if XO_SSE
+#if defined(XO_SSE)
     m(_mm_set_ps(w, z, y, x))
 #else
     x(x), y(y), z(z), w(w)
@@ -175,7 +175,7 @@ const Quaternion& Quaternion::MakeConjugate() {
 void Quaternion::GetAxisAngleRadians(Vector3& axis, float& radians) const {
     Quaternion q = Normalized();
 
-#if XO_SSE
+#if defined(XO_SSE)
     axis.m = q.m;
 #else
     axis.x = q.x;
@@ -192,20 +192,15 @@ void Quaternion::RotationRadians(float x, float y, float z, Quaternion& outQuat)
 
 void Quaternion::RotationRadians(const Vector3& v, Quaternion& outQuat) {
     Vector3 hv = v * 0.5f;
+    _MM_ALIGN16 float s[3];
+    _MM_ALIGN16 float c[3];
+    SinCos_x3(hv.f, s, c);
 
-#if XO_SSE && defined(__INTEL_COMPILER)
-    Vector3 vs(_mm_sin_ps(hv));
-    Vector3 vc(_mm_cos_ps(hv));
-#else
-    // agner fog has a portable vector trig.... see if the licence is usable.
-    Vector3 vs(Sin(hv.x), Sin(hv.y), Sin(hv.z));
-    Vector3 vc(Cos(hv.x), Cos(hv.y), Cos(hv.z));
-#endif
     _XO_ASSIGN_QUAT_Q(outQuat,
-        vc.x * vc.y * vc.z + vs.x * vs.y * vs.z,
-        vs.x * vc.y * vc.z - vc.x * vs.y * vs.z,
-        vc.x * vs.y * vc.z + vs.x * vc.y * vs.z,
-        vc.x * vc.y * vs.z - vs.x * vs.y * vc.z);
+        c[0] * c[1] * c[2] + s[0] * s[1] * s[2],
+        s[0] * c[1] * c[2] - c[0] * s[1] * s[2],
+        c[0] * s[1] * c[2] + s[0] * c[1] * s[2],
+        c[0] * c[1] * s[2] - s[0] * s[1] * c[2]);
 }
 
 void Quaternion::AxisAngleRadians(const Vector3& axis, float radians, Quaternion& outQuat) {

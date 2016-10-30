@@ -38,11 +38,13 @@ public:
     _XOINL Vector4(float f); //!< All elements are set to f.
     _XOINL Vector4(float x, float y, float z, float w); //!< Assigns each named value accordingly.
     _XOINL Vector4(const Vector4& vec); //!< Copy constructor, trivial.
-#if XO_SSE
+#if defined(XO_SSE)
     _XOINL Vector4(const __m128& vec); //!< Assigns m to vec, sets all elements.
 #endif
     _XOINL Vector4(const class Vector2& v); //!< Assigns same-name values from v, zero to z and w. \f$\begin{pmatrix}v.x&v.y&0&0\end{pmatrix}\f$
+    _XOINL Vector4(const class Vector2& v, float z, float w); //!< Assigns same-name values from v, then z and w. \f$\begin{pmatrix}v.x&v.y&0&0\end{pmatrix}\f$
     _XOINL Vector4(const class Vector3& v); //!< Assigns same-name values from v, zero to w.\f$\begin{pmatrix}v.x&v.y&v.z&0\end{pmatrix}\f$
+    _XOINL Vector4(const class Vector3& v, float w); //!< Assigns same-name values from v, then w.\f$\begin{pmatrix}v.x&v.y&v.z&0\end{pmatrix}\f$
     //! @}
 
     //>See
@@ -55,7 +57,15 @@ public:
     _XOINL const Vector4& Set(float f);
     //! Set each. Copies vec into this.
     _XOINL const Vector4& Set(const Vector4& vec);
-#if XO_SSE
+    //! Set each. Assigns same-name values from vec, zero to z and w.
+    _XOINL const Vector4& Set(const Vector2& vec);
+    //! Set each. Assigns same-name values from vec, then z and w.
+    _XOINL const Vector4& Set(const Vector2& vec, float z, float w);
+    //! Set each. Assigns same-name values from vec, zero to w.
+    _XOINL const Vector4& Set(const Vector3& vec);
+    //! Set each. Assigns same-name values from vec, then w.
+    _XOINL const Vector4& Set(const Vector3& vec, float w);
+#if defined(XO_SSE)
     //! Set each. Copies vec int m.
     _XOINL const Vector4& Set(const __m128& vec);
 #endif
@@ -73,10 +83,12 @@ public:
     //! Overloads the new and delete operators for Vector4 when memory alignment is required (such as with SSE).
     //! @sa XO_16ALIGNED_MALLOC, XO_16ALIGNED_FREE
     _XO_OVERLOAD_NEW_DELETE();
-#if XO_SSE
+#if defined(XO_SSE)
     //! Type cast operator. Allows Vector4 to be used implicitly where ever __m128 can be.
     _XOINL operator const __m128&() const;
 #endif
+    //! Type cast operator. Allows Vector4 to be used implicitly wherever a float* can be.
+    _XOINL operator float*() const { return (float*)f; }
     //! Extract reference operator, useful for setting values by index.
     //! \f[i\begin{cases}0 & return\ x;\\1 & return\ y;\\2 & return\ z;\\3 & return\ w;\\? & undefined\end{cases}\f]
     _XOINL float& operator [](int i);
@@ -312,7 +324,7 @@ public:
 #if defined(_XONOCONSTEXPR)
     static const float Epsilon;
 #else
-#   if XO_SSE
+#   if defined(XO_SSE)
     //! Smallest increment from zero that could be assigned to each element of this vector and would still be seen as equal to a zero vector.
     _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
 #   else
@@ -330,7 +342,7 @@ public:
             float w;
         };
         float f[4]; //!< ordered as \f$\begin{pmatrix}x&y&z&w\end{pmatrix}\f$
-#if XO_SSE
+#if defined(XO_SSE)
         //! Exists when SSE is in use, represents a 128 bit xmm register.
         //! @sa https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions
         __m128 m;

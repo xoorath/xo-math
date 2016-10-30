@@ -77,7 +77,7 @@ public:
 #if defined(_XONOCONSTEXPR)
     static const float Epsilon;
 #else
-#   if XO_SSE
+#   if defined(XO_SSE)
     _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 4.0f;
 #   else
     _XOCONSTEXPR static const float Epsilon = FloatEpsilon * 4.0f;
@@ -89,13 +89,13 @@ public:
             float x, y, z, w;
         };
         float f[4];
-#if XO_SSE
+#if defined(XO_SSE)
         __m128 m;
 #endif
     };
 
 private:
-#if XO_SSE
+#if defined(XO_SSE)
     static const unsigned IDX_X = 0;
     static const unsigned IDX_Y = 1;
     static const unsigned IDX_Z = 2;

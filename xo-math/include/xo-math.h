@@ -19,6 +19,22 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
+// xo-math:
+// TODO:
+//  * Ensure macros are consistently named.
+//  * Remove internal macro warning. Users are probably not stupid.
+//  * Selectively start moving methods away from inline, rather than using it everywhere.
+//  * Support NEON
+//  * Add transformation object.
+//  * Matrix
+//  *   IsUnitary()
+//  *   HasOrthonormalBases()
+//  *   HasInverse()
+//  *   SafeInverse() or TryInverse()
+//  * xo-math
+//  *   fast sin/cos, sincos, _x2 _x2 _x3
+
 #ifndef XO_MATH_H
 #define XO_MATH_H
 
@@ -117,7 +133,9 @@ _XOMATH_INTERNAL_MACRO_WARNING
 // todo: remove constexpr in visual studio 2013 and re-test for support
 #   if defined(_MSC_VER) && _MSC_VER < 1800
 #       define _XOCONSTEXPR
-#       define _XONOCONSTEXPR
+#       if !defined(_XONOCONSTEXPR)
+#           define _XONOCONSTEXPR
+#       endif
 #    else
 #       define _XOCONSTEXPR constexpr
 #    endif
@@ -179,13 +197,29 @@ XOMATH_BEGIN_XO_NS();
 
 _XOCONSTEXPR const float PI = 3.141592653589793238462643383279502884197169399375105820f;
 _XOCONSTEXPR const float PIx2 = 2.0f * PI;
+_XOCONSTEXPR const float InversePIx2 = 1.0f / PIx2;
 _XOCONSTEXPR const float TAU = PIx2;
-_XOCONSTEXPR const float HalfPI = PI / 2.0f;
+_XOCONSTEXPR const float HalfPI = PI/2.0f;
+_XOCONSTEXPR const float HalfPIx3 = HalfPI*3.0f;
+_XOCONSTEXPR const float QuarterPI = PI/4.0f;
 
 _XOCONSTEXPR const float FloatEpsilon = 0.0000001192092896f;
 
 _XOCONSTEXPR const float Rad2Deg = 360.0f / TAU;
 _XOCONSTEXPR const float Deg2Rad = TAU / 360.0f;
+
+#if _MSC_VER 
+#pragma warning(push) 
+#pragma warning(disable:4311)
+#pragma warning(disable:4302)
+#endif 
+_XOINL bool IsAligned16(const void* v) {
+    return ((unsigned)v & 15) == 0;
+}
+#if _MSC_VER 
+#pragma warning(pop)
+#endif 
+
 
 _XOINL float HexFloat(unsigned u) {
     union {
@@ -196,9 +230,10 @@ _XOINL float HexFloat(unsigned u) {
     return Converter.f;
 }
 
-#if XO_SSE
+#if defined(XO_SSE)
 namespace sse {
     static const __m128 AbsMask = _mm_set1_ps(HexFloat(0x7fffffff));
+    static const __m128 SignMask = _mm_set1_ps(HexFloat(0x80000000));
 
     _XOINL __m128 Abs(__m128 v) {
         return _mm_and_ps(AbsMask, v);
@@ -257,15 +292,83 @@ _XOMATH_INTERNAL_MACRO_WARNING
 _XOINL float Min(float x, float y)      { return _XO_MIN(x, y); }
 _XOINL float Max(float x, float y)      { return _XO_MAX(x, y); }
 _XOINL float Abs(float f)               { return f > 0.0f ? f : -f; }
-_XOINL float Sqrt(float f)              { return sqrtf(f); }
-_XOINL float Sin(float f)               { return sinf(f); }
-_XOINL float Cos(float f)               { return cosf(f); }
+_XOINL float Sqrt(float f)              { return sqrtf(f); } 
+_XOINL float Sin(float f)               { return sinf(f); } 
+_XOINL float Cos(float f)               { return cosf(f); } 
 _XOINL float Tan(float f)               { return tanf(f); }
 _XOINL float ASin(float f)              { return asinf(f); }
 _XOINL float ACos(float f)              { return acosf(f); }
-_XOINL float ATan(float f)              { return atanf(f); }
-_XOINL float ATan2(float y, float x)    { return atan2f(y, x); }
+_XOINL float ATan(float f)              { return atanf(f); } 
+_XOINL float ATan2(float y, float x)    { return atan2f(y, x); } 
+
 _XOINL float Difference(float x, float y) { return Abs(x-y); }
+
+_XOINL
+void Sin_x2(const float* f, float* s) {
+    s[0] = Sin(f[0]);
+    s[1] = Sin(f[1]);
+}
+
+_XOINL
+void Sin_x3(const float* f, float* s) {
+    s[0] = Sin(f[0]);
+    s[1] = Sin(f[1]);
+    s[2] = Sin(f[2]);
+}
+
+_XOINL
+void Sin_x4(const float* f, float* s) {
+    s[0] = Sin(f[0]);
+    s[1] = Sin(f[1]);
+    s[2] = Sin(f[2]);
+    s[3] = Sin(f[3]);
+}
+
+_XOINL
+void Cos_x2(const float* f, float* c) {
+    c[0] = Cos(f[0]);
+    c[1] = Cos(f[1]);
+}
+
+_XOINL
+void Cos_x3(const float* f, float* c) {
+    c[0] = Cos(f[0]);
+    c[1] = Cos(f[1]);
+    c[2] = Cos(f[2]);
+}
+
+_XOINL
+void Cos_x4(const float* f, float* c) {
+    c[0] = Cos(f[0]);
+    c[1] = Cos(f[1]);
+    c[2] = Cos(f[2]);
+    c[3] = Cos(f[3]);
+}
+
+_XOINL
+void SinCos(float f, float& s, float& c) { 
+    s = Sin(f);
+    c = Cos(f);
+}
+
+_XOINL
+void SinCos_x2(const float* f, float* s, float* c) {
+    Sin_x2(f, s);
+    Cos_x2(f, c);
+}
+
+_XOINL
+void SinCos_x3(const float* f, float* s, float* c) {
+    Sin_x3(f, s);
+    Cos_x3(f, c);
+}
+
+_XOINL
+void SinCos_x4(const float* f, float* s, float* c) {
+    Sin_x4(f, s);
+    Cos_x4(f, c);
+}
+
 _XOINL
 bool CloseEnough(float x, float y, float tolerance = FloatEpsilon) {
     return Difference(x, y) * (1.0f/tolerance) <= Min(Abs(x), Abs(y));
@@ -307,7 +410,7 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #   undef _XO_ASSIGN_QUAT_Q
 #endif
 
-#if XO_SSE
+#if defined(XO_SSE)
 #define _XO_ASSIGN_QUAT(W, X, Y, Z) m = _mm_set_ps(W, Z, Y, X);
 #define _XO_ASSIGN_QUAT_Q(Q, W, X, Y, Z) Q.m = _mm_set_ps(W, Z, Y, X);
 #else

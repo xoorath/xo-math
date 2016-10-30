@@ -90,24 +90,12 @@ function SaveSourceOutFile() {
   var lines = g_SourceInputText.split('\n');
   
   for(var i = 0; i < lines.length; ++i) {
-    var includeFound = false;
-    // for(var j = 0; j < g_IncludeNames.length; ++j) {
-    //   if(lines[i].indexOf('"' + g_IncludeNames[j] + '"') > 0) {
-    //     output += g_IncludesText[g_IncludeNames[j]];
-    //     includeFound = true;
-    //     break;
-    //   }
-    // }
-
     if(lines[i].indexOf('XOMATH_END_XO_NS') >= 0) {
       for(var name in g_SourcesText) {
         output += g_SourcesText[name];
       }
     }
-
-    if(!includeFound) {
-      output += lines[i] + '\n';
-    }
+    output += lines[i] + '\n';
   }
 
   fs.writeFile(__dirname + g_OutPath + g_SourceOutName, output, function(err) {

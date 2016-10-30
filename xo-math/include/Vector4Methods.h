@@ -50,7 +50,7 @@ Vector4::Vector4() {
 }
 
 Vector4::Vector4(float f) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(_mm_set1_ps(f))
 {
 }
@@ -61,7 +61,7 @@ Vector4::Vector4(float f) :
 #endif
 
 Vector4::Vector4(float x, float y, float z, float w) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(_mm_set_ps(w, z, y, x))
 {
 }
@@ -71,7 +71,7 @@ Vector4::Vector4(float x, float y, float z, float w) :
 }
 #endif
 Vector4::Vector4(const Vector4& vec) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(vec.m)
 {
 }
@@ -82,7 +82,7 @@ Vector4::Vector4(const Vector4& vec) :
 #endif
 
 
-#if XO_SSE
+#if defined(XO_SSE)
 Vector4::Vector4(const __m128& vec) : 
     m(vec)
 {
@@ -90,7 +90,7 @@ Vector4::Vector4(const __m128& vec) :
 #endif
 
 Vector4::Vector4(const class Vector2& vec) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(_mm_set_ps(0.0f, 0.0f, vec.y, vec.x)) 
 {
 }
@@ -100,8 +100,19 @@ Vector4::Vector4(const class Vector2& vec) :
 }
 #endif
 
+Vector4::Vector4(const class Vector2& vec, float z, float w) :
+#if defined(XO_SSE)
+    m(_mm_set_ps(w, z, vec.y, vec.x))
+{
+}
+#else
+    x(vec.x), y(vec.y), z(z), w(w)
+{
+}
+#endif
+
 Vector4::Vector4(const class Vector3& vec) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(vec.m)
 {
 }
@@ -111,8 +122,21 @@ Vector4::Vector4(const class Vector3& vec) :
 }
 #endif
 
+Vector4::Vector4(const class Vector3& vec, float w) :
+#if defined(XO_SSE)
+    m(vec.m)
+{
+    //! @todo there's likely an sse way to do this.
+    w = w;
+}
+#else
+    x(vec.x), y(vec.y), z(vec.z), w(w)
+{
+}
+#endif
+
 const Vector4& Vector4::Set(float x, float y, float z, float w) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_set_ps(w, z, y, x);
 #else
     this->x = x;
@@ -124,7 +148,7 @@ const Vector4& Vector4::Set(float x, float y, float z, float w) {
 }
 
 const Vector4& Vector4::Set(float f) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_set1_ps(f);
 #else
     this->x = f;
@@ -136,7 +160,7 @@ const Vector4& Vector4::Set(float f) {
 }
 
 const Vector4& Vector4::Set(const Vector4& vec) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = vec.m;
 #else
     this->x = vec.x;
@@ -147,7 +171,57 @@ const Vector4& Vector4::Set(const Vector4& vec) {
     return *this;
 }
 
-#if XO_SSE
+const Vector4& Vector4::Set(const Vector2& vec) {
+#if defined(XO_SSE)
+    m = _mm_set_ps(0.0f, 0.0f, vec.y, vec.x);
+#else
+    this->x = vec.x;
+    this->y = vec.y;
+    this->z = 0.0f;
+    this->w = 0.0f;
+#endif
+    return *this;
+}
+
+const Vector4& Vector4::Set(const Vector2& vec, float z, float w) {
+#if defined(XO_SSE)
+    m = _mm_set_ps(w, z, vec.y, vec.x);
+#else
+    this->x = vec.x;
+    this->y = vec.y;
+    this->z = z;
+    this->w = w;
+#endif
+    return *this;
+}
+
+const Vector4& Vector4::Set(const Vector3& vec) {
+#if defined(XO_SSE)
+    this->m = vec.m;
+    this->w = 0.0f;
+#else
+    this->x = vec.x;
+    this->y = vec.y;
+    this->z = vec.z;
+    this->w = 0.0f;
+#endif
+    return *this;
+}
+
+const Vector4& Vector4::Set(const Vector3& vec, float w) {
+#if defined(XO_SSE)
+    this->m = vec.m;
+    this->w = w;
+#else
+    this->x = vec.x;
+    this->y = vec.y;
+    this->z = vec.z;
+    this->w = w;
+#endif
+    return *this;
+}
+
+#if defined(XO_SSE)
 const Vector4& Vector4::Set(const __m128& vec) {
     m = vec;
     return *this;
@@ -162,7 +236,7 @@ void Vector4::Get(float& x, float& y, float& z, float& w) const {
 }
 
 void Vector4::Get(float* f) const {
-#if XO_SSE
+#if defined(XO_SSE)
     _mm_store_ps(f, m);
 #else
     f[0] = this->x;
@@ -173,7 +247,7 @@ void Vector4::Get(float* f) const {
 }
  
 float Vector4::Sum() const {
-#if XO_SSE
+#if defined(XO_SSE)
     auto s = _mm_hadd_ps(m, m);
     s = _mm_hadd_ps(s, s);
     return _mm_cvtss_f32(s);
@@ -183,7 +257,7 @@ float Vector4::Sum() const {
 }
  
 float Vector4::MagnitudeSquared() const {
-#if XO_SSE
+#if defined(XO_SSE)
     auto square = _mm_mul_ps(m, m);
     square = _mm_hadd_ps(square, square);
     square = _mm_hadd_ps(square, square);
@@ -251,7 +325,7 @@ float Vector4::Dot(const Vector4& a, const Vector4& b) {
     d = _mm_hadd_ps(d, d);
     d = _mm_hadd_ps(d, d);
     return _mm_cvtss_f32(d);
-#elif XO_SSE
+#elif defined(XO_SSE)
     __m128 d = _mm_mul_ps(a.m, b.m);
     _MM_ALIGN16 float t[4];
     _mm_store_ps(t, d);

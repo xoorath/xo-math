@@ -40,7 +40,7 @@ _XOINL Vector4 Abs(const Vector4& v) {
     return Vector4(sse::Abs(v.m));
 }
 
-#if XO_SSE
+#if defined(XO_SSE)
 
 namespace sse {
 

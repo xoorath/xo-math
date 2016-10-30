@@ -24,7 +24,7 @@
 
 XOMATH_BEGIN_XO_NS();
 
-#if XO_SSE
+#if defined(XO_SSE)
 namespace sse {
 
     volatile _XOTLS unsigned LastKnownControlWord = 0;

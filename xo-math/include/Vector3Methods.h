@@ -25,7 +25,7 @@ static_assert(false, "Don't include Vector3Methods.h directly. Include xo-math.h
 
 XOMATH_BEGIN_XO_NS();
 
-#if XO_SSE
+#if defined(XO_SSE)
 
 #if defined IDX_X
 _XOMATH_INTERNAL_MACRO_WARNING
@@ -54,7 +54,7 @@ Vector3::Vector3() {
 }
 
 Vector3::Vector3(float f) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(_mm_set1_ps(f))
 #else
     x(f), y(f), z(f)
@@ -63,7 +63,7 @@ Vector3::Vector3(float f) :
 }
 
 Vector3::Vector3(float x, float y, float z) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(_mm_set_ps(0.0f, z, y, x))
 #else
     x(x), y(y), z(z)
@@ -72,7 +72,7 @@ Vector3::Vector3(float x, float y, float z) :
 }
 
 Vector3::Vector3(const Vector3& vec) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(vec) 
 #else
     x(vec.x), y(vec.y), z(vec.z) 
@@ -80,7 +80,7 @@ Vector3::Vector3(const Vector3& vec) :
 {
 }
 
-#if XO_SSE
+#if defined(XO_SSE)
 Vector3::Vector3(const __m128& vec) : 
     m(vec) 
 {
@@ -88,7 +88,7 @@ Vector3::Vector3(const __m128& vec) :
 #endif
 
 Vector3::Vector3(const class Vector2& v) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(_mm_set_ps(0.0f, 0.0f, v.y, v.x))
 #else
     x(v.x), y(v.y), z(0.0f)
@@ -97,7 +97,7 @@ Vector3::Vector3(const class Vector2& v) :
 }
 
 Vector3::Vector3(const class Vector4& v) :
-#if XO_SSE
+#if defined(XO_SSE)
     m(v.m)
 #else
     x(v.x), y(v.y), z(v.z)
@@ -106,7 +106,7 @@ Vector3::Vector3(const class Vector4& v) :
 }
 
 const Vector3& Vector3::Set(float x, float y, float z) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_set_ps(0.0f, z, y, x);
 #else
     this->x = x;
@@ -117,7 +117,7 @@ const Vector3& Vector3::Set(float x, float y, float z) {
 }
 
 const Vector3& Vector3::Set(float f) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = _mm_set1_ps(f);
 #else
     this->x = f;
@@ -128,7 +128,7 @@ const Vector3& Vector3::Set(float f) {
 }
 
 const Vector3& Vector3::Set(const Vector3& vec) {
-#if XO_SSE
+#if defined(XO_SSE)
     m = vec.m;
 #else
     this->x = vec.x;
@@ -138,7 +138,7 @@ const Vector3& Vector3::Set(const Vector3& vec) {
     return *this;
 }
 
-#if XO_SSE
+#if defined(XO_SSE)
 const Vector3& Vector3::Set(const __m128& vec) {
     m = vec;
     return *this;
@@ -152,7 +152,7 @@ void Vector3::Get(float& x, float& y, float &z) const {
 }
 
 void Vector3::Get(float* f) const {
-#if XO_SSE
+#if defined(XO_SSE)
     _mm_store_ps(f, m);
 #else
     f[0] = this->x;
@@ -162,7 +162,7 @@ void Vector3::Get(float* f) const {
 }
 
 Vector3 Vector3::ZYX() const {
-#if XO_SSE
+#if defined(XO_SSE)
     return Vector3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Y, IDX_Z)));
 #else
     return Vector3(z, y, x);
@@ -170,7 +170,7 @@ Vector3 Vector3::ZYX() const {
 }
 
 _XOINL float Vector3::Sum() const {
-#if XO_SSE3
+#if defined(XO_SSE3)
     __m128 x = _mm_and_ps(m, MASK);
     x = _mm_hadd_ps(x, x);
     x = _mm_hadd_ps(x, x);
@@ -219,14 +219,14 @@ bool Vector3::IsNormalized() const {
 }
  
 float Vector3::Dot(const Vector3& a, const Vector3& b) {
-#if XO_SSE4_1
+#if defined(XO_SSE4_1)
     return _mm_cvtss_f32(_mm_dp_ps(a, b, 0x7f));
-#elif XO_SSE3
+#elif defined(XO_SSE3)
     auto d = _mm_and_ps(_mm_mul_ps(a.m, b.m), MASK);
     d = _mm_hadd_ps(d, d);
     d = _mm_hadd_ps(d, d);
     return _mm_cvtss_f32(d);
-#elif XO_SSE
+#elif defined(XO_SSE)
     auto d = _mm_mul_ps(a.m, b.m);
     _MM_ALIGN16 float t[4];
     _mm_store_ps(t, d);
@@ -237,7 +237,7 @@ float Vector3::Dot(const Vector3& a, const Vector3& b) {
 }
  
 void Vector3::Cross(const Vector3& a, const Vector3& b, Vector3& outVec) {
-#if XO_SSE
+#if defined(XO_SSE)
     // Todo: There's a trick to do this with three shuffles. Look into that.
     __m128 l = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)));
     __m128 r = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)));

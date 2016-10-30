@@ -36,7 +36,7 @@ public:
     _XOINL Vector3(float f); //!< All elements are set to f.
     _XOINL Vector3(float x, float y, float z); //!< Assigns each named value accordingly.
     _XOINL Vector3(const Vector3& vec); //!< Copy constructor, trivial.
-#if XO_SSE
+#if defined(XO_SSE)
     _XOINL Vector3(const __m128& vec); //!< Assigns m to vec, sets all elements.
 #endif
     _XOINL Vector3(const class Vector2& v); //!< Assigns same-name values from v, zero to z. \f$\begin{pmatrix}v.x&v.y&0\end{pmatrix}\f$
@@ -53,7 +53,7 @@ public:
     _XOINL const Vector3& Set(float f);
     //! Set each. Copies vec into this.
     _XOINL const Vector3& Set(const Vector3& vec);
-#if XO_SSE
+#if defined(XO_SSE)
     //! Set each. Copies vec int m.
     _XOINL const Vector3& Set(const __m128& vec);
 #endif
@@ -71,7 +71,7 @@ public:
     //! Overloads the new and delete operators for Vector3 when memory alignment is required (such as with SSE).
     //! @sa XO_16ALIGNED_MALLOC, XO_16ALIGNED_FREE
     _XO_OVERLOAD_NEW_DELETE();
-#if XO_SSE
+#if defined(XO_SSE)
     //! Type cast operator. Allows Vector3 to be used implicitly where ever __m128 can be.
     _XOINL operator __m128() const;
 #endif
@@ -350,7 +350,7 @@ public:
     //! @todo Make this optional with a define.
     //! Prints the contents of vector v and its magnitude to the provided ostream.
     friend std::ostream& operator <<(std::ostream& os, const Vector3& v) {
-#if XO_SSE
+#if defined(XO_SSE)
         os << "(x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", w:" << v.w << ", mag:" << v.Magnitude() << ")";
 #else
         os << "(x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", mag:" << v.Magnitude() << ")";
@@ -382,7 +382,7 @@ public:
 #if defined(_XONOCONSTEXPR)
     static const float Epsilon;
 #else
-#   if XO_SSE
+#   if defined(XO_SSE)
     //! Smallest increment from zero that could be assigned to each element of this vector and would still be seen as equal to a zero vector.
     _XOCONSTEXPR static const float Epsilon = sse::SSEFloatEpsilon * 3.0f;
 #   else
@@ -392,7 +392,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////// Members
     // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#public_members
-#if XO_SSE
+#if defined(XO_SSE)
     union {
         struct {
             float x;
@@ -418,7 +418,7 @@ public:
 #endif
 
 private:
-#if XO_SSE
+#if defined(XO_SSE)
     static const __m128 MASK;
 #endif
 };
