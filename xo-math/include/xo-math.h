@@ -214,7 +214,7 @@ _XOCONSTEXPR const float Deg2Rad = TAU / 360.0f;
 #pragma warning(disable:4302)
 #endif 
 _XOINL bool IsAligned16(const void* v) {
-    return ((unsigned)v & 15) == 0;
+    return ((uintptr_t)v & 15) == 0;
 }
 #if _MSC_VER 
 #pragma warning(pop)
