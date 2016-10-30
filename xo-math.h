@@ -1359,9 +1359,26 @@ public:
     _XOINL Vector3 operator * (const Vector3& v) const;
 
 
-    ////////////////////////////////////////////////////////////////////////// Static Methods
-    // See: http://xo-math.rtfd.io/en/latest/classes/matrix4x4.html#static_methods
-    _XOINL const Matrix4x4& Inverse();
+    ////////////////////////////////////////////////////////////////////////// Methods
+    // See: http://xo-math.rtfd.io/en/latest/classes/matrix4x4.html#methods
+    _XOINL bool HasOrthonormalBasis() const;
+    _XOINL bool IsUnitary() const;
+    _XOINL float Determinant() const;
+    _XOINL bool HasInverse() const;
+
+    _XOINL bool TryGetInverse(Matrix4x4& m) const;
+    _XOINL bool TryGetInverse(Matrix4x4& m, float& outDeterminant) const;
+    _XOINL void GetInverse(Matrix4x4& m) const;
+    _XOINL void GetInverse(Matrix4x4& m, float& outDeterminant) const;
+    _XOINL Matrix4x4 GetInverse() const;
+    _XOINL Matrix4x4 GetInverse(float& outDeterminant) const;
+
+    _XOINL bool TryMakeInverse();
+    _XOINL bool TryMakeInverse(float& outDeterminant);
+    // Same as TryMakeInverse but fails silently for determinant values of 0.
+    _XOINL const Matrix4x4& MakeInverse();
+    // Same as TryMakeInverse with an out param, but fails silently for determinant values of 0.
+    _XOINL const Matrix4x4& MakeInverse(float& outDeterminant);
     _XOINL const Matrix4x4& Transpose();
     _XOINL const Matrix4x4& Transform(Vector3& v) const;
     _XOINL const Matrix4x4& Transform(Vector4& v) const;
@@ -1432,7 +1449,16 @@ public:
         return os;
     }
 
-    Vector4 r[4];
+    union {
+        Vector4 r[4];
+        float m[16];
+        struct {
+            float   m00, m01, m02, m03,
+                    m10, m11, m12, m13,
+                    m20, m21, m22, m23,
+                    m30, m31, m32, m33;
+        };
+    };
 
     static const Matrix4x4
         Identity,
