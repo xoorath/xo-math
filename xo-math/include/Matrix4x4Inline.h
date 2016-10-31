@@ -41,14 +41,6 @@ float& Matrix4x4::operator ()(int r, int c) {
     return this->r[r][c];
 }
 
-const Vector4& Matrix4x4::GetRow(int i) const {
-    return r[i];
-}
-
-Vector4 Matrix4x4::GetColumn(int i) const {
-    return Vector4(r[0][i], r[1][i], r[2][i], r[3][i]);
-}
-
 Matrix4x4 Matrix4x4::operator ~() const {
     auto m = *this;
     return m.Transpose();

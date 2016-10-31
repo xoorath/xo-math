@@ -44,9 +44,9 @@
 #ifdef XO_CUSTOM_NS
 #   define XOMATH_BEGIN_XO_NS()  namespace XO_CUSTOM_NS {
 #   define XOMATH_END_XO_NS()    }
-#elif defined(XO_SINGLE_NS)
-#   define XOMATH_BEGIN_XO_NS()  namespace xo {
-#   define XOMATH_END_XO_NS()    }
+#elif defined(XO_SPECIFIC_NS)
+#   define XOMATH_BEGIN_XO_NS()  namespace xo { namespace math {
+#   define XOMATH_END_XO_NS()    } }
 #elif defined(XO_SIMPLE_NS)
 #   define XOMATH_BEGIN_XO_NS()  namespace math {
 #   define XOMATH_END_XO_NS()    }
@@ -54,8 +54,8 @@
 #   define XOMATH_BEGIN_XO_NS()
 #   define XOMATH_END_XO_NS()
 #else
-#   define XOMATH_BEGIN_XO_NS()  namespace xo { namespace math {
-#   define XOMATH_END_XO_NS()    } }
+#   define XOMATH_BEGIN_XO_NS()  namespace xo {
+#   define XOMATH_END_XO_NS()    }
 #endif
 
 #if !defined(XO_ASSERT)
@@ -84,7 +84,9 @@ static_assert(false, "xo-math found both XO_SPACE_YUP and XO_SPACE_ZUP defined. 
 #endif 
 
 #include <math.h>
-#include <ostream>
+#ifndef XO_NO_OSTREAM
+#   include <ostream>
+#endif
 #include <random>
 #include <thread>
 #include <limits>
@@ -305,12 +307,14 @@ _XOINL float Difference(float x, float y) { return Abs(x-y); }
 
 _XOINL
 void Sin_x2(const float* f, float* s) {
+    XO_ASSERT(IsAligned16(f) && IsAligned16(s), "xo-math Sin_x2 requires aligned params.");
     s[0] = Sin(f[0]);
     s[1] = Sin(f[1]);
 }
 
 _XOINL
 void Sin_x3(const float* f, float* s) {
+    XO_ASSERT(IsAligned16(f) && IsAligned16(s), "xo-math Sin_x3 requires aligned params.");
     s[0] = Sin(f[0]);
     s[1] = Sin(f[1]);
     s[2] = Sin(f[2]);
@@ -318,6 +322,7 @@ void Sin_x3(const float* f, float* s) {
 
 _XOINL
 void Sin_x4(const float* f, float* s) {
+    XO_ASSERT(IsAligned16(f) && IsAligned16(s), "xo-math Sin_x4 requires aligned params.");
     s[0] = Sin(f[0]);
     s[1] = Sin(f[1]);
     s[2] = Sin(f[2]);
@@ -326,12 +331,14 @@ void Sin_x4(const float* f, float* s) {
 
 _XOINL
 void Cos_x2(const float* f, float* c) {
+    XO_ASSERT(IsAligned16(f) && IsAligned16(c), "xo-math Cos_x2 requires aligned params.");
     c[0] = Cos(f[0]);
     c[1] = Cos(f[1]);
 }
 
 _XOINL
 void Cos_x3(const float* f, float* c) {
+    XO_ASSERT(IsAligned16(f) && IsAligned16(c), "xo-math Cos_x3 requires aligned params.");
     c[0] = Cos(f[0]);
     c[1] = Cos(f[1]);
     c[2] = Cos(f[2]);
@@ -339,6 +346,7 @@ void Cos_x3(const float* f, float* c) {
 
 _XOINL
 void Cos_x4(const float* f, float* c) {
+    XO_ASSERT(IsAligned16(f) && IsAligned16(c), "xo-math Cos_x4 requires aligned params.");
     c[0] = Cos(f[0]);
     c[1] = Cos(f[1]);
     c[2] = Cos(f[2]);
@@ -353,18 +361,21 @@ void SinCos(float f, float& s, float& c) {
 
 _XOINL
 void SinCos_x2(const float* f, float* s, float* c) {
+    XO_ASSERT(IsAligned16(f) && IsAligned16(s) && IsAligned16(c), "xo-math SinCos_x2 requires aligned params.");
     Sin_x2(f, s);
     Cos_x2(f, c);
 }
 
 _XOINL
 void SinCos_x3(const float* f, float* s, float* c) {
+    XO_ASSERT(IsAligned16(f) && IsAligned16(s) && IsAligned16(c), "xo-math SinCos_x3 requires aligned params.");
     Sin_x3(f, s);
     Cos_x3(f, c);
 }
 
 _XOINL
 void SinCos_x4(const float* f, float* s, float* c) {
+    XO_ASSERT(IsAligned16(f) && IsAligned16(s) && IsAligned16(c), "xo-math SinCos_x4 requires aligned params.");
     Sin_x4(f, s);
     Cos_x4(f, c);
 }
@@ -425,16 +436,11 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #include "Matrix4x4.h"
 #include "Quaternion.h"
 
-#include "Vector2Operators.h"
-#include "Vector2Methods.h"
-#include "Vector3Operators.h"
-#include "Vector3Methods.h"
-#include "Vector4Operators.h"
-#include "Vector4Methods.h"
-#include "Matrix4x4Operators.h"
-#include "Matrix4x4Methods.h"
-#include "QuaternionOperators.h"
-#include "QuaternionMethods.h"
+#include "Vector2Inline.h"
+#include "Vector3Inline.h"
+#include "Vector4Inline.h"
+#include "Matrix4x4Inline.h"
+#include "QuaternionInline.h"
 
 #include "SSE.h"
 
@@ -484,7 +490,7 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #define XO_MATH_VERSION_DATE "Fall 2016"
 #define XO_MATH_VERSION_MAJOR 0
 #define XO_MATH_VERSION_KIND "x"
-#define XO_MATH_VERSION_MINOR 3
+#define XO_MATH_VERSION_MINOR 4
 #define XO_MATH_VERSION_SUB 0
 #define XO_MATH_VERSION_STR _XO_MATH_STRINGIFY(XO_MATH_VERSION_MAJOR) "." _XO_MATH_STRINGIFY(XO_MATH_VERSION_MINOR) "." XO_MATH_VERSION_KIND _XO_MATH_STRINGIFY(XO_MATH_VERSION_SUB)
 #define XO_MATH_VERSION (XO_MATH_VERSION_MAJOR*10000) + (XO_MATH_VERSION_MINOR*1000) + (XO_MATH_VERSION_SUB*100)

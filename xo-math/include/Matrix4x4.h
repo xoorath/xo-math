@@ -34,8 +34,8 @@ public:
     //> See
     //! @name Constructors
     //! @{
-    _XOINL Matrix4x4(); //!< Performs no initialization.
-    _XOINL explicit Matrix4x4(float m); //!< All elements are set to f.
+    Matrix4x4(); //!< Performs no initialization.
+    explicit Matrix4x4(float m); //!< All elements are set to f.
     //! specify each element.
     /*!
         \f[
@@ -47,12 +47,12 @@ public:
             \end{bmatrix}
         \f]
     */
-    _XOINL Matrix4x4(float m00, float m01, float m02, float m03,
+    Matrix4x4(float m00, float m01, float m02, float m03,
                      float m10, float m11, float m12, float m13,
                      float m20, float m21, float m22, float m23,
                      float m30, float m31, float m32, float m33);
     //! Copy constructor, trivial.
-    _XOINL Matrix4x4(const Matrix4x4& m);
+    Matrix4x4(const Matrix4x4& m);
     //! Specifies each row.
     /*!
         \f[
@@ -64,7 +64,7 @@ public:
             \end{bmatrix}
         \f]
     */
-    _XOINL Matrix4x4(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3);
+    Matrix4x4(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3);
     //! Specify the upper left of the matrix as one Vector3 per row, leaving unset elements as 0 except the bottom right which will be set to 1.
     /*!
         \f[
@@ -76,22 +76,22 @@ public:
             \end{bmatrix}
         \f]
     */
-    _XOINL Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2);
+    Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2);
     //! Creates a rotation matrix from quaternion q.
-    _XOINL Matrix4x4(const class Quaternion& q);
+    Matrix4x4(const class Quaternion& q);
     //! @}
 
     //! @name Set / Get Methods
     //! @{
 
     //! Sets column i to vector r.
-    _XOINL const Matrix4x4& SetRow(int i, const Vector4& r);
+    const Matrix4x4& SetRow(int i, const Vector4& r);
     //! Sets column i to vector r.
-    _XOINL const Matrix4x4& SetColumn(int i, const Vector4& r);
+    const Matrix4x4& SetColumn(int i, const Vector4& r);
     //! Get a const reference to a row in the matrix.
-    _XOINL const Vector4& GetRow(int i) const;
+    const Vector4& GetRow(int i) const;
     //! Return a column, copied out of the matrix
-    _XOINL Vector4 GetColumn(int i) const;
+    Vector4 GetColumn(int i) const;
     //! @}
 
     //>See
@@ -202,27 +202,27 @@ public:
     //! @{
 
     //! Returns true if the dot between any two columns is 1 or 0.
-    _XOINL bool HasOrthonormalBasis() const;
+    bool HasOrthonormalBasis() const;
     //! Returns true if this matrix is unitary. A matrix is unitary when the following is true: (m.Transposed() * m) == Identity
-    _XOINL bool IsUnitary() const;
+    bool IsUnitary() const;
     //! Gets the determinant of this matrix.
-    _XOINL float Determinant() const;
+    float Determinant() const;
     //! Returns true if the matrix has an inverse. This happens for non-zero determinant values.
     //! @note This method is expensive.
-    _XOINL bool HasInverse() const;
+    bool HasInverse() const;
 
     //! Sets m to this matrix inverted if possible. Returns true on success.
-    _XOINL bool TryGetInverse(Matrix4x4& m) const;
+    bool TryGetInverse(Matrix4x4& m) const;
     //! Sets m to this matrix inverted if possible. Returns true on success. Also provides the necessary determinant value as an out param, for when that's helpful.
-    _XOINL bool TryGetInverse(Matrix4x4& m, float& outDeterminant) const;
+    bool TryGetInverse(Matrix4x4& m, float& outDeterminant) const;
     //! Same as TryGetInverse but fails silently for determinant values of 0.
-    _XOINL void GetInverse(Matrix4x4& m) const;
+    void GetInverse(Matrix4x4& m) const;
     //! Same as TryGetInverse with an outDeterminant param, but fails silently for determinant values of 0.
-    _XOINL void GetInverse(Matrix4x4& m, float& outDeterminant) const;
+    void GetInverse(Matrix4x4& m, float& outDeterminant) const;
     //! Calls Matrix4x4::GetInverse, but returning a copy of the input param.
-    _XOINL Matrix4x4 GetInverse() const;
+    Matrix4x4 GetInverse() const;
     //! Calls Matrix4x4::GetInverse, but returning a copy of the input param.
-    _XOINL Matrix4x4 GetInverse(float& outDeterminant) const;
+    Matrix4x4 GetInverse(float& outDeterminant) const;
 
     //! Sets this matrix to its own inverse, returning true if successful.
     //! @note If the matrix is a simple transform, you can build it with the inverse of it's parameters. 
@@ -230,13 +230,13 @@ public:
     //! the matrix you're trying to build is a result of multiple simple transforms, the inverse can instead
     //! be built as the order of multiplication reversed also using negative input params. for example: 
     //! (Scale(s) * Translation(Vector3(x, y, z))).MakeInverse() is equal to Translation(-Vector3(x, y, z)) * Scale(-s)
-    _XOINL bool TryMakeInverse();
+    bool TryMakeInverse();
     //! Same as TryMakeInverse with no parameter, but provides the necessary determinant value as an out param, for when that's helpful.
-    _XOINL bool TryMakeInverse(float& outDeterminant);
+    bool TryMakeInverse(float& outDeterminant);
     // Same as TryMakeInverse but fails silently for determinant values of 0.
-    _XOINL const Matrix4x4& MakeInverse();
+    const Matrix4x4& MakeInverse();
     // Same as TryMakeInverse with an out param, but fails silently for determinant values of 0.
-    _XOINL const Matrix4x4& MakeInverse(float& outDeterminant);
+    const Matrix4x4& MakeInverse(float& outDeterminant);
     //! Sets this matrix as a transpose of itself
     /*!
         \f[
@@ -256,15 +256,15 @@ public:
         \f]
     */
     //! @sa https://en.wikipedia.org/wiki/Transpose
-    _XOINL const Matrix4x4& Transpose();
+    const Matrix4x4& Transpose();
     //! Transforms vector v in place by this matrix.
-    _XOINL const Matrix4x4& Transform(Vector3& v) const;
+    const Matrix4x4& Transform(Vector3& v) const;
     //! Transforms vector v in place by this matrix.
-    _XOINL const Matrix4x4& Transform(Vector4& v) const;
+    const Matrix4x4& Transform(Vector4& v) const;
 
     //! Returns a copy of this matrix transposed. See Matrix4x4::Transposed
     //! @sa https://en.wikipedia.org/wiki/Transpose
-    _XOINL Matrix4x4 Transposed() const;
+    Matrix4x4 Transposed() const;
     //! @}
 
     //>See
@@ -282,7 +282,7 @@ public:
         \end{bmatrix}
     \f]
     */
-    _XOINL static void Scale(float xyz, Matrix4x4& outMatrix);
+    static void Scale(float xyz, Matrix4x4& outMatrix);
     //! Assigns outMatrix to a scale matrix, where each of x y and z scale values are their same-named parameters.
     /*!
     \f[
@@ -294,7 +294,7 @@ public:
         \end{bmatrix}
     \f]
     */
-    _XOINL static void Scale(float x, float y, float z, Matrix4x4& outMatrix);
+    static void Scale(float x, float y, float z, Matrix4x4& outMatrix);
     //! Assigns outMatrix to a scale matrix, where each of x y and z scale values are provided by v.
     /*!
     \f[
@@ -306,7 +306,7 @@ public:
         \end{bmatrix}
     \f]
     */
-    _XOINL static void Scale(const Vector3& v, Matrix4x4& outMatrix);
+    static void Scale(const Vector3& v, Matrix4x4& outMatrix);
     //! Assigns outMatrix to a translation matrix, where each of x y and z are their same-named parameters
     /*!
     \f[
@@ -318,7 +318,7 @@ public:
         \end{bmatrix}
     \f]
     */
-    _XOINL static void Translation(float x, float y, float z, Matrix4x4& outMatrix);
+    static void Translation(float x, float y, float z, Matrix4x4& outMatrix);
     //! Assigns outMatrix to a translation matrix, where each of x y and z are provided by v.
     /*!
     \f[
@@ -330,7 +330,7 @@ public:
         \end{bmatrix}
     \f]
     */
-    _XOINL static void Translation(const Vector3& v, Matrix4x4& outMatrix);
+    static void Translation(const Vector3& v, Matrix4x4& outMatrix);
     //! Assigns outMatrix to a pitch matrix, where theta \f$\theta\f$ is the parameter radians.
     /*!
     \f[
@@ -343,7 +343,7 @@ public:
     \f]
     */
     //! @sa https://en.wikipedia.org/wiki/Rotation_matrix
-    _XOINL static void RotationXRadians(float radians, Matrix4x4& outMatrix);
+    static void RotationXRadians(float radians, Matrix4x4& outMatrix);
     //! Assigns outMatrix to a yaw matrix, where theta \f$\theta\f$ is the parameter radians.
     /*!
     \f[
@@ -356,7 +356,7 @@ public:
     \f]
     */
     //! @sa https://en.wikipedia.org/wiki/Rotation_matrix
-    _XOINL static void RotationYRadians(float radians, Matrix4x4& outMatrix);
+    static void RotationYRadians(float radians, Matrix4x4& outMatrix);
     //! Assigns outMatrix to a roll matrix, where theta \f$\theta\f$ is the parameter radians.
     /*!
     \f[
@@ -369,15 +369,15 @@ public:
     \f]
     */
     //! @sa https://en.wikipedia.org/wiki/Rotation_matrix
-    _XOINL static void RotationZRadians(float radians, Matrix4x4& outMatrix);
+    static void RotationZRadians(float radians, Matrix4x4& outMatrix);
     //! Assigns outMatrix to a rotation matrix. Rotation matricies are build by multiplying a yaw a pitch and a roll matrix. 
     //! See Matrix4x4::RotationXRadians, Matrix4x4::RotationYRadians and Matrix4x4::RotationZRadians for details.
     //! @sa https://en.wikipedia.org/wiki/Rotation_matrix
-    _XOINL static void RotationRadians(float x, float y, float z, Matrix4x4& outMatrix);
+    static void RotationRadians(float x, float y, float z, Matrix4x4& outMatrix);
     //! Assigns outMatrix to a rotation matrix. Rotation matricies are build by multiplying a yaw a pitch and a roll matrix. 
     //! See Matrix4x4::RotationXRadians, Matrix4x4::RotationYRadians and Matrix4x4::RotationZRadians for details.
     //! @sa https://en.wikipedia.org/wiki/Rotation_matrix
-    _XOINL static void RotationRadians(const Vector3& v, Matrix4x4& outMatrix);
+    static void RotationRadians(const Vector3& v, Matrix4x4& outMatrix);
     //! Assigns outMatrix to an axis-angle rotation matrix with \f$\theta\f$ radians along axis a.    
     //!
     //! \f$let\ c = \cos\theta\f$
@@ -395,23 +395,23 @@ public:
         \end{bmatrix}
     \f]
     */
-    _XOINL static void AxisAngleRadians(const Vector3& axis, float radians, Matrix4x4& outMatrix);
+    static void AxisAngleRadians(const Vector3& axis, float radians, Matrix4x4& outMatrix);
     //! The length of this vector.
     //! It's preferred to use Vector3::MagnitudeSquared when possible, as Vector3::Magnitude requires a call to Sqrt.
     //!
     //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert = \sqrt{(x\times x)+(y\times y)+(z\times z)}\f$
     //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
-    _XOINL static void RotationXDegrees(float degrees, Matrix4x4& outMatrix);
+    static void RotationXDegrees(float degrees, Matrix4x4& outMatrix);
     //! Calls Matrix4x4::RotationYRadians, converting the input degrees to radians.
-    _XOINL static void RotationYDegrees(float degrees, Matrix4x4& outMatrix);
+    static void RotationYDegrees(float degrees, Matrix4x4& outMatrix);
     //! Calls Matrix4x4::RotationZRadians, converting the input degrees to radians.
-    _XOINL static void RotationZDegrees(float degrees, Matrix4x4& outMatrix);
+    static void RotationZDegrees(float degrees, Matrix4x4& outMatrix);
     //! Calls Matrix4x4::RotationDegrees, converting the input degrees to radians.
-    _XOINL static void RotationDegrees(float x, float y, float z, Matrix4x4& outMatrix);
+    static void RotationDegrees(float x, float y, float z, Matrix4x4& outMatrix);
     //! Calls Matrix4x4::RotationDegrees, converting the input degrees to radians.
-    _XOINL static void RotationDegrees(const Vector3& v, Matrix4x4& outMatrix);
+    static void RotationDegrees(const Vector3& v, Matrix4x4& outMatrix);
     //! Calls Matrix4x4::AxisAngleDegrees, converting the input degrees to radians.
-    _XOINL static void AxisAngleDegrees(const Vector3& axis, float degrees, Matrix4x4& outMatrix);
+    static void AxisAngleDegrees(const Vector3& axis, float degrees, Matrix4x4& outMatrix);
     //! Assigns outMatrix to an orthographic projection matrix.
     //!
     //! \f$let\ w = width\f$
@@ -432,7 +432,7 @@ public:
     \f]
     */
     //! @sa http://scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix
-    _XOINL static void OrthographicProjection(float width, float height, float near, float far, Matrix4x4& outMatrix);
+    static void OrthographicProjection(float width, float height, float near, float far, Matrix4x4& outMatrix);
     //! Assigns outMatrix to a perspective projection matrix. Parameters fovx and fovy are angles in radians.
     //! If you know the desired fovx and aren't sure what to use for fovy, multiply the fovx you have by the aspect
     //! ratio of your screen.
@@ -451,17 +451,17 @@ public:
     \f]
     */
     //! @sa http://scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix
-    _XOINL static void PerspectiveProjectionRadians(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix);
+    static void PerspectiveProjectionRadians(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix);
     //! Calls Matrix4x4::PerspectiveProjectionRadians , converting the inputs fovx and fovy to radians.
-    _XOINL static void PerspectiveProjectionDegrees(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix);
+    static void PerspectiveProjectionDegrees(float fovx, float fovy, float near, float far, Matrix4x4& outMatrix);
     //! Assigns outMatrix to a look at matrix.
-    _XOINL static void LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up, Matrix4x4& outMatrix);
+    static void LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up, Matrix4x4& outMatrix);
     //! Assigns outMatrix to a look at matrix, with up being Vector3::Up
-    _XOINL static void LookAtFromPosition(const Vector3& from, const Vector3& to, Matrix4x4& outMatrix);
+    static void LookAtFromPosition(const Vector3& from, const Vector3& to, Matrix4x4& outMatrix);
     //! Assigns outMatrix to a look at matrix, from Vector3::Zero towards direction.
-    _XOINL static void LookAtFromDirection(const Vector3& direction, const Vector3& up, Matrix4x4& outMatrix);
+    static void LookAtFromDirection(const Vector3& direction, const Vector3& up, Matrix4x4& outMatrix);
     //! Assigns outMatrix to a look at matrix, from Vector3::Zero towards direction with up being Vector3::Up.
-    _XOINL static void LookAtFromDirection(const Vector3& direction, Matrix4x4& outMatrix);
+    static void LookAtFromDirection(const Vector3& direction, Matrix4x4& outMatrix);
     //! @}
 
     //!> See
@@ -469,35 +469,35 @@ public:
     //! Variants of other same-name static methods. See their documentation for more details under the 
     //! Static Methods heading.
     //! @{
-    _XOINL static Matrix4x4 Scale(float xyz);
-    _XOINL static Matrix4x4 Scale(float x, float y, float z);
-    _XOINL static Matrix4x4 Scale(const Vector3& v);
+    static Matrix4x4 Scale(float xyz);
+    static Matrix4x4 Scale(float x, float y, float z);
+    static Matrix4x4 Scale(const Vector3& v);
 
-    _XOINL static Matrix4x4 Translation(float x, float y, float z);
-    _XOINL static Matrix4x4 Translation(const Vector3& v);
+    static Matrix4x4 Translation(float x, float y, float z);
+    static Matrix4x4 Translation(const Vector3& v);
     
-    _XOINL static Matrix4x4 RotationXRadians(float radians);
-    _XOINL static Matrix4x4 RotationYRadians(float radians);
-    _XOINL static Matrix4x4 RotationZRadians(float radians);
-    _XOINL static Matrix4x4 RotationRadians(float x, float y, float z);
-    _XOINL static Matrix4x4 RotationRadians(const Vector3& v);
-    _XOINL static Matrix4x4 AxisAngleRadians(const Vector3& axis, float radians);
+    static Matrix4x4 RotationXRadians(float radians);
+    static Matrix4x4 RotationYRadians(float radians);
+    static Matrix4x4 RotationZRadians(float radians);
+    static Matrix4x4 RotationRadians(float x, float y, float z);
+    static Matrix4x4 RotationRadians(const Vector3& v);
+    static Matrix4x4 AxisAngleRadians(const Vector3& axis, float radians);
 
-    _XOINL static Matrix4x4 RotationXDegrees(float degrees);
-    _XOINL static Matrix4x4 RotationYDegrees(float degrees);
-    _XOINL static Matrix4x4 RotationZDegrees(float degrees);
-    _XOINL static Matrix4x4 RotationDegrees(float x, float y, float z);
-    _XOINL static Matrix4x4 RotationDegrees(const Vector3& v);
-    _XOINL static Matrix4x4 AxisAngleDegrees(const Vector3& axis, float degrees);
+    static Matrix4x4 RotationXDegrees(float degrees);
+    static Matrix4x4 RotationYDegrees(float degrees);
+    static Matrix4x4 RotationZDegrees(float degrees);
+    static Matrix4x4 RotationDegrees(float x, float y, float z);
+    static Matrix4x4 RotationDegrees(const Vector3& v);
+    static Matrix4x4 AxisAngleDegrees(const Vector3& axis, float degrees);
 
-    _XOINL static Matrix4x4 OrthographicProjection(float width, float height, float near, float far);
-    _XOINL static Matrix4x4 PerspectiveProjectionRadians(float fovx, float fovy, float near, float far);
-    _XOINL static Matrix4x4 PerspectiveProjectionDegrees(float fovx, float fovy, float near, float far);
+    static Matrix4x4 OrthographicProjection(float width, float height, float near, float far);
+    static Matrix4x4 PerspectiveProjectionRadians(float fovx, float fovy, float near, float far);
+    static Matrix4x4 PerspectiveProjectionDegrees(float fovx, float fovy, float near, float far);
 
-    _XOINL static Matrix4x4 LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up);
-    _XOINL static Matrix4x4 LookAtFromPosition(const Vector3& from, const Vector3& to);
-    _XOINL static Matrix4x4 LookAtFromDirection(const Vector3& direction, const Vector3& up);
-    _XOINL static Matrix4x4 LookAtFromDirection(const Vector3& direction);
+    static Matrix4x4 LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up);
+    static Matrix4x4 LookAtFromPosition(const Vector3& from, const Vector3& to);
+    static Matrix4x4 LookAtFromDirection(const Vector3& direction, const Vector3& up);
+    static Matrix4x4 LookAtFromDirection(const Vector3& direction);
     //! @}
 
     //>See
@@ -506,10 +506,12 @@ public:
 
     //! @todo Make this optional with a define.
     //! Prints the contents of matrix m to the provided ostream in the form of its four row vectors.
+#ifndef XO_NO_OSTREAM
     friend std::ostream& operator <<(std::ostream& os, const Matrix4x4& m) {
         os << "\nrow 0: " << m.r[0] << "\nrow 1: " << m.r[1] << "\nrow 2: " << m.r[2] << "\nrow 3: " << m.r[3] << "\n";
         return os;
     }
+#endif
     //! @}
 
     //! Matrix rows

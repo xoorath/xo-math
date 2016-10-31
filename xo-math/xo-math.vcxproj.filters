@@ -29,19 +29,7 @@
     <ClInclude Include="include\Matrix4x4.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\Matrix4x4Methods.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Matrix4x4Operators.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\Quaternion.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\QuaternionMethods.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\QuaternionOperators.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\SSE.h">
@@ -50,28 +38,10 @@
     <ClInclude Include="include\Vector2.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\Vector2Methods.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Vector2Operators.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\Vector3.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\Vector3Methods.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Vector3Operators.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\Vector4.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Vector4Methods.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Vector4Operators.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\xo-math.h">
@@ -81,6 +51,21 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\xo-math-config.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Matrix4x4Inline.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\QuaternionInline.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Vector2Inline.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Vector3Inline.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Vector4Inline.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

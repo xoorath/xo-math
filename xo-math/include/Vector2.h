@@ -33,12 +33,12 @@ public:
     //>See
     //! @name Constructors
     //! @{
-    _XOINL Vector2(); //!< Performs no initialization.
-    _XOINL Vector2(float v); //!< All elements are set to f.
-    _XOINL Vector2(float x, float y); //!< Assigns each named value accordingly.
-    _XOINL Vector2(const Vector2& v); //!< Copy constructor, trivial.
-    _XOINL Vector2(const class Vector3& v); //!< Assigns same-name values from v.
-    _XOINL Vector2(const class Vector4& v); //!< Assigns same-name values from v.
+    Vector2(); //!< Performs no initialization.
+    Vector2(float v); //!< All elements are set to f.
+    Vector2(float x, float y); //!< Assigns each named value accordingly.
+    Vector2(const Vector2& v); //!< Copy constructor, trivial.
+    Vector2(const class Vector3& v); //!< Assigns same-name values from v.
+    Vector2(const class Vector4& v); //!< Assigns same-name values from v.
     //! @}
 
 
@@ -47,15 +47,15 @@ public:
     //! @{
 
     //! Set all. x, and y will be assigned to the input params.
-    _XOINL const Vector2& Set(float x, float y);
+    const Vector2& Set(float x, float y);
     //! Set each. x, and y will be assigned to f.
-    _XOINL const Vector2& Set(float f);
+    const Vector2& Set(float f);
     //! Set each. Copies vec into this.
-    _XOINL const Vector2& Set(const Vector2& vec);
+    const Vector2& Set(const Vector2& vec);
     //! Extract all getter. x and y will be assigned to those values of this vector.
-    _XOINL void Get(float& x, float& y) const;
+    void Get(float& x, float& y) const;
     //! Extract all getter. f[0] and f[1] will be assigned to x and y respectively.
-    _XOINL void Get(float* f) const;
+    void Get(float* f) const;
     //! @}
 
     //>See
@@ -189,33 +189,33 @@ public:
     //! @{
 
     //! Returns true when the Magnitude of this vector is within Vector2::Epsilon of being 1.0
-    _XOINL bool IsNormalized() const;
+    bool IsNormalized() const;
     //! Returns true when the Magnitude of this vector is <= Vector2::Epsilon
-    _XOINL bool IsZero() const;
+    bool IsZero() const;
     //! The length of this vector
     //! It's preferred to use Vector2::MagnitudeSquared when possible, as Vector2::Magnitude requires a call to Sqrt.
     //!
     //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert = \sqrt{(x\times x)+(y\times y)}\f$
     //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
-    _XOINL float Magnitude() const;
+    float Magnitude() const;
     //! The square length of this vector.
     //! It's preferred to use Vector2::MagnitudeSquared when possible, as Vector2::Magnitude requires a call to Sqrt.
     //!
     //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert^2 = (x\times x)+(y\times y)\f$
     //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
-    _XOINL float MagnitudeSquared() const;
+    float MagnitudeSquared() const;
     //! The sum of all vector elements.
     //!
     //! \f$x+y\f$
-    _XOINL float Sum() const;
+    float Sum() const;
 
     //! Normalizes this vector to a Magnitude of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
-    _XOINL const Vector2& Normalize();
+    const Vector2& Normalize();
 
     //! Returns a copy of this vector with a Magnitude of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
-    _XOINL Vector2 Normalized() const;
+    Vector2 Normalized() const;
     //! @}
 
     //>See
@@ -224,41 +224,41 @@ public:
 
     //! Sets outVec to a vector interpolated between a and b by a scalar amount t.
     //! @sa https://en.wikipedia.org/wiki/Linear_interpolation
-    _XOINL static void Lerp(const Vector2& a, const Vector2& b, float t, Vector2& outVec);
+    static void Lerp(const Vector2& a, const Vector2& b, float t, Vector2& outVec);
     //! Set outVec to have elements equal to the max of each element in a and b.
     //!
     //! \f$\begin{pmatrix}\max(a.x, b.x)&\max(a.y, b.y)\end{pmatrix}\f$
-    _XOINL static void Max(const Vector2& a, const Vector2& b, Vector2& outVec);
+    static void Max(const Vector2& a, const Vector2& b, Vector2& outVec);
     //! Assigns outvec to a vector half way between a and b.
-    _XOINL static void Midpoint(const Vector2& a, const Vector2& b, Vector2& outVec);
+    static void Midpoint(const Vector2& a, const Vector2& b, Vector2& outVec);
     //! Set outVec to have elements equal to the min of each element in a and b.
     //!
     //! \f$\begin{pmatrix}\min(a.x, b.x)&\min(a.y, b.y)\end{pmatrix}\f$
-    _XOINL static void Min(const Vector2& a, const Vector2& b, Vector2& outVec);
+    static void Min(const Vector2& a, const Vector2& b, Vector2& outVec);
     //! Assigns outVec to a vector rotated 90 degrees clockwise from v.
-    _XOINL static void OrthogonalCCW(const Vector2& v, Vector2& outVec);
+    static void OrthogonalCCW(const Vector2& v, Vector2& outVec);
     //! Assigns outVec to a vector rotated 90 degrees counterclockwise from v.
-    _XOINL static void OrthogonalCW(const Vector2& v, Vector2& outVec);
+    static void OrthogonalCW(const Vector2& v, Vector2& outVec);
 
     //! Calls Vector2::AngleRadians, converting the return value to degrees.
-    _XOINL static float AngleDegrees(const Vector2& a, const Vector2& b);
+    static float AngleDegrees(const Vector2& a, const Vector2& b);
     //! Returns the angle in radians between vector a and b. Note that this value is counterclockwise.
-    _XOINL static float AngleRadians(const Vector2& a, const Vector2& b);
+    static float AngleRadians(const Vector2& a, const Vector2& b);
     //! A 2D cross product returns a magnitude of what would be the z axis
     //! in the 3d cross product of a and b, where z. Note that only the magnitude
     //! is significant in the return value as x and y values of this product would be zero.
     //! @sa Vector3::Cross
-    _XOINL static float Cross(const Vector2& a, const Vector2& b);
+    static float Cross(const Vector2& a, const Vector2& b);
     //! Returns the distance between vectors a and b in 2 dimensional space.
     //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
     //!
     //! \f$distance = \lvert\rvert\boldsymbol{b-a}\lvert\rvert\f$
-    _XOINL static float Distance(const Vector2& a, const Vector2& b);
+    static float Distance(const Vector2& a, const Vector2& b);
     //! Returns the square distance between vectors a and b in 2 dimensional space.
     //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
     //!
     //! \f$distance^2 = \lvert\rvert\boldsymbol{b-a}\lvert\rvert^2\f$
-    _XOINL static float DistanceSquared(const Vector2& a, const Vector2& b);
+    static float DistanceSquared(const Vector2& a, const Vector2& b);
     //! Returns a single number representing a product of magnitudes. Commonly used with two normalized 
     //! vectors to determine if they are pointed the same way. In this case: 1.0 represents same-facing vectors
     //! 0 represents perpendicular vectors, and -1 will be facing away
@@ -266,7 +266,7 @@ public:
     //! \f$a\cdot b =(a.x\times b.x) + (a.y\times b.y)\f$
     //!
     //! @sa https://en.wikipedia.org/wiki/Dot_product
-    _XOINL static float Dot(const Vector2& a, const Vector2& b);
+    static float Dot(const Vector2& a, const Vector2& b);
     //! @}
 
     //>See
@@ -278,23 +278,23 @@ public:
     //! Static variants return what would have been the outVec param.
     //! @{
 
-    _XOINL static Vector2 Lerp(const Vector2& a, const Vector2& b, float t);
-    _XOINL static Vector2 Max(const Vector2& a, const Vector2& b);
-    _XOINL static Vector2 Midpoint(const Vector2& a, const Vector2& b);
-    _XOINL static Vector2 Min(const Vector2& a, const Vector2& b);
-    _XOINL static Vector2 OrthogonalCCW(const Vector2& v);
-    _XOINL static Vector2 OrthogonalCW(const Vector2& v);
+    static Vector2 Lerp(const Vector2& a, const Vector2& b, float t);
+    static Vector2 Max(const Vector2& a, const Vector2& b);
+    static Vector2 Midpoint(const Vector2& a, const Vector2& b);
+    static Vector2 Min(const Vector2& a, const Vector2& b);
+    static Vector2 OrthogonalCCW(const Vector2& v);
+    static Vector2 OrthogonalCW(const Vector2& v);
 
-    _XOINL float AngleDegrees(const Vector2& v) const;
-    _XOINL float AngleRadians(const Vector2& v) const;
-    _XOINL float Cross(const Vector2& v) const;
-    _XOINL float Distance(const Vector2& v) const;
-    _XOINL float DistanceSquared(const Vector2& v) const;
-    _XOINL float Dot(const Vector2& v) const;
-    _XOINL Vector2 Lerp(const Vector2& v, float t) const;
-    _XOINL Vector2 Midpoint(const Vector2& v) const;
-    _XOINL Vector2 OrthogonalCCW() const;
-    _XOINL Vector2 OrthogonalCW() const;
+    float AngleDegrees(const Vector2& v) const;
+    float AngleRadians(const Vector2& v) const;
+    float Cross(const Vector2& v) const;
+    float Distance(const Vector2& v) const;
+    float DistanceSquared(const Vector2& v) const;
+    float Dot(const Vector2& v) const;
+    Vector2 Lerp(const Vector2& v, float t) const;
+    Vector2 Midpoint(const Vector2& v) const;
+    Vector2 OrthogonalCCW() const;
+    Vector2 OrthogonalCW() const;
     //! @}
 
     //>See
@@ -303,10 +303,12 @@ public:
 
     //! @todo Make this optional with a define.
     //! Prints the contents of vector v and its magnitude to the provided ostream.
+#ifndef XO_NO_OSTREAM
     friend std::ostream& operator <<(std::ostream& os, const Vector2& v) {
         os << "(x:" << v.x << ", y:" << v.y << ", mag:" << v.Magnitude() << ")";
         return os;
     }
+#endif
     //! @}
 
     static const Vector2

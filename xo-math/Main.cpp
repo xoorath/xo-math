@@ -10,10 +10,10 @@ using std::endl;
 #include "include/xo-math.h" // the development version of xo-math
 //#include "../xo-math.h" // the distribution version of xo-math
 
-using xo::math::Sqrt;
-using xo::math::FloatEpsilon;
-using xo::math::HalfPI;
-using xo::math::PI;
+using xo::Sqrt;
+using xo::FloatEpsilon;
+using xo::HalfPI;
+using xo::PI;
 
 #include "xo-test.h"
 
@@ -23,7 +23,7 @@ Test test;
 
 void TestVector2Operators() {
     test("Vector2 Operators", []{
-        using xo::math::Vector2;
+        using xo::Vector2;
 
         Vector2 left    = Vector2(-1.1f, 2.2f);
         Vector2 right   = Vector2(11.1f, -0.2f);
@@ -106,14 +106,14 @@ void TestVector2Operators() {
 
 void TestVector2Methods() {
     test("Vector2 Methods", []{
-        using xo::math::Vector2;
+        using xo::Vector2;
 
         test.ReportSuccessIf(Vector2(1.1f), Vector2(1.1f, 1.1f), TEST_MSG("Constructor (float) did not set all elements."));
         test.ReportSuccessIf(Vector2(1.0f, 1.0f), Vector2::One, TEST_MSG("Constructor (x, y) did not set all elements."));
         test.ReportSuccessIf(Vector2(Vector2(1.0f, 1.0f)), Vector2::One, TEST_MSG("Copy constructor (Vector3) did not copy as expected."));
 
-        test.ReportSuccessIf(Vector2(xo::math::Vector4(1.1f, 2.2f, 3.3f, 4.4f)), Vector2(1.1f, 2.2f), TEST_MSG("Constructor(Vector4) didn't set all elements as expected"));
-        test.ReportSuccessIf(Vector2(xo::math::Vector3(1.1f, 2.2f, 3.3f)), Vector2(1.1f, 2.2f), TEST_MSG("Constructor(Vector3) didn't set all elements as expected"));
+        test.ReportSuccessIf(Vector2(xo::Vector4(1.1f, 2.2f, 3.3f, 4.4f)), Vector2(1.1f, 2.2f), TEST_MSG("Constructor(Vector4) didn't set all elements as expected"));
+        test.ReportSuccessIf(Vector2(xo::Vector3(1.1f, 2.2f, 3.3f)), Vector2(1.1f, 2.2f), TEST_MSG("Constructor(Vector3) didn't set all elements as expected"));
 
         Vector2 temp;
         test.ReportSuccessIf(temp.Set(1.1f, 2.2f), Vector2(1.1f, 2.2f), TEST_MSG("Set(x, y, z) did not set all elements."));
@@ -185,7 +185,7 @@ void TestVector2Methods() {
 
 void TestVector3Operators() {
     test("Vector3 Operators", []{
-        using xo::math::Vector3;
+        using xo::Vector3;
 
         Vector3 left    = Vector3(-1.1f, 2.2f, 0.33f); // mag: 2.481713056564
         Vector3 right   = Vector3(11.1f, -0.2f, -3.33f); // mag: 11.5905
@@ -280,7 +280,7 @@ void TestVector3Operators() {
 
 void TestVector3Methods() {
     test("Vector3 Methods", []{
-        using xo::math::Vector3;
+        using xo::Vector3;
         test.ReportSuccessIf(Vector3(1.1f), Vector3(1.1f, 1.1f, 1.1f), TEST_MSG("Constructor (float) did not set all elements."));
         test.ReportSuccessIf(Vector3(1.0f, 1.0f, 1.0f), Vector3::One, TEST_MSG("Constructor (x, y, z) did not set all elements."));
         test.ReportSuccessIf(Vector3(Vector3(1.0f, 1.0f, 1.0f)), Vector3::One, TEST_MSG("Copy constructor (Vector3) did not copy as expected."));
@@ -288,8 +288,8 @@ void TestVector3Methods() {
         __m128 m = _mm_set_ps1(1.1f);
         test.ReportSuccessIf(Vector3(m), Vector3(1.1f, 1.1f, 1.1f), TEST_MSG("Constructor (__m128) did not set all elements."));
 #endif
-        test.ReportSuccessIf(Vector3(xo::math::Vector4(1.1f, 2.2f, 3.3f, 4.4f)), Vector3(1.1f, 2.2f, 3.3f), TEST_MSG("Constructor(Vector4) didn't set all elements as expected"));
-        test.ReportSuccessIf(Vector3(xo::math::Vector2(1.1f, 2.2f)), Vector3(1.1f, 2.2f, 0.0f), TEST_MSG("Constructor(Vector2) didn't set all elements as expected"));
+        test.ReportSuccessIf(Vector3(xo::Vector4(1.1f, 2.2f, 3.3f, 4.4f)), Vector3(1.1f, 2.2f, 3.3f), TEST_MSG("Constructor(Vector4) didn't set all elements as expected"));
+        test.ReportSuccessIf(Vector3(xo::Vector2(1.1f, 2.2f)), Vector3(1.1f, 2.2f, 0.0f), TEST_MSG("Constructor(Vector2) didn't set all elements as expected"));
 
         Vector3 temp;
         test.ReportSuccessIf(temp.Set(1.1f, 2.2f, 3.3f), Vector3(1.1f, 2.2f, 3.3f), TEST_MSG("Set(x, y, z) did not set all elements."));
@@ -670,7 +670,7 @@ void TestVector3Methods() {
 
 void TestVector4Operators() {
     test("Vector4 Operators", [] {
-        using xo::math::Vector4;
+        using xo::Vector4;
         Vector4 left = Vector4(11.1f, -0.2f, -3.33f, -0.04f);
         Vector4 right = Vector4(-1.1f, 2.2f, 0.33f, 44.0f);
 
@@ -768,7 +768,7 @@ void TestVector4Operators() {
 
 void TestVector4Methods() {
     test("Vector4 Methods", []{
-        using xo::math::Vector4;
+        using xo::Vector4;
         test.ReportSuccessIf(Vector4(1.1f), Vector4(1.1f, 1.1f, 1.1f, 1.1f), TEST_MSG("Constructor (float) did not set all elements."));
         test.ReportSuccessIf(Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector4::One, TEST_MSG("Constructor (x, y, z, w) did not set all elements."));
         test.ReportSuccessIf(Vector4(Vector4(1.0f, 1.0f, 1.0f, 1.0f)), Vector4::One, TEST_MSG("Copy constructor (Vector3) did not copy as expected."));
@@ -776,8 +776,8 @@ void TestVector4Methods() {
         __m128 m = _mm_set_ps1(1.1f);
         test.ReportSuccessIf(Vector4(m), Vector4(1.1f, 1.1f, 1.1f, 1.1f), TEST_MSG("Constructor (__m128) did not set all elements."));
 #endif
-        test.ReportSuccessIf(Vector4(xo::math::Vector3(1.1f, 2.2f, 3.3f)), Vector4(1.1f, 2.2f, 3.3f, 0.0f), TEST_MSG("Constructor(Vector3) didn't set all elements as expected"));
-        test.ReportSuccessIf(Vector4(xo::math::Vector2(1.1f, 2.2f)), Vector4(1.1f, 2.2f, 0.0f, 0.0f), TEST_MSG("Constructor(Vector2) didn't set all elements as expected"));
+        test.ReportSuccessIf(Vector4(xo::Vector3(1.1f, 2.2f, 3.3f)), Vector4(1.1f, 2.2f, 3.3f, 0.0f), TEST_MSG("Constructor(Vector3) didn't set all elements as expected"));
+        test.ReportSuccessIf(Vector4(xo::Vector2(1.1f, 2.2f)), Vector4(1.1f, 2.2f, 0.0f, 0.0f), TEST_MSG("Constructor(Vector2) didn't set all elements as expected"));
 
         Vector4 temp;
         test.ReportSuccessIf(temp.Set(1.1f, 2.2f, 3.3f, 4.4f), Vector4(1.1f, 2.2f, 3.3f, 4.4f), TEST_MSG("Set(x, y, z, w) did not set all elements."));
@@ -840,12 +840,12 @@ void TestVector4Methods() {
 int main() {
 
 #if defined(XO_SSE)
-    xo::math::sse::ThrowNoExceptions();
+    xo::sse::ThrowNoExceptions();
 #endif
     cout << XO_MATH_COMPILER_INFO << endl;
 
 #if defined(XO_SSE)
-    xo::math::sse::GetAllMXCSRInfo(cout);
+    xo::sse::GetAllMXCSRInfo(cout);
 #endif
 
     cout.precision(12);

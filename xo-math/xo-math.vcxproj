@@ -154,21 +154,16 @@
   <ItemGroup>
     <ClInclude Include="include\DetectSIMD.h" />
     <ClInclude Include="include\Matrix4x4.h" />
-    <ClInclude Include="include\Matrix4x4Methods.h" />
-    <ClInclude Include="include\Matrix4x4Operators.h" />
+    <ClInclude Include="include\Matrix4x4Inline.h" />
     <ClInclude Include="include\Quaternion.h" />
-    <ClInclude Include="include\QuaternionMethods.h" />
-    <ClInclude Include="include\QuaternionOperators.h" />
+    <ClInclude Include="include\QuaternionInline.h" />
     <ClInclude Include="include\SSE.h" />
     <ClInclude Include="include\Vector2.h" />
-    <ClInclude Include="include\Vector2Methods.h" />
-    <ClInclude Include="include\Vector2Operators.h" />
+    <ClInclude Include="include\Vector2Inline.h" />
     <ClInclude Include="include\Vector3.h" />
-    <ClInclude Include="include\Vector3Methods.h" />
-    <ClInclude Include="include\Vector3Operators.h" />
+    <ClInclude Include="include\Vector3Inline.h" />
     <ClInclude Include="include\Vector4.h" />
-    <ClInclude Include="include\Vector4Methods.h" />
-    <ClInclude Include="include\Vector4Operators.h" />
+    <ClInclude Include="include\Vector4Inline.h" />
     <ClInclude Include="include\xo-math-config.h" />
     <ClInclude Include="include\xo-math.h" />
     <ClInclude Include="xo-test.h" />

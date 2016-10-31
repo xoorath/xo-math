@@ -26,8 +26,9 @@
 //! This option doesn't undef the internal macros in xo-math.h
 #define XO_EXPORT_ALL
 
-#include <iostream>
-#define XO_ASSERT(condition, message) if(condition) { std::cout << message << std::endl; }
+//#include <iostream>
+//#define XO_ASSERT(condition, message) if(!(condition)) { std::cerr << message << std::endl; }
+#define XO_ASSERT(condition, message)
 
 //! Use left hand space for xo-math.
 //! Variants: XO_SPACE_RIGHTHAND
@@ -42,5 +43,7 @@
 //#define XO_SSE3
 //#define XO_SSE4_1
 //#define XO_SSE4_2
+
+//#define XO_NO_OSTREAM
 
 #endif // XO_MATH_CONFIG_H_

@@ -26,4 +26,3 @@ XOMATH_BEGIN_XO_NS();
 
 
 XOMATH_END_XO_NS();
-#undef _XO_MATH_OBJ

@@ -27,9 +27,9 @@ XOMATH_BEGIN_XO_NS();
 
 class _MM_ALIGN16 Quaternion {
 public:
-    _XOINL Quaternion();
-    _XOINL Quaternion(const Matrix4x4& m);
-    _XOINL Quaternion(float x, float y, float z, float w);
+    Quaternion();
+    Quaternion(const Matrix4x4& m);
+    Quaternion(float x, float y, float z, float w);
 
     _XO_OVERLOAD_NEW_DELETE();
 
@@ -42,33 +42,33 @@ public:
     _XOINL bool operator == (const Quaternion& q) const;
     _XOINL bool operator != (const Quaternion& q) const;
 
-    _XOINL const Quaternion& MakeConjugate();
-    _XOINL const Quaternion& MakeInverse();
-    _XOINL const Quaternion& Normalize();
-    _XOINL Quaternion Conjugate() const;
-    _XOINL Quaternion Inverse() const;
-    _XOINL Quaternion Normalized() const;
-    _XOINL void GetAxisAngleRadians(Vector3& axis, float& radians) const;
+    const Quaternion& MakeConjugate();
+    const Quaternion& MakeInverse();
+    const Quaternion& Normalize();
+    Quaternion Conjugate() const;
+    Quaternion Inverse() const;
+    Quaternion Normalized() const;
+    void GetAxisAngleRadians(Vector3& axis, float& radians) const;
 
-    _XOINL static void AxisAngleRadians(const Vector3& axis, float radians, Quaternion& outQuat);
-    _XOINL static void Lerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat);
-    _XOINL static void LookAtFromDirection(const Vector3& direction, const Vector3& up, Quaternion& outQuat);
-    _XOINL static void LookAtFromDirection(const Vector3& direction, Quaternion& outQuat);
-    _XOINL static void LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up, Quaternion& outQuat);
-    _XOINL static void LookAtFromPosition(const Vector3& from, const Vector3& to, Quaternion& outQuat);
-    _XOINL static void RotationRadians(const Vector3& v, Quaternion& outQuat);
-    _XOINL static void RotationRadians(float x, float y, float z, Quaternion& outQuat);
-    _XOINL static void Slerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat);
+    static void AxisAngleRadians(const Vector3& axis, float radians, Quaternion& outQuat);
+    static void Lerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat);
+    static void LookAtFromDirection(const Vector3& direction, const Vector3& up, Quaternion& outQuat);
+    static void LookAtFromDirection(const Vector3& direction, Quaternion& outQuat);
+    static void LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up, Quaternion& outQuat);
+    static void LookAtFromPosition(const Vector3& from, const Vector3& to, Quaternion& outQuat);
+    static void RotationRadians(const Vector3& v, Quaternion& outQuat);
+    static void RotationRadians(float x, float y, float z, Quaternion& outQuat);
+    static void Slerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat);
 
-    _XOINL static Quaternion AxisAngleRadians(const Vector3& axis, float radians);
-    _XOINL static Quaternion Lerp(const Quaternion& a, const Quaternion& b, float t);
-    _XOINL static Quaternion LookAtFromDirection(const Vector3& direction);
-    _XOINL static Quaternion LookAtFromDirection(const Vector3& direction, const Vector3& up);
-    _XOINL static Quaternion LookAtFromPosition(const Vector3& from, const Vector3& to);
-    _XOINL static Quaternion LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up);
-    _XOINL static Quaternion RotationRadians(const Vector3& v);
-    _XOINL static Quaternion RotationRadians(float x, float y, float z);
-    _XOINL static Quaternion Slerp(const Quaternion& a, const Quaternion& b, float t);
+    static Quaternion AxisAngleRadians(const Vector3& axis, float radians);
+    static Quaternion Lerp(const Quaternion& a, const Quaternion& b, float t);
+    static Quaternion LookAtFromDirection(const Vector3& direction);
+    static Quaternion LookAtFromDirection(const Vector3& direction, const Vector3& up);
+    static Quaternion LookAtFromPosition(const Vector3& from, const Vector3& to);
+    static Quaternion LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up);
+    static Quaternion RotationRadians(const Vector3& v);
+    static Quaternion RotationRadians(float x, float y, float z);
+    static Quaternion Slerp(const Quaternion& a, const Quaternion& b, float t);
 
     static const Quaternion
         Identity,

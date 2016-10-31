@@ -21,6 +21,7 @@
 
 #define _XO_MATH_OBJ
 #include "xo-math.h"
+#include <ostream>
 
 XOMATH_BEGIN_XO_NS();
 
@@ -284,4 +285,3 @@ namespace sse {
 #endif
 
 XOMATH_END_XO_NS();
-#undef _XO_MATH_OBJ

@@ -34,17 +34,17 @@ public:
     //>See
     //! @name Constructors
     //! @{
-    _XOINL Vector4(); //!< Performs no initialization.
-    _XOINL Vector4(float f); //!< All elements are set to f.
-    _XOINL Vector4(float x, float y, float z, float w); //!< Assigns each named value accordingly.
-    _XOINL Vector4(const Vector4& vec); //!< Copy constructor, trivial.
+    Vector4(); //!< Performs no initialization.
+    Vector4(float f); //!< All elements are set to f.
+    Vector4(float x, float y, float z, float w); //!< Assigns each named value accordingly.
+    Vector4(const Vector4& vec); //!< Copy constructor, trivial.
 #if defined(XO_SSE)
-    _XOINL Vector4(const __m128& vec); //!< Assigns m to vec, sets all elements.
+    Vector4(const __m128& vec); //!< Assigns m to vec, sets all elements.
 #endif
-    _XOINL Vector4(const class Vector2& v); //!< Assigns same-name values from v, zero to z and w. \f$\begin{pmatrix}v.x&v.y&0&0\end{pmatrix}\f$
-    _XOINL Vector4(const class Vector2& v, float z, float w); //!< Assigns same-name values from v, then z and w. \f$\begin{pmatrix}v.x&v.y&0&0\end{pmatrix}\f$
-    _XOINL Vector4(const class Vector3& v); //!< Assigns same-name values from v, zero to w.\f$\begin{pmatrix}v.x&v.y&v.z&0\end{pmatrix}\f$
-    _XOINL Vector4(const class Vector3& v, float w); //!< Assigns same-name values from v, then w.\f$\begin{pmatrix}v.x&v.y&v.z&0\end{pmatrix}\f$
+    Vector4(const class Vector2& v); //!< Assigns same-name values from v, zero to z and w. \f$\begin{pmatrix}v.x&v.y&0&0\end{pmatrix}\f$
+    Vector4(const class Vector2& v, float z, float w); //!< Assigns same-name values from v, then z and w. \f$\begin{pmatrix}v.x&v.y&0&0\end{pmatrix}\f$
+    Vector4(const class Vector3& v); //!< Assigns same-name values from v, zero to w.\f$\begin{pmatrix}v.x&v.y&v.z&0\end{pmatrix}\f$
+    Vector4(const class Vector3& v, float w); //!< Assigns same-name values from v, then w.\f$\begin{pmatrix}v.x&v.y&v.z&0\end{pmatrix}\f$
     //! @}
 
     //>See
@@ -52,28 +52,28 @@ public:
     //! @{
 
     //! Set all. x, y, z and w will be assigned to the input params.
-    _XOINL const Vector4& Set(float x, float y, float z, float w);
+    const Vector4& Set(float x, float y, float z, float w);
     //! Set each. x, y, z and w will be assigned to f.
-    _XOINL const Vector4& Set(float f);
+    const Vector4& Set(float f);
     //! Set each. Copies vec into this.
-    _XOINL const Vector4& Set(const Vector4& vec);
+    const Vector4& Set(const Vector4& vec);
     //! Set each. Assigns same-name values from vec, zero to z and w.
-    _XOINL const Vector4& Set(const Vector2& vec);
+    const Vector4& Set(const Vector2& vec);
     //! Set each. Assigns same-name values from vec, then z and w.
-    _XOINL const Vector4& Set(const Vector2& vec, float z, float w);
+    const Vector4& Set(const Vector2& vec, float z, float w);
     //! Set each. Assigns same-name values from vec, zero to w.
-    _XOINL const Vector4& Set(const Vector3& vec);
+    const Vector4& Set(const Vector3& vec);
     //! Set each. Assigns same-name values from vec, then w.
-    _XOINL const Vector4& Set(const Vector3& vec, float w);
+    const Vector4& Set(const Vector3& vec, float w);
 #if defined(XO_SSE)
     //! Set each. Copies vec int m.
-    _XOINL const Vector4& Set(const __m128& vec);
+    const Vector4& Set(const __m128& vec);
 #endif
     //! Extract all getter. x, y, z and w will be assigned to those values of this vector.
-    _XOINL void Get(float& x, float& y, float& z, float& w) const;
+    void Get(float& x, float& y, float& z, float& w) const;
     //! Extract all getter. f[0], f[1], f[2] and f[3] will be assigned to x, y, z and w respectively.
     //! @Note When using SSE f must be aligned. Example: _MM_ALIGN16 float f[4];
-    _XOINL void Get(float* f) const;
+    void Get(float* f) const;
     //! @}
 
     //>See
@@ -217,33 +217,33 @@ public:
     //! @{
 
     //! Returns true when the Magnitude of this vector is within Vector4::Epsilon of being 1.0
-    _XOINL bool IsNormalized() const;
+    bool IsNormalized() const;
     //! Returns true when the Magnitude of this vector is <= Vector4::Epsilon
-    _XOINL bool IsZero() const;
+    bool IsZero() const;
     //! The length of this vector in 4 dimensional space.
     //! It's preferred to use Vector4::MagnitudeSquared when possible, as Vector4::Magnitude requires a call to Sqrt.
     //!
     //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert = \sqrt{(x\times x)+(y\times y)+(z\times z)+(w\times w)}\f$
     //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
-    _XOINL float Magnitude() const;
+    float Magnitude() const;
     //! The square length of this vector in 4 dimensional space.
     //! It's preferred to use Vector4::MagnitudeSquared when possible, as Vector4::Magnitude requires a call to Sqrt.
     //!
     //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert^2 = (x\times x)+(y\times y)+(z\times z)+(w\times w)\f$
     //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
-    _XOINL float MagnitudeSquared() const;
+    float MagnitudeSquared() const;
     //! The sum of all vector elements.
     //!
     //! \f$x+y+z+w\f$
-    _XOINL float Sum() const;
+    float Sum() const;
 
     //! Normalizes this vector to a Magnitude of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
-    _XOINL const Vector4& Normalize();
+    const Vector4& Normalize();
 
     //! Returns a copy of this vector with a Magnitude of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
-    _XOINL Vector4 Normalized() const;
+    Vector4 Normalized() const;
     //! @}
 
     //>See
@@ -252,25 +252,25 @@ public:
 
     //! Sets outVec to a vector interpolated between a and b by a scalar amount t.
     //! @sa https://en.wikipedia.org/wiki/Linear_interpolation
-    _XOINL static void Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec);
+    static void Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec);
     //! Set outVec to have elements equal to the max of each element in a and b.
     //!
     //! \f$\begin{pmatrix}\max(a.x, b.x)&\max(a.y, b.y)&\max(a.z, b.z)&\max(a.w, b.w)\end{pmatrix}\f$
-    _XOINL static void Max(const Vector4& a, const Vector4& b, Vector4& outVec);
+    static void Max(const Vector4& a, const Vector4& b, Vector4& outVec);
     //! Set outVec to have elements equal to the min of each element in a and b.
     //!
     //! \f$\begin{pmatrix}\min(a.x, b.x)&\min(a.y, b.y)&\min(a.z, b.z)&\min(a.w, b.w)\end{pmatrix}\f$
-    _XOINL static void Min(const Vector4& a, const Vector4& b, Vector4& outVec);
+    static void Min(const Vector4& a, const Vector4& b, Vector4& outVec);
     //! Returns the distance between vectors a and b in 4 dimensional space.
     //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
     //!
     //! \f$distance = \lvert\rvert\boldsymbol{b-a}\lvert\rvert\f$
-    _XOINL static float Distance(const Vector4&a, const Vector4&b);
+    static float Distance(const Vector4&a, const Vector4&b);
     //! Returns the square distance between vectors a and b in 4 dimensional space.
     //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
     //!
     //! \f$distance^2 = \lvert\rvert\boldsymbol{b-a}\lvert\rvert^2\f$
-    _XOINL static float DistanceSquared(const Vector4& a, const Vector4& b);
+    static float DistanceSquared(const Vector4& a, const Vector4& b);
     //! Returns a single number representing a product of magnitudes. Commonly used with two normalized 
     //! vectors to determine if they are pointed the same way. In this case: 1.0 represents same-facing vectors
     //! 0 represents perpendicular vectors, and -1 will be facing away
@@ -278,7 +278,7 @@ public:
     //! \f$a\cdot b =(a.x\times b.x) + (a.y\times b.y) + (a.z\times b.z) + (a.w\times  b.w)\f$
     //!
     //! @sa https://en.wikipedia.org/wiki/Dot_product
-    _XOINL static float Dot(const Vector4& a, const Vector4& b);
+    static float Dot(const Vector4& a, const Vector4& b);
     //! @}
     
     //>See
@@ -289,14 +289,14 @@ public:
     //! Non static variants replace the first Vector4 parameter by 'this' vector.
     //! Static variants return what would have been the outVec param.
     //! @{
-    _XOINL static Vector4 Lerp(const Vector4& a, const Vector4& b, float t);
-    _XOINL static Vector4 Max(const Vector4& a, const Vector4& b);
-    _XOINL static Vector4 Min(const Vector4& a, const Vector4& b);
+    static Vector4 Lerp(const Vector4& a, const Vector4& b, float t);
+    static Vector4 Max(const Vector4& a, const Vector4& b);
+    static Vector4 Min(const Vector4& a, const Vector4& b);
 
-    _XOINL float Distance(const Vector4& v) const;
-    _XOINL float DistanceSquared(const Vector4& v) const;
-    _XOINL float Dot(const Vector4& v) const;
-    _XOINL Vector4 Lerp(const Vector4& v, float t) const;
+    float Distance(const Vector4& v) const;
+    float DistanceSquared(const Vector4& v) const;
+    float Dot(const Vector4& v) const;
+    Vector4 Lerp(const Vector4& v, float t) const;
     //! @}
 
     //>See
@@ -305,10 +305,12 @@ public:
 
     //! @todo Make this optional with a define.
     //! Prints the contents of vector v and its magnitude to the provided ostream.
+#ifndef XO_NO_OSTREAM
     friend std::ostream& operator <<(std::ostream& os, const Vector4& v) {
         os << "(x:" << v.x << ", y:" << v.y << ", z:" << v.z << ", w:" << v.w << ", mag:" << v.Magnitude() << ")";
         return os;
     }
+#endif
     //! @}
 
     ////////////////////////////////////////////////////////////////////////// Static Attributes

@@ -12,21 +12,16 @@ var g_SourceInputText = null;
 var g_IncludeNames = [
   'DetectSIMD.h',
   'Matrix4x4.h',
-  'Matrix4x4Methods.h',
-  'Matrix4x4Operators.h',
+  'Matrix4x4Inline.h',
   'Quaternion.h',
-  'QuaternionMethods.h',
-  'QuaternionOperators.h',
+  'QuaternionInline.h',
   'SSE.h',
   'Vector2.h',
-  'Vector2Methods.h',
-  'Vector2Operators.h',
+  'Vector2Inline.h',
   'Vector3.h',
-  'Vector3Methods.h',
-  'Vector3Operators.h',
+  'Vector3Inline.h',
   'Vector4.h',
-  'Vector4Methods.h',
-  'Vector4Operators.h',
+  'Vector4Inline.h',
 ];
 var g_IncludesText = [];
 for(var i = 0; i < g_IncludeNames.length; ++i) {
