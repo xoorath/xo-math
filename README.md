@@ -6,6 +6,8 @@
 
 :warning: **xo-math is currently in progress and not ready for production use.**
 
+![xo-math](https://raw.githubusercontent.com/xoorath/xo-math/master/xo-math/brand/xo-math-white.png)
+
 # What is xo-math
 
 xo-math is an open source single header file module for optimized game math. C++11 or newer required.
