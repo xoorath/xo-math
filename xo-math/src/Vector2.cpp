@@ -19,11 +19,25 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Vector2Methods.h directly. Include xo-math.h, which fully implements this type.");
-#else // XOMATH_INTERNAL
+#define _XO_MATH_OBJ
+#include "xo-math.h"
 
 XOMATH_BEGIN_XO_NS();
+
+#if defined(_XONOCONSTEXPR)
+const float Vector2::Epsilon = FloatEpsilon * 2.0f;
+#endif
+
+const Vector2 Vector2::UnitX(1.0f, 0.0f);
+const Vector2 Vector2::UnitY(0.0f, 1.0f);
+
+const Vector2 Vector2::Up(0.0f, 1.0f);
+const Vector2 Vector2::Down(0.0f, -1.0f);
+const Vector2 Vector2::Left(-1.0f, 0.0f);
+const Vector2 Vector2::Right(1.0f, 0.0f);
+
+const Vector2 Vector2::One(1.0f, 1.0f);
+const Vector2 Vector2::Zero(0.0f, 0.0f);
 
 Vector2::Vector2() {
 }
@@ -212,5 +226,3 @@ Vector2 Vector2::OrthogonalCCW() const                      { return OrthogonalC
 Vector2 Vector2::OrthogonalCW() const                       { return OrthogonalCW(*this); }
 
 XOMATH_END_XO_NS();
-
-#endif

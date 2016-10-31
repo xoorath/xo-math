@@ -19,17 +19,27 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Matrix4x4Methods.h directly. Include xo-math.h, which fully implements this type.");
-#else // XOMATH_INTERNAL
+#define _XO_MATH_OBJ
+#include "xo-math.h"
 
-#if defined(_XO_ASSERT_MSG)
-_XOMATH_INTERNAL_MACRO_WARNING
-#else
-#   define _XO_ASSERT_MSG(msg) "xo-math Matrix4x4" msg
-#endif
+#define _XO_ASSERT_MSG(msg) "xo-math Matrix4x4" msg
 
 XOMATH_BEGIN_XO_NS();
+
+const Matrix4x4 Matrix4x4::Identity(Vector4(1.0f, 0.0f, 0.0f, 0.0f),
+                                    Vector4(0.0f, 1.0f, 0.0f, 0.0f),
+                                    Vector4(0.0f, 0.0f, 1.0f, 0.0f),
+                                    Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+
+const Matrix4x4 Matrix4x4::One(Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+                               Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+                               Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+                               Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+const Matrix4x4 Matrix4x4::Zero(Vector4(0.0f, 0.0f, 0.0f, 0.0f),
+                                Vector4(0.0f, 0.0f, 0.0f, 0.0f),
+                                Vector4(0.0f, 0.0f, 0.0f, 0.0f),
+                                Vector4(0.0f, 0.0f, 0.0f, 0.0f));
 
 Matrix4x4::Matrix4x4() {
 }
@@ -96,6 +106,14 @@ Matrix4x4::Matrix4x4(const class Quaternion& q) {
     r[1] = Vector4( xy2 - wq2.z,           1.0f - qq2.x - qq2.z,   yz2 + wq2.x,          0.0f);
     r[2] = Vector4( xz2 + wq2.y,           yz2 - wq2.x,            1.0f - qq2.x - qq2.y, 0.0f);
     r[3] = Vector4::UnitW;
+}
+
+const Vector4& Matrix4x4::GetRow(int i) const {
+    return r[i];
+}
+
+Vector4 Matrix4x4::GetColumn(int i) const {
+    return Vector4(r[0][i], r[1][i], r[2][i], r[3][i]);
 }
 
 const Matrix4x4& Matrix4x4::Transpose() {
@@ -467,7 +485,3 @@ Matrix4x4 Matrix4x4::LookAtFromDirection(const Vector3& direction) {
 }
 
 XOMATH_END_XO_NS();
-
-#undef _XO_ASSERT_MSG
-
-#endif

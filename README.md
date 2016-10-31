@@ -22,7 +22,8 @@ If you feel I've failed my mission here, [please let me know](https://github.com
 
 # Quick Start
 
-Download [xo-math.h](https://raw.githubusercontent.com/xoorath/xo-math/master/xo-math.h) from the root of the repo, include it in your project and you're good to go.
+Download [xo-math.h](https://raw.githubusercontent.com/xoorath/xo-math/master/xo-math.h), [xo-math.cpp](https://raw.githubusercontent.com/xoorath/xo-math/master/xo-math.cpp) and [xo-math-config.h](https://raw.githubusercontent.com/xoorath/xo-math/master/xo-math-config.h) from the root of the repo, include them in your project and you're good to go.
+
 
 ```c++
 #include <iostream>
@@ -33,14 +34,14 @@ using namespace xo;
 
 int main() {
     
-    math::Vector3 vec = math::Vector3::RandomOnConeRadians(math::Vector3::Up, math::HalfPI/2.0f);
+    Vector3 vec = Vector3::RandomOnConeRadians(Vector3::Up, HalfPI/2.0f);
     cout << "random 45 degree cone vector from Vector3::Up: " << vec << endl;
 
     if(vec == 1.0f) {
         cout << "The vector is normalized." << endl;
     }
 
-    math::Matrix4x4 tilt = math::Matrix4x4::RotationXDegrees(-90.0f);
+    Matrix4x4 tilt = Matrix4x4::RotationXDegrees(-90.0f);
     tilt.Transform(vec);
     cout << "Now rotated -90 degrees by the x axis: " << vec << endl;
 
@@ -60,7 +61,7 @@ Here's what I know about compiler/platform support:
 | ------------- | ------- | ---------- |
 | clang++       | >=3.3   | Yes!       |
 | g++           | >=4.8   | Yes!       |
-| msvc          | 2015    | Yes!       |
+| msvc          | >=2012  | Yes!       |
 | apple llvm    | >=7.3   | Yes!       |
 | apple llvm    | >=5     | Probably?  |
 | intel         | >= 11.1 | Unknown.[***](https://www.crowdrise.com/intel-parallel-studio-for-xo-math/fundraiser/jaredthomson) |

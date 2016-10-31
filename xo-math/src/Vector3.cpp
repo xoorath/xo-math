@@ -19,11 +19,62 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Vector3Methods.h directly. Include xo-math.h, which fully implements this type.");
-#else // XOMATH_INTERNAL
+#define _XO_MATH_OBJ
+#include "xo-math.h"
 
 XOMATH_BEGIN_XO_NS();
+
+#if defined(_XONOCONSTEXPR)
+#   if defined(XO_SSE)
+const float Vector3::Epsilon = sse::SSEFloatEpsilon * 3.0f;
+#   else
+const float Vector3::Epsilon = FloatEpsilon * 3.0f;
+#   endif
+#endif
+
+#if defined(XO_SSE2)
+const __m128 Vector3::MASK = _mm_castsi128_ps(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff));
+#elif defined(XO_SSE)
+const __m128 Vector3::MASK = {-1, -1, -1, 0};
+#endif
+
+const Vector3 Vector3::Origin(0.0f, 0.0f, 0.0f);
+
+const Vector3 Vector3::UnitX(1.0f, 0.0f, 0.0f);
+const Vector3 Vector3::UnitY(0.0f, 1.0f, 0.0f);
+const Vector3 Vector3::UnitZ(0.0f, 0.0f, 1.0f);
+
+const Vector3 Vector3::Left(-1.0f, 0.0f, 0.0f);
+const Vector3 Vector3::Right(1.0f, 0.0f, 0.0f);
+
+#if defined(XO_SPACE_ZUP)
+const Vector3 Vector3::Up(0.0f, 0.0f, 1.0f);
+const Vector3 Vector3::Down(0.0f, 0.0f, -1.0f);
+#elif defined(XO_SPACE_YUP)
+const Vector3 Vector3::Up(0.0f, 1.0f, 0.0f);
+const Vector3 Vector3::Down(0.0f, -1.0f, 0.0f);
+#endif
+
+#if defined(XO_SPACE_LEFTHAND)
+#   if defined(XO_SPACE_ZUP)
+const Vector3 Vector3::Forward(0.0f, -1.0f, 0.0f);
+const Vector3 Vector3::Backward(0.0f, 1.0f, 0.0f);
+#   elif defined(XO_SPACE_YUP)
+const Vector3 Vector3::Forward(0.0f, 0.0f, 1.0f);
+const Vector3 Vector3::Backward(0.0f, 0.0f, -1.0f);
+#   endif
+#elif defined(XO_SPACE_RIGHTHAND)
+#   if defined(XO_SPACE_ZUP)
+const Vector3 Vector3::Forward(0.0f, 1.0f, 0.0f);
+const Vector3 Vector3::Backward(0.0f, -1.0f, 0.0f);
+#   elif defined(XO_SPACE_YUP)
+const Vector3 Vector3::Forward(0.0f, 0.0f, -1.0f);
+const Vector3 Vector3::Backward(0.0f, 0.0f, 1.0f);
+#   endif
+#endif
+
+const Vector3 Vector3::One(1.0f, 1.0f, 1.0f);
+const Vector3 Vector3::Zero(0.0f, 0.0f, 0.0f);
 
 #if defined(XO_SSE)
 
@@ -480,5 +531,3 @@ Vector3 Vector3::RandomInConeDegrees(float angle) const                   { retu
 #undef IDX_W
 
 XOMATH_END_XO_NS();
-
-#endif

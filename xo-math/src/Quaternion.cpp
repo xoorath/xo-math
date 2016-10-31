@@ -19,14 +19,26 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include QuaternionMethods.h directly. Include xo-math.h, which fully implements this type.");
-#else // XOMATH_INTERNAL
+#define _XO_MATH_OBJ
+#include "xo-math.h"
 
 XOMATH_BEGIN_XO_NS();
 
-namespace xo_internal {
-    _XOINL float QuaternionSquareSum(const Quaternion& q) {
+#if defined(_XONOCONSTEXPR)
+#   if defined(XO_SSE)
+const float Quaternion::Epsilon = sse::SSEFloatEpsilon * 4.0f;
+#   else
+const float Quaternion::Epsilon = FloatEpsilon * 4.0f;
+#   endif
+#endif
+
+const Quaternion Quaternion::Identity(0.0f, 0.0f, 0.0f, 1.0f);
+const Quaternion Quaternion::Zero(0.0f, 0.0f, 0.0f, 0.0f);
+
+namespace xo_internal
+{
+    _XOINL float QuaternionSquareSum(const Quaternion& q)
+    {
 #if defined(XO_SSE)
         __m128 square = _mm_mul_ps(q.m, q.m);
         square = _mm_hadd_ps(square, square);
@@ -38,10 +50,12 @@ namespace xo_internal {
     }
 }
 
-Quaternion::Quaternion() {
+Quaternion::Quaternion()
+{
 }
 
-Quaternion::Quaternion(const Matrix4x4& mat) {
+Quaternion::Quaternion(const Matrix4x4& mat)
+{
     Vector3 xAxis(mat[0]);
     Vector3 yAxis(mat[1]);
     Vector3 zAxis(mat[2]);
@@ -49,7 +63,8 @@ Quaternion::Quaternion(const Matrix4x4& mat) {
     Vector3 scale(xAxis.Magnitude(), yAxis.Magnitude(), zAxis.Magnitude());
 
     // don't use close enough, skip the abs since we're all positive value.
-    if(scale.x <= FloatEpsilon || scale.y <= FloatEpsilon || scale.z <= FloatEpsilon) {
+    if (scale.x <= FloatEpsilon || scale.y <= FloatEpsilon || scale.z <= FloatEpsilon)
+    {
 #if defined(XO_SSE)
 
 #else
@@ -66,7 +81,7 @@ Quaternion::Quaternion(const Matrix4x4& mat) {
     Vector3 recipScale = Vector3(_mm_rcp_ps(scale.m));
 #   endif
 #else
-    Vector3 recipScale = Vector3(1.0f/scale.x, 1.0f/scale.y, 1.0f/scale.z);
+    Vector3 recipScale = Vector3(1.0f / scale.x, 1.0f / scale.y, 1.0f / scale.z);
 #endif
     xAxis *= recipScale.x;
     yAxis *= recipScale.y;
@@ -80,7 +95,7 @@ Quaternion::Quaternion(const Matrix4x4& mat) {
         float s = 0.5f / Sqrt(trace);
         _XO_ASSIGN_QUAT(
             0.25f / s,
-            (yAxis.z- zAxis.y) * s,
+            (yAxis.z - zAxis.y) * s,
             (xAxis.y - yAxis.x) * s,
             (zAxis.x - xAxis.z) * s);
     }
@@ -106,17 +121,17 @@ Quaternion::Quaternion(const Matrix4x4& mat) {
         }
         else
         {
-            float s = 0.5f / Sqrt(1.0f + zAxis.z - xAxis.x - yAxis.y );
+            float s = 0.5f / Sqrt(1.0f + zAxis.z - xAxis.x - yAxis.y);
             _XO_ASSIGN_QUAT(
-                (xAxis.y - yAxis.x ) * s,
-                (zAxis.x + xAxis.z ) * s,
+                (xAxis.y - yAxis.x) * s,
+                (zAxis.x + xAxis.z) * s,
                 0.25f / s,
-                (zAxis.y + yAxis.z ) * s);
+                (zAxis.y + yAxis.z) * s);
         }
     }
 }
 
-Quaternion::Quaternion(float x, float y, float z, float w)  :
+Quaternion::Quaternion(float x, float y, float z, float w) :
 #if defined(XO_SSE)
     m(_mm_set_ps(w, z, y, x))
 #else
@@ -125,17 +140,21 @@ Quaternion::Quaternion(float x, float y, float z, float w)  :
 {
 }
 
-Quaternion Quaternion::Inverse() const {
+Quaternion Quaternion::Inverse() const
+{
     return Quaternion(*this).MakeInverse();
 }
 
-const Quaternion& Quaternion::MakeInverse() {
+const Quaternion& Quaternion::MakeInverse()
+{
     float magnitude = xo_internal::QuaternionSquareSum(*this);
-    
-    if (CloseEnough(magnitude, 1.0f, Epsilon)) {
+
+    if (CloseEnough(magnitude, 1.0f, Epsilon))
+    {
         return MakeConjugate();
     }
-    if (CloseEnough(magnitude, 0.0f, Epsilon)) {
+    if (CloseEnough(magnitude, 0.0f, Epsilon))
+    {
         return *this;
     }
 
@@ -144,18 +163,22 @@ const Quaternion& Quaternion::MakeInverse() {
     return *this;
 }
 
-Quaternion Quaternion::Normalized() const {
+Quaternion Quaternion::Normalized() const
+{
     return Quaternion(*this).Normalize();
 }
 
-const Quaternion& Quaternion::Normalize() {
+const Quaternion& Quaternion::Normalize()
+{
     float magnitude = xo_internal::QuaternionSquareSum(*this);
-    if (CloseEnough(magnitude, 1.0f, Epsilon)) {
+    if (CloseEnough(magnitude, 1.0f, Epsilon))
+    {
         return *this;
     }
 
     magnitude = Sqrt(magnitude);
-    if (CloseEnough(magnitude, 0.0f, Epsilon)) {
+    if (CloseEnough(magnitude, 0.0f, Epsilon))
+    {
         return *this;
     }
 
@@ -163,16 +186,19 @@ const Quaternion& Quaternion::Normalize() {
     return *this;
 }
 
-Quaternion Quaternion::Conjugate() const {
+Quaternion Quaternion::Conjugate() const
+{
     return Quaternion(*this).MakeConjugate();
 }
 
-const Quaternion& Quaternion::MakeConjugate() {
+const Quaternion& Quaternion::MakeConjugate()
+{
     _XO_ASSIGN_QUAT(w, -x, -y, -z);
     return *this;
 }
 
-void Quaternion::GetAxisAngleRadians(Vector3& axis, float& radians) const {
+void Quaternion::GetAxisAngleRadians(Vector3& axis, float& radians) const
+{
     Quaternion q = Normalized();
 
 #if defined(XO_SSE)
@@ -186,24 +212,27 @@ void Quaternion::GetAxisAngleRadians(Vector3& axis, float& radians) const {
     radians = (2.0f * ACos(q.w));
 }
 
-void Quaternion::RotationRadians(float x, float y, float z, Quaternion& outQuat) {
+void Quaternion::RotationRadians(float x, float y, float z, Quaternion& outQuat)
+{
     RotationRadians(Vector3(x, y, z), outQuat);
 }
 
-void Quaternion::RotationRadians(const Vector3& v, Quaternion& outQuat) {
+void Quaternion::RotationRadians(const Vector3& v, Quaternion& outQuat)
+{
     Vector3 hv = v * 0.5f;
     _MM_ALIGN16 float s[3];
     _MM_ALIGN16 float c[3];
     SinCos_x3(hv.f, s, c);
 
     _XO_ASSIGN_QUAT_Q(outQuat,
-        c[0] * c[1] * c[2] + s[0] * s[1] * s[2],
-        s[0] * c[1] * c[2] - c[0] * s[1] * s[2],
-        c[0] * s[1] * c[2] + s[0] * c[1] * s[2],
-        c[0] * c[1] * s[2] - s[0] * s[1] * c[2]);
+                      c[0] * c[1] * c[2] + s[0] * s[1] * s[2],
+                      s[0] * c[1] * c[2] - c[0] * s[1] * s[2],
+                      c[0] * s[1] * c[2] + s[0] * c[1] * s[2],
+                      c[0] * c[1] * s[2] - s[0] * s[1] * c[2]);
 }
 
-void Quaternion::AxisAngleRadians(const Vector3& axis, float radians, Quaternion& outQuat) {
+void Quaternion::AxisAngleRadians(const Vector3& axis, float radians, Quaternion& outQuat)
+{
     float hr = radians * 0.5f;
     float sr = Sin(hr);
 
@@ -212,23 +241,28 @@ void Quaternion::AxisAngleRadians(const Vector3& axis, float radians, Quaternion
     _XO_ASSIGN_QUAT_Q(outQuat, Cos(radians), n.x, n.y, n.z);
 }
 
-void Quaternion::LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up, Quaternion& outQuat) {
-    LookAtFromDirection(to-from, up, outQuat);
+void Quaternion::LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up, Quaternion& outQuat)
+{
+    LookAtFromDirection(to - from, up, outQuat);
 }
 
-void Quaternion::LookAtFromPosition(const Vector3& from, const Vector3& to, Quaternion& outQuat) {
+void Quaternion::LookAtFromPosition(const Vector3& from, const Vector3& to, Quaternion& outQuat)
+{
     LookAtFromPosition(from, to, Vector3::Up, outQuat);
 }
 
-void Quaternion::LookAtFromDirection(const Vector3&, const Vector3&, Quaternion&) {
+void Quaternion::LookAtFromDirection(const Vector3&, const Vector3&, Quaternion&)
+{
     // Todo
 }
 
-void Quaternion::LookAtFromDirection(const Vector3& direction, Quaternion& outQuat) {
+void Quaternion::LookAtFromDirection(const Vector3& direction, Quaternion& outQuat)
+{
     LookAtFromDirection(direction, Vector3::Up, outQuat);
 }
 
-void Quaternion::Slerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat) {
+void Quaternion::Slerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat)
+{
     //      The folowing copyright and licence applies to the contents of this Quaternion::Slerp method
 
     //      Copyright 2013 BlackBerry Inc.
@@ -252,18 +286,22 @@ void Quaternion::Slerp(const Quaternion& a, const Quaternion& b, float t, Quater
     // It contains no division operations, no trig, no inverse trig
     // and no sqrt. Not only does this code tolerate small constraint
     // errors in the input quaternions, it actually corrects for them.
-    if (CloseEnough(t, 0.0f)) {
+    if (CloseEnough(t, 0.0f))
+    {
         outQuat = a;
         return;
     }
-    else if (CloseEnough(t, 1.0f)) {
+    else if (CloseEnough(t, 1.0f))
+    {
         outQuat = b;
         return;
     }
-    else if (a == b) {
+    else if (a == b)
+    {
         outQuat = a;
     }
-    else {
+    else
+    {
         float halfY, alpha, beta;
         float u, f1, f2a, f2b;
         float ratio1, ratio2;
@@ -329,14 +367,18 @@ void Quaternion::Slerp(const Quaternion& a, const Quaternion& b, float t, Quater
     }
 }
 
-void Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat) {
-    if (CloseEnough(t, 0.0f, Epsilon)) {
+void Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat)
+{
+    if (CloseEnough(t, 0.0f, Epsilon))
+    {
         outQuat = a;
     }
-    else if (CloseEnough(t, 1.0f, Epsilon)) {
+    else if (CloseEnough(t, 1.0f, Epsilon))
+    {
         outQuat = b;
     }
-    else {
+    else
+    {
         Vector4* vq = (Vector4*)&outQuat;
         Vector4* va = (Vector4*)&a;
         Vector4* vb = (Vector4*)&b;
@@ -345,60 +387,67 @@ void Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t, Quatern
     }
 }
 
-Quaternion Quaternion::RotationRadians(float x, float y, float z) {
+Quaternion Quaternion::RotationRadians(float x, float y, float z)
+{
     Quaternion q;
     RotationRadians(x, y, z, q);
     return q;
 }
 
-Quaternion Quaternion::RotationRadians(const Vector3& v) {
+Quaternion Quaternion::RotationRadians(const Vector3& v)
+{
     Quaternion q;
     RotationRadians(v, q);
     return q;
 }
 
-Quaternion Quaternion::AxisAngleRadians(const Vector3& axis, float radians) {
+Quaternion Quaternion::AxisAngleRadians(const Vector3& axis, float radians)
+{
     Quaternion q;
     AxisAngleRadians(axis, radians, q);
     return q;
 }
 
-Quaternion Quaternion::LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up) {
+Quaternion Quaternion::LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up)
+{
     Quaternion q;
     LookAtFromPosition(from, to, up, q);
     return q;
 }
 
-Quaternion Quaternion::LookAtFromPosition(const Vector3& from, const Vector3& to) {
+Quaternion Quaternion::LookAtFromPosition(const Vector3& from, const Vector3& to)
+{
     Quaternion q;
     LookAtFromPosition(from, to, q);
     return q;
 }
 
-Quaternion Quaternion::LookAtFromDirection(const Vector3& direction, const Vector3& up) {
+Quaternion Quaternion::LookAtFromDirection(const Vector3& direction, const Vector3& up)
+{
     Quaternion q;
     LookAtFromDirection(direction, up, q);
     return q;
 }
 
-Quaternion Quaternion::LookAtFromDirection(const Vector3& direction) {
+Quaternion Quaternion::LookAtFromDirection(const Vector3& direction)
+{
     Quaternion q;
     LookAtFromDirection(direction, q);
     return q;
 }
 
-Quaternion Quaternion::Slerp(const Quaternion& a, const Quaternion& b, float t) {
+Quaternion Quaternion::Slerp(const Quaternion& a, const Quaternion& b, float t)
+{
     Quaternion q;
     Slerp(a, b, t, q);
     return q;
 }
 
-Quaternion Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t) {
+Quaternion Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t)
+{
     Quaternion q;
     Lerp(a, b, t, q);
     return q;
 }
 
 XOMATH_END_XO_NS();
-
-#endif

@@ -19,32 +19,31 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Vector4Methods.h directly. Include xo-math.h, which fully implements this type.");
-#else // XOMATH_INTERNAL
+#define _XO_MATH_OBJ
+#include "xo-math.h"
 
 XOMATH_BEGIN_XO_NS();
 
-#if defined IDX_X
-_XOMATH_INTERNAL_MACRO_WARNING
+#if defined(_XONOCONSTEXPR)
+#   if defined(XO_SSE)
+const float Vector4::Epsilon = sse::SSEFloatEpsilon * 4.0f;
 #   else
-#       define IDX_X 0
+const float Vector4::Epsilon = FloatEpsilon * 4.0f;
 #   endif
-#if defined IDX_Y
-_XOMATH_INTERNAL_MACRO_WARNING
-#   else
-#       define IDX_Y 1
-#   endif
-#if defined IDX_Z
-_XOMATH_INTERNAL_MACRO_WARNING
-#   else
-#       define IDX_Z 2
-#   endif
-#if defined IDX_W
-_XOMATH_INTERNAL_MACRO_WARNING
-#   else
-#       define IDX_W 3
-#   endif
+#endif
+
+const Vector4 Vector4::One(1.0f, 1.0f, 1.0f, 1.0f);
+const Vector4 Vector4::Zero(0.0f, 0.0f, 0.0f, 0.0f);
+
+const Vector4 Vector4::UnitX(1.0f, 0.0f, 0.0f, 0.0f);
+const Vector4 Vector4::UnitY(0.0f, 1.0f, 0.0f, 0.0f);
+const Vector4 Vector4::UnitZ(0.0f, 0.0f, 1.0f, 0.0f);
+const Vector4 Vector4::UnitW(0.0f, 0.0f, 0.0f, 1.0f);
+
+#define IDX_X 0
+#define IDX_Y 1
+#define IDX_Z 2
+#define IDX_W 3
 
 Vector4::Vector4() {
 }
@@ -372,12 +371,4 @@ Vector4 Vector4::Lerp(const Vector4& v, float t) const {
     return temp;
 }
 
-#undef IDX_X
-#undef IDX_Y
-#undef IDX_Z
-#undef IDX_W
-
-
 XOMATH_END_XO_NS();
-
-#endif
