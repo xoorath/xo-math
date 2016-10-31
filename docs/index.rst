@@ -20,7 +20,7 @@ If you feel I've failed my mission here, please let me know `on github`_.
 Quick Start
 ----------
 
-Download `xo-math.h`_ from the root of the repo, include it in your project and you're good to go.
+Download `xo-math.h`_, `xo-math.cpp`_ and `xo-math-config.h`_ from the root of the repo, include them in your project and you're good to go.
 
 .. code ::
 
@@ -32,14 +32,14 @@ Download `xo-math.h`_ from the root of the repo, include it in your project and 
 
     int main() {
         
-        math::Vector3 vec = math::Vector3::RandomOnConeRadians(math::Vector3::Up, math::HalfPI/2.0f);
+        Vector3 vec = Vector3::RandomOnConeRadians(Vector3::Up, HalfPI/2.0f);
         cout << "random 45 degree cone vector from Vector3::Up: " << vec << endl;
 
         if(vec == 1.0f) {
             cout << "The vector is normalized." << endl;
         }
 
-        math::Matrix4x4 tilt = math::Matrix4x4::RotationXDegrees(-90.0f);
+        Matrix4x4 tilt = Matrix4x4::RotationXDegrees(-90.0f);
         tilt.Transform(vec);
         cout << "Now rotated -90 degrees by the x axis: " << vec << endl;
 
@@ -59,7 +59,7 @@ The following configurations are known to work with no additional work.
 ====================== ==================== =======================
 Compiler               Targets              Minimum Tested Version
 ====================== ==================== =======================
-msvc++                 Win32                14.0 (VS2015)
+msvc++                 Win32                11.0 (VS2012)
 g++                    Linux, OSX, Win32    4.8
 clang++                Linux, OSX, Win32    3.2
 apple-clang            OSX                  4.2 (Xcode 4.6)
@@ -70,7 +70,7 @@ apple-clang            OSX                  4.2 (Xcode 4.6)
 ====================== ================================= =======================
 Compiler               Targets                           Minimum Version
 ====================== ================================= =======================
-msvc++                 `Android`_, ARM, Win32, `XB1`_    12.0 (VS2013)
+msvc++                 `Android`_, ARM, Win32, `XB1`_    11.0 (VS2012)
 g++                    Linux, OSX, Win32                 4.8
 clang++                Linux, OSX, `PS4`_, Win32         3.2
 apple-clang            OSX, `iOS`_                       4.2 (Xcode 4.6)
@@ -118,6 +118,8 @@ License
 The project is licensed under the MIT license.
 
 .. _xo-math.h: https://raw.githubusercontent.com/xoorath/xo-math/master/xo-math.h
+.. _xo-math-config.h: https://raw.githubusercontent.com/xoorath/xo-math/master/xo-math-config.h
+.. _xo-math.cpp: https://raw.githubusercontent.com/xoorath/xo-math/master/xo-math.cpp
 .. _on github: https://github.com/xoorath/xo-math/issues
 .. _Intel parallel studio for xo-math: https://www.crowdrise.com/intel-parallel-studio-for-xo-math
 .. _NEON: http://www.arm.com/products/processors/technologies/neon.php
