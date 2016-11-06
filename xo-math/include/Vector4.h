@@ -19,10 +19,6 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Vector4.h directly. Include xo-math.h, which fully implements this type.");
-#else // XOMATH_INTERNAL
-
 XOMATH_BEGIN_XO_NS();
 
 //! @brief A four dimensional euclidean vector, optimized for use in games.
@@ -52,22 +48,22 @@ public:
     //! @{
 
     //! Set all. x, y, z and w will be assigned to the input params.
-    const Vector4& Set(float x, float y, float z, float w);
+    Vector4& Set(float x, float y, float z, float w);
     //! Set each. x, y, z and w will be assigned to f.
-    const Vector4& Set(float f);
+    Vector4& Set(float f);
     //! Set each. Copies vec into this.
-    const Vector4& Set(const Vector4& vec);
+    Vector4& Set(const Vector4& vec);
     //! Set each. Assigns same-name values from vec, zero to z and w.
-    const Vector4& Set(const Vector2& vec);
+    Vector4& Set(const Vector2& vec);
     //! Set each. Assigns same-name values from vec, then z and w.
-    const Vector4& Set(const Vector2& vec, float z, float w);
+    Vector4& Set(const Vector2& vec, float z, float w);
     //! Set each. Assigns same-name values from vec, zero to w.
-    const Vector4& Set(const Vector3& vec);
+    Vector4& Set(const Vector3& vec);
     //! Set each. Assigns same-name values from vec, then w.
-    const Vector4& Set(const Vector3& vec, float w);
+    Vector4& Set(const Vector3& vec, float w);
 #if defined(XO_SSE)
     //! Set each. Copies vec int m.
-    const Vector4& Set(const __m128& vec);
+    Vector4& Set(const __m128& vec);
 #endif
     //! Extract all getter. x, y, z and w will be assigned to those values of this vector.
     void Get(float& x, float& y, float& z, float& w) const;
@@ -110,31 +106,31 @@ public:
     //! Operates on all same-name vector elements with other vector types, or all elements to scalar/integer types.
     //! @sa XO_NO_INVERSE_DIVISION
     //! @{
-    _XOINL const Vector4& operator += (const Vector4& v);
-    _XOINL const Vector4& operator += (float v);
-    _XOINL const Vector4& operator += (double v);
-    _XOINL const Vector4& operator += (int v);
-    _XOINL const Vector4& operator += (const class Vector2& v);
-    _XOINL const Vector4& operator += (const class Vector3& v);
-    _XOINL const Vector4& operator -= (const Vector4& v);
-    _XOINL const Vector4& operator -= (float v);
-    _XOINL const Vector4& operator -= (double v);
-    _XOINL const Vector4& operator -= (int v);
-    _XOINL const Vector4& operator -= (const class Vector2& v);
-    _XOINL const Vector4& operator -= (const class Vector3& v);
-    _XOINL const Vector4& operator *= (const Vector4& v);
-    _XOINL const Vector4& operator *= (float v);
-    _XOINL const Vector4& operator *= (double v);
-    _XOINL const Vector4& operator *= (int v);
-    _XOINL const Vector4& operator *= (const class Vector2& v);
-    _XOINL const Vector4& operator *= (const class Vector3& v);
+    _XOINL Vector4& operator += (const Vector4& v);
+    _XOINL Vector4& operator += (float v);
+    _XOINL Vector4& operator += (double v);
+    _XOINL Vector4& operator += (int v);
+    _XOINL Vector4& operator += (const class Vector2& v);
+    _XOINL Vector4& operator += (const class Vector3& v);
+    _XOINL Vector4& operator -= (const Vector4& v);
+    _XOINL Vector4& operator -= (float v);
+    _XOINL Vector4& operator -= (double v);
+    _XOINL Vector4& operator -= (int v);
+    _XOINL Vector4& operator -= (const class Vector2& v);
+    _XOINL Vector4& operator -= (const class Vector3& v);
+    _XOINL Vector4& operator *= (const Vector4& v);
+    _XOINL Vector4& operator *= (float v);
+    _XOINL Vector4& operator *= (double v);
+    _XOINL Vector4& operator *= (int v);
+    _XOINL Vector4& operator *= (const class Vector2& v);
+    _XOINL Vector4& operator *= (const class Vector3& v);
     // See: XO_NO_INVERSE_DIVISION
-    _XOINL const Vector4& operator /= (const Vector4& v);
-    _XOINL const Vector4& operator /= (float v);
-    _XOINL const Vector4& operator /= (double v);
-    _XOINL const Vector4& operator /= (int v);
-    _XOINL const Vector4& operator /= (const class Vector2& v);
-    _XOINL const Vector4& operator /= (const class Vector3& v);
+    _XOINL Vector4& operator /= (const Vector4& v);
+    _XOINL Vector4& operator /= (float v);
+    _XOINL Vector4& operator /= (double v);
+    _XOINL Vector4& operator /= (int v);
+    _XOINL Vector4& operator /= (const class Vector2& v);
+    _XOINL Vector4& operator /= (const class Vector3& v);
     _XOINL Vector4 operator + (const Vector4& v) const;
     _XOINL Vector4 operator + (float v) const;
     _XOINL Vector4 operator + (double v) const;
@@ -239,7 +235,7 @@ public:
 
     //! Normalizes this vector to a Magnitude of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
-    const Vector4& Normalize();
+    Vector4& Normalize();
 
     //! Returns a copy of this vector with a Magnitude of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
@@ -353,5 +349,3 @@ public:
 };
 
 XOMATH_END_XO_NS();
-
-#endif // XOMATH_INTERNAL

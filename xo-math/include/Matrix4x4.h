@@ -19,10 +19,6 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Matrix4x4.h directly. Include xo-math.h, which fully implements this type.");
-#else // XOMATH_INTERNAL
-
 XOMATH_BEGIN_XO_NS();
 
 //! @brief A 4x4 matrix type for building transformations.
@@ -85,9 +81,9 @@ public:
     //! @{
 
     //! Sets column i to vector r.
-    const Matrix4x4& SetRow(int i, const Vector4& r);
+    Matrix4x4& SetRow(int i, const Vector4& r);
     //! Sets column i to vector r.
-    const Matrix4x4& SetColumn(int i, const Vector4& r);
+    Matrix4x4& SetColumn(int i, const Vector4& r);
     //! Get a const reference to a row in the matrix.
     const Vector4& GetRow(int i) const;
     //! Return a column, copied out of the matrix
@@ -118,10 +114,10 @@ public:
 
     //! @name Operators
     //! @{
-    _XOINL const Matrix4x4& operator += (const Matrix4x4& m);
-    _XOINL const Matrix4x4& operator -= (const Matrix4x4& m);
+    _XOINL Matrix4x4& operator += (const Matrix4x4& m);
+    _XOINL Matrix4x4& operator -= (const Matrix4x4& m);
     //! @sa https://en.wikipedia.org/wiki/Matrix_multiplication
-    _XOINL const Matrix4x4& operator *= (const Matrix4x4& m);
+    _XOINL Matrix4x4& operator *= (const Matrix4x4& m);
 
     _XOINL Matrix4x4 operator + (const Matrix4x4& m) const;
     _XOINL Matrix4x4 operator - (const Matrix4x4& m) const;
@@ -234,9 +230,9 @@ public:
     //! Same as TryMakeInverse with no parameter, but provides the necessary determinant value as an out param, for when that's helpful.
     bool TryMakeInverse(float& outDeterminant);
     // Same as TryMakeInverse but fails silently for determinant values of 0.
-    const Matrix4x4& MakeInverse();
+    Matrix4x4& MakeInverse();
     // Same as TryMakeInverse with an out param, but fails silently for determinant values of 0.
-    const Matrix4x4& MakeInverse(float& outDeterminant);
+    Matrix4x4& MakeInverse(float& outDeterminant);
     //! Sets this matrix as a transpose of itself
     /*!
         \f[
@@ -256,7 +252,7 @@ public:
         \f]
     */
     //! @sa https://en.wikipedia.org/wiki/Transpose
-    const Matrix4x4& Transpose();
+    Matrix4x4& Transpose();
     //! Transforms vector v in place by this matrix.
     const Matrix4x4& Transform(Vector3& v) const;
     //! Transforms vector v in place by this matrix.
@@ -564,5 +560,3 @@ public:
 
 
 XOMATH_END_XO_NS();
-
-#endif // XOMATH_INTERNAL

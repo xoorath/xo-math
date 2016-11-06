@@ -19,10 +19,6 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include SSE.h directly. Include xo-math.h.");
-#else // XOMATH_INTERNAL
-
 XOMATH_BEGIN_XO_NS();
 
 //! @todo why is this in sse? is there no fallback?
@@ -138,5 +134,3 @@ namespace sse {
 #endif
 
 XOMATH_END_XO_NS();
-
-#endif // XOMATH_INTERNAL

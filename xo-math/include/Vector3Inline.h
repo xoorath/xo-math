@@ -19,10 +19,6 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Vector3Operators.h directly. Include xo-math.h, which fully implements this type.");
-#else // XOMATH_INTERNAL
-
 XOMATH_BEGIN_XO_NS();
 
 #if defined(XO_SSE)
@@ -51,7 +47,7 @@ Vector3 Vector3::operator ~() const {
     return ZYX();
 }
 
-const Vector3& Vector3::operator += (const Vector3& v) {
+Vector3& Vector3::operator += (const Vector3& v) {
 #if defined(XO_SSE)
     m = _mm_add_ps(m, v);
 #else
@@ -62,7 +58,7 @@ const Vector3& Vector3::operator += (const Vector3& v) {
     return *this;
 }
 
-const Vector3& Vector3::operator += (float v) {
+Vector3& Vector3::operator += (float v) {
 #if defined(XO_SSE)
     m = _mm_add_ps(m, _mm_set_ps1(v));
 #else
@@ -73,12 +69,12 @@ const Vector3& Vector3::operator += (float v) {
     return *this;
 }
 
-const Vector3& Vector3::operator += (double v)                  { return (*this) += float(v); }
-const Vector3& Vector3::operator += (int v)                     { return (*this) += float(v); }
-const Vector3& Vector3::operator += (const class Vector2& v)    { return (*this) += Vector3(v); }
-const Vector3& Vector3::operator += (const class Vector4& v)    { return (*this) += Vector3(v); }
+Vector3& Vector3::operator += (double v)                  { return (*this) += float(v); }
+Vector3& Vector3::operator += (int v)                     { return (*this) += float(v); }
+Vector3& Vector3::operator += (const class Vector2& v)    { return (*this) += Vector3(v); }
+Vector3& Vector3::operator += (const class Vector4& v)    { return (*this) += Vector3(v); }
 
-const Vector3& Vector3::operator -= (const Vector3& v) {
+Vector3& Vector3::operator -= (const Vector3& v) {
 #if defined(XO_SSE)
     m = _mm_sub_ps(m, v);
 #else
@@ -89,7 +85,7 @@ const Vector3& Vector3::operator -= (const Vector3& v) {
     return *this;
 }
 
-const Vector3& Vector3::operator -= (float v) {
+Vector3& Vector3::operator -= (float v) {
 #if defined(XO_SSE)
     m = _mm_sub_ps(m, _mm_set_ps1(v));
 #else
@@ -100,12 +96,12 @@ const Vector3& Vector3::operator -= (float v) {
     return *this;
 }
 
-const Vector3& Vector3::operator -= (double v)                  { return (*this) -= float(v); }
-const Vector3& Vector3::operator -= (int v)                     { return (*this) -= float(v); }
-const Vector3& Vector3::operator -= (const class Vector2& v)    { return (*this) -= Vector3(v); }
-const Vector3& Vector3::operator -= (const class Vector4& v)    { return (*this) -= Vector3(v); }
+Vector3& Vector3::operator -= (double v)                  { return (*this) -= float(v); }
+Vector3& Vector3::operator -= (int v)                     { return (*this) -= float(v); }
+Vector3& Vector3::operator -= (const class Vector2& v)    { return (*this) -= Vector3(v); }
+Vector3& Vector3::operator -= (const class Vector4& v)    { return (*this) -= Vector3(v); }
 
-const Vector3& Vector3::operator *= (const Vector3& v) {
+Vector3& Vector3::operator *= (const Vector3& v) {
 #if defined(XO_SSE)
     m = _mm_mul_ps(m, v);
 #else
@@ -116,7 +112,7 @@ const Vector3& Vector3::operator *= (const Vector3& v) {
     return *this;
 }
 
-const Vector3& Vector3::operator *= (float v) {
+Vector3& Vector3::operator *= (float v) {
 #if defined(XO_SSE)
     m = _mm_mul_ps(m, _mm_set_ps1(v));
 #else
@@ -127,13 +123,13 @@ const Vector3& Vector3::operator *= (float v) {
     return *this;
 }
 
-const Vector3& Vector3::operator *= (double v)                  { return (*this) *= float(v); }
-const Vector3& Vector3::operator *= (int v)                     { return (*this) *= float(v); }
-const Vector3& Vector3::operator *= (const class Vector2& v)    { return (*this) *= Vector3(v); }
-const Vector3& Vector3::operator *= (const class Vector4& v)    { return (*this) *= Vector3(v); }
+Vector3& Vector3::operator *= (double v)                  { return (*this) *= float(v); }
+Vector3& Vector3::operator *= (int v)                     { return (*this) *= float(v); }
+Vector3& Vector3::operator *= (const class Vector2& v)    { return (*this) *= Vector3(v); }
+Vector3& Vector3::operator *= (const class Vector4& v)    { return (*this) *= Vector3(v); }
 
 #if defined(XO_NO_INVERSE_DIVISION)
-const Vector3& Vector3::operator /= (const Vector3& v) {
+Vector3& Vector3::operator /= (const Vector3& v) {
 #if defined(XO_SSE)
     // see: https://software.intel.com/sites/landingpage/IntrinsicsGuide
     // see: https://software.intel.com/en-us/articles/measuring-instruction-latency-and-throughput
@@ -156,7 +152,7 @@ const Vector3& Vector3::operator /= (const Vector3& v) {
     return *this;
 }
 
-const Vector3& Vector3::operator /= (float v) {
+Vector3& Vector3::operator /= (float v) {
 #   if defined(XO_SSE)
     m = _mm_div_ps(m, _mm_set_ps1(v));
 #   else
@@ -168,7 +164,7 @@ const Vector3& Vector3::operator /= (float v) {
 }
 #else
 
-const Vector3& Vector3::operator /= (const Vector3& v) {
+Vector3& Vector3::operator /= (const Vector3& v) {
 #   if defined(XO_SSE)
     // see: https://software.intel.com/sites/landingpage/IntrinsicsGuide
     // see: https://software.intel.com/en-us/articles/measuring-instruction-latency-and-throughput
@@ -200,7 +196,7 @@ const Vector3& Vector3::operator /= (const Vector3& v) {
     return *this;
 }
 
-const Vector3& Vector3::operator /= (float v) { 
+Vector3& Vector3::operator /= (float v) { 
 #   if defined(XO_SSE)
     m = _mm_mul_ps(m, _mm_set_ps1(1.0f/v));
 #   else
@@ -212,10 +208,10 @@ const Vector3& Vector3::operator /= (float v) {
     return *this;
 }
 #endif
-const Vector3& Vector3::operator /= (double v)                  { return (*this) /= float(v); }
-const Vector3& Vector3::operator /= (int v)                     { return (*this) /= float(v); }
-const Vector3& Vector3::operator /= (const class Vector2& v)    { return (*this) /= Vector3(v); }
-const Vector3& Vector3::operator /= (const class Vector4& v)    { return (*this) /= Vector3(v); }
+Vector3& Vector3::operator /= (double v)                  { return (*this) /= float(v); }
+Vector3& Vector3::operator /= (int v)                     { return (*this) /= float(v); }
+Vector3& Vector3::operator /= (const class Vector2& v)    { return (*this) /= Vector3(v); }
+Vector3& Vector3::operator /= (const class Vector4& v)    { return (*this) /= Vector3(v); }
 
 Vector3 Vector3::operator + (const Vector3& v) const        { return Vector3(*this) += v; }
 Vector3 Vector3::operator + (float v) const                 { return Vector3(*this) += v; }
@@ -312,5 +308,3 @@ bool Vector3::operator != (const class Vector2& v) const    { return !((*this) =
 bool Vector3::operator != (const class Vector4& v) const    { return !((*this) == v); }
 
 XOMATH_END_XO_NS();
-
-#endif // XOMATH_INTERNAL

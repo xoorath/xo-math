@@ -57,19 +57,19 @@ Vector2::Vector2(const class Vector3& v) : x(v.x), y(v.y) {
 Vector2::Vector2(const class Vector4& v) : x(v.x), y(v.y) {
 }
 
-const Vector2& Vector2::Set(float x, float y) {
+Vector2& Vector2::Set(float x, float y) {
     this->x = x;
     this->y = y;
     return *this;
 }
 
-const Vector2& Vector2::Set(float v) {
+Vector2& Vector2::Set(float v) {
     x = v;
     y = v;
     return *this;
 }
 
-const Vector2& Vector2::Set(const Vector2& v) {
+Vector2& Vector2::Set(const Vector2& v) {
     x = v.x;
     y = v.y;
     return *this;
@@ -96,7 +96,7 @@ float Vector2::MagnitudeSquared() const {
     return x*x + y*y;
 }
 
-const Vector2& Vector2::Normalize() {
+Vector2& Vector2::Normalize() {
     float magnitude = MagnitudeSquared();
     if (CloseEnough(magnitude, 1.0f, Epsilon))
         return *this; // already normalized

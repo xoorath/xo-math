@@ -19,10 +19,6 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Matrix4x4Operators.h directly. Include GameMath.h, which fully implements this type.");
-#else // XOMATH_INTERNAL
-
 XOMATH_BEGIN_XO_NS();
 
 const Vector4& Matrix4x4::operator [](int i) const {
@@ -46,7 +42,7 @@ Matrix4x4 Matrix4x4::operator ~() const {
     return m.Transpose();
 }
 
-const Matrix4x4& Matrix4x4::operator += (const Matrix4x4& m) {
+Matrix4x4& Matrix4x4::operator += (const Matrix4x4& m) {
     r[0] += m[0];
     r[1] += m[1];
     r[2] += m[2];
@@ -54,7 +50,7 @@ const Matrix4x4& Matrix4x4::operator += (const Matrix4x4& m) {
     return *this;
 }
 
-const Matrix4x4& Matrix4x4::operator -= (const Matrix4x4& m) {
+Matrix4x4& Matrix4x4::operator -= (const Matrix4x4& m) {
     r[0] -= m[0];
     r[1] -= m[1];
     r[2] -= m[2];
@@ -62,7 +58,7 @@ const Matrix4x4& Matrix4x4::operator -= (const Matrix4x4& m) {
     return *this;
 }
 
-const Matrix4x4& Matrix4x4::operator *= (const Matrix4x4& m) {
+Matrix4x4& Matrix4x4::operator *= (const Matrix4x4& m) {
     auto t = m.Transposed();
     return (*this) = Matrix4x4(
         (r[0] * t[0]).Sum(), (r[0] * t[1]).Sum(), (r[0] * t[2]).Sum(), (r[0] * t[3]).Sum(),
@@ -85,5 +81,3 @@ Vector3 Matrix4x4::operator * (const Vector3& v) const {
 }
 
 XOMATH_END_XO_NS();
-
-#endif

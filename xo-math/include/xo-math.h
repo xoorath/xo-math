@@ -23,8 +23,6 @@
 // xo-math:
 // TODO:
 //  * Ensure macros are consistently named.
-//  * Remove internal macro warning. Users are probably not stupid.
-//  * Selectively start moving methods away from inline, rather than using it everywhere.
 //  * Support NEON
 //  * Add transformation object.
 //  * Matrix
@@ -62,21 +60,6 @@
 #   define XO_ASSERT(condition, message)
 #endif
 
-#if defined(XO_SPACE_LEFTHAND) && defined(XO_SPACE_RIGHTHAND)
-static_assert(false, "xo-math found both XO_SPACE_LEFTHAND and XO_SPACE_RIGHTHAND defined. These are incompatible");
-#elif !defined(XO_SPACE_LEFTHAND) && !defined(XO_SPACE_RIGHTHAND)
-    //! Default to right hand space if no configuration is defined.
-    //! @sa https://www.evl.uic.edu/ralph/508S98/coordinates.html
-#   define XO_SPACE_RIGHTHAND 1
-#endif
-
-#if defined(XO_SPACE_YUP) && defined(XO_SPACE_ZUP)
-static_assert(false, "xo-math found both XO_SPACE_YUP and XO_SPACE_ZUP defined. These are incompatible");
-#elif !defined(XO_SPACE_YUP) && !defined(XO_SPACE_ZUP)
-    //! Default to z up if no configuration is defined.
-#   define XO_SPACE_ZUP
-#endif
-
 ////////////////////////////////////////////////////////////////////////// Dependencies for xo-math headers
 #if _MSC_VER 
 #pragma warning(push) 
@@ -105,17 +88,7 @@ static_assert(false, "xo-math found both XO_SPACE_YUP and XO_SPACE_ZUP defined. 
 #   define _MM_ALIGN16 __attribute__((aligned(16)))
 #endif
 
-#if defined(_XOMATH_INTERNAL_MACRO_WARNING)
-static_assert(false, "xo-math found an internal macro where it shouldn't have.");
-#else
-#   define _XOMATH_INTERNAL_MACRO_WARNING static_assert(false, "xo-math found an internal macro where it shouldn't have.");
-#endif
-
-#if defined(XOMATH_INTERNAL)
-_XOMATH_INTERNAL_MACRO_WARNING
-#else
-#   define XOMATH_INTERNAL 1
-#endif
+#define XOMATH_INTERNAL 1
 
 #if !defined(_XO_MATH_STRINGIFY_HELPER)
     // Do not undef at end of file. Will break XO_MATH_VERSION... and XO_MATH_COMPILER... defines
@@ -129,70 +102,47 @@ _XOMATH_INTERNAL_MACRO_WARNING
 
 #include "DetectSIMD.h"
 
-#if defined(_XOCONSTEXPR) || defined(_XONOCONSTEXPR)
-_XOMATH_INTERNAL_MACRO_WARNING
-#else
+
 // todo: remove constexpr in visual studio 2013 and re-test for support
-#   if defined(_MSC_VER) && _MSC_VER < 1800
-#       define _XOCONSTEXPR
-#       if !defined(_XONOCONSTEXPR)
-#           define _XONOCONSTEXPR
-#       endif
-#    else
-#       define _XOCONSTEXPR constexpr
+#if defined(_MSC_VER) && _MSC_VER < 1800
+#    define _XOCONSTEXPR
+#    if !defined(_XONOCONSTEXPR)
+#        define _XONOCONSTEXPR
 #    endif
+#else
+#   define _XOCONSTEXPR constexpr
 #endif
 
-#if defined(_XOINL)
-_XOMATH_INTERNAL_MACRO_WARNING
+#if defined(_MSC_VER)
+#   define _XOINL __forceinline
 #else
-#   ifdef XO_NO_INLINE
-        // I've found at least on msvc that inline will improve execution time in our test main. on 100k iterations I saw 0.51s without inline and 0.46s with inline.
-#       define _XOINL
-#   elif defined(_MSC_VER)
-#       define _XOINL __forceinline
-#   else
-#       define _XOINL inline
-#   endif
+#   define _XOINL inline
 #endif
 
-#if defined(_XOTLS)
-_XOMATH_INTERNAL_MACRO_WARNING
+
+#if (defined(__clang__) && defined(__APPLE__))
+#   define _XOTLS __thread
+#elif (defined(_MSC_VER) && _MSC_VER < 1800)
+#   define _XOTLS __declspec(thread)
 #else
-#   if (defined(__clang__) && defined(__APPLE__))
-#       define _XOTLS __thread
-#	elif (defined(_MSC_VER) && _MSC_VER < 1800)
-#       define _XOTLS __declspec(thread)
-#   else
-#       define _XOTLS thread_local
-#   endif
+#   define _XOTLS thread_local
 #endif
 
-#if defined(_XO_TLS_ENGINE)
-_XOMATH_INTERNAL_MACRO_WARNING
-#else
-    // apple clang doesn't give us thread_local until xcode 8.
-#   if (defined(__clang__) && defined(__APPLE__)) || (defined(_MSC_VER) && _MSC_VER < 1800)
-#       define _XO_TLS_ENGINE \
-            static _XOTLS std::mt19937* tls_engline; \
-            static _XOTLS char mem[sizeof(std::mt19937)];\
-            if(!tls_engline) { \
-                tls_engline = new(mem) std::mt19937((unsigned)clock()); \
-            }
-#   else
-#       define _XO_TLS_ENGINE \
-            static _XOTLS std::mt19937 tls_engline((unsigned)clock());
-#   endif
-#endif
+# define _XO_NO_TLS (defined(__clang__) && defined(__APPLE__)) || (defined(_MSC_VER) && _MSC_VER < 1800)
 
-#if defined(_XO_TLS_DISTRIBUTION)
-_XOMATH_INTERNAL_MACRO_WARNING
+// apple clang doesn't give us thread_local until xcode 8.
+#if _XO_NO_TLS
+#   define _XO_TLS_ENGINE \
+        static _XOTLS std::mt19937* tls_engline; \
+        static _XOTLS char mem[sizeof(std::mt19937)];\
+        if(!tls_engline) { \
+            tls_engline = new(mem) std::mt19937((unsigned)clock()); \
+        }
+#    define _XO_TLS_DISTRIBUTION dist(*tls_engline)
 #else
-#   if defined(__clang__) && defined(__APPLE__) || (defined(_MSC_VER) && _MSC_VER < 1800)
-#       define _XO_TLS_DISTRIBUTION dist(*tls_engline)
-#   else
-#       define _XO_TLS_DISTRIBUTION dist(tls_engline)
-#   endif
+#   define _XO_TLS_ENGINE \
+        static _XOTLS std::mt19937 tls_engline((unsigned)clock());
+#    define _XO_TLS_DISTRIBUTION dist(tls_engline)
 #endif
 
 XOMATH_BEGIN_XO_NS();
@@ -252,43 +202,26 @@ namespace sse {
 
 // We wont warn about pre-defining XO_16ALIGNED_MALLOC or XO_16ALIGNED_FREE.
 // If a user wants to create their own allocator, we wont get in the way of that.
-#   if !defined(XO_16ALIGNED_MALLOC)
-#       define XO_16ALIGNED_MALLOC(size) _mm_malloc(size, 16)
-#   endif
-#   if  !defined(XO_16ALIGNED_FREE)
-#       define XO_16ALIGNED_FREE(ptr) _mm_free(ptr)
-#   endif
-
-#   if defined(_XO_OVERLOAD_NEW_DELETE)
-_XOMATH_INTERNAL_MACRO_WARNING
-#   else
-#   define _XO_OVERLOAD_NEW_DELETE() \
-        _XOINL static void* operator new (std::size_t size)     { return XO_16ALIGNED_MALLOC(size); } \
-        _XOINL static void* operator new[] (std::size_t size)   { return XO_16ALIGNED_MALLOC(size); } \
-        _XOINL static void operator delete (void* ptr)          { XO_16ALIGNED_FREE(ptr); } \
-        _XOINL static void operator delete[] (void* ptr)        { XO_16ALIGNED_FREE(ptr); }
-#   endif
-
-#else
-// we don't need to overload new and delete unless memory alignment is required.
-#if defined(_XO_OVERLOAD_NEW_DELETE)
-_XOMATH_INTERNAL_MACRO_WARNING
-#   else
-#       define _XO_OVERLOAD_NEW_DELETE()
-#   endif
+#if !defined(XO_16ALIGNED_MALLOC)
+#    define XO_16ALIGNED_MALLOC(size) _mm_malloc(size, 16)
+#endif
+#if  !defined(XO_16ALIGNED_FREE)
+#    define XO_16ALIGNED_FREE(ptr) _mm_free(ptr)
 #endif
 
-#if defined(_XO_MIN)
-_XOMATH_INTERNAL_MACRO_WARNING
+#define _XO_OVERLOAD_NEW_DELETE() \
+     _XOINL static void* operator new (std::size_t size)     { return XO_16ALIGNED_MALLOC(size); } \
+     _XOINL static void* operator new[] (std::size_t size)   { return XO_16ALIGNED_MALLOC(size); } \
+     _XOINL static void operator delete (void* ptr)          { XO_16ALIGNED_FREE(ptr); } \
+     _XOINL static void operator delete[] (void* ptr)        { XO_16ALIGNED_FREE(ptr); }
+
 #else
-#   define _XO_MIN(a, b) (a < b ? a : b)
+    // we don't need to overload new and delete unless memory alignment is required.
+#   define _XO_OVERLOAD_NEW_DELETE()
 #endif
 
-#if defined(_XO_MAX)
-_XOMATH_INTERNAL_MACRO_WARNING
-#else
-#   define _XO_MAX(a, b) (a > b ? a : b)
-#endif
+#define _XO_MIN(a, b) (a < b ? a : b)
+#define _XO_MAX(a, b) (a > b ? a : b)
 
 // wrap for now, so we have the option to make a faster version later.
 _XOINL float Min(float x, float y)      { return _XO_MIN(x, y); }
@@ -302,7 +235,6 @@ _XOINL float ASin(float f)              { return asinf(f); }
 _XOINL float ACos(float f)              { return acosf(f); }
 _XOINL float ATan(float f)              { return atanf(f); } 
 _XOINL float ATan2(float y, float x)    { return atan2f(y, x); } 
-
 _XOINL float Difference(float x, float y) { return Abs(x-y); }
 
 _XOINL
@@ -412,15 +344,6 @@ float RandomRange(float low, float high) {
 
 XOMATH_END_XO_NS();
 
-#if defined(_XO_ASSIGN_QUAT)
-_XOMATH_INTERNAL_MACRO_WARNING
-#   undef _XO_ASSIGN_QUAT
-#endif
-#if defined(_XO_ASSIGN_QUAT_Q)
-_XOMATH_INTERNAL_MACRO_WARNING
-#   undef _XO_ASSIGN_QUAT_Q
-#endif
-
 #if defined(XO_SSE)
 #define _XO_ASSIGN_QUAT(W, X, Y, Z) m = _mm_set_ps(W, Z, Y, X);
 #define _XO_ASSIGN_QUAT_Q(Q, W, X, Y, Z) Q.m = _mm_set_ps(W, Z, Y, X);
@@ -458,8 +381,6 @@ _XOMATH_INTERNAL_MACRO_WARNING
 #endif
 
 #if !defined(XO_EXPORT_ALL)
-#   undef _XOMATH_INTERNAL_MACRO_WARNING
-
 #   undef _XOCONSTEXPR
 #   undef _XOINL
 #   undef _XOTLS

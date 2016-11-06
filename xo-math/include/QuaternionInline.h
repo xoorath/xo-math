@@ -19,10 +19,6 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include QuaternionOperators.h directly. Include xo-math.h, which fully implements this type.");
-#else // XOMATH_INTERNAL
-
 XOMATH_BEGIN_XO_NS();
 
 float& Quaternion::operator [](int i) { 
@@ -33,7 +29,7 @@ const float& Quaternion::operator [](int i) const {
   return f[i]; 
 }
 
-const Quaternion& Quaternion::operator *= (const Quaternion& q) {
+Quaternion& Quaternion::operator *= (const Quaternion& q) {
     // TODO: see if there's a cute intrinsic way to do this.
     _XO_ASSIGN_QUAT(
       w * q.x + x * q.w + y * q.z - z * q.y,
@@ -64,5 +60,3 @@ bool Quaternion::operator != (const Quaternion& q) const {
 }
 
 XOMATH_END_XO_NS();
-
-#endif

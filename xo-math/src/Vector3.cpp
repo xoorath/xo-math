@@ -78,26 +78,21 @@ const Vector3 Vector3::Zero(0.0f, 0.0f, 0.0f);
 
 #if defined(XO_SSE)
 
-#if defined IDX_X
-_XOMATH_INTERNAL_MACRO_WARNING
-#   else
-#       define IDX_X 0
-#   endif
-#if defined IDX_Y
-_XOMATH_INTERNAL_MACRO_WARNING
-#   else
-#       define IDX_Y 1
-#   endif
-#if defined IDX_Z
-_XOMATH_INTERNAL_MACRO_WARNING
-#   else
-#       define IDX_Z 2
-#   endif
-#if defined IDX_W
-_XOMATH_INTERNAL_MACRO_WARNING
-#   else
-#       define IDX_W 3
-#   endif
+#if !defined(IDX_X)
+#   define IDX_X 0
+#endif
+
+#if !defined(IDX_Y)
+#   define IDX_Y 1
+#endif
+
+#if !defined(IDX_Z)
+#   define IDX_Z 2
+#endif
+
+#if !defined(IDX_W)
+#   define IDX_W 3
+#endif
 
 #endif
 
@@ -156,7 +151,7 @@ Vector3::Vector3(const class Vector4& v) :
 {
 }
 
-const Vector3& Vector3::Set(float x, float y, float z) {
+Vector3& Vector3::Set(float x, float y, float z) {
 #if defined(XO_SSE)
     m = _mm_set_ps(0.0f, z, y, x);
 #else
@@ -167,7 +162,7 @@ const Vector3& Vector3::Set(float x, float y, float z) {
     return *this;
 }
 
-const Vector3& Vector3::Set(float f) {
+Vector3& Vector3::Set(float f) {
 #if defined(XO_SSE)
     m = _mm_set1_ps(f);
 #else
@@ -178,7 +173,7 @@ const Vector3& Vector3::Set(float f) {
     return *this;
 }
 
-const Vector3& Vector3::Set(const Vector3& vec) {
+Vector3& Vector3::Set(const Vector3& vec) {
 #if defined(XO_SSE)
     m = vec.m;
 #else
@@ -190,7 +185,7 @@ const Vector3& Vector3::Set(const Vector3& vec) {
 }
 
 #if defined(XO_SSE)
-const Vector3& Vector3::Set(const __m128& vec) {
+Vector3& Vector3::Set(const __m128& vec) {
     m = vec;
     return *this;
 }
@@ -241,7 +236,7 @@ float Vector3::Magnitude() const {
     return Sqrt(MagnitudeSquared());
 }
 
-const Vector3& Vector3::Normalize() {
+Vector3& Vector3::Normalize() {
     float magnitude = MagnitudeSquared();
     if (CloseEnough(magnitude, 1.0f, Epsilon)) {
         return *this; // already normalized

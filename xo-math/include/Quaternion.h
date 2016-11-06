@@ -19,10 +19,6 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Quaternion.h directly. Include xo-math.h, which fully implements this type.");
-#else // XOMATH_INTERNAL
-
 XOMATH_BEGIN_XO_NS();
 
 class _MM_ALIGN16 Quaternion {
@@ -36,15 +32,15 @@ public:
     _XOINL float& operator [](int i);
     _XOINL const float& operator [](int i) const;
 
-    _XOINL const Quaternion& operator *= (const Quaternion& q);
+    _XOINL Quaternion& operator *= (const Quaternion& q);
     _XOINL Quaternion operator * (const Quaternion& q) const;
 
     _XOINL bool operator == (const Quaternion& q) const;
     _XOINL bool operator != (const Quaternion& q) const;
 
-    const Quaternion& MakeConjugate();
-    const Quaternion& MakeInverse();
-    const Quaternion& Normalize();
+    Quaternion& MakeConjugate();
+    Quaternion& MakeInverse();
+    Quaternion& Normalize();
     Quaternion Conjugate() const;
     Quaternion Inverse() const;
     Quaternion Normalized() const;
@@ -104,5 +100,3 @@ private:
 };
 
 XOMATH_END_XO_NS();
-
-#endif // XOMATH_INTERNAL

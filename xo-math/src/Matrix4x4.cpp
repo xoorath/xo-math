@@ -116,7 +116,7 @@ Vector4 Matrix4x4::GetColumn(int i) const {
     return Vector4(r[0][i], r[1][i], r[2][i], r[3][i]);
 }
 
-const Matrix4x4& Matrix4x4::Transpose() {
+Matrix4x4& Matrix4x4::Transpose() {
 #if defined(XO_SSE)
     _MM_TRANSPOSE4_PS(r[0].m, r[1].m, r[2].m, r[3].m);
 #else

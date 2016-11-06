@@ -145,7 +145,7 @@ Quaternion Quaternion::Inverse() const
     return Quaternion(*this).MakeInverse();
 }
 
-const Quaternion& Quaternion::MakeInverse()
+Quaternion& Quaternion::MakeInverse()
 {
     float magnitude = xo_internal::QuaternionSquareSum(*this);
 
@@ -168,7 +168,7 @@ Quaternion Quaternion::Normalized() const
     return Quaternion(*this).Normalize();
 }
 
-const Quaternion& Quaternion::Normalize()
+Quaternion& Quaternion::Normalize()
 {
     float magnitude = xo_internal::QuaternionSquareSum(*this);
     if (CloseEnough(magnitude, 1.0f, Epsilon))
@@ -191,7 +191,7 @@ Quaternion Quaternion::Conjugate() const
     return Quaternion(*this).MakeConjugate();
 }
 
-const Quaternion& Quaternion::MakeConjugate()
+Quaternion& Quaternion::MakeConjugate()
 {
     _XO_ASSIGN_QUAT(w, -x, -y, -z);
     return *this;

@@ -19,10 +19,6 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Vector2.h directly. Include xo-math.h, which fully implements this type.");
-#else // XOMATH_INTERNAL
-
 XOMATH_BEGIN_XO_NS();
 
 //! A two dimensional euclidean vector, optimized for use in games.
@@ -47,11 +43,11 @@ public:
     //! @{
 
     //! Set all. x, and y will be assigned to the input params.
-    const Vector2& Set(float x, float y);
+    Vector2& Set(float x, float y);
     //! Set each. x, and y will be assigned to f.
-    const Vector2& Set(float f);
+    Vector2& Set(float f);
     //! Set each. Copies vec into this.
-    const Vector2& Set(const Vector2& vec);
+    Vector2& Set(const Vector2& vec);
     //! Extract all getter. x and y will be assigned to those values of this vector.
     void Get(float& x, float& y) const;
     //! Extract all getter. f[0] and f[1] will be assigned to x and y respectively.
@@ -84,30 +80,30 @@ public:
     //! Operates on all same-name vector elements with other vector types, or all elements to scalar/integer types.
     //! @{
 
-    _XOINL const Vector2& operator += (const Vector2& v);
-    _XOINL const Vector2& operator += (float v);
-    _XOINL const Vector2& operator += (double v);
-    _XOINL const Vector2& operator += (int v);
-    _XOINL const Vector2& operator += (const class Vector3& v);
-    _XOINL const Vector2& operator += (const class Vector4& v);
-    _XOINL const Vector2& operator -= (const Vector2& v);
-    _XOINL const Vector2& operator -= (float v);
-    _XOINL const Vector2& operator -= (double v);
-    _XOINL const Vector2& operator -= (int v);
-    _XOINL const Vector2& operator -= (const class Vector3& v);
-    _XOINL const Vector2& operator -= (const class Vector4& v);
-    _XOINL const Vector2& operator *= (const Vector2& v);
-    _XOINL const Vector2& operator *= (float v);
-    _XOINL const Vector2& operator *= (double v);
-    _XOINL const Vector2& operator *= (int v);
-    _XOINL const Vector2& operator *= (const class Vector3& v);
-    _XOINL const Vector2& operator *= (const class Vector4& v);
-    _XOINL const Vector2& operator /= (const Vector2& v);
-    _XOINL const Vector2& operator /= (float v);
-    _XOINL const Vector2& operator /= (double v);
-    _XOINL const Vector2& operator /= (int v);
-    _XOINL const Vector2& operator /= (const class Vector3& v);
-    _XOINL const Vector2& operator /= (const class Vector4& v);
+    _XOINL Vector2& operator += (const Vector2& v);
+    _XOINL Vector2& operator += (float v);
+    _XOINL Vector2& operator += (double v);
+    _XOINL Vector2& operator += (int v);
+    _XOINL Vector2& operator += (const class Vector3& v);
+    _XOINL Vector2& operator += (const class Vector4& v);
+    _XOINL Vector2& operator -= (const Vector2& v);
+    _XOINL Vector2& operator -= (float v);
+    _XOINL Vector2& operator -= (double v);
+    _XOINL Vector2& operator -= (int v);
+    _XOINL Vector2& operator -= (const class Vector3& v);
+    _XOINL Vector2& operator -= (const class Vector4& v);
+    _XOINL Vector2& operator *= (const Vector2& v);
+    _XOINL Vector2& operator *= (float v);
+    _XOINL Vector2& operator *= (double v);
+    _XOINL Vector2& operator *= (int v);
+    _XOINL Vector2& operator *= (const class Vector3& v);
+    _XOINL Vector2& operator *= (const class Vector4& v);
+    _XOINL Vector2& operator /= (const Vector2& v);
+    _XOINL Vector2& operator /= (float v);
+    _XOINL Vector2& operator /= (double v);
+    _XOINL Vector2& operator /= (int v);
+    _XOINL Vector2& operator /= (const class Vector3& v);
+    _XOINL Vector2& operator /= (const class Vector4& v);
     _XOINL Vector2 operator + (const Vector2& v) const;
     _XOINL Vector2 operator + (float v) const;
     _XOINL Vector2 operator + (double v) const;
@@ -211,7 +207,7 @@ public:
 
     //! Normalizes this vector to a Magnitude of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
-    const Vector2& Normalize();
+    Vector2& Normalize();
 
     //! Returns a copy of this vector with a Magnitude of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
@@ -334,5 +330,3 @@ public:
 };
 
 XOMATH_END_XO_NS();
-
-#endif // XOMATH_INTERNAL

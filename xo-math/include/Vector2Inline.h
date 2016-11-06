@@ -19,10 +19,6 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef XOMATH_INTERNAL
-static_assert(false, "Don't include Vector2Operators.h directly. Include xo-math.h, which fully implements this type.");
-#else // XOMATH_INTERNAL
-
 XOMATH_BEGIN_XO_NS();
 
 float& Vector2::operator [](int i) { return f[i]; }
@@ -31,57 +27,57 @@ const float& Vector2::operator [](int i) const { return f[i]; }
 Vector2 Vector2::operator - () const { return Vector2(-x, -y); }
 Vector2 Vector2::operator ~ () const { return Vector2(y, x); }
 
-const Vector2& Vector2::operator += (const Vector2& v) {
+Vector2& Vector2::operator += (const Vector2& v) {
     x += v.x;
     y += v.y;
     return *this; 
 }
-const Vector2& Vector2::operator += (float v) {
+Vector2& Vector2::operator += (float v) {
     x += v;
     y += v;
     return *this; 
 }
-const Vector2& Vector2::operator += (double v)                  { return *this += (float)v; }
-const Vector2& Vector2::operator += (int v)                     { return *this += (float)v; }
-const Vector2& Vector2::operator += (const class Vector3& v)    { return *this += Vector2(v); }
-const Vector2& Vector2::operator += (const class Vector4& v)    { return *this += Vector2(v); }
+Vector2& Vector2::operator += (double v)                  { return *this += (float)v; }
+Vector2& Vector2::operator += (int v)                     { return *this += (float)v; }
+Vector2& Vector2::operator += (const class Vector3& v)    { return *this += Vector2(v); }
+Vector2& Vector2::operator += (const class Vector4& v)    { return *this += Vector2(v); }
 
-const Vector2& Vector2::operator -= (const Vector2& v) {
+Vector2& Vector2::operator -= (const Vector2& v) {
     x -= v.x;
     y -= v.y;
     return *this; 
 }
-const Vector2& Vector2::operator -= (float v) {
+Vector2& Vector2::operator -= (float v) {
     x -= v;
     y -= v;
     return *this; 
 }
-const Vector2& Vector2::operator -= (double v)                  { return *this -= (float)v; }
-const Vector2& Vector2::operator -= (int v)                     { return *this -= (float)v; }
-const Vector2& Vector2::operator -= (const class Vector3& v)    { return *this -= Vector2(v); }
-const Vector2& Vector2::operator -= (const class Vector4& v)    { return *this -= Vector2(v); }
+Vector2& Vector2::operator -= (double v)                  { return *this -= (float)v; }
+Vector2& Vector2::operator -= (int v)                     { return *this -= (float)v; }
+Vector2& Vector2::operator -= (const class Vector3& v)    { return *this -= Vector2(v); }
+Vector2& Vector2::operator -= (const class Vector4& v)    { return *this -= Vector2(v); }
 
-const Vector2& Vector2::operator *= (const Vector2& v) {
+Vector2& Vector2::operator *= (const Vector2& v) {
     x *= v.x;
     y *= v.y;
     return *this; 
 }
-const Vector2& Vector2::operator *= (float v) {
+Vector2& Vector2::operator *= (float v) {
     x *= v;
     y *= v;
     return *this;
 }
-const Vector2& Vector2::operator *= (double v)                  { return *this *= (float)v; }
-const Vector2& Vector2::operator *= (int v)                     { return *this *= (float)v; }
-const Vector2& Vector2::operator *= (const class Vector3& v)    { return *this *= Vector2(v); }
-const Vector2& Vector2::operator *= (const class Vector4& v)    { return *this *= Vector2(v); }
+Vector2& Vector2::operator *= (double v)                  { return *this *= (float)v; }
+Vector2& Vector2::operator *= (int v)                     { return *this *= (float)v; }
+Vector2& Vector2::operator *= (const class Vector3& v)    { return *this *= Vector2(v); }
+Vector2& Vector2::operator *= (const class Vector4& v)    { return *this *= Vector2(v); }
 
-const Vector2& Vector2::operator /= (const Vector2& v) {
+Vector2& Vector2::operator /= (const Vector2& v) {
     x /= v.x;
     y /= v.y;
     return *this;
 }
-const Vector2& Vector2::operator /= (float v) {
+Vector2& Vector2::operator /= (float v) {
 #if defined(XO_NO_INVERSE_DIVISION)
     x /= v;
     y /= v;
@@ -91,10 +87,10 @@ const Vector2& Vector2::operator /= (float v) {
 #endif
     
 }
-const Vector2& Vector2::operator /= (double v)                  { return *this /= (float)v; }
-const Vector2& Vector2::operator /= (int v)                     { return *this /= (float)v; }
-const Vector2& Vector2::operator /= (const class Vector3& v)    { return *this /= Vector2(v); }
-const Vector2& Vector2::operator /= (const class Vector4& v)    { return *this /= Vector2(v); }
+Vector2& Vector2::operator /= (double v)                  { return *this /= (float)v; }
+Vector2& Vector2::operator /= (int v)                     { return *this /= (float)v; }
+Vector2& Vector2::operator /= (const class Vector3& v)    { return *this /= Vector2(v); }
+Vector2& Vector2::operator /= (const class Vector4& v)    { return *this /= Vector2(v); }
 
 Vector2 Vector2::operator + (const Vector2& v) const        { return Vector2(*this) += v; }
 Vector2 Vector2::operator + (float v) const                 { return Vector2(*this) += v; }
@@ -181,5 +177,3 @@ bool Vector2::operator != (const class Vector3& v) const    { return !((*this) =
 bool Vector2::operator != (const class Vector4& v) const    { return !((*this) == v); }
 
 XOMATH_END_XO_NS();
-
-#endif

@@ -134,7 +134,7 @@ Vector4::Vector4(const class Vector3& vec, float w) :
 }
 #endif
 
-const Vector4& Vector4::Set(float x, float y, float z, float w) {
+Vector4& Vector4::Set(float x, float y, float z, float w) {
 #if defined(XO_SSE)
     m = _mm_set_ps(w, z, y, x);
 #else
@@ -146,7 +146,7 @@ const Vector4& Vector4::Set(float x, float y, float z, float w) {
     return *this;
 }
 
-const Vector4& Vector4::Set(float f) {
+Vector4& Vector4::Set(float f) {
 #if defined(XO_SSE)
     m = _mm_set1_ps(f);
 #else
@@ -158,7 +158,7 @@ const Vector4& Vector4::Set(float f) {
     return *this;
 }
 
-const Vector4& Vector4::Set(const Vector4& vec) {
+Vector4& Vector4::Set(const Vector4& vec) {
 #if defined(XO_SSE)
     m = vec.m;
 #else
@@ -170,7 +170,7 @@ const Vector4& Vector4::Set(const Vector4& vec) {
     return *this;
 }
 
-const Vector4& Vector4::Set(const Vector2& vec) {
+Vector4& Vector4::Set(const Vector2& vec) {
 #if defined(XO_SSE)
     m = _mm_set_ps(0.0f, 0.0f, vec.y, vec.x);
 #else
@@ -182,7 +182,7 @@ const Vector4& Vector4::Set(const Vector2& vec) {
     return *this;
 }
 
-const Vector4& Vector4::Set(const Vector2& vec, float z, float w) {
+Vector4& Vector4::Set(const Vector2& vec, float z, float w) {
 #if defined(XO_SSE)
     m = _mm_set_ps(w, z, vec.y, vec.x);
 #else
@@ -194,7 +194,7 @@ const Vector4& Vector4::Set(const Vector2& vec, float z, float w) {
     return *this;
 }
 
-const Vector4& Vector4::Set(const Vector3& vec) {
+Vector4& Vector4::Set(const Vector3& vec) {
 #if defined(XO_SSE)
     this->m = vec.m;
     this->w = 0.0f;
@@ -207,7 +207,7 @@ const Vector4& Vector4::Set(const Vector3& vec) {
     return *this;
 }
 
-const Vector4& Vector4::Set(const Vector3& vec, float w) {
+Vector4& Vector4::Set(const Vector3& vec, float w) {
 #if defined(XO_SSE)
     this->m = vec.m;
     this->w = w;
@@ -221,7 +221,7 @@ const Vector4& Vector4::Set(const Vector3& vec, float w) {
 }
 
 #if defined(XO_SSE)
-const Vector4& Vector4::Set(const __m128& vec) {
+Vector4& Vector4::Set(const __m128& vec) {
     m = vec;
     return *this;
 }
@@ -270,7 +270,7 @@ float Vector4::Magnitude() const {
     return Sqrt(MagnitudeSquared());
 }
 
-const Vector4& Vector4::Normalize() {
+Vector4& Vector4::Normalize() {
     float magnitude = MagnitudeSquared();
     if (CloseEnough(magnitude, 1.0f, Epsilon)) {
         return *this; // already normalized
