@@ -249,28 +249,6 @@ public:
     //!
     //! \f$\begin{pmatrix}\min(a.x, b.x)&\min(a.y, b.y)&\min(a.z, b.z)\end{pmatrix}\f$
     static void Min(const Vector3& a, const Vector3& b, Vector3& outVec);
-    //! Return a random vector with a magnitude of d.
-    static void RandomAtDistance(float d, Vector3& outVec);
-    //! Calls Vector3::RandomInConeRadians, converting the input angle in degrees to radians.
-    static void RandomInConeDegrees(const Vector3& forward, float angle, Vector3& outVec);
-    //! Return a random vector inside a cone with an angle relative to the input forward.
-    //! @note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
-    //! angles at and beyond PI radians will no longer represent a meaningful cone.
-    static void RandomInConeRadians(const Vector3& forward, float angle, Vector3& outVec);
-    //! Return a random vector with a magnitude that does not exceed d.
-    static void RandomInDistance(float d, Vector3& outVec);
-    //! Assigns outVec to a random vector with a magnitude between low and high, inclusively.
-    static void RandomInRange(float low, float high, Vector3& outVec);
-    //! Return a random vector with a magnitude that does not exceed 1.
-    static void RandomInSphere(Vector3& outVec);
-    //! Calls Vector3::RandomOnConeRadians, converting the input angle in degrees to radians.
-    static void RandomOnConeDegrees(const Vector3& forward, float angle, Vector3& outVec);
-    //! Return a random vector on edge of a cone with an angle relative to the input forward.
-    //! @note this 'cone' does not have a flat bottom, it is a rotation of the forward vector.
-    //! angles at and beyond PI radians will no longer represent a meaningful cone.
-    static void RandomOnConeRadians(const Vector3& forward, float angle, Vector3& outVec);
-    //! Return a random vector with a length of 1.0f.
-    static void RandomOnSphere(Vector3& outVec);
     //! Calls Vector3::RotateRadians, converting the input angle in degrees to radians.
     static void RotateDegrees(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec);
     //! Assign outVec to v rotated along an axis by a specified angle in radians.
@@ -301,6 +279,60 @@ public:
     //! @}
 
     //>See
+    //! @name Random Methods
+    //! @{
+
+    
+    static void RandomInCircle(const Vector3& up, float radius, Vector3& outVec);
+    static void RandomInConeRadians(const Vector3& forward, float angle, Vector3& outVec);
+    static void RandomInCube(float size, Vector3& outVec);
+    static void RandomInFanRadians(const Vector3& forward, const Vector3& up, float angle, Vector3& outVec);
+    static void RandomInSphere(float minRadius, float maxRadius, Vector3& outVec);
+    static void RandomOnCircle(Vector3& outVec);
+    static void RandomOnCircle(const Vector3& up, float radius, Vector3& outVec);
+    static void RandomOnConeRadians(const Vector3& forward, float angle, Vector3& outVec);
+    static void RandomOnCube(Vector3& outVec);
+    static void RandomOnCube(float size, Vector3& outVec);
+    static void RandomOnSphere(float radius, Vector3& outVec);
+
+    static void RandomInSphere(float radius, Vector3& outVec) {
+        RandomInSphere(0.0f, radius, outVec);
+    }
+    static void RandomInSphere(Vector3& outVec) {
+        RandomInSphere(1.0f, outVec);
+    }
+    static void RandomInCircle(Vector3& outVec) {
+        RandomInCircle(Vector3::Up, 1.0f, outVec);
+    }
+    static void RandomInCube(Vector3& outVec) {
+        RandomInCube(0.5f, outVec);
+    }
+    static void RandomInConeDegrees(const Vector3& forward, float angle, Vector3& outVec) { 
+        RandomInConeRadians(forward, angle * Deg2Rad, outVec); 
+    }
+    static void RandomInFanDegrees(const Vector3& forward, const Vector3& up, float angle, Vector3& outVec) { 
+        RandomInFanRadians(forward, up, angle * Deg2Rad, outVec); 
+    }
+    static void RandomOnConeDegrees(const Vector3& forward, float angle, Vector3& outVec) { 
+        RandomOnConeRadians(forward, angle * Deg2Rad, outVec); 
+    }
+    static void RandomOnSphere(Vector3& outVec) {
+        RandomOnSphere(1.0f, outVec);
+    }
+
+    //! @}
+
+#define _RET_VARIANT(name) { Vector3 tempV; name(
+#define _RET_VARIANT_END() tempV); return tempV; }
+#define _RET_VARIANT_0(name)                                 _RET_VARIANT(name)                               _RET_VARIANT_END()
+#define _RET_VARIANT_1(name, first)                          _RET_VARIANT(name) first,                        _RET_VARIANT_END()
+#define _RET_VARIANT_2(name, first, second)                  _RET_VARIANT(name) first, second,                _RET_VARIANT_END()
+#define _RET_VARIANT_3(name, first, second, third)           _RET_VARIANT(name) first, second, third,         _RET_VARIANT_END()
+#define _RET_VARIANT_4(name, first, second, third, fourth)   _RET_VARIANT(name) first, second, third, fourth, _RET_VARIANT_END()
+#define _THIS_VARIANT1(name, first)                         { return name(*this, first); }
+#define _THIS_VARIANT2(name, first, second)                 { return name(*this, first, second); }
+
+    //>See
     //! @name Variants
     //! Variants of other same-name static methods. See their documentation for more details under the 
     //! Static Methods heading.
@@ -308,42 +340,54 @@ public:
     //! Non static variants replace the first Vector3 parameter by 'this' vector.
     //! Static variants return what would have been the outVec param.
     //! @{
-    static Vector3 Cross(const Vector3& a, const Vector3& b);
-    static Vector3 Lerp(const Vector3& a, const Vector3& b, float t);
-    static Vector3 Max(const Vector3& a, const Vector3& b);
-    static Vector3 Min(const Vector3& a, const Vector3& b);
-    static Vector3 RandomAtDistance(float d);
-    static Vector3 RandomInConeDegrees(const Vector3& forward, float angle);
-    static Vector3 RandomInConeRadians(const Vector3& forward, float angle);
-    static Vector3 RandomInDistance(float d);
-    static Vector3 RandomInRange(float low, float high);
-    static Vector3 RandomInSphere();
-    static Vector3 RandomOnConeDegrees(const Vector3& forward, float angle);
-    static Vector3 RandomOnConeRadians(const Vector3& forward, float angle);
-    static Vector3 RandomOnSphere();
-    static Vector3 RotateDegrees(const Vector3& v, const Vector3& axis, float angle);
-    static Vector3 RotateRadians(const Vector3& v, const Vector3& axis, float angle);
 
-    float AngleDegrees(const Vector3& v) const;
-    float AngleRadians(const Vector3& v) const;
-    float Distance(const Vector3& v) const;
-    float DistanceSquared(const Vector3& v) const;
-    float Dot(const Vector3& v) const;
-    Vector3 Cross(const Vector3& v) const;
-    Vector3 Lerp(const Vector3& v, float t) const;
-    Vector3 RandomInConeDegrees(float angle) const;
-    Vector3 RandomInConeRadians(float angle) const;
-    Vector3 RandomOnConeDegrees(float angle) const;
-    Vector3 RandomOnConeRadians(float angle) const;
-    Vector3 RotateDegrees(const Vector3& axis, float angle) const;
-    Vector3 RotateRadians(const Vector3& axis, float angle) const;
+    float AngleDegrees(const Vector3& v) const                                                  _THIS_VARIANT1(AngleDegrees, v)
+    float AngleRadians(const Vector3& v) const                                                  _THIS_VARIANT1(AngleRadians, v)
+    float Distance(const Vector3& v) const                                                      _THIS_VARIANT1(Distance, v)
+    float DistanceSquared(const Vector3& v) const                                               _THIS_VARIANT1(DistanceSquared, v)
+    float Dot(const Vector3& v) const                                                           _THIS_VARIANT1(Dot, v)
+    Vector3 Cross(const Vector3& v) const                                                       _THIS_VARIANT1(Cross, v)
+    Vector3 Lerp(const Vector3& v, float t) const                                               _THIS_VARIANT2(Lerp, v, t)
+    Vector3 RotateDegrees(const Vector3& axis, float angle) const                               _THIS_VARIANT2(RotateDegrees, axis, angle)
+    Vector3 RotateRadians(const Vector3& axis, float angle) const                               _THIS_VARIANT2(RotateRadians, axis, angle)
+
+    static Vector3 Cross(const Vector3& a, const Vector3& b)                                    _RET_VARIANT_2(Cross, a, b)
+    static Vector3 Lerp(const Vector3& a, const Vector3& b, float t)                            _RET_VARIANT_3(Lerp, a, b, t)
+    static Vector3 Max(const Vector3& a, const Vector3& b)                                      _RET_VARIANT_2(Max, a, b)
+    static Vector3 Min(const Vector3& a, const Vector3& b)                                      _RET_VARIANT_2(Min, a, b)
+    static Vector3 RandomInCircle()                                                             _RET_VARIANT_0(RandomInCircle)
+    static Vector3 RandomInCircle(const Vector3& up, float radius)                              _RET_VARIANT_2(RandomInCircle, up, radius)
+    static Vector3 RandomInConeDegrees(const Vector3& forward, float angle)                     _RET_VARIANT_2(RandomInConeDegrees, forward, angle)
+    static Vector3 RandomInConeRadians(const Vector3& forward, float angle)                     _RET_VARIANT_2(RandomInConeRadians, forward, angle)
+    static Vector3 RandomInCube()                                                               _RET_VARIANT_0(RandomInCube)
+    static Vector3 RandomInCube(float size)                                                     _RET_VARIANT_1(RandomInCube, size)
+    static Vector3 RandomInFanDegrees(const Vector3& forward, const Vector3& up, float angle)   _RET_VARIANT_3(RandomInFanDegrees, forward, up, angle)
+    static Vector3 RandomInFanRadians(const Vector3& forward, const Vector3& up, float angle)   _RET_VARIANT_3(RandomInFanRadians, forward, up, angle)
+    static Vector3 RandomInSphere()                                                             _RET_VARIANT_0(RandomInSphere)
+    static Vector3 RandomInSphere(float minRadius, float maxRadius)                             _RET_VARIANT_2(RandomInSphere, minRadius, maxRadius)
+    static Vector3 RandomInSphere(float radius)                                                 _RET_VARIANT_1(RandomInSphere, radius)
+    static Vector3 RandomOnCircle()                                                             _RET_VARIANT_0(RandomOnCircle)
+    static Vector3 RandomOnCircle(const Vector3& up, float radius)                              _RET_VARIANT_2(RandomOnCircle, up, radius)
+    static Vector3 RandomOnConeDegrees(const Vector3& forward, float angle)                     _RET_VARIANT_2(RandomOnConeDegrees, forward, angle)
+    static Vector3 RandomOnConeRadians(const Vector3& forward, float angle)                     _RET_VARIANT_2(RandomOnConeRadians, forward, angle)
+    static Vector3 RandomOnCube()                                                               _RET_VARIANT_0(RandomOnCube)
+    static Vector3 RandomOnCube(float size)                                                     _RET_VARIANT_1(RandomOnCube, size)
+    static Vector3 RandomOnSphere()                                                             _RET_VARIANT_0(RandomOnSphere)
+    static Vector3 RandomOnSphere(float radius)                                                 _RET_VARIANT_1(RandomOnSphere, radius)
+    static Vector3 RotateDegrees(const Vector3& v, const Vector3& axis, float angle)            _RET_VARIANT_3(RotateDegrees, v, axis, angle)
+    static Vector3 RotateRadians(const Vector3& v, const Vector3& axis, float angle)            _RET_VARIANT_3(RotateRadians, v, axis, angle)
     //! @}
 
-    //>See
-    //! @name Extras
-    //! @{
+#undef _RET_VARIANT
+#undef _RET_VARIANT_END
+#undef _RET_VARIANT_0
+#undef _RET_VARIANT_1
+#undef _RET_VARIANT_2
+#undef _RET_VARIANT_3
+#undef _RET_VARIANT_4
+#undef _THIS_VARIANT1
+#undef _THIS_VARIANT2
 
-    //! @todo Make this optional with a define.
     //! Prints the contents of vector v and its magnitude to the provided ostream.
 #ifndef XO_NO_OSTREAM
     friend std::ostream& operator <<(std::ostream& os, const Vector3& v) {

@@ -23,15 +23,20 @@
 // xo-math:
 // TODO:
 //  * Ensure macros are consistently named.
-//  * Support NEON
+//  * Support NEON (investigate http://projectne10.github.io/Ne10/ license)
 //  * Add transformation object.
-//  * Matrix
-//  *   IsUnitary()
-//  *   HasOrthonormalBases()
-//  *   HasInverse()
-//  *   SafeInverse() or TryInverse()
-//  * xo-math
-//  *   fast sin/cos, sincos, _x2 _x2 _x3
+//  * Move trivial methods to headers, keep only "meaningful" code in *.cpp/*inline.h files
+//  * Use macros to generate variant functions for other classes, like in Vector3.h
+//  * Consider other simpler documentation solution. github pages?
+//  * Fix generated output (xo-math.h/.cpp/-config.h).
+//  * Consider something like premake or similar for dev project files. Check out https://github.com/bkaradzic/GENie
+//  * Move CI back to travis, include more compiler versions.
+//  * Matrix: finish filling out stubs
+//  * fast sin/cos, sincos, _x2 _x2 _x3
+//  * RNG: https://blogs.unity3d.com/2015/01/07/a-primer-on-repeatable-random-numbers/
+//  * Noise:
+//  * Consider moving all randoms out of types themselves and into a separate file.
+//  * Make a very simple graphics demo using many features of xo-math.
 
 #ifndef XO_MATH_H
 #define XO_MATH_H
