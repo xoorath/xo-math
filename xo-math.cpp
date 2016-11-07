@@ -833,85 +833,11 @@ void Quaternion::Slerp(const Quaternion& a, const Quaternion& b, float t, Quater
 
 void Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat)
 {
-    if (CloseEnough(t, 0.0f, Epsilon))
-    {
-        outQuat = a;
-    }
-    else if (CloseEnough(t, 1.0f, Epsilon))
-    {
-        outQuat = b;
-    }
-    else
-    {
-        Vector4* vq = (Vector4*)&outQuat;
-        Vector4* va = (Vector4*)&a;
-        Vector4* vb = (Vector4*)&b;
-        // Todo: give the vectors the same static 'outQuat' type interface, then just use the Vector4::Lerp for this lerp
-        (*vq) = *va + ((*vb - *va) * t);
-    }
-}
-
-Quaternion Quaternion::RotationRadians(float x, float y, float z)
-{
-    Quaternion q;
-    RotationRadians(x, y, z, q);
-    return q;
-}
-
-Quaternion Quaternion::RotationRadians(const Vector3& v)
-{
-    Quaternion q;
-    RotationRadians(v, q);
-    return q;
-}
-
-Quaternion Quaternion::AxisAngleRadians(const Vector3& axis, float radians)
-{
-    Quaternion q;
-    AxisAngleRadians(axis, radians, q);
-    return q;
-}
-
-Quaternion Quaternion::LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up)
-{
-    Quaternion q;
-    LookAtFromPosition(from, to, up, q);
-    return q;
-}
-
-Quaternion Quaternion::LookAtFromPosition(const Vector3& from, const Vector3& to)
-{
-    Quaternion q;
-    LookAtFromPosition(from, to, q);
-    return q;
-}
-
-Quaternion Quaternion::LookAtFromDirection(const Vector3& direction, const Vector3& up)
-{
-    Quaternion q;
-    LookAtFromDirection(direction, up, q);
-    return q;
-}
-
-Quaternion Quaternion::LookAtFromDirection(const Vector3& direction)
-{
-    Quaternion q;
-    LookAtFromDirection(direction, q);
-    return q;
-}
-
-Quaternion Quaternion::Slerp(const Quaternion& a, const Quaternion& b, float t)
-{
-    Quaternion q;
-    Slerp(a, b, t, q);
-    return q;
-}
-
-Quaternion Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t)
-{
-    Quaternion q;
-    Lerp(a, b, t, q);
-    return q;
+    Vector4& vq = static_cast<Vector4>(outQuat);
+    const Vector4& va = a;
+    const Vector4& vb = b;
+    // Todo: give the vectors the same static 'outQuat' type interface, then just use the Vector4::Lerp for this lerp
+    vq = va + (vb - va) * t;
 }
 
 
@@ -1194,9 +1120,6 @@ const Vector2 Vector2::Right(1.0f, 0.0f);
 const Vector2 Vector2::One(1.0f, 1.0f);
 const Vector2 Vector2::Zero(0.0f, 0.0f);
 
-Vector2::Vector2() {
-}
-
 Vector2::Vector2(float v) : x(v), y(v) {
 }
 
@@ -1239,146 +1162,7 @@ void Vector2::Get(float* f) const {
     f[1] = this->y;
 }
 
-float Vector2::Sum() const {
-    return x+y;
-}
 
-float Vector2::Magnitude() const {
-    return sqrtf(x*x + y*y);
-}
-
-float Vector2::MagnitudeSquared() const {
-    return x*x + y*y;
-}
-
-Vector2& Vector2::Normalize() {
-    float magnitude = MagnitudeSquared();
-    if (CloseEnough(magnitude, 1.0f, Epsilon))
-        return *this; // already normalized
-    if (CloseEnough(magnitude, 0.0f, Epsilon))
-        return *this; // zero vec
-    magnitude = sqrtf(magnitude);
-    (*this) /= magnitude;
-    return *this;
-}
-
-Vector2 Vector2::Normalized() const {
-    return Vector2(*this).Normalize();
-}
-
-bool Vector2::IsZero() const {
-    return CloseEnough(MagnitudeSquared(), 0.0f, Epsilon);
-}
-
-bool Vector2::IsNormalized() const {
-  // todo: check closeness
-    return CloseEnough(MagnitudeSquared(), 1.0f, Epsilon);
-}
-
-
-float Vector2::Dot(const Vector2& a, const Vector2& b) {
-    return (a.x * b.x) + (a.y * b.y);
-}
-
-float Vector2::Cross(const Vector2& a, const Vector2& b) {
-    return (a.x * b.y) - (a.y * b.x);
-}
-
-
-float Vector2::AngleRadians(const Vector2& a, const Vector2& b) {
-    return -ATan2(Cross(a, b), Dot(a, b));
-}
-
-float Vector2::AngleDegrees(const Vector2& a, const Vector2& b) {
-    return AngleRadians(a, b) * Rad2Deg;
-}
-
-float Vector2::Distance(const Vector2& a, const Vector2& b) {
-    return (b-a).Magnitude();
-}
-
-float Vector2::DistanceSquared(const Vector2& a, const Vector2& b) {
-    return (b-a).MagnitudeSquared();
-}
-
-void Vector2::Max(const Vector2& a, const Vector2& b, Vector2& outVec) {
-    outVec.Set(_XO_MAX(a.x, b.x), _XO_MAX(a.y, b.y));
-}
-
-void Vector2::Min(const Vector2& a, const Vector2& b, Vector2& outVec) {
-    outVec.Set(_XO_MIN(a.x, b.x), _XO_MIN(a.y, b.y));
-}
-
-void Vector2::OrthogonalCCW(const Vector2& v, Vector2& outVec) {
-    outVec.Set(-v.y, v.x);
-}
-
-void Vector2::OrthogonalCW(const Vector2& v, Vector2& outVec) {
-    outVec.Set(v.y, -v.x);
-}
-
-void Vector2::Lerp(const Vector2& a, const Vector2& b, float t, Vector2& outVec) {
-    if(CloseEnough(t, 0.0f, Epsilon)) {
-        outVec.Set(a);
-    }
-    else if(CloseEnough(t, 1.0f, Epsilon)) {
-        outVec.Set(b);
-    }
-    else {
-        outVec.Set(a + ((b - a) * t));
-    }
-}
-
-void Vector2::Midpoint(const Vector2& a, const Vector2& b, Vector2& outVec) {
-    Vector2::Lerp(a, b, 0.5f, outVec);
-}
-
-Vector2 Vector2::Max(const Vector2& a, const Vector2& b) {
-    Vector2 tempVec;
-    Max(a, b, tempVec);
-    return tempVec;
-}
-
-Vector2 Vector2::Min(const Vector2& a, const Vector2& b) {
-    Vector2 tempVec;
-    Min(a, b, tempVec);
-    return tempVec;
-}
-
-Vector2 Vector2::OrthogonalCCW(const Vector2& v) {
-    Vector2 tempVec;
-    OrthogonalCCW(v, tempVec);
-    return tempVec;
-}
-
-Vector2 Vector2::OrthogonalCW(const Vector2& v) {
-    Vector2 tempVec;
-    OrthogonalCW(v, tempVec);
-    return tempVec;
-}
-
-Vector2 Vector2::Lerp(const Vector2& a, const Vector2& b, float t) {
-    Vector2 tempVec;
-    Lerp(a, b, t, tempVec);
-    return tempVec;
-}
-
-Vector2 Vector2::Midpoint(const Vector2& a, const Vector2& b) {
-    Vector2 tempVec;
-    Midpoint(a, b, tempVec);
-    return tempVec;
-}
-
-float Vector2::AngleDegrees(const Vector2& v) const         { return AngleDegrees(*this, v); }
-float Vector2::AngleRadians(const Vector2& v) const         { return AngleRadians(*this, v); }
-float Vector2::Cross(const Vector2& v) const                { return Cross(*this, v); }
-float Vector2::Distance(const Vector2& v) const             { return Distance(*this, v); }
-float Vector2::DistanceSquared(const Vector2& v) const      { return DistanceSquared(*this, v); }
-float Vector2::Dot(const Vector2& v) const                  { return Dot(*this, v); }
-Vector2 Vector2::Lerp(const Vector2& v, float t) const      { return Lerp(*this, v, t); }
-Vector2 Vector2::Midpoint(const Vector2& v) const           { return Midpoint(*this, v); }
-Vector2 Vector2::OrthogonalCCW() const                      { return OrthogonalCCW(*this); }
-Vector2 Vector2::OrthogonalCW() const                       { return OrthogonalCW(*this); }
 
 
 ////////////////////////////////////////////////////////////////////////// Vector3.cpp
@@ -1454,10 +1238,6 @@ const Vector3 Vector3::Zero(0.0f, 0.0f, 0.0f);
 #endif
 
 #endif
-
-// todo: move to header
-Vector3::Vector3() {
-}
 
 Vector3::Vector3(float f) :
 #if defined(XO_SSE)
@@ -1586,95 +1366,35 @@ _XOINL float Vector3::Sum() const {
 #endif
 }
 
-float Vector3::MagnitudeSquared() const {
-    Vector3 x = *this;
-    x *= x;
-    return x.Sum();
-}
-
-// todo: move to header
-float Vector3::Magnitude() const {
-    return Sqrt(MagnitudeSquared());
-}
-
 Vector3& Vector3::Normalize() {
+    return (*this) /= Magnitude();
+}
+
+Vector3& Vector3::NormalizeSafe() {
     float magnitude = MagnitudeSquared();
-    if (CloseEnough(magnitude, 1.0f, Epsilon)) {
-        return *this; // already normalized
-    }
-    else if (CloseEnough(magnitude, 0.0f, Epsilon)) {
-        return *this; // zero vec
-    }
-    else {
-        magnitude = Sqrt(magnitude);
-        return (*this) /= magnitude;
-    }
-}
-
-// todo: move to header
-Vector3 Vector3::Normalized() const {
-    return Vector3(*this).Normalize();
-}
-
-// todo: move to header
-bool Vector3::IsZero() const {
-    return CloseEnough(MagnitudeSquared(), 0.0f, Epsilon);
-}
-
-// todo: move to header
-bool Vector3::IsNormalized() const {
-    return CloseEnough(MagnitudeSquared(), 1.0f, Epsilon);
+    if (magnitude == 0.0f)
+        return *this;
+    return *this /= Sqrt(magnitude);
 }
  
 float Vector3::Dot(const Vector3& a, const Vector3& b) {
 #if defined(XO_SSE4_1)
     return _mm_cvtss_f32(_mm_dp_ps(a, b, 0x7f));
-#elif defined(XO_SSE3)
-    auto d = _mm_and_ps(_mm_mul_ps(a.m, b.m), MASK);
-    d = _mm_hadd_ps(d, d);
-    d = _mm_hadd_ps(d, d);
-    return _mm_cvtss_f32(d);
-#elif defined(XO_SSE)
-    auto d = _mm_mul_ps(a.m, b.m);
-    _MM_ALIGN16 float t[4];
-    _mm_store_ps(t, d);
-    return t[IDX_X] + t[IDX_Y] + t[IDX_Z];
 #else
-    return (a.x*b.x) + (a.y*b.y) + (a.z*b.z);
+    return (a * b).Sum();
 #endif
 }
  
 void Vector3::Cross(const Vector3& a, const Vector3& b, Vector3& outVec) {
 #if defined(XO_SSE)
-    // Todo: There's a trick to do this with three shuffles. Look into that.
-    __m128 l = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)));
-    __m128 r = _mm_mul_ps(_mm_shuffle_ps(a.m, a.m, _MM_SHUFFLE(IDX_W, IDX_Y, IDX_X, IDX_Z)), _mm_shuffle_ps(b.m, b.m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Z, IDX_Y)));
-    outVec.m = _mm_sub_ps(l, r);
+    constexpr int m3021 = _MM_SHUFFLE(3, 0, 2, 1);
+    __m128 result = _mm_sub_ps(_mm_mul_ps(a, _mm_shuffle_ps(b, b, m3021)), _mm_mul_ps(b, _mm_shuffle_ps(a, a, m3021)));
+    outVec.m = _mm_shuffle_ps(result, result, m3021);
 #else
     outVec.x = (a.y*b.z)-(a.z*b.y);
     outVec.y = (a.z*b.x)-(a.x*b.z);
     outVec.z = (a.x*b.y)-(a.y*b.x);
 #endif
-}
-
-void Vector3::Max(const Vector3& a, const Vector3& b, Vector3& outVec) {
-    outVec.Set(_XO_MAX(a.x, b.x), _XO_MAX(a.y, b.y), _XO_MAX(a.z, b.z));
-}
- 
-void Vector3::Min(const Vector3& a, const Vector3& b, Vector3& outVec) {
-    outVec.Set(_XO_MIN(a.x, b.x), _XO_MIN(a.y, b.y), _XO_MIN(a.z, b.z));
-}
-
-void Vector3::Lerp(const Vector3& a, const Vector3& b, float t, Vector3& outVec) {
-    if(CloseEnough(t, 0.0f)) {
-        outVec.Set(a);
-    }
-    else if(CloseEnough(t, 1.0f)) {
-        outVec.Set(b);
-    } 
-    else {
-        outVec.Set(a + ((b - a) * t));
-    }
 }
 
 void Vector3::RotateRadians(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec) {
@@ -1688,31 +1408,11 @@ void Vector3::RotateRadians(const Vector3& v, const Vector3& axis, float angle, 
     outVec.Set(v * cosAng + axv * sinAng + axis * adv * (1.0f - cosAng));
 }
 
-// todo: move to header
-void Vector3::RotateDegrees(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec) {
-    RotateRadians(v, axis, angle * Deg2Rad, outVec);
-}
-
 float Vector3::AngleRadians(const Vector3& a, const Vector3& b) {
     Vector3 cross;
     Vector3::Cross(a, b, cross);
     cross *= cross;
     return ATan2(Sqrt(cross.Sum()), Vector3::Dot(a, b));
-}
-
-// todo: move to header
-float Vector3::AngleDegrees(const Vector3& a, const Vector3& b) {
-    return AngleRadians(a, b) * Rad2Deg;
-}
-
-// todo: move to header
-float Vector3::DistanceSquared(const Vector3& a, const Vector3& b) {
-    return (b - a).MagnitudeSquared();
-}
- 
-// todo: move to header
-float Vector3::Distance(const Vector3&a, const Vector3&b) {
-    return (b - a).Magnitude();
 }
 
 void Vector3::RandomInConeRadians(const Vector3& forward, float angle, Vector3& outVec) {
@@ -1744,18 +1444,6 @@ void Vector3::RandomOnSphere(float radius, Vector3& outVec) {
     outVec *= radius;
 }
 
-void Vector3::RandomInSphere(float minRadius, float maxRadius, Vector3& outVec) {
-    RandomOnSphere(Sqrt(RandomRange(minRadius, maxRadius)), outVec);
-}
-
-void Vector3::RandomOnCube(Vector3& outVec) {
-    RandomOnCube(0.5f, outVec);
-}
-
-void Vector3::RandomInCube(float size, Vector3& outVec) {
-    outVec.Set(RandomRange(-size, size), RandomRange(-size, size), RandomRange(-size, size));
-}
-
 void Vector3::RandomOnCube(float size, Vector3& outVec) {
     switch (RandomRange(0, 5)) {
         case 0: outVec.Set(RandomRange(-size, size),    RandomRange(-size, size),                size);         break;
@@ -1765,14 +1453,6 @@ void Vector3::RandomOnCube(float size, Vector3& outVec) {
         case 4: outVec.Set(             size,           RandomRange(-size, size),   RandomRange(-size, size));  break;
         case 5: outVec.Set(            -size,           RandomRange(-size, size),   RandomRange(-size, size));  break;
     }
-}
-
-void Vector3::RandomInFanRadians(const Vector3& forward, const Vector3& up, float angle, Vector3& outVec) {
-    Vector3::RotateRadians(forward, up, RandomRange(-angle*0.5f, angle*0.5f), outVec);
-}
-
-void Vector3::RandomOnCircle(Vector3& outVec) {
-    RandomOnCircle(Vector3::Up, 1.0f, outVec);
 }
 
 void Vector3::RandomInCircle(const Vector3& up, float radius, Vector3& outVec) {
@@ -1909,6 +1589,15 @@ Vector4::Vector4(const class Vector3& vec, float w) :
 }
 #endif
 
+Vector4::Vector4(const class Quaternion& q) :
+#if defined(XO_SSE)
+    m(q.m)
+#else
+    x(q.x), y(q.y), z(q.z), w(q.w)
+#endif
+{
+}
+
 Vector4& Vector4::Set(float x, float y, float z, float w) {
 #if defined(XO_SSE)
     m = _mm_set_ps(w, z, y, x);
@@ -2022,128 +1711,26 @@ void Vector4::Get(float* f) const {
  
 float Vector4::Sum() const {
 #if defined(XO_SSE)
-    auto s = _mm_hadd_ps(m, m);
-    s = _mm_hadd_ps(s, s);
-    return _mm_cvtss_f32(s);
+    __m128 s = _mm_hadd_ps(m, m);
+    return _mm_cvtss_f32(_mm_hadd_ps(s, s));
 #else
     return x+y+z+w;
 #endif
 }
- 
-float Vector4::MagnitudeSquared() const {
-#if defined(XO_SSE)
-    auto square = _mm_mul_ps(m, m);
-    square = _mm_hadd_ps(square, square);
-    square = _mm_hadd_ps(square, square);
-    return _mm_cvtss_f32(square);
-#else
-    return (x*x) + (y*y) + (z*z) + (w*w);
-#endif
-}
- 
-float Vector4::Magnitude() const {
-    return Sqrt(MagnitudeSquared());
-}
 
-Vector4& Vector4::Normalize() {
+Vector4& Vector4::NormalizeSafe() {
     float magnitude = MagnitudeSquared();
-    if (CloseEnough(magnitude, 1.0f, Epsilon)) {
-        return *this; // already normalized
-    }
-    else if (CloseEnough(magnitude, 0.0f, Epsilon)) {
-        return *this; // zero vec
-    }
-    else {
-        magnitude = Sqrt(magnitude);
-        return (*this) /= magnitude;
-    }
-}
- 
-Vector4 Vector4::Normalized() const {
-    return Vector4(*this).Normalize();
-}
-
-bool Vector4::IsZero() const {
-    return CloseEnough(MagnitudeSquared(), 0.0f, Epsilon);
-}
-
-bool Vector4::IsNormalized() const {
-    return CloseEnough(MagnitudeSquared(), 1.0f, Epsilon);
-}
- 
-void Vector4::Max(const Vector4& a, const Vector4& b, Vector4& outVec) {
-    outVec.Set(_XO_MAX(a.x, b.x), _XO_MAX(a.y, b.y), _XO_MAX(a.z, b.z), _XO_MAX(a.w, b.w));
-}
-
-void Vector4::Min(const Vector4& a, const Vector4& b, Vector4& outVec) {
-    outVec.Set(_XO_MIN(a.x, b.x), _XO_MIN(a.y, b.y), _XO_MIN(a.z, b.z), _XO_MIN(a.w, b.w));
-}
-
-void Vector4::Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec) {
-    if(CloseEnough(t, 0.0f, Epsilon)) {
-        outVec = a;
-    }
-    else if(CloseEnough(t, 1.0f, Epsilon)) {
-        outVec = b;
-    }
-    else {
-        outVec = a + ((b - a) * t);    
-    }
+    if (magnitude == 0.0f)
+        return *this;
+    return *this /= Sqrt(magnitude);
 }
 
 float Vector4::Dot(const Vector4& a, const Vector4& b) {
 #if defined(XO_SSE4)
     return _mm_cvtss_f32(_mm_dp_ps(a.m, b.m, 0xff));
-#elif defined(XO_SSE3)
-    __m128 d = _mm_mul_ps(a.m, b.m);
-    d = _mm_hadd_ps(d, d);
-    d = _mm_hadd_ps(d, d);
-    return _mm_cvtss_f32(d);
-#elif defined(XO_SSE)
-    __m128 d = _mm_mul_ps(a.m, b.m);
-    _MM_ALIGN16 float t[4];
-    _mm_store_ps(t, d);
-    return t[IDX_X] + t[IDX_Y] + t[IDX_Z] + t[IDX_W];
 #else
-    return (a.x*b.x) + (a.y*b.y) + (a.z*b.z) + (a.w*b.w);
+    return (a * b).Sum();
 #endif
-}
-
-
-float Vector4::DistanceSquared(const Vector4& a, const Vector4& b) {
-    return (b - a).MagnitudeSquared();
-}
-
-float Vector4::Distance(const Vector4&a, const Vector4&b) {
-    return (b - a).Magnitude();
-}
-
-Vector4 Vector4::Max(const Vector4& a, const Vector4& b) {
-    Vector4 v;
-    Max(a, b, v);
-    return v;
-}
-
-Vector4 Vector4::Min(const Vector4& a, const Vector4& b) {
-    Vector4 v;
-    Min(a, b, v);
-    return v;
-}
-
-Vector4 Vector4::Lerp(const Vector4& a, const Vector4& b, float t) {
-    Vector4 v;
-    Lerp(a, b, t, v);
-    return v;
-}
-
-float Vector4::Dot(const Vector4& v) const                                { return Dot(*this, v); }
-float Vector4::DistanceSquared(const Vector4& v) const                    { return DistanceSquared(*this, v); }
-float Vector4::Distance(const Vector4& v) const                           { return Distance(*this, v); }
-
-Vector4 Vector4::Lerp(const Vector4& v, float t) const {
-    Vector4 temp;
-    Vector4::Lerp(*this, v, t, temp);
-    return temp;
 }
 
 

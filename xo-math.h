@@ -28,7 +28,6 @@
 //  * Move trivial methods to headers, keep only "meaningful" code in *.cpp/*inline.h files
 //  * Use macros to generate variant functions for other classes, like in Vector3.h
 //  * Consider other simpler documentation solution. github pages?
-//  * Fix generated output (xo-math.h/.cpp/-config.h).
 //  * Consider something like premake or similar for dev project files. Check out https://github.com/bkaradzic/GENie
 //  * Move CI back to travis, include more compiler versions.
 //  * Matrix: finish filling out stubs
@@ -233,6 +232,7 @@ _XOINL float Min(float x, float y)      { return _XO_MIN(x, y); }
 _XOINL float Max(float x, float y)      { return _XO_MAX(x, y); }
 _XOINL float Abs(float f)               { return f > 0.0f ? f : -f; }
 _XOINL float Sqrt(float f)              { return sqrtf(f); } 
+_XOINL float Cbrt(float f)              { return cbrtf(f); }
 _XOINL float Sin(float f)               { return sinf(f); } 
 _XOINL float Cos(float f)               { return cosf(f); } 
 _XOINL float Tan(float f)               { return tanf(f); }
@@ -365,7 +365,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////// Constructors
     // See: http://xo-math.rtfd.io/en/latest/classes/vector2.html#constructors
-    Vector2(); 
+    Vector2() { } 
     Vector2(float v); 
     Vector2(float x, float y); 
     Vector2(const Vector2& v); 
@@ -481,51 +481,111 @@ public:
 
     ////////////////////////////////////////////////////////////////////////// Methods
     // See: http://xo-math.rtfd.io/en/latest/classes/vector2.html#methods
-    bool IsNormalized() const;
-    bool IsZero() const;
-    float Magnitude() const;
-    float MagnitudeSquared() const;
-    float Sum() const;
+    bool IsNormalized() const {
+        return CloseEnough(MagnitudeSquared(), 1.0f, Epsilon);
+    }
+    bool IsZero() const {
+        return CloseEnough(MagnitudeSquared(), 0.0f, Epsilon);
+    }
+    float Magnitude() const {
+        return sqrtf(MagnitudeSquared());
+    }
+    float MagnitudeSquared() const {
+        return x*x + y*y;
+    }
+    float Sum() const {
+        return x + y;
+    }
 
-    Vector2& Normalize();
+    Vector2& Normalize() {
+        return (*this) /= Magnitude();
+    }
 
-    Vector2 Normalized() const;
+    Vector2 Normalized() const {
+        return Vector2(*this).Normalize();
+    }
 
     ////////////////////////////////////////////////////////////////////////// Static Methods
     // See: http://xo-math.rtfd.io/en/latest/classes/vector2.html#static_methods
-    static void Lerp(const Vector2& a, const Vector2& b, float t, Vector2& outVec);
-    static void Max(const Vector2& a, const Vector2& b, Vector2& outVec);
-    static void Midpoint(const Vector2& a, const Vector2& b, Vector2& outVec);
-    static void Min(const Vector2& a, const Vector2& b, Vector2& outVec);
-    static void OrthogonalCCW(const Vector2& v, Vector2& outVec);
-    static void OrthogonalCW(const Vector2& v, Vector2& outVec);
+    static void Lerp(const Vector2& a, const Vector2& b, float t, Vector2& outVec) {
+        outVec = a + ((b - a) * t);
+    }
+    static void Max(const Vector2& a, const Vector2& b, Vector2& outVec) {
+        outVec.Set(_XO_MAX(a.x, b.x), _XO_MAX(a.y, b.y));
+    }
+    static void Midpoint(const Vector2& a, const Vector2& b, Vector2& outVec) {
+        Vector2::Lerp(a, b, 0.5f, outVec);
+    }
+    static void Min(const Vector2& a, const Vector2& b, Vector2& outVec) {
+        outVec.Set(_XO_MIN(a.x, b.x), _XO_MIN(a.y, b.y));
+    }
+    static void OrthogonalCCW(const Vector2& v, Vector2& outVec) {
+        outVec.Set(-v.y, v.x);
+    }
+    static void OrthogonalCW(const Vector2& v, Vector2& outVec) {
+        outVec.Set(v.y, -v.x);
+    }
 
-    static float AngleDegrees(const Vector2& a, const Vector2& b);
-    static float AngleRadians(const Vector2& a, const Vector2& b);
-    static float Cross(const Vector2& a, const Vector2& b);
-    static float Distance(const Vector2& a, const Vector2& b);
-    static float DistanceSquared(const Vector2& a, const Vector2& b);
-    static float Dot(const Vector2& a, const Vector2& b);
+    static float AngleDegrees(const Vector2& a, const Vector2& b) {
+        return AngleRadians(a, b) * Rad2Deg;
+    }
+    static float AngleRadians(const Vector2& a, const Vector2& b) {
+        return -ATan2(Cross(a, b), Dot(a, b));
+    }
+    static float Cross(const Vector2& a, const Vector2& b) {
+        return (a.x * b.y) - (a.y * b.x);
+    }
+    static float Distance(const Vector2& a, const Vector2& b) {
+        return (b - a).Magnitude();
+    }
+    static float DistanceSquared(const Vector2& a, const Vector2& b) {
+        return (b - a).MagnitudeSquared();
+    }
+    static float Dot(const Vector2& a, const Vector2& b) {
+        return (a * b).Sum();
+    }
+
+#define _RET_VARIANT(name) { Vector2 tempV; name(
+#define _RET_VARIANT_END() tempV); return tempV; }
+#define _RET_VARIANT_0(name)                                 _RET_VARIANT(name)                               _RET_VARIANT_END()
+#define _RET_VARIANT_1(name, first)                          _RET_VARIANT(name) first,                        _RET_VARIANT_END()
+#define _RET_VARIANT_2(name, first, second)                  _RET_VARIANT(name) first, second,                _RET_VARIANT_END()
+#define _RET_VARIANT_3(name, first, second, third)           _RET_VARIANT(name) first, second, third,         _RET_VARIANT_END()
+#define _RET_VARIANT_4(name, first, second, third, fourth)   _RET_VARIANT(name) first, second, third, fourth, _RET_VARIANT_END()
+#define _THIS_VARIANT0(name)                                { return name(*this); }
+#define _THIS_VARIANT1(name, first)                         { return name(*this, first); }
+#define _THIS_VARIANT2(name, first, second)                 { return name(*this, first, second); }
 
     ////////////////////////////////////////////////////////////////////////// Variants
     // See: http://xo-math.rtfd.io/en/latest/classes/vector2.html#variants
-    static Vector2 Lerp(const Vector2& a, const Vector2& b, float t);
-    static Vector2 Max(const Vector2& a, const Vector2& b);
-    static Vector2 Midpoint(const Vector2& a, const Vector2& b);
-    static Vector2 Min(const Vector2& a, const Vector2& b);
-    static Vector2 OrthogonalCCW(const Vector2& v);
-    static Vector2 OrthogonalCW(const Vector2& v);
+    static Vector2 Lerp(const Vector2& a, const Vector2& b, float t)    _RET_VARIANT_3(Lerp, a, b, t)
+    static Vector2 Max(const Vector2& a, const Vector2& b)              _RET_VARIANT_2(Max, a, b)
+    static Vector2 Midpoint(const Vector2& a, const Vector2& b)         _RET_VARIANT_2(Midpoint, a, b)
+    static Vector2 Min(const Vector2& a, const Vector2& b)              _RET_VARIANT_2(Min, a, b)
+    static Vector2 OrthogonalCCW(const Vector2& v)                      _RET_VARIANT_1(OrthogonalCCW, v)
+    static Vector2 OrthogonalCW(const Vector2& v)                       _RET_VARIANT_1(OrthogonalCW, v)
 
-    float AngleDegrees(const Vector2& v) const;
-    float AngleRadians(const Vector2& v) const;
-    float Cross(const Vector2& v) const;
-    float Distance(const Vector2& v) const;
-    float DistanceSquared(const Vector2& v) const;
-    float Dot(const Vector2& v) const;
-    Vector2 Lerp(const Vector2& v, float t) const;
-    Vector2 Midpoint(const Vector2& v) const;
-    Vector2 OrthogonalCCW() const;
-    Vector2 OrthogonalCW() const;
+    float AngleDegrees(const Vector2& v) const                          _THIS_VARIANT1(AngleDegrees, v)
+    float AngleRadians(const Vector2& v) const                          _THIS_VARIANT1(AngleRadians, v)
+    float Cross(const Vector2& v) const                                 _THIS_VARIANT1(Cross, v)
+    float Distance(const Vector2& v) const                              _THIS_VARIANT1(Distance, v)
+    float DistanceSquared(const Vector2& v) const                       _THIS_VARIANT1(DistanceSquared, v)
+    float Dot(const Vector2& v) const                                   _THIS_VARIANT1(Dot, v)
+    Vector2 Lerp(const Vector2& v, float t) const                       _THIS_VARIANT2(Lerp, v, t)
+    Vector2 Midpoint(const Vector2& v) const                            _THIS_VARIANT1(Midpoint, v)
+    Vector2 OrthogonalCCW() const                                       _THIS_VARIANT0(OrthogonalCCW)
+    Vector2 OrthogonalCW() const                                        _THIS_VARIANT0(OrthogonalCW)
+
+#undef _RET_VARIANT
+#undef _RET_VARIANT_END
+#undef _RET_VARIANT_0
+#undef _RET_VARIANT_1
+#undef _RET_VARIANT_2
+#undef _RET_VARIANT_3
+#undef _RET_VARIANT_4
+#undef _THIS_VARIANT0
+#undef _THIS_VARIANT1
+#undef _THIS_VARIANT2
 
     ////////////////////////////////////////////////////////////////////////// Extras
     // See: http://xo-math.rtfd.io/en/latest/classes/vector2.html#extras
@@ -566,7 +626,7 @@ class _MM_ALIGN16 Vector3 {
 public:
     ////////////////////////////////////////////////////////////////////////// Constructors
     // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#constructors
-    Vector3(); 
+    Vector3() { } 
     Vector3(float f); 
     Vector3(float x, float y, float z); 
     Vector3(const Vector3& vec); 
@@ -691,49 +751,85 @@ public:
 
     ////////////////////////////////////////////////////////////////////////// Methods
     // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#methods
-    bool IsNormalized() const;
-    bool IsZero() const;
-    float Magnitude() const;
-    float MagnitudeSquared() const;
+    bool IsNormalized() const {
+        return CloseEnough(MagnitudeSquared(), 1.0f, Epsilon);
+    }
+    bool IsZero() const {
+        return CloseEnough(MagnitudeSquared(), 0.0f, Epsilon);
+    }
+    float Magnitude() const {
+        return Sqrt(MagnitudeSquared());
+    }
+    float MagnitudeSquared() const {
+        return ((*this) * (*this)).Sum();
+    }
     float Sum() const;
 
     Vector3& Normalize();
 
-    Vector3 Normalized() const;
+    Vector3& NormalizeSafe();
+
+    Vector3 Normalized() const {
+        return Vector3(*this).Normalize();
+    }
+
+    Vector3 NormalizedSafe() const {
+        return Vector3(*this).NormalizeSafe();
+    }
     Vector3 ZYX() const;
     
 
     ////////////////////////////////////////////////////////////////////////// Static Methods
     // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#static_methods
     static void Cross(const Vector3& a, const Vector3& b, Vector3& outVec);
-    static void Lerp(const Vector3& a, const Vector3& b, float t, Vector3& outVec);
-    static void Max(const Vector3& a, const Vector3& b, Vector3& outVec);
-    static void Min(const Vector3& a, const Vector3& b, Vector3& outVec);
-    static void RotateDegrees(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec);
+    static void Lerp(const Vector3& a, const Vector3& b, float t, Vector3& outVec) {
+        outVec = a + ((b - a) * t);
+    }
+    static void Max(const Vector3& a, const Vector3& b, Vector3& outVec) {
+        outVec.Set(_XO_MAX(a.x, b.x), _XO_MAX(a.y, b.y), _XO_MAX(a.z, b.z));
+    }
+    static void Min(const Vector3& a, const Vector3& b, Vector3& outVec) {
+        outVec.Set(_XO_MIN(a.x, b.x), _XO_MIN(a.y, b.y), _XO_MIN(a.z, b.z));
+    }
+    static void RotateDegrees(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec) {
+        RotateRadians(v, axis, angle * Deg2Rad, outVec);
+    }
     static void RotateRadians(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec);
     // Calls Vector3::AngleRadians, converting the return value to degrees.
-    static float AngleDegrees(const Vector3& a, const Vector3& b);
+    static float AngleDegrees(const Vector3& a, const Vector3& b) {
+        return AngleRadians(a, b) * Rad2Deg;
+    }
     static float AngleRadians(const Vector3& a, const Vector3& b);
-    static float Distance(const Vector3&a, const Vector3&b);
-    static float DistanceSquared(const Vector3& a, const Vector3& b);
+    static float Distance(const Vector3&a, const Vector3&b) {
+        return (b - a).Magnitude();
+    }
+    static float DistanceSquared(const Vector3& a, const Vector3& b) {
+        return (b - a).MagnitudeSquared();
+    }
     static float Dot(const Vector3& a, const Vector3& b);
     
 
     ////////////////////////////////////////////////////////////////////////// Random Methods
     // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#random_methods
-    
     static void RandomInCircle(const Vector3& up, float radius, Vector3& outVec);
     static void RandomInConeRadians(const Vector3& forward, float angle, Vector3& outVec);
-    static void RandomInCube(float size, Vector3& outVec);
-    static void RandomInFanRadians(const Vector3& forward, const Vector3& up, float angle, Vector3& outVec);
-    static void RandomInSphere(float minRadius, float maxRadius, Vector3& outVec);
-    static void RandomOnCircle(Vector3& outVec);
     static void RandomOnCircle(const Vector3& up, float radius, Vector3& outVec);
     static void RandomOnConeRadians(const Vector3& forward, float angle, Vector3& outVec);
-    static void RandomOnCube(Vector3& outVec);
     static void RandomOnCube(float size, Vector3& outVec);
     static void RandomOnSphere(float radius, Vector3& outVec);
 
+    static void RandomOnCircle(Vector3& outVec) {
+        RandomOnCircle(Vector3::Up, 1.0f, outVec);
+    }
+    static void RandomInFanRadians(const Vector3& forward, const Vector3& up, float angle, Vector3& outVec) {
+        Vector3::RotateRadians(forward, up, RandomRange(-angle*0.5f, angle*0.5f), outVec);
+    }
+    static void RandomInCube(float size, Vector3& outVec) {
+        outVec.Set(RandomRange(-size, size), RandomRange(-size, size), RandomRange(-size, size));
+    }
+    static void RandomInSphere(float minRadius, float maxRadius, Vector3& outVec) {
+        RandomOnSphere(Sqrt(RandomRange(minRadius, maxRadius)), outVec);
+    }
     static void RandomInSphere(float radius, Vector3& outVec) {
         RandomInSphere(0.0f, radius, outVec);
     }
@@ -748,6 +844,9 @@ public:
     }
     static void RandomInConeDegrees(const Vector3& forward, float angle, Vector3& outVec) { 
         RandomInConeRadians(forward, angle * Deg2Rad, outVec); 
+    }
+    static void RandomOnCube(Vector3& outVec) {
+        RandomOnCube(0.5f, outVec);
     }
     static void RandomInFanDegrees(const Vector3& forward, const Vector3& up, float angle, Vector3& outVec) { 
         RandomInFanRadians(forward, up, angle * Deg2Rad, outVec); 
@@ -902,6 +1001,7 @@ public:
     Vector4(const class Vector2& v, float z, float w); 
     Vector4(const class Vector3& v); 
     Vector4(const class Vector3& v, float w); 
+    Vector4(const class Quaternion& q);
 
     ////////////////////////////////////////////////////////////////////////// Set / Get Methods
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#set_get_methods
@@ -1024,35 +1124,83 @@ public:
     _XOINL bool operator != (const class Vector3& v) const;
 
 
-    bool IsNormalized() const;
-    bool IsZero() const;
-    float Magnitude() const;
-    float MagnitudeSquared() const;
+    bool IsNormalized() const {
+        return CloseEnough(MagnitudeSquared(), 1.0f, Epsilon);
+    }
+    bool IsZero() const {
+        return CloseEnough(MagnitudeSquared(), 0.0f, Epsilon);
+    }
+    float Magnitude() const {
+        return Sqrt(MagnitudeSquared());
+    }
+    float MagnitudeSquared() const {
+        return ((*this) * (*this)).Sum();
+    }
     float Sum() const;
 
-    Vector4& Normalize();
+    Vector4& Normalize() {
+        return (*this) /= Magnitude();
+    }
 
-    Vector4 Normalized() const;
+    Vector4& NormalizeSafe();
+
+    Vector4 Normalized() const {
+        return Vector4(*this).Normalize();
+    }
+
+    Vector3 NormalizedSafe() const {
+        return Vector3(*this).NormalizeSafe();
+    }
 
     ////////////////////////////////////////////////////////////////////////// Static Methods
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#static_methods
-    static void Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec);
-    static void Max(const Vector4& a, const Vector4& b, Vector4& outVec);
-    static void Min(const Vector4& a, const Vector4& b, Vector4& outVec);
-    static float Distance(const Vector4&a, const Vector4&b);
-    static float DistanceSquared(const Vector4& a, const Vector4& b);
+    static void Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec) {
+        outVec = a + ((b - a) * t);
+    }
+    static void Max(const Vector4& a, const Vector4& b, Vector4& outVec) {
+        outVec.Set(_XO_MAX(a.x, b.x), _XO_MAX(a.y, b.y), _XO_MAX(a.z, b.z), _XO_MAX(a.w, b.w));
+    }
+    static void Min(const Vector4& a, const Vector4& b, Vector4& outVec) {
+        outVec.Set(_XO_MIN(a.x, b.x), _XO_MIN(a.y, b.y), _XO_MIN(a.z, b.z), _XO_MIN(a.w, b.w));
+    }
+    static float Distance(const Vector4&a, const Vector4&b) {
+        return (b - a).Magnitude();
+    }
+    static float DistanceSquared(const Vector4& a, const Vector4& b) {
+        return (b - a).MagnitudeSquared();
+    }
     static float Dot(const Vector4& a, const Vector4& b);
     
+#define _RET_VARIANT(name) { Vector4 tempV; name(
+#define _RET_VARIANT_END() tempV); return tempV; }
+#define _RET_VARIANT_0(name)                                 _RET_VARIANT(name)                               _RET_VARIANT_END()
+#define _RET_VARIANT_1(name, first)                          _RET_VARIANT(name) first,                        _RET_VARIANT_END()
+#define _RET_VARIANT_2(name, first, second)                  _RET_VARIANT(name) first, second,                _RET_VARIANT_END()
+#define _RET_VARIANT_3(name, first, second, third)           _RET_VARIANT(name) first, second, third,         _RET_VARIANT_END()
+#define _RET_VARIANT_4(name, first, second, third, fourth)   _RET_VARIANT(name) first, second, third, fourth, _RET_VARIANT_END()
+#define _THIS_VARIANT1(name, first)                         { return name(*this, first); }
+#define _THIS_VARIANT2(name, first, second)                 { return name(*this, first, second); }
+
     ////////////////////////////////////////////////////////////////////////// Variants
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#variants
-    static Vector4 Lerp(const Vector4& a, const Vector4& b, float t);
-    static Vector4 Max(const Vector4& a, const Vector4& b);
-    static Vector4 Min(const Vector4& a, const Vector4& b);
+    static Vector4 Lerp(const Vector4& a, const Vector4& b, float t)    _RET_VARIANT_3(Lerp, a, b, t)
+    static Vector4 Max(const Vector4& a, const Vector4& b)              _RET_VARIANT_2(Max, a, b)
+    static Vector4 Min(const Vector4& a, const Vector4& b)              _RET_VARIANT_2(Min, a, b)
 
-    float Distance(const Vector4& v) const;
-    float DistanceSquared(const Vector4& v) const;
-    float Dot(const Vector4& v) const;
-    Vector4 Lerp(const Vector4& v, float t) const;
+    float Distance(const Vector4& v) const                              _THIS_VARIANT1(Distance, v)
+    float DistanceSquared(const Vector4& v) const                       _THIS_VARIANT1(DistanceSquared, v)
+    float Dot(const Vector4& v) const                                   _THIS_VARIANT1(Dot, v)
+    Vector4 Lerp(const Vector4& v, float t) const                       _THIS_VARIANT2(Lerp, v, t)
+
+#undef _RET_VARIANT
+#undef _RET_VARIANT_END
+#undef _RET_VARIANT_0
+#undef _RET_VARIANT_1
+#undef _RET_VARIANT_2
+#undef _RET_VARIANT_3
+#undef _RET_VARIANT_4
+#undef _THIS_VARIANT1
+#undef _THIS_VARIANT2
 
     ////////////////////////////////////////////////////////////////////////// Extras
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#extras
@@ -1295,15 +1443,35 @@ public:
     static void RotationRadians(float x, float y, float z, Quaternion& outQuat);
     static void Slerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat);
 
-    static Quaternion AxisAngleRadians(const Vector3& axis, float radians);
-    static Quaternion Lerp(const Quaternion& a, const Quaternion& b, float t);
-    static Quaternion LookAtFromDirection(const Vector3& direction);
-    static Quaternion LookAtFromDirection(const Vector3& direction, const Vector3& up);
-    static Quaternion LookAtFromPosition(const Vector3& from, const Vector3& to);
-    static Quaternion LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up);
-    static Quaternion RotationRadians(const Vector3& v);
-    static Quaternion RotationRadians(float x, float y, float z);
-    static Quaternion Slerp(const Quaternion& a, const Quaternion& b, float t);
+#define _RET_VARIANT(name) { Quaternion tempV; name(
+#define _RET_VARIANT_END() tempV); return tempV; }
+#define _RET_VARIANT_0(name)                                 _RET_VARIANT(name)                               _RET_VARIANT_END()
+#define _RET_VARIANT_1(name, first)                          _RET_VARIANT(name) first,                        _RET_VARIANT_END()
+#define _RET_VARIANT_2(name, first, second)                  _RET_VARIANT(name) first, second,                _RET_VARIANT_END()
+#define _RET_VARIANT_3(name, first, second, third)           _RET_VARIANT(name) first, second, third,         _RET_VARIANT_END()
+#define _RET_VARIANT_4(name, first, second, third, fourth)   _RET_VARIANT(name) first, second, third, fourth, _RET_VARIANT_END()
+#define _THIS_VARIANT1(name, first)                         { return name(*this, first); }
+#define _THIS_VARIANT2(name, first, second)                 { return name(*this, first, second); }
+
+    static Quaternion AxisAngleRadians(const Vector3& axis, float radians)                          _RET_VARIANT_2(AxisAngleRadians, axis, radians)
+    static Quaternion Lerp(const Quaternion& a, const Quaternion& b, float t)                       _RET_VARIANT_3(Lerp, a, b, t)
+    static Quaternion LookAtFromDirection(const Vector3& direction)                                 _RET_VARIANT_1(LookAtFromDirection, direction)
+    static Quaternion LookAtFromDirection(const Vector3& direction, const Vector3& up)              _RET_VARIANT_2(LookAtFromDirection, direction, up)
+    static Quaternion LookAtFromPosition(const Vector3& from, const Vector3& to)                    _RET_VARIANT_2(LookAtFromPosition, from, to)
+    static Quaternion LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up) _RET_VARIANT_3(LookAtFromPosition, from, to, up)
+    static Quaternion RotationRadians(const Vector3& v)                                             _RET_VARIANT_1(RotationRadians, v)
+    static Quaternion RotationRadians(float x, float y, float z)                                    _RET_VARIANT_3(RotationRadians, x, y, z)
+    static Quaternion Slerp(const Quaternion& a, const Quaternion& b, float t)                      _RET_VARIANT_3(Slerp, a, b, t)
+
+#undef _RET_VARIANT
+#undef _RET_VARIANT_END
+#undef _RET_VARIANT_0
+#undef _RET_VARIANT_1
+#undef _RET_VARIANT_2
+#undef _RET_VARIANT_3
+#undef _RET_VARIANT_4
+#undef _THIS_VARIANT1
+#undef _THIS_VARIANT2
 
     static const Quaternion
         Identity,
