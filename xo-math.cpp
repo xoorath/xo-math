@@ -1455,6 +1455,7 @@ const Vector3 Vector3::Zero(0.0f, 0.0f, 0.0f);
 
 #endif
 
+// todo: move to header
 Vector3::Vector3() {
 }
 
@@ -1591,6 +1592,7 @@ float Vector3::MagnitudeSquared() const {
     return x.Sum();
 }
 
+// todo: move to header
 float Vector3::Magnitude() const {
     return Sqrt(MagnitudeSquared());
 }
@@ -1609,16 +1611,17 @@ Vector3& Vector3::Normalize() {
     }
 }
 
-
+// todo: move to header
 Vector3 Vector3::Normalized() const {
     return Vector3(*this).Normalize();
 }
 
+// todo: move to header
 bool Vector3::IsZero() const {
     return CloseEnough(MagnitudeSquared(), 0.0f, Epsilon);
 }
 
-
+// todo: move to header
 bool Vector3::IsNormalized() const {
     return CloseEnough(MagnitudeSquared(), 1.0f, Epsilon);
 }
@@ -1685,63 +1688,9 @@ void Vector3::RotateRadians(const Vector3& v, const Vector3& axis, float angle, 
     outVec.Set(v * cosAng + axv * sinAng + axis * adv * (1.0f - cosAng));
 }
 
+// todo: move to header
 void Vector3::RotateDegrees(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec) {
     RotateRadians(v, axis, angle * Deg2Rad, outVec);
-}
-
-void Vector3::RandomOnConeRadians(const Vector3& forward, float angle, Vector3& outVec) {
-    Vector3 forwardNorm = forward.Normalized();
-    Vector3 crossed, tilted;
-    Vector3 other = forwardNorm == Up ? Left : Up; // anything unit length but the forwardNorm vector
-    Vector3::Cross(forwardNorm, other, crossed);
-    Vector3::RotateRadians(forwardNorm, crossed, angle, tilted);
-    Vector3::RotateRadians(tilted, forwardNorm, RandomRange(-PI, PI), outVec);
-    outVec *= forward.Magnitude();
-}
-
-void Vector3::RandomInConeRadians(const Vector3& forward, float angle, Vector3& outVec) {
-    Vector3 forwardNorm = forward.Normalized();
-    Vector3 crossed, tilted;
-    Vector3 other = forwardNorm == Up ? Left : Up; // anything unit length but the forwardNorm vector
-    Vector3::Cross(forwardNorm, other, crossed);
-    Vector3::RotateRadians(forwardNorm, crossed, RandomRange(0.0f, angle), tilted);
-    Vector3::RotateRadians(tilted, forwardNorm, RandomRange(-PI, PI), outVec);
-    outVec *= forward.Magnitude();
-}
-
-void Vector3::RandomOnConeDegrees(const Vector3& forward, float angle, Vector3& outVec) {
-    RandomOnConeRadians(forward, angle * Deg2Rad, outVec);
-}
-
-void Vector3::RandomInConeDegrees(const Vector3& forward, float angle, Vector3& outVec) {
-    RandomInConeRadians(forward, angle * Deg2Rad, outVec);
-}
-
-void Vector3::RandomOnSphere(Vector3& outVec) {
-    // TODO: find a better method to do this.
-    // In the off chance we randomly pick 0,0,0 this method will break.
-    outVec.Set(RandomRange(-1.0f, 1.0f), RandomRange(-1.0f, 1.0f), RandomRange(-1.0f, 1.0f));
-    outVec.Normalize();
-}
-
-void Vector3::RandomInSphere(Vector3& outVec) {
-    RandomOnSphere(outVec);
-    outVec *= RandomRange(0.0f, 1.0f);
-}
-
-void Vector3::RandomAtDistance(float d, Vector3& outVec) {
-    RandomOnSphere(outVec);
-    outVec *= d;
-}
-
-void Vector3::RandomInDistance(float d, Vector3& outVec) {
-    RandomOnSphere(outVec);
-    outVec *= RandomRange(0.0f, d);
-}
-
-void Vector3::RandomInRange(float low, float high, Vector3& outVec) {
-    RandomOnSphere(outVec);
-    outVec *= RandomRange(low, high);
 }
 
 float Vector3::AngleRadians(const Vector3& a, const Vector3& b) {
@@ -1751,133 +1700,96 @@ float Vector3::AngleRadians(const Vector3& a, const Vector3& b) {
     return ATan2(Sqrt(cross.Sum()), Vector3::Dot(a, b));
 }
 
+// todo: move to header
 float Vector3::AngleDegrees(const Vector3& a, const Vector3& b) {
     return AngleRadians(a, b) * Rad2Deg;
 }
 
+// todo: move to header
 float Vector3::DistanceSquared(const Vector3& a, const Vector3& b) {
     return (b - a).MagnitudeSquared();
 }
  
+// todo: move to header
 float Vector3::Distance(const Vector3&a, const Vector3&b) {
     return (b - a).Magnitude();
 }
 
-Vector3 Vector3::Cross(const Vector3& a, const Vector3& b) {
-    Vector3 tempV;
-    Cross(a, b, tempV);
-    return tempV;
-}
-    
-Vector3 Vector3::Max(const Vector3& a, const Vector3& b) {
-    Vector3 tempV;
-    Max(a, b, tempV);
-    return tempV;
-}
-    
-Vector3 Vector3::Min(const Vector3& a, const Vector3& b) {
-    Vector3 tempV;
-    Min(a, b, tempV);
-    return tempV;
-}
-    
-Vector3 Vector3::Lerp(const Vector3& a, const Vector3& b, float t) {
-    Vector3 tempV;
-    Lerp(a, b, t, tempV);
-    return tempV;
-}
-    
-Vector3 Vector3::RotateRadians(const Vector3& v, const Vector3& axis, float angle) {
-    Vector3 tempV;
-    RotateRadians(v, axis, angle, tempV);
-    return tempV;
-}
-    
-Vector3 Vector3::RotateDegrees(const Vector3& v, const Vector3& axis, float angle) {
-    Vector3 tempV;
-    RotateDegrees(v, axis, angle, tempV);
-    return tempV;
-}
-    
-Vector3 Vector3::RandomOnConeRadians(const Vector3& forward, float angle) {
-    Vector3 tempV;
-    RandomOnConeRadians(forward, angle, tempV);
-    return tempV;
-}
-    
-Vector3 Vector3::RandomInConeRadians(const Vector3& forward, float angle) {
-    Vector3 tempV;
-    RandomInConeRadians(forward, angle, tempV);
-    return tempV;
-}
-    
-Vector3 Vector3::RandomOnConeDegrees(const Vector3& forward, float angle) {
-    Vector3 tempV;
-    RandomOnConeDegrees(forward, angle, tempV);
-    return tempV;
-}
-    
-Vector3 Vector3::RandomInConeDegrees(const Vector3& forward, float angle) {
-    Vector3 tempV;
-    RandomInConeDegrees(forward, angle, tempV);
-    return tempV;
-}
-    
-Vector3 Vector3::RandomOnSphere() {
-    Vector3 tempV;
-    RandomOnSphere(tempV);
-    return tempV;
-}
-    
-Vector3 Vector3::RandomInSphere() {
-    Vector3 tempV;
-    RandomInSphere(tempV);
-    return tempV;
-}
-    
-Vector3 Vector3::RandomAtDistance(float d) {
-    Vector3 tempV;
-    RandomAtDistance(d, tempV);
-    return tempV;
-}
-    
-Vector3 Vector3::RandomInDistance(float d) {
-    Vector3 tempV;
-    RandomInDistance(d, tempV);
-    return tempV;
-}
-    
-Vector3 Vector3::RandomInRange(float low, float high) {
-    Vector3 tempV;
-    RandomInRange(low, high, tempV);
-    return tempV;
+void Vector3::RandomInConeRadians(const Vector3& forward, float angle, Vector3& outVec) {
+    Vector3 cross;
+    Vector3::Cross(forward, forward == Vector3::Up ? Vector3::Left : Vector3::Up, cross);
+    Vector3::RotateRadians(forward, cross, RandomRange(0.0f, angle*0.5f), outVec);
+    Vector3::RotateRadians(outVec, forward.Normalized(), RandomRange(0.0f, TAU), outVec);
 }
 
-float Vector3::Dot(const Vector3& v) const                                { return Dot(*this, v); }
+void Vector3::RandomOnConeRadians(const Vector3& forward, float angle, Vector3& outVec) {
+    Vector3 cross;
+    Vector3::Cross(forward, forward == Vector3::Up ? Vector3::Left : Vector3::Up, cross);
+    Vector3::RotateRadians(forward, cross, angle*0.5f, outVec);
+    Vector3::RotateRadians(outVec, forward.Normalized(), RandomRange(0.0f, TAU), outVec);
+}
 
-Vector3 Vector3::Cross(const Vector3& v) const                            { return Cross(*this, v); }
+void Vector3::RandomOnSphere(float radius, Vector3& outVec) {
+    // Marsaglia's method: https://projecteuclid.org/download/pdf_1/euclid.aoms/1177692644
+    float x1, x2, x12, x22;
+    x1 = RandomRange(-1.0f, 1.0f);
+    x2 = RandomRange(-1.0f, 1.0f);
+    x12 = Square(x1);
+    x22 = Square(x1);
+    outVec.Set(
+        2.0f * x1 * Sqrt(1.0f - x12 - x22),
+        2.0f * x2 * Sqrt(1.0f - x12 - x22),
+        1.0f - (2.0f * (x12 + x22))
+        );
+    outVec *= radius;
+}
 
-float Vector3::AngleRadians(const Vector3& v) const                       { return AngleRadians(*this, v); }
+void Vector3::RandomInSphere(float minRadius, float maxRadius, Vector3& outVec) {
+    RandomOnSphere(Sqrt(RandomRange(minRadius, maxRadius)), outVec);
+}
 
-float Vector3::AngleDegrees(const Vector3& v) const                       { return AngleDegrees(*this, v); }
+void Vector3::RandomOnCube(Vector3& outVec) {
+    RandomOnCube(0.5f, outVec);
+}
 
-float Vector3::DistanceSquared(const Vector3& v) const                    { return DistanceSquared(*this, v); }
+void Vector3::RandomInCube(float size, Vector3& outVec) {
+    outVec.Set(RandomRange(-size, size), RandomRange(-size, size), RandomRange(-size, size));
+}
 
-float Vector3::Distance(const Vector3& v) const                           { return Distance(*this, v); }
+void Vector3::RandomOnCube(float size, Vector3& outVec) {
+    switch (RandomRange(0, 5)) {
+        case 0: outVec.Set(RandomRange(-size, size),    RandomRange(-size, size),                size);         break;
+        case 1: outVec.Set(RandomRange(-size, size),    RandomRange(-size, size),               -size);         break;
+        case 2: outVec.Set(RandomRange(-size, size),                 size,          RandomRange(-size, size));  break;
+        case 3: outVec.Set(RandomRange(-size, size),                -size,          RandomRange(-size, size));  break;
+        case 4: outVec.Set(             size,           RandomRange(-size, size),   RandomRange(-size, size));  break;
+        case 5: outVec.Set(            -size,           RandomRange(-size, size),   RandomRange(-size, size));  break;
+    }
+}
 
-Vector3 Vector3::Lerp(const Vector3& v, float t) const                    { return Lerp(*this, v, t); }
+void Vector3::RandomInFanRadians(const Vector3& forward, const Vector3& up, float angle, Vector3& outVec) {
+    Vector3::RotateRadians(forward, up, RandomRange(-angle*0.5f, angle*0.5f), outVec);
+}
 
-Vector3 Vector3::RotateRadians(const Vector3& axis, float angle) const    { return RotateRadians(*this, axis, angle); }
+void Vector3::RandomOnCircle(Vector3& outVec) {
+    RandomOnCircle(Vector3::Up, 1.0f, outVec);
+}
 
-Vector3 Vector3::RotateDegrees(const Vector3& axis, float angle) const    { return RotateDegrees(*this, axis, angle); }
+void Vector3::RandomInCircle(const Vector3& up, float radius, Vector3& outVec) {
+    Vector3 cross;
+    Vector3::Cross(up, up == Right ? Forward : Right, cross);
+    Vector3::RotateRadians(cross, up.Normalized(), RandomRange(0.0f, TAU), outVec);
+    outVec *= Sqrt(RandomRange(0.0f, 1.0f)) * radius;
+}
 
-Vector3 Vector3::RandomOnConeRadians(float angle) const                   { return RandomOnConeRadians(*this, angle); }
+void Vector3::RandomOnCircle(const Vector3& up, float radius, Vector3& outVec) {
+    Vector3 cross;
+    Vector3::Cross(up, up == Right ? Forward : Right, cross);
+    Vector3::RotateRadians(cross, up.Normalized(), RandomRange(0.0f, TAU), outVec);
+    outVec *= radius;
+}
 
-Vector3 Vector3::RandomInConeRadians(float angle) const                   { return RandomInConeRadians(*this, angle); }
 
-Vector3 Vector3::RandomOnConeDegrees(float angle) const                   { return RandomOnConeDegrees(*this, angle); }
-
-Vector3 Vector3::RandomInConeDegrees(float angle) const                   { return RandomInConeDegrees(*this, angle); }
 
 #undef IDX_X
 #undef IDX_Y
