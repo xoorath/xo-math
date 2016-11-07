@@ -28,7 +28,7 @@ public:
     //>See
     //! @name Constructors
     //! @{
-    Vector3(); //!< Performs no initialization.
+    Vector3() { } //!< Performs no initialization.
     Vector3(float f); //!< All elements are set to f.
     Vector3(float x, float y, float z); //!< Assigns each named value accordingly.
     Vector3(const Vector3& vec); //!< Copy constructor, trivial.
@@ -197,21 +197,29 @@ public:
     //! @{
 
     //! Returns true when the Magnitude of this vector is within Vector3::Epsilon of being 1.0
-    bool IsNormalized() const;
+    bool IsNormalized() const {
+        return CloseEnough(MagnitudeSquared(), 1.0f, Epsilon);
+    }
     //! Returns true when the Magnitude of this vector is <= Vector3::Epsilon
-    bool IsZero() const;
+    bool IsZero() const {
+        return CloseEnough(MagnitudeSquared(), 0.0f, Epsilon);
+    }
     //! The length of this vector
     //! It's preferred to use Vector3::MagnitudeSquared when possible, as Vector3::Magnitude requires a call to Sqrt.
     //!
     //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert = \sqrt{(x\times x)+(y\times y)+(z\times z)}\f$
     //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
-    float Magnitude() const;
+    float Magnitude() const {
+        return Sqrt(MagnitudeSquared());
+    }
     //! The square length of this vector.
     //! It's preferred to use Vector3::MagnitudeSquared when possible, as Vector3::Magnitude requires a call to Sqrt.
     //!
     //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert^2 = (x\times x)+(y\times y)+(z\times z)\f$
     //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
-    float MagnitudeSquared() const;
+    float MagnitudeSquared() const {
+        return ((*this) * (*this)).Sum();
+    }
     //! The sum of all vector elements.
     //!
     //! \f$x+y+z\f$
@@ -221,9 +229,17 @@ public:
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
     Vector3& Normalize();
 
+    Vector3& NormalizeSafe();
+
     //! Returns a copy of this vector with a Magnitude of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
-    Vector3 Normalized() const;
+    Vector3 Normalized() const {
+        return Vector3(*this).Normalize();
+    }
+
+    Vector3 NormalizedSafe() const {
+        return Vector3(*this).NormalizeSafe();
+    }
     //! Returns this vector swizzled so elements appear in reverse order. Vector3::operator~() provides the same functionality.
     //!
     //! \f$\begin{pmatrix}z,&y,&x\end{pmatrix}\f$
@@ -240,33 +256,47 @@ public:
     static void Cross(const Vector3& a, const Vector3& b, Vector3& outVec);
     //! Sets outVec to a vector interpolated between a and b by a scalar amount t.
     //! @sa https://en.wikipedia.org/wiki/Linear_interpolation
-    static void Lerp(const Vector3& a, const Vector3& b, float t, Vector3& outVec);
+    static void Lerp(const Vector3& a, const Vector3& b, float t, Vector3& outVec) {
+        outVec = a + ((b - a) * t);
+    }
     //! Set outVec to have elements equal to the max of each element in a and b.
     //!
     //! \f$\begin{pmatrix}\max(a.x, b.x)&\max(a.y, b.y)&\max(a.z, b.z)\end{pmatrix}\f$
-    static void Max(const Vector3& a, const Vector3& b, Vector3& outVec);
+    static void Max(const Vector3& a, const Vector3& b, Vector3& outVec) {
+        outVec.Set(_XO_MAX(a.x, b.x), _XO_MAX(a.y, b.y), _XO_MAX(a.z, b.z));
+    }
     //! Set outVec to have elements equal to the min of each element in a and b.
     //!
     //! \f$\begin{pmatrix}\min(a.x, b.x)&\min(a.y, b.y)&\min(a.z, b.z)\end{pmatrix}\f$
-    static void Min(const Vector3& a, const Vector3& b, Vector3& outVec);
+    static void Min(const Vector3& a, const Vector3& b, Vector3& outVec) {
+        outVec.Set(_XO_MIN(a.x, b.x), _XO_MIN(a.y, b.y), _XO_MIN(a.z, b.z));
+    }
     //! Calls Vector3::RotateRadians, converting the input angle in degrees to radians.
-    static void RotateDegrees(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec);
+    static void RotateDegrees(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec) {
+        RotateRadians(v, axis, angle * Deg2Rad, outVec);
+    }
     //! Assign outVec to v rotated along an axis by a specified angle in radians.
     static void RotateRadians(const Vector3& v, const Vector3& axis, float angle, Vector3& outVec);
     // Calls Vector3::AngleRadians, converting the return value to degrees.
-    static float AngleDegrees(const Vector3& a, const Vector3& b);
+    static float AngleDegrees(const Vector3& a, const Vector3& b) {
+        return AngleRadians(a, b) * Rad2Deg;
+    }
     //! Returns the angle in radians between vector a and b.
     static float AngleRadians(const Vector3& a, const Vector3& b);
     //! Returns the distance between vectors a and b in 3 dimensional space.
     //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
     //!
     //! \f$distance = \lvert\rvert\boldsymbol{b-a}\lvert\rvert\f$
-    static float Distance(const Vector3&a, const Vector3&b);
+    static float Distance(const Vector3&a, const Vector3&b) {
+        return (b - a).Magnitude();
+    }
     //! Returns the square distance between vectors a and b in 3 dimensional space.
     //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
     //!
     //! \f$distance^2 = \lvert\rvert\boldsymbol{b-a}\lvert\rvert^2\f$
-    static float DistanceSquared(const Vector3& a, const Vector3& b);
+    static float DistanceSquared(const Vector3& a, const Vector3& b) {
+        return (b - a).MagnitudeSquared();
+    }
     //! Returns a single number representing a product of magnitudes. Commonly used with two normalized 
     //! vectors to determine if they are pointed the same way. In this case: 1.0 represents same-facing vectors
     //! 0 represents perpendicular vectors, and -1 will be facing away
@@ -281,20 +311,26 @@ public:
     //>See
     //! @name Random Methods
     //! @{
-
-    
+ 
     static void RandomInCircle(const Vector3& up, float radius, Vector3& outVec);
     static void RandomInConeRadians(const Vector3& forward, float angle, Vector3& outVec);
-    static void RandomInCube(float size, Vector3& outVec);
-    static void RandomInFanRadians(const Vector3& forward, const Vector3& up, float angle, Vector3& outVec);
-    static void RandomInSphere(float minRadius, float maxRadius, Vector3& outVec);
-    static void RandomOnCircle(Vector3& outVec);
     static void RandomOnCircle(const Vector3& up, float radius, Vector3& outVec);
     static void RandomOnConeRadians(const Vector3& forward, float angle, Vector3& outVec);
-    static void RandomOnCube(Vector3& outVec);
     static void RandomOnCube(float size, Vector3& outVec);
     static void RandomOnSphere(float radius, Vector3& outVec);
 
+    static void RandomOnCircle(Vector3& outVec) {
+        RandomOnCircle(Vector3::Up, 1.0f, outVec);
+    }
+    static void RandomInFanRadians(const Vector3& forward, const Vector3& up, float angle, Vector3& outVec) {
+        Vector3::RotateRadians(forward, up, RandomRange(-angle*0.5f, angle*0.5f), outVec);
+    }
+    static void RandomInCube(float size, Vector3& outVec) {
+        outVec.Set(RandomRange(-size, size), RandomRange(-size, size), RandomRange(-size, size));
+    }
+    static void RandomInSphere(float minRadius, float maxRadius, Vector3& outVec) {
+        RandomOnSphere(Sqrt(RandomRange(minRadius, maxRadius)), outVec);
+    }
     static void RandomInSphere(float radius, Vector3& outVec) {
         RandomInSphere(0.0f, radius, outVec);
     }
@@ -309,6 +345,9 @@ public:
     }
     static void RandomInConeDegrees(const Vector3& forward, float angle, Vector3& outVec) { 
         RandomInConeRadians(forward, angle * Deg2Rad, outVec); 
+    }
+    static void RandomOnCube(Vector3& outVec) {
+        RandomOnCube(0.5f, outVec);
     }
     static void RandomInFanDegrees(const Vector3& forward, const Vector3& up, float angle, Vector3& outVec) { 
         RandomInFanRadians(forward, up, angle * Deg2Rad, outVec); 

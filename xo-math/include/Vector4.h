@@ -41,6 +41,7 @@ public:
     Vector4(const class Vector2& v, float z, float w); //!< Assigns same-name values from v, then z and w. \f$\begin{pmatrix}v.x&v.y&0&0\end{pmatrix}\f$
     Vector4(const class Vector3& v); //!< Assigns same-name values from v, zero to w.\f$\begin{pmatrix}v.x&v.y&v.z&0\end{pmatrix}\f$
     Vector4(const class Vector3& v, float w); //!< Assigns same-name values from v, then w.\f$\begin{pmatrix}v.x&v.y&v.z&0\end{pmatrix}\f$
+    Vector4(const class Quaternion& q);
     //! @}
 
     //>See
@@ -213,21 +214,29 @@ public:
     //! @{
 
     //! Returns true when the Magnitude of this vector is within Vector4::Epsilon of being 1.0
-    bool IsNormalized() const;
+    bool IsNormalized() const {
+        return CloseEnough(MagnitudeSquared(), 1.0f, Epsilon);
+    }
     //! Returns true when the Magnitude of this vector is <= Vector4::Epsilon
-    bool IsZero() const;
+    bool IsZero() const {
+        return CloseEnough(MagnitudeSquared(), 0.0f, Epsilon);
+    }
     //! The length of this vector in 4 dimensional space.
     //! It's preferred to use Vector4::MagnitudeSquared when possible, as Vector4::Magnitude requires a call to Sqrt.
     //!
     //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert = \sqrt{(x\times x)+(y\times y)+(z\times z)+(w\times w)}\f$
     //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
-    float Magnitude() const;
+    float Magnitude() const {
+        return Sqrt(MagnitudeSquared());
+    }
     //! The square length of this vector in 4 dimensional space.
     //! It's preferred to use Vector4::MagnitudeSquared when possible, as Vector4::Magnitude requires a call to Sqrt.
     //!
     //! \f$\lvert\rvert\boldsymbol{this}\lvert\rvert^2 = (x\times x)+(y\times y)+(z\times z)+(w\times w)\f$
     //! @sa https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Euclidean_vector_space
-    float MagnitudeSquared() const;
+    float MagnitudeSquared() const {
+        return ((*this) * (*this)).Sum();
+    }
     //! The sum of all vector elements.
     //!
     //! \f$x+y+z+w\f$
@@ -235,11 +244,21 @@ public:
 
     //! Normalizes this vector to a Magnitude of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
-    Vector4& Normalize();
+    Vector4& Normalize() {
+        return (*this) /= Magnitude();
+    }
+
+    Vector4& NormalizeSafe();
 
     //! Returns a copy of this vector with a Magnitude of 1.
     //! @sa https://en.wikipedia.org/wiki/Unit_vector
-    Vector4 Normalized() const;
+    Vector4 Normalized() const {
+        return Vector4(*this).Normalize();
+    }
+
+    Vector3 NormalizedSafe() const {
+        return Vector3(*this).NormalizeSafe();
+    }
     //! @}
 
     //>See
@@ -248,25 +267,35 @@ public:
 
     //! Sets outVec to a vector interpolated between a and b by a scalar amount t.
     //! @sa https://en.wikipedia.org/wiki/Linear_interpolation
-    static void Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec);
+    static void Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec) {
+        outVec = a + ((b - a) * t);
+    }
     //! Set outVec to have elements equal to the max of each element in a and b.
     //!
     //! \f$\begin{pmatrix}\max(a.x, b.x)&\max(a.y, b.y)&\max(a.z, b.z)&\max(a.w, b.w)\end{pmatrix}\f$
-    static void Max(const Vector4& a, const Vector4& b, Vector4& outVec);
+    static void Max(const Vector4& a, const Vector4& b, Vector4& outVec) {
+        outVec.Set(_XO_MAX(a.x, b.x), _XO_MAX(a.y, b.y), _XO_MAX(a.z, b.z), _XO_MAX(a.w, b.w));
+    }
     //! Set outVec to have elements equal to the min of each element in a and b.
     //!
     //! \f$\begin{pmatrix}\min(a.x, b.x)&\min(a.y, b.y)&\min(a.z, b.z)&\min(a.w, b.w)\end{pmatrix}\f$
-    static void Min(const Vector4& a, const Vector4& b, Vector4& outVec);
+    static void Min(const Vector4& a, const Vector4& b, Vector4& outVec) {
+        outVec.Set(_XO_MIN(a.x, b.x), _XO_MIN(a.y, b.y), _XO_MIN(a.z, b.z), _XO_MIN(a.w, b.w));
+    }
     //! Returns the distance between vectors a and b in 4 dimensional space.
     //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
     //!
     //! \f$distance = \lvert\rvert\boldsymbol{b-a}\lvert\rvert\f$
-    static float Distance(const Vector4&a, const Vector4&b);
+    static float Distance(const Vector4&a, const Vector4&b) {
+        return (b - a).Magnitude();
+    }
     //! Returns the square distance between vectors a and b in 4 dimensional space.
     //! It's preferred to use the DistanceSquared when possible, as Distance requires a call to Sqrt.
     //!
     //! \f$distance^2 = \lvert\rvert\boldsymbol{b-a}\lvert\rvert^2\f$
-    static float DistanceSquared(const Vector4& a, const Vector4& b);
+    static float DistanceSquared(const Vector4& a, const Vector4& b) {
+        return (b - a).MagnitudeSquared();
+    }
     //! Returns a single number representing a product of magnitudes. Commonly used with two normalized 
     //! vectors to determine if they are pointed the same way. In this case: 1.0 represents same-facing vectors
     //! 0 represents perpendicular vectors, and -1 will be facing away
@@ -277,6 +306,16 @@ public:
     static float Dot(const Vector4& a, const Vector4& b);
     //! @}
     
+#define _RET_VARIANT(name) { Vector4 tempV; name(
+#define _RET_VARIANT_END() tempV); return tempV; }
+#define _RET_VARIANT_0(name)                                 _RET_VARIANT(name)                               _RET_VARIANT_END()
+#define _RET_VARIANT_1(name, first)                          _RET_VARIANT(name) first,                        _RET_VARIANT_END()
+#define _RET_VARIANT_2(name, first, second)                  _RET_VARIANT(name) first, second,                _RET_VARIANT_END()
+#define _RET_VARIANT_3(name, first, second, third)           _RET_VARIANT(name) first, second, third,         _RET_VARIANT_END()
+#define _RET_VARIANT_4(name, first, second, third, fourth)   _RET_VARIANT(name) first, second, third, fourth, _RET_VARIANT_END()
+#define _THIS_VARIANT1(name, first)                         { return name(*this, first); }
+#define _THIS_VARIANT2(name, first, second)                 { return name(*this, first, second); }
+
     //>See
     //! @name Variants
     //! Variants of other same-name static methods. See their documentation for more details under the 
@@ -285,15 +324,25 @@ public:
     //! Non static variants replace the first Vector4 parameter by 'this' vector.
     //! Static variants return what would have been the outVec param.
     //! @{
-    static Vector4 Lerp(const Vector4& a, const Vector4& b, float t);
-    static Vector4 Max(const Vector4& a, const Vector4& b);
-    static Vector4 Min(const Vector4& a, const Vector4& b);
+    static Vector4 Lerp(const Vector4& a, const Vector4& b, float t)    _RET_VARIANT_3(Lerp, a, b, t)
+    static Vector4 Max(const Vector4& a, const Vector4& b)              _RET_VARIANT_2(Max, a, b)
+    static Vector4 Min(const Vector4& a, const Vector4& b)              _RET_VARIANT_2(Min, a, b)
 
-    float Distance(const Vector4& v) const;
-    float DistanceSquared(const Vector4& v) const;
-    float Dot(const Vector4& v) const;
-    Vector4 Lerp(const Vector4& v, float t) const;
+    float Distance(const Vector4& v) const                              _THIS_VARIANT1(Distance, v)
+    float DistanceSquared(const Vector4& v) const                       _THIS_VARIANT1(DistanceSquared, v)
+    float Dot(const Vector4& v) const                                   _THIS_VARIANT1(Dot, v)
+    Vector4 Lerp(const Vector4& v, float t) const                       _THIS_VARIANT2(Lerp, v, t)
     //! @}
+
+#undef _RET_VARIANT
+#undef _RET_VARIANT_END
+#undef _RET_VARIANT_0
+#undef _RET_VARIANT_1
+#undef _RET_VARIANT_2
+#undef _RET_VARIANT_3
+#undef _RET_VARIANT_4
+#undef _THIS_VARIANT1
+#undef _THIS_VARIANT2
 
     //>See
     //! @name Extras

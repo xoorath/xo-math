@@ -134,6 +134,15 @@ Vector4::Vector4(const class Vector3& vec, float w) :
 }
 #endif
 
+Vector4::Vector4(const class Quaternion& q) :
+#if defined(XO_SSE)
+    m(q.m)
+#else
+    x(q.x), y(q.y), z(q.z), w(q.w)
+#endif
+{
+}
+
 Vector4& Vector4::Set(float x, float y, float z, float w) {
 #if defined(XO_SSE)
     m = _mm_set_ps(w, z, y, x);
@@ -247,128 +256,26 @@ void Vector4::Get(float* f) const {
  
 float Vector4::Sum() const {
 #if defined(XO_SSE)
-    auto s = _mm_hadd_ps(m, m);
-    s = _mm_hadd_ps(s, s);
-    return _mm_cvtss_f32(s);
+    __m128 s = _mm_hadd_ps(m, m);
+    return _mm_cvtss_f32(_mm_hadd_ps(s, s));
 #else
     return x+y+z+w;
 #endif
 }
- 
-float Vector4::MagnitudeSquared() const {
-#if defined(XO_SSE)
-    auto square = _mm_mul_ps(m, m);
-    square = _mm_hadd_ps(square, square);
-    square = _mm_hadd_ps(square, square);
-    return _mm_cvtss_f32(square);
-#else
-    return (x*x) + (y*y) + (z*z) + (w*w);
-#endif
-}
- 
-float Vector4::Magnitude() const {
-    return Sqrt(MagnitudeSquared());
-}
 
-Vector4& Vector4::Normalize() {
+Vector4& Vector4::NormalizeSafe() {
     float magnitude = MagnitudeSquared();
-    if (CloseEnough(magnitude, 1.0f, Epsilon)) {
-        return *this; // already normalized
-    }
-    else if (CloseEnough(magnitude, 0.0f, Epsilon)) {
-        return *this; // zero vec
-    }
-    else {
-        magnitude = Sqrt(magnitude);
-        return (*this) /= magnitude;
-    }
-}
- 
-Vector4 Vector4::Normalized() const {
-    return Vector4(*this).Normalize();
-}
-
-bool Vector4::IsZero() const {
-    return CloseEnough(MagnitudeSquared(), 0.0f, Epsilon);
-}
-
-bool Vector4::IsNormalized() const {
-    return CloseEnough(MagnitudeSquared(), 1.0f, Epsilon);
-}
- 
-void Vector4::Max(const Vector4& a, const Vector4& b, Vector4& outVec) {
-    outVec.Set(_XO_MAX(a.x, b.x), _XO_MAX(a.y, b.y), _XO_MAX(a.z, b.z), _XO_MAX(a.w, b.w));
-}
-
-void Vector4::Min(const Vector4& a, const Vector4& b, Vector4& outVec) {
-    outVec.Set(_XO_MIN(a.x, b.x), _XO_MIN(a.y, b.y), _XO_MIN(a.z, b.z), _XO_MIN(a.w, b.w));
-}
-
-void Vector4::Lerp(const Vector4& a, const Vector4& b, float t, Vector4& outVec) {
-    if(CloseEnough(t, 0.0f, Epsilon)) {
-        outVec = a;
-    }
-    else if(CloseEnough(t, 1.0f, Epsilon)) {
-        outVec = b;
-    }
-    else {
-        outVec = a + ((b - a) * t);    
-    }
+    if (magnitude == 0.0f)
+        return *this;
+    return *this /= Sqrt(magnitude);
 }
 
 float Vector4::Dot(const Vector4& a, const Vector4& b) {
 #if defined(XO_SSE4)
     return _mm_cvtss_f32(_mm_dp_ps(a.m, b.m, 0xff));
-#elif defined(XO_SSE3)
-    __m128 d = _mm_mul_ps(a.m, b.m);
-    d = _mm_hadd_ps(d, d);
-    d = _mm_hadd_ps(d, d);
-    return _mm_cvtss_f32(d);
-#elif defined(XO_SSE)
-    __m128 d = _mm_mul_ps(a.m, b.m);
-    _MM_ALIGN16 float t[4];
-    _mm_store_ps(t, d);
-    return t[IDX_X] + t[IDX_Y] + t[IDX_Z] + t[IDX_W];
 #else
-    return (a.x*b.x) + (a.y*b.y) + (a.z*b.z) + (a.w*b.w);
+    return (a * b).Sum();
 #endif
-}
-
-
-float Vector4::DistanceSquared(const Vector4& a, const Vector4& b) {
-    return (b - a).MagnitudeSquared();
-}
-
-float Vector4::Distance(const Vector4&a, const Vector4&b) {
-    return (b - a).Magnitude();
-}
-
-Vector4 Vector4::Max(const Vector4& a, const Vector4& b) {
-    Vector4 v;
-    Max(a, b, v);
-    return v;
-}
-
-Vector4 Vector4::Min(const Vector4& a, const Vector4& b) {
-    Vector4 v;
-    Min(a, b, v);
-    return v;
-}
-
-Vector4 Vector4::Lerp(const Vector4& a, const Vector4& b, float t) {
-    Vector4 v;
-    Lerp(a, b, t, v);
-    return v;
-}
-
-float Vector4::Dot(const Vector4& v) const                                { return Dot(*this, v); }
-float Vector4::DistanceSquared(const Vector4& v) const                    { return DistanceSquared(*this, v); }
-float Vector4::Distance(const Vector4& v) const                           { return Distance(*this, v); }
-
-Vector4 Vector4::Lerp(const Vector4& v, float t) const {
-    Vector4 temp;
-    Vector4::Lerp(*this, v, t, temp);
-    return temp;
 }
 
 XOMATH_END_XO_NS();

@@ -28,7 +28,6 @@
 //  * Move trivial methods to headers, keep only "meaningful" code in *.cpp/*inline.h files
 //  * Use macros to generate variant functions for other classes, like in Vector3.h
 //  * Consider other simpler documentation solution. github pages?
-//  * Fix generated output (xo-math.h/.cpp/-config.h).
 //  * Consider something like premake or similar for dev project files. Check out https://github.com/bkaradzic/GENie
 //  * Move CI back to travis, include more compiler versions.
 //  * Matrix: finish filling out stubs
@@ -233,6 +232,7 @@ _XOINL float Min(float x, float y)      { return _XO_MIN(x, y); }
 _XOINL float Max(float x, float y)      { return _XO_MAX(x, y); }
 _XOINL float Abs(float f)               { return f > 0.0f ? f : -f; }
 _XOINL float Sqrt(float f)              { return sqrtf(f); } 
+_XOINL float Cbrt(float f)              { return cbrtf(f); }
 _XOINL float Sin(float f)               { return sinf(f); } 
 _XOINL float Cos(float f)               { return cosf(f); } 
 _XOINL float Tan(float f)               { return tanf(f); }

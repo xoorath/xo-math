@@ -369,85 +369,11 @@ void Quaternion::Slerp(const Quaternion& a, const Quaternion& b, float t, Quater
 
 void Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat)
 {
-    if (CloseEnough(t, 0.0f, Epsilon))
-    {
-        outQuat = a;
-    }
-    else if (CloseEnough(t, 1.0f, Epsilon))
-    {
-        outQuat = b;
-    }
-    else
-    {
-        Vector4* vq = (Vector4*)&outQuat;
-        Vector4* va = (Vector4*)&a;
-        Vector4* vb = (Vector4*)&b;
-        // Todo: give the vectors the same static 'outQuat' type interface, then just use the Vector4::Lerp for this lerp
-        (*vq) = *va + ((*vb - *va) * t);
-    }
-}
-
-Quaternion Quaternion::RotationRadians(float x, float y, float z)
-{
-    Quaternion q;
-    RotationRadians(x, y, z, q);
-    return q;
-}
-
-Quaternion Quaternion::RotationRadians(const Vector3& v)
-{
-    Quaternion q;
-    RotationRadians(v, q);
-    return q;
-}
-
-Quaternion Quaternion::AxisAngleRadians(const Vector3& axis, float radians)
-{
-    Quaternion q;
-    AxisAngleRadians(axis, radians, q);
-    return q;
-}
-
-Quaternion Quaternion::LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up)
-{
-    Quaternion q;
-    LookAtFromPosition(from, to, up, q);
-    return q;
-}
-
-Quaternion Quaternion::LookAtFromPosition(const Vector3& from, const Vector3& to)
-{
-    Quaternion q;
-    LookAtFromPosition(from, to, q);
-    return q;
-}
-
-Quaternion Quaternion::LookAtFromDirection(const Vector3& direction, const Vector3& up)
-{
-    Quaternion q;
-    LookAtFromDirection(direction, up, q);
-    return q;
-}
-
-Quaternion Quaternion::LookAtFromDirection(const Vector3& direction)
-{
-    Quaternion q;
-    LookAtFromDirection(direction, q);
-    return q;
-}
-
-Quaternion Quaternion::Slerp(const Quaternion& a, const Quaternion& b, float t)
-{
-    Quaternion q;
-    Slerp(a, b, t, q);
-    return q;
-}
-
-Quaternion Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t)
-{
-    Quaternion q;
-    Lerp(a, b, t, q);
-    return q;
+    Vector4& vq = static_cast<Vector4>(outQuat);
+    const Vector4& va = a;
+    const Vector4& vb = b;
+    // Todo: give the vectors the same static 'outQuat' type interface, then just use the Vector4::Lerp for this lerp
+    vq = va + (vb - va) * t;
 }
 
 XOMATH_END_XO_NS();

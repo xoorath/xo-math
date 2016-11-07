@@ -56,15 +56,35 @@ public:
     static void RotationRadians(float x, float y, float z, Quaternion& outQuat);
     static void Slerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat);
 
-    static Quaternion AxisAngleRadians(const Vector3& axis, float radians);
-    static Quaternion Lerp(const Quaternion& a, const Quaternion& b, float t);
-    static Quaternion LookAtFromDirection(const Vector3& direction);
-    static Quaternion LookAtFromDirection(const Vector3& direction, const Vector3& up);
-    static Quaternion LookAtFromPosition(const Vector3& from, const Vector3& to);
-    static Quaternion LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up);
-    static Quaternion RotationRadians(const Vector3& v);
-    static Quaternion RotationRadians(float x, float y, float z);
-    static Quaternion Slerp(const Quaternion& a, const Quaternion& b, float t);
+#define _RET_VARIANT(name) { Quaternion tempV; name(
+#define _RET_VARIANT_END() tempV); return tempV; }
+#define _RET_VARIANT_0(name)                                 _RET_VARIANT(name)                               _RET_VARIANT_END()
+#define _RET_VARIANT_1(name, first)                          _RET_VARIANT(name) first,                        _RET_VARIANT_END()
+#define _RET_VARIANT_2(name, first, second)                  _RET_VARIANT(name) first, second,                _RET_VARIANT_END()
+#define _RET_VARIANT_3(name, first, second, third)           _RET_VARIANT(name) first, second, third,         _RET_VARIANT_END()
+#define _RET_VARIANT_4(name, first, second, third, fourth)   _RET_VARIANT(name) first, second, third, fourth, _RET_VARIANT_END()
+#define _THIS_VARIANT1(name, first)                         { return name(*this, first); }
+#define _THIS_VARIANT2(name, first, second)                 { return name(*this, first, second); }
+
+    static Quaternion AxisAngleRadians(const Vector3& axis, float radians)                          _RET_VARIANT_2(AxisAngleRadians, axis, radians)
+    static Quaternion Lerp(const Quaternion& a, const Quaternion& b, float t)                       _RET_VARIANT_3(Lerp, a, b, t)
+    static Quaternion LookAtFromDirection(const Vector3& direction)                                 _RET_VARIANT_1(LookAtFromDirection, direction)
+    static Quaternion LookAtFromDirection(const Vector3& direction, const Vector3& up)              _RET_VARIANT_2(LookAtFromDirection, direction, up)
+    static Quaternion LookAtFromPosition(const Vector3& from, const Vector3& to)                    _RET_VARIANT_2(LookAtFromPosition, from, to)
+    static Quaternion LookAtFromPosition(const Vector3& from, const Vector3& to, const Vector3& up) _RET_VARIANT_3(LookAtFromPosition, from, to, up)
+    static Quaternion RotationRadians(const Vector3& v)                                             _RET_VARIANT_1(RotationRadians, v)
+    static Quaternion RotationRadians(float x, float y, float z)                                    _RET_VARIANT_3(RotationRadians, x, y, z)
+    static Quaternion Slerp(const Quaternion& a, const Quaternion& b, float t)                      _RET_VARIANT_3(Slerp, a, b, t)
+
+#undef _RET_VARIANT
+#undef _RET_VARIANT_END
+#undef _RET_VARIANT_0
+#undef _RET_VARIANT_1
+#undef _RET_VARIANT_2
+#undef _RET_VARIANT_3
+#undef _RET_VARIANT_4
+#undef _THIS_VARIANT1
+#undef _THIS_VARIANT2
 
     static const Quaternion
         Identity,
