@@ -117,7 +117,7 @@ Vector4 Matrix4x4::GetColumn(int i) const {
     return Vector4(r[0][i], r[1][i], r[2][i], r[3][i]);
 }
 
-const Matrix4x4& Matrix4x4::Transpose() {
+Matrix4x4& Matrix4x4::Transpose() {
 #if defined(XO_SSE)
     _MM_TRANSPOSE4_PS(r[0].m, r[1].m, r[2].m, r[3].m);
 #else
@@ -609,7 +609,7 @@ Quaternion Quaternion::Inverse() const
     return Quaternion(*this).MakeInverse();
 }
 
-const Quaternion& Quaternion::MakeInverse()
+Quaternion& Quaternion::MakeInverse()
 {
     float magnitude = xo_internal::QuaternionSquareSum(*this);
 
@@ -632,7 +632,7 @@ Quaternion Quaternion::Normalized() const
     return Quaternion(*this).Normalize();
 }
 
-const Quaternion& Quaternion::Normalize()
+Quaternion& Quaternion::Normalize()
 {
     float magnitude = xo_internal::QuaternionSquareSum(*this);
     if (CloseEnough(magnitude, 1.0f, Epsilon))
@@ -655,7 +655,7 @@ Quaternion Quaternion::Conjugate() const
     return Quaternion(*this).MakeConjugate();
 }
 
-const Quaternion& Quaternion::MakeConjugate()
+Quaternion& Quaternion::MakeConjugate()
 {
     _XO_ASSIGN_QUAT(w, -x, -y, -z);
     return *this;
@@ -1212,19 +1212,19 @@ Vector2::Vector2(const class Vector3& v) : x(v.x), y(v.y) {
 Vector2::Vector2(const class Vector4& v) : x(v.x), y(v.y) {
 }
 
-const Vector2& Vector2::Set(float x, float y) {
+Vector2& Vector2::Set(float x, float y) {
     this->x = x;
     this->y = y;
     return *this;
 }
 
-const Vector2& Vector2::Set(float v) {
+Vector2& Vector2::Set(float v) {
     x = v;
     y = v;
     return *this;
 }
 
-const Vector2& Vector2::Set(const Vector2& v) {
+Vector2& Vector2::Set(const Vector2& v) {
     x = v.x;
     y = v.y;
     return *this;
@@ -1251,7 +1251,7 @@ float Vector2::MagnitudeSquared() const {
     return x*x + y*y;
 }
 
-const Vector2& Vector2::Normalize() {
+Vector2& Vector2::Normalize() {
     float magnitude = MagnitudeSquared();
     if (CloseEnough(magnitude, 1.0f, Epsilon))
         return *this; // already normalized
@@ -1437,26 +1437,21 @@ const Vector3 Vector3::Zero(0.0f, 0.0f, 0.0f);
 
 #if defined(XO_SSE)
 
-#if defined IDX_X
-_XOMATH_INTERNAL_MACRO_WARNING
-#   else
-#       define IDX_X 0
-#   endif
-#if defined IDX_Y
-_XOMATH_INTERNAL_MACRO_WARNING
-#   else
-#       define IDX_Y 1
-#   endif
-#if defined IDX_Z
-_XOMATH_INTERNAL_MACRO_WARNING
-#   else
-#       define IDX_Z 2
-#   endif
-#if defined IDX_W
-_XOMATH_INTERNAL_MACRO_WARNING
-#   else
-#       define IDX_W 3
-#   endif
+#if !defined(IDX_X)
+#   define IDX_X 0
+#endif
+
+#if !defined(IDX_Y)
+#   define IDX_Y 1
+#endif
+
+#if !defined(IDX_Z)
+#   define IDX_Z 2
+#endif
+
+#if !defined(IDX_W)
+#   define IDX_W 3
+#endif
 
 #endif
 
@@ -1515,7 +1510,7 @@ Vector3::Vector3(const class Vector4& v) :
 {
 }
 
-const Vector3& Vector3::Set(float x, float y, float z) {
+Vector3& Vector3::Set(float x, float y, float z) {
 #if defined(XO_SSE)
     m = _mm_set_ps(0.0f, z, y, x);
 #else
@@ -1526,7 +1521,7 @@ const Vector3& Vector3::Set(float x, float y, float z) {
     return *this;
 }
 
-const Vector3& Vector3::Set(float f) {
+Vector3& Vector3::Set(float f) {
 #if defined(XO_SSE)
     m = _mm_set1_ps(f);
 #else
@@ -1537,7 +1532,7 @@ const Vector3& Vector3::Set(float f) {
     return *this;
 }
 
-const Vector3& Vector3::Set(const Vector3& vec) {
+Vector3& Vector3::Set(const Vector3& vec) {
 #if defined(XO_SSE)
     m = vec.m;
 #else
@@ -1549,7 +1544,7 @@ const Vector3& Vector3::Set(const Vector3& vec) {
 }
 
 #if defined(XO_SSE)
-const Vector3& Vector3::Set(const __m128& vec) {
+Vector3& Vector3::Set(const __m128& vec) {
     m = vec;
     return *this;
 }
@@ -1600,7 +1595,7 @@ float Vector3::Magnitude() const {
     return Sqrt(MagnitudeSquared());
 }
 
-const Vector3& Vector3::Normalize() {
+Vector3& Vector3::Normalize() {
     float magnitude = MagnitudeSquared();
     if (CloseEnough(magnitude, 1.0f, Epsilon)) {
         return *this; // already normalized
@@ -2002,7 +1997,7 @@ Vector4::Vector4(const class Vector3& vec, float w) :
 }
 #endif
 
-const Vector4& Vector4::Set(float x, float y, float z, float w) {
+Vector4& Vector4::Set(float x, float y, float z, float w) {
 #if defined(XO_SSE)
     m = _mm_set_ps(w, z, y, x);
 #else
@@ -2014,7 +2009,7 @@ const Vector4& Vector4::Set(float x, float y, float z, float w) {
     return *this;
 }
 
-const Vector4& Vector4::Set(float f) {
+Vector4& Vector4::Set(float f) {
 #if defined(XO_SSE)
     m = _mm_set1_ps(f);
 #else
@@ -2026,7 +2021,7 @@ const Vector4& Vector4::Set(float f) {
     return *this;
 }
 
-const Vector4& Vector4::Set(const Vector4& vec) {
+Vector4& Vector4::Set(const Vector4& vec) {
 #if defined(XO_SSE)
     m = vec.m;
 #else
@@ -2038,7 +2033,7 @@ const Vector4& Vector4::Set(const Vector4& vec) {
     return *this;
 }
 
-const Vector4& Vector4::Set(const Vector2& vec) {
+Vector4& Vector4::Set(const Vector2& vec) {
 #if defined(XO_SSE)
     m = _mm_set_ps(0.0f, 0.0f, vec.y, vec.x);
 #else
@@ -2050,7 +2045,7 @@ const Vector4& Vector4::Set(const Vector2& vec) {
     return *this;
 }
 
-const Vector4& Vector4::Set(const Vector2& vec, float z, float w) {
+Vector4& Vector4::Set(const Vector2& vec, float z, float w) {
 #if defined(XO_SSE)
     m = _mm_set_ps(w, z, vec.y, vec.x);
 #else
@@ -2062,7 +2057,7 @@ const Vector4& Vector4::Set(const Vector2& vec, float z, float w) {
     return *this;
 }
 
-const Vector4& Vector4::Set(const Vector3& vec) {
+Vector4& Vector4::Set(const Vector3& vec) {
 #if defined(XO_SSE)
     this->m = vec.m;
     this->w = 0.0f;
@@ -2075,7 +2070,7 @@ const Vector4& Vector4::Set(const Vector3& vec) {
     return *this;
 }
 
-const Vector4& Vector4::Set(const Vector3& vec, float w) {
+Vector4& Vector4::Set(const Vector3& vec, float w) {
 #if defined(XO_SSE)
     this->m = vec.m;
     this->w = w;
@@ -2089,7 +2084,7 @@ const Vector4& Vector4::Set(const Vector3& vec, float w) {
 }
 
 #if defined(XO_SSE)
-const Vector4& Vector4::Set(const __m128& vec) {
+Vector4& Vector4::Set(const __m128& vec) {
     m = vec;
     return *this;
 }
@@ -2138,7 +2133,7 @@ float Vector4::Magnitude() const {
     return Sqrt(MagnitudeSquared());
 }
 
-const Vector4& Vector4::Normalize() {
+Vector4& Vector4::Normalize() {
     float magnitude = MagnitudeSquared();
     if (CloseEnough(magnitude, 1.0f, Epsilon)) {
         return *this; // already normalized
