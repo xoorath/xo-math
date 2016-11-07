@@ -207,7 +207,7 @@ function ReadInclude(name) {
           txt += split[i] + '\n';
       }
       else {
-        if(split[i].indexOf('XOMATH_INTERNAL') >= 0) {
+        if(split[i].indexOf('XOMATH_BEGIN_XO_NS') >= 0) {
           reading = true;
           txt += split[i] + '\n';
         } else if (split[i].indexOf('*/') >= 0) {
