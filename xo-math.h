@@ -1299,21 +1299,13 @@ public:
     bool HasOrthonormalBasis() const;
     bool IsUnitary() const;
     float Determinant() const;
-    bool HasInverse() const;
 
-    bool TryGetInverse(Matrix4x4& m) const;
-    bool TryGetInverse(Matrix4x4& m, float& outDeterminant) const;
-    void GetInverse(Matrix4x4& m) const;
-    void GetInverse(Matrix4x4& m, float& outDeterminant) const;
-    Matrix4x4 GetInverse() const;
-    Matrix4x4 GetInverse(float& outDeterminant) const;
+    void GetInverse(Matrix4x4& o) const;
+    void MakeInverse();
 
-    bool TryMakeInverse();
-    bool TryMakeInverse(float& outDeterminant);
-    // Same as TryMakeInverse but fails silently for determinant values of 0.
-    Matrix4x4& MakeInverse();
-    // Same as TryMakeInverse with an out param, but fails silently for determinant values of 0.
-    Matrix4x4& MakeInverse(float& outDeterminant);
+    bool TryGetInverseSlow(Matrix4x4& o) const;
+    bool TryMakeInverseSlow();
+
     Matrix4x4& Transpose();
     const Matrix4x4& Transform(Vector3& v) const;
     const Matrix4x4& Transform(Vector4& v) const;
