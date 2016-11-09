@@ -654,6 +654,11 @@ int main() {
     TestVector4Operators();
     TestVector4Methods();
 
+    auto m = xo::Matrix4x4::RotationDegrees(20.0f, 30.0f, 40.0f);
+    float f;
+    m.MakeInverse(f);
+    m.MakeInverse(f);
+
 #if defined(_MSC_VER)
     system("pause");
 #endif

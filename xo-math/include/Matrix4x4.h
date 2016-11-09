@@ -203,36 +203,13 @@ public:
     bool IsUnitary() const;
     //! Gets the determinant of this matrix.
     float Determinant() const;
-    //! Returns true if the matrix has an inverse. This happens for non-zero determinant values.
-    //! @note This method is expensive.
-    bool HasInverse() const;
 
-    //! Sets m to this matrix inverted if possible. Returns true on success.
-    bool TryGetInverse(Matrix4x4& m) const;
-    //! Sets m to this matrix inverted if possible. Returns true on success. Also provides the necessary determinant value as an out param, for when that's helpful.
-    bool TryGetInverse(Matrix4x4& m, float& outDeterminant) const;
-    //! Same as TryGetInverse but fails silently for determinant values of 0.
-    void GetInverse(Matrix4x4& m) const;
-    //! Same as TryGetInverse with an outDeterminant param, but fails silently for determinant values of 0.
-    void GetInverse(Matrix4x4& m, float& outDeterminant) const;
-    //! Calls Matrix4x4::GetInverse, but returning a copy of the input param.
-    Matrix4x4 GetInverse() const;
-    //! Calls Matrix4x4::GetInverse, but returning a copy of the input param.
-    Matrix4x4 GetInverse(float& outDeterminant) const;
+    void GetInverse(Matrix4x4& o) const;
+    void MakeInverse();
 
-    //! Sets this matrix to its own inverse, returning true if successful.
-    //! @note If the matrix is a simple transform, you can build it with the inverse of it's parameters. 
-    //! for example: RotationYRadians(x).MakeInverse() is equal to RotationYRadians(-x). Furthermore if
-    //! the matrix you're trying to build is a result of multiple simple transforms, the inverse can instead
-    //! be built as the order of multiplication reversed also using negative input params. for example: 
-    //! (Scale(s) * Translation(Vector3(x, y, z))).MakeInverse() is equal to Translation(-Vector3(x, y, z)) * Scale(-s)
-    bool TryMakeInverse();
-    //! Same as TryMakeInverse with no parameter, but provides the necessary determinant value as an out param, for when that's helpful.
-    bool TryMakeInverse(float& outDeterminant);
-    // Same as TryMakeInverse but fails silently for determinant values of 0.
-    Matrix4x4& MakeInverse();
-    // Same as TryMakeInverse with an out param, but fails silently for determinant values of 0.
-    Matrix4x4& MakeInverse(float& outDeterminant);
+    bool TryGetInverseSlow(Matrix4x4& o) const;
+    bool TryMakeInverseSlow();
+
     //! Sets this matrix as a transpose of itself
     /*!
         \f[

@@ -369,7 +369,7 @@ void Quaternion::Slerp(const Quaternion& a, const Quaternion& b, float t, Quater
 
 void Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat)
 {
-    Vector4& vq = static_cast<Vector4>(outQuat);
+    Vector4& vq = (Vector4&)outQuat;
     const Vector4& va = a;
     const Vector4& vb = b;
     // Todo: give the vectors the same static 'outQuat' type interface, then just use the Vector4::Lerp for this lerp
