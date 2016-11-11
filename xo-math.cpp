@@ -117,6 +117,10 @@ Vector4 Matrix4x4::GetColumn(int i) const {
     return Vector4(r[0][i], r[1][i], r[2][i], r[3][i]);
 }
 
+Matrix4x4& Matrix4x4::MakeInverse(float& outDeterminant) {
+
+}
+
 Matrix4x4& Matrix4x4::Transpose() {
 #if defined(XO_SSE)
     _MM_TRANSPOSE4_PS(r[0].m, r[1].m, r[2].m, r[3].m);
@@ -833,7 +837,7 @@ void Quaternion::Slerp(const Quaternion& a, const Quaternion& b, float t, Quater
 
 void Quaternion::Lerp(const Quaternion& a, const Quaternion& b, float t, Quaternion& outQuat)
 {
-    Vector4& vq = static_cast<Vector4>(outQuat);
+    Vector4& vq = (Vector4&)outQuat;
     const Vector4& va = a;
     const Vector4& vb = b;
     // Todo: give the vectors the same static 'outQuat' type interface, then just use the Vector4::Lerp for this lerp
