@@ -117,8 +117,228 @@ Vector4 Matrix4x4::GetColumn(int i) const {
     return Vector4(r[0][i], r[1][i], r[2][i], r[3][i]);
 }
 
-Matrix4x4& Matrix4x4::MakeInverse(float& outDeterminant) {
+namespace
+{
+#if defined(XO_SSE)
+    _XOINL void EarlyInverse(__m128& minor0, __m128& minor1, __m128& minor2, __m128& minor3,
+                             __m128& row0, __m128& row1, __m128& row2, __m128& row3,
+                             __m128& det, __m128& tmp1, float m[16])
+    {
+        // http://download.intel.com/design/PentiumIII/sml/24504301.pdf
+        // http://stackoverflow.com/questions/18743531/sse-half-loads-mm-loadh-pi-mm-loadl-pi-issue-warnings
+#   define _fake_initialization() _mm_setzero_ps()
 
+        tmp1 = _mm_loadh_pi(_mm_loadl_pi(_fake_initialization(), (__m64*)(m)), (__m64*)(m + 4));
+        row1 = _mm_loadh_pi(_mm_loadl_pi(_fake_initialization(), (__m64*)(m + 8)), (__m64*)(m + 12));
+        row0 = _mm_shuffle_ps(tmp1, row1, 0x88);
+        row1 = _mm_shuffle_ps(row1, tmp1, 0xDD);
+        tmp1 = _mm_loadh_pi(_mm_loadl_pi(tmp1, (__m64*)(m + 2)), (__m64*)(m + 6));
+        row3 = _mm_loadh_pi(_mm_loadl_pi(_fake_initialization(), (__m64*)(m + 10)), (__m64*)(m + 14));
+        row2 = _mm_shuffle_ps(tmp1, row3, 0x88);
+        row3 = _mm_shuffle_ps(row3, tmp1, 0xDD);
+        // -----------------------------------------------
+        tmp1 = _mm_mul_ps(row2, row3);
+        tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0xB1);
+        minor0 = _mm_mul_ps(row1, tmp1);
+        minor1 = _mm_mul_ps(row0, tmp1);
+        tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0x4E);
+        minor0 = _mm_sub_ps(_mm_mul_ps(row1, tmp1), minor0);
+        minor1 = _mm_sub_ps(_mm_mul_ps(row0, tmp1), minor1);
+        minor1 = _mm_shuffle_ps(minor1, minor1, 0x4E);
+        // -----------------------------------------------
+        tmp1 = _mm_mul_ps(row1, row2);
+        tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0xB1);
+        minor0 = _mm_add_ps(_mm_mul_ps(row3, tmp1), minor0);
+        minor3 = _mm_mul_ps(row0, tmp1);
+        tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0x4E);
+        minor0 = _mm_sub_ps(minor0, _mm_mul_ps(row3, tmp1));
+        minor3 = _mm_sub_ps(_mm_mul_ps(row0, tmp1), minor3);
+        minor3 = _mm_shuffle_ps(minor3, minor3, 0x4E);
+        // -----------------------------------------------
+        tmp1 = _mm_mul_ps(_mm_shuffle_ps(row1, row1, 0x4E), row3);
+        tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0xB1);
+        row2 = _mm_shuffle_ps(row2, row2, 0x4E);
+        minor0 = _mm_add_ps(_mm_mul_ps(row2, tmp1), minor0);
+        minor2 = _mm_mul_ps(row0, tmp1);
+        tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0x4E);
+        minor0 = _mm_sub_ps(minor0, _mm_mul_ps(row2, tmp1));
+        minor2 = _mm_sub_ps(_mm_mul_ps(row0, tmp1), minor2);
+        minor2 = _mm_shuffle_ps(minor2, minor2, 0x4E);
+        // -----------------------------------------------
+        tmp1 = _mm_mul_ps(row0, row1);
+        tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0xB1);
+        minor2 = _mm_add_ps(_mm_mul_ps(row3, tmp1), minor2);
+        minor3 = _mm_sub_ps(_mm_mul_ps(row2, tmp1), minor3);
+        tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0x4E);
+        minor2 = _mm_sub_ps(_mm_mul_ps(row3, tmp1), minor2);
+        minor3 = _mm_sub_ps(minor3, _mm_mul_ps(row2, tmp1));
+        // -----------------------------------------------
+        tmp1 = _mm_mul_ps(row0, row3);
+        tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0xB1);
+        minor1 = _mm_sub_ps(minor1, _mm_mul_ps(row2, tmp1));
+        minor2 = _mm_add_ps(_mm_mul_ps(row1, tmp1), minor2);
+        tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0x4E);
+        minor1 = _mm_add_ps(_mm_mul_ps(row2, tmp1), minor1);
+        minor2 = _mm_sub_ps(minor2, _mm_mul_ps(row1, tmp1));
+        // -----------------------------------------------
+        tmp1 = _mm_mul_ps(row0, row2);
+        tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0xB1);
+        minor1 = _mm_add_ps(_mm_mul_ps(row3, tmp1), minor1);
+        minor3 = _mm_sub_ps(minor3, _mm_mul_ps(row1, tmp1));
+        tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0x4E);
+        minor1 = _mm_sub_ps(minor1, _mm_mul_ps(row3, tmp1));
+        minor3 = _mm_add_ps(_mm_mul_ps(row1, tmp1), minor3);
+        // -----------------------------------------------
+        det = _mm_mul_ps(row0, minor0);
+        det = _mm_add_ps(_mm_shuffle_ps(det, det, 0x4E), det);
+        det = _mm_add_ss(_mm_shuffle_ps(det, det, 0xB1), det);
+#   undef _fake_initialization
+    }
+
+    _XOINL void LateInverse(__m128& minor0, __m128& minor1, __m128& minor2, __m128& minor3,
+                            __m128& det, __m128& tmp1, float m[16])
+    {
+        // http://download.intel.com/design/PentiumIII/sml/24504301.pdf
+        tmp1 = _mm_rcp_ss(det);
+        det = _mm_sub_ss(_mm_add_ss(tmp1, tmp1), _mm_mul_ss(det, _mm_mul_ss(tmp1, tmp1)));
+        det = _mm_shuffle_ps(det, det, 0x00);
+        minor0 = _mm_mul_ps(det, minor0);
+        _mm_storel_pi((__m64*)(m), minor0);
+        _mm_storeh_pi((__m64*)(m + 2), minor0);
+        minor1 = _mm_mul_ps(det, minor1);
+        _mm_storel_pi((__m64*)(m + 4), minor1);
+        _mm_storeh_pi((__m64*)(m + 6), minor1);
+        minor2 = _mm_mul_ps(det, minor2);
+        _mm_storel_pi((__m64*)(m + 8), minor2);
+        _mm_storeh_pi((__m64*)(m + 10), minor2);
+        minor3 = _mm_mul_ps(det, minor3);
+        _mm_storel_pi((__m64*)(m + 12), minor3);
+        _mm_storeh_pi((__m64*)(m + 14), minor3);
+    }
+#else
+    _XOINL void EarlyInverse(float tmp[12], float src[16], float& det, float m[16])
+    {
+        // http://download.intel.com/design/PentiumIII/sml/24504301.pdf
+        // transpose matrix
+        for (int i = 0; i < 4; i++)
+        {
+            src[i] = m[i * 4];
+            src[i + 4] = m[i * 4 + 1];
+            src[i + 8] = m[i * 4 + 2];
+            src[i + 12] = m[i * 4 + 3];
+        }
+        // calculate pairs for first 8 elements (cofactors)
+        tmp[0] = src[10] * src[15];
+        tmp[1] = src[11] * src[14];
+        tmp[2] = src[9] * src[15];
+        tmp[3] = src[11] * src[13];
+        tmp[4] = src[9] * src[14];
+        tmp[5] = src[10] * src[13];
+        tmp[6] = src[8] * src[15];
+        tmp[7] = src[11] * src[12];
+        tmp[8] = src[8] * src[14];
+        tmp[9] = src[10] * src[12];
+        tmp[10] = src[8] * src[13];
+        tmp[11] = src[9] * src[12];
+        // calculate first 8 elements (cofactors)
+        m[0] = tmp[0] * src[5] + tmp[3] * src[6] + tmp[4] * src[7];
+        m[0] -= tmp[1] * src[5] + tmp[2] * src[6] + tmp[5] * src[7];
+        m[1] = tmp[1] * src[4] + tmp[6] * src[6] + tmp[9] * src[7];
+        m[1] -= tmp[0] * src[4] + tmp[7] * src[6] + tmp[8] * src[7];
+        m[2] = tmp[2] * src[4] + tmp[7] * src[5] + tmp[10] * src[7];
+        m[2] -= tmp[3] * src[4] + tmp[6] * src[5] + tmp[11] * src[7];
+        m[3] = tmp[5] * src[4] + tmp[8] * src[5] + tmp[11] * src[6];
+        m[3] -= tmp[4] * src[4] + tmp[9] * src[5] + tmp[10] * src[6];
+        m[4] = tmp[1] * src[1] + tmp[2] * src[2] + tmp[5] * src[3];
+        m[4] -= tmp[0] * src[1] + tmp[3] * src[2] + tmp[4] * src[3];
+        m[5] = tmp[0] * src[0] + tmp[7] * src[2] + tmp[8] * src[3];
+        m[5] -= tmp[1] * src[0] + tmp[6] * src[2] + tmp[9] * src[3];
+        m[6] = tmp[3] * src[0] + tmp[6] * src[1] + tmp[11] * src[3];
+        m[6] -= tmp[2] * src[0] + tmp[7] * src[1] + tmp[10] * src[3];
+        m[7] = tmp[4] * src[0] + tmp[9] * src[1] + tmp[10] * src[2];
+        m[7] -= tmp[5] * src[0] + tmp[8] * src[1] + tmp[11] * src[2];
+        // calculate pairs for second 8 elements (cofactors)
+        tmp[0] = src[2] * src[7];
+        tmp[1] = src[3] * src[6];
+        tmp[2] = src[1] * src[7];
+        tmp[3] = src[3] * src[5];
+        tmp[4] = src[1] * src[6];
+        tmp[5] = src[2] * src[5];
+        tmp[6] = src[0] * src[7];
+        tmp[7] = src[3] * src[4];
+        tmp[8] = src[0] * src[6];
+        tmp[9] = src[2] * src[4];
+        tmp[10] = src[0] * src[5];
+        tmp[11] = src[1] * src[4];
+        // calculate second 8 elements (cofactors)
+        m[8] = tmp[0] * src[13] + tmp[3] * src[14] + tmp[4] * src[15];
+        m[8] -= tmp[1] * src[13] + tmp[2] * src[14] + tmp[5] * src[15];
+        m[9] = tmp[1] * src[12] + tmp[6] * src[14] + tmp[9] * src[15];
+        m[9] -= tmp[0] * src[12] + tmp[7] * src[14] + tmp[8] * src[15];
+        m[10] = tmp[2] * src[12] + tmp[7] * src[13] + tmp[10] * src[15];
+        m[10] -= tmp[3] * src[12] + tmp[6] * src[13] + tmp[11] * src[15];
+        m[11] = tmp[5] * src[12] + tmp[8] * src[13] + tmp[11] * src[14];
+        m[11] -= tmp[4] * src[12] + tmp[9] * src[13] + tmp[10] * src[14];
+        m[12] = tmp[2] * src[10] + tmp[5] * src[11] + tmp[1] * src[9];
+        m[12] -= tmp[4] * src[11] + tmp[0] * src[9] + tmp[3] * src[10];
+        m[13] = tmp[8] * src[11] + tmp[0] * src[8] + tmp[7] * src[10];
+        m[13] -= tmp[6] * src[10] + tmp[9] * src[11] + tmp[1] * src[8];
+        m[14] = tmp[6] * src[9] + tmp[11] * src[11] + tmp[3] * src[8];
+        m[14] -= tmp[10] * src[11] + tmp[2] * src[8] + tmp[7] * src[9];
+        m[15] = tmp[10] * src[10] + tmp[4] * src[8] + tmp[9] * src[9];
+        m[15] -= tmp[8] * src[9] + tmp[11] * src[10] + tmp[5] * src[8];
+        // calculate determinant
+        det = src[0] * m[0] + src[1] * m[1] + src[2] * m[2] + src[3] * m[3];
+    }
+
+    _XOINL void LateInverse(float &det, float m[16])
+    {
+        // http://download.intel.com/design/PentiumIII/sml/24504301.pdf
+        // calculate matrix inverse 
+        det = 1 / det;
+        for (int j = 0; j < 16; j++)
+            m[j] *= det;
+    }
+#endif
+}
+
+void Matrix4x4::MakeInverse() {
+#if defined(XO_SSE)
+    __m128 minor0, minor1, minor2, minor3;
+    __m128 row0, row1, row2, row3;
+    __m128 det, tmp1;
+    EarlyInverse(minor0, minor1, minor2, minor3, row0, row1, row2, row3, det, tmp1, m);
+    LateInverse(minor0, minor1, minor2, minor3, det, tmp1, m);
+#else
+    float tmp[12]; // temp array for pairs
+    float src[16]; // array of transpose source matrix
+    float det; // determinant
+    EarlyInverse(tmp, src, det, m);
+    LateInverse(det, m);
+#endif
+}
+
+bool Matrix4x4::TryMakeInverse()
+{
+#if defined(XO_SSE)
+    __m128 minor0, minor1, minor2, minor3;
+    __m128 row0, row1, row2, row3;
+    __m128 det, tmp1;
+    EarlyInverse(minor0, minor1, minor2, minor3, row0, row1, row2, row3, det, tmp1, m);
+    if (_mm_cvtss_f32(det) == 0.0f)
+        return false;
+    LateInverse(minor0, minor1, minor2, minor3, det, tmp1, m);
+    return true;
+#else
+    float tmp[12]; // temp array for pairs
+    float src[16]; // array of transpose source matrix
+    float det; // determinant
+    EarlyInverse(tmp, src, det, m);
+    if (det == 0.0f)
+        return false;
+    LateInverse(det, m);
+    return true;
+#endif
 }
 
 Matrix4x4& Matrix4x4::Transpose() {

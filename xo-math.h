@@ -1300,11 +1300,11 @@ public:
     bool IsUnitary() const;
     float Determinant() const;
 
-    void GetInverse(Matrix4x4& o) const;
-    void MakeInverse();
 
-    bool TryGetInverseSlow(Matrix4x4& o) const;
-    bool TryMakeInverseSlow();
+    void MakeInverse();
+    void GetInverse(Matrix4x4& o) const { o = *this; o.MakeInverse(); }
+    bool TryMakeInverse();
+    bool TryGetInverse(Matrix4x4& o) const { o = *this; return o.TryMakeInverse(); }
 
     Matrix4x4& Transpose();
     const Matrix4x4& Transform(Vector3& v) const;
@@ -1658,6 +1658,12 @@ bool Vector2::operator != (int v) const                     { return !((*this) =
 bool Vector2::operator != (const class Vector3& v) const    { return !((*this) == v); }
 bool Vector2::operator != (const class Vector4& v) const    { return !((*this) == v); }
 
+_XOINL 
+Vector2 Abs(const Vector2& v)
+{
+    return Vector2(Abs(v.x), Abs(v.y));
+}
+
 XOMATH_END_XO_NS();
 
 XOMATH_BEGIN_XO_NS();
@@ -1947,6 +1953,16 @@ bool Vector3::operator != (double v) const                  { return !((*this) =
 bool Vector3::operator != (int v) const                     { return !((*this) == v); }
 bool Vector3::operator != (const class Vector2& v) const    { return !((*this) == v); }
 bool Vector3::operator != (const class Vector4& v) const    { return !((*this) == v); }
+
+_XOINL
+Vector3 Abs(const Vector3& v)
+{
+#if defined(XO_SSE)
+    return (sse::Abs(v.m));
+#else
+    return Vector3(Abs(v.x), Abs(v.y), Abs(v.z));
+#endif
+}
 
 XOMATH_END_XO_NS();
 
@@ -2280,6 +2296,16 @@ bool Vector4::operator != (int v) const             { return !((*this) == v); }
 bool Vector4::operator != (const class Vector2& v) const  { return !((*this) == v); }
 bool Vector4::operator != (const class Vector3& v) const  { return !((*this) == v); }
 
+_XOINL 
+Vector4 Abs(const Vector4& v)
+{
+#if defined(XO_SSE)
+    return (sse::Abs(v.m));
+#else
+    return Vector4(Abs(v.x), Abs(v.y), Abs(v.z));
+#endif
+}
+
 #undef IDX_X
 #undef IDX_Y
 #undef IDX_Z
@@ -2394,18 +2420,6 @@ XOMATH_END_XO_NS();
 
 
 XOMATH_BEGIN_XO_NS();
-
-_XOINL Vector2 Abs(const Vector2& v) {
-    return Vector2(Abs(v.x), Abs(v.y));
-}
-
-_XOINL Vector3 Abs(const Vector3& v) {
-    return (sse::Abs(v.m));
-}
-
-_XOINL Vector4 Abs(const Vector4& v) {
-    return Vector4(sse::Abs(v.m));
-}
 
 #if defined(XO_SSE)
 
