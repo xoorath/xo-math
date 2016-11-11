@@ -307,4 +307,14 @@ bool Vector3::operator != (int v) const                     { return !((*this) =
 bool Vector3::operator != (const class Vector2& v) const    { return !((*this) == v); }
 bool Vector3::operator != (const class Vector4& v) const    { return !((*this) == v); }
 
+_XOINL
+Vector3 Abs(const Vector3& v)
+{
+#if defined(XO_SSE)
+    return (sse::Abs(v.m));
+#else
+    return Vector3(Abs(v.x), Abs(v.y), Abs(v.z));
+#endif
+}
+
 XOMATH_END_XO_NS();

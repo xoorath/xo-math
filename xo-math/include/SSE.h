@@ -21,21 +21,6 @@
 
 XOMATH_BEGIN_XO_NS();
 
-//! @todo why is this in sse? is there no fallback?
-_XOINL Vector2 Abs(const Vector2& v) {
-    return Vector2(Abs(v.x), Abs(v.y));
-}
-
-//! @todo why is this in sse? is there no fallback?
-_XOINL Vector3 Abs(const Vector3& v) {
-    return (sse::Abs(v.m));
-}
-
-//! @todo why is this in sse? is there no fallback?
-_XOINL Vector4 Abs(const Vector4& v) {
-    return Vector4(sse::Abs(v.m));
-}
-
 #if defined(XO_SSE)
 
 namespace sse {

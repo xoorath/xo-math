@@ -349,6 +349,16 @@ bool Vector4::operator != (int v) const             { return !((*this) == v); }
 bool Vector4::operator != (const class Vector2& v) const  { return !((*this) == v); }
 bool Vector4::operator != (const class Vector3& v) const  { return !((*this) == v); }
 
+_XOINL 
+Vector4 Abs(const Vector4& v)
+{
+#if defined(XO_SSE)
+    return (sse::Abs(v.m));
+#else
+    return Vector4(Abs(v.x), Abs(v.y), Abs(v.z));
+#endif
+}
+
 #undef IDX_X
 #undef IDX_Y
 #undef IDX_Z

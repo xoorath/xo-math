@@ -176,4 +176,10 @@ bool Vector2::operator != (int v) const                     { return !((*this) =
 bool Vector2::operator != (const class Vector3& v) const    { return !((*this) == v); }
 bool Vector2::operator != (const class Vector4& v) const    { return !((*this) == v); }
 
+_XOINL 
+Vector2 Abs(const Vector2& v)
+{
+    return Vector2(Abs(v.x), Abs(v.y));
+}
+
 XOMATH_END_XO_NS();

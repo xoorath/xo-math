@@ -204,11 +204,11 @@ public:
     //! Gets the determinant of this matrix.
     float Determinant() const;
 
-    void GetInverse(Matrix4x4& o) const;
-    void MakeInverse();
 
-    bool TryGetInverseSlow(Matrix4x4& o) const;
-    bool TryMakeInverseSlow();
+    void MakeInverse();
+    void GetInverse(Matrix4x4& o) const { o = *this; o.MakeInverse(); }
+    bool TryMakeInverse();
+    bool TryGetInverse(Matrix4x4& o) const { o = *this; return o.TryMakeInverse(); }
 
     //! Sets this matrix as a transpose of itself
     /*!
