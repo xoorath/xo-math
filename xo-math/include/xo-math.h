@@ -78,7 +78,9 @@
 #include <thread>
 #include <limits>
 #if defined(__arm__)
-
+#   if defined(__ARM_NEON__)
+#       include <arm_neon.h>
+#   endif
 #else
 #   if defined(_MSC_VER)
 #       include <xmmintrin.h>

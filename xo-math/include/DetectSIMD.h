@@ -77,6 +77,11 @@
 #       define XO_AVX512 1
 #   endif
 #endif
+#if defined(__arm__)
+#   if defined(__ARM_NEON__)
+#   define XO_NEON
+#   endif
+#endif
 
 #if defined(XO_AVX512)
 #   define XO_MATH_HIGHEST_SIMD "avx512"
@@ -96,6 +101,8 @@
 #   define XO_MATH_HIGHEST_SIMD "sse2"
 #elif defined(XO_SSE)
 #   define XO_MATH_HIGHEST_SIMD "sse"
+#elif defined(XO_NEON)
+#   define XO_MATH_HIGHEST_SIMD "neon"
 #else
 #   define XO_MATH_HIGHEST_SIMD "none"
 #endif
