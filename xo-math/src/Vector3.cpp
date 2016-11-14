@@ -212,7 +212,7 @@ Vector3 Vector3::ZYX() const {
 #endif
 }
 
-_XOINL float Vector3::Sum() const {
+float Vector3::Sum() const {
 #if defined(XO_SSE3)
     __m128 x = _mm_and_ps(m, MASK);
     x = _mm_hadd_ps(x, x);

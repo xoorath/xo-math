@@ -77,10 +77,14 @@
 #include <random>
 #include <thread>
 #include <limits>
-#if defined(_MSC_VER)
-#   include <xmmintrin.h>
+#if defined(__arm__)
+
 #else
-#   include <x86intrin.h>
+#   if defined(_MSC_VER)
+#       include <xmmintrin.h>
+#   else
+#       include <x86intrin.h>
+#   endif
 #endif
 
 #if _MSC_VER 
