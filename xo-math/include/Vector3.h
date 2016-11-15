@@ -23,7 +23,7 @@ XOMATH_BEGIN_XO_NS();
 
 //! A three dimensional euclidean vector, optimized for use in games.
 //! @sa https://en.wikipedia.org/wiki/Euclidean_vector
-class _MM_ALIGN16 Vector3 {
+class _XOSIMDALIGN Vector3 {
 public:
     //>See
     //! @name Constructors
@@ -488,6 +488,14 @@ public:
         //! Exists when SSE is in use, represents a 128 bit xmm register.
         //! @sa https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions
         __m128 xmm;
+    };
+#elif defined(XO_NEON)
+    union {
+        struct {
+            float x, y, z, w;
+        };
+        float f[4];
+        float32x4_t n;
     };
 #else
     union {

@@ -222,8 +222,8 @@ void Quaternion::RotationRadians(float x, float y, float z, Quaternion& outQuat)
 void Quaternion::RotationRadians(const Vector3& v, Quaternion& outQuat)
 {
     Vector3 hv = v * 0.5f;
-    _MM_ALIGN16 float s[3];
-    _MM_ALIGN16 float c[3];
+    _XOSIMDALIGN float s[3];
+    _XOSIMDALIGN float c[3];
     SinCos_x3(hv.f, s, c);
 
     _XO_ASSIGN_QUAT_Q(outQuat,

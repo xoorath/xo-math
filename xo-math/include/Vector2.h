@@ -23,7 +23,7 @@ XOMATH_BEGIN_XO_NS();
 
 //! A two dimensional euclidean vector, optimized for use in games.
 //! @sa https://en.wikipedia.org/wiki/Euclidean_vector
-class _MM_ALIGN16 Vector2 {
+class _XOSIMDALIGN Vector2 {
 public:
 
     //>See

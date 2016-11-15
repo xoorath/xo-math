@@ -440,8 +440,8 @@ void Matrix4x4::RotationZRadians(float radians, Matrix4x4& m) {
 }
 
 void Matrix4x4::RotationRadians(float x, float y, float z, Matrix4x4& m) {
-    _MM_ALIGN16 float c[4];
-    _MM_ALIGN16 float s[4];
+    _XOSIMDALIGN float c[4];
+    _XOSIMDALIGN float s[4];
     Vector4 v(x, y, z, 0.0f);
     SinCos_x4(v.f, s, c);
 
@@ -452,8 +452,8 @@ void Matrix4x4::RotationRadians(float x, float y, float z, Matrix4x4& m) {
 }
 
 void Matrix4x4::RotationRadians(const Vector3& v, Matrix4x4& m) {
-    _MM_ALIGN16 float c[4];
-    _MM_ALIGN16 float s[4];
+    _XOSIMDALIGN float c[4];
+    _XOSIMDALIGN float s[4];
     SinCos_x4(v.f, s, c);
 
     m[0].Set(c[1]*c[2],                     -c[1]*s[2],                 s[1],           0.0f);

@@ -100,13 +100,19 @@
 #pragma warning(pop) 
 #endif 
 
-// Not available in clang, so far as I can tell.
-#if !defined(__arm__) && !defined(_M_ARM)
-#   ifndef _MM_ALIGN16
-#      define _MM_ALIGN16 __attribute__((aligned(16)))
+
+#if defined(_MSC_VER)
+#   if defined(_M_ARM)
+#       define _XOSIMDALIGN __declspec(align(8))
+#   else
+#       define _XOSIMDALIGN __declspec(align(16))
 #   endif
 #else
-#      define _MM_ALIGN16
+#   if defined(__arm__)
+#       define _XOSIMDALIGN __attribute__((aligned(8)))
+#   else
+#       define _XOSIMDALIGN __attribute__((aligned(16)))
+#   endif
 #endif
 
 #define XOMATH_INTERNAL 1
@@ -403,6 +409,8 @@ XOMATH_END_XO_NS();
 #endif
 
 #if !defined(XO_EXPORT_ALL)
+#   undef _XOSIMDALIGN
+
 #   undef _XOCONSTEXPR
 #   undef _XOINL
 #   undef _XOTLS

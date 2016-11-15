@@ -99,6 +99,8 @@ const Vector3 Vector3::Zero(0.0f, 0.0f, 0.0f);
 Vector3::Vector3(float f) :
 #if defined(XO_SSE)
     xmm(_mm_set1_ps(f))
+#elif defined(XO_NEON)
+    n(vdupq_n_f32(f))
 #else
     x(f), y(f), z(f)
 #endif
@@ -197,6 +199,8 @@ void Vector3::Get(float& x, float& y, float &z) const {
 void Vector3::Get(float* f) const {
 #if defined(XO_SSE)
     _mm_store_ps(f, xmm);
+#elif defined(XO_NEON)
+    vst1q_f32(f, n);
 #else
     f[0] = this->x;
     f[1] = this->y;

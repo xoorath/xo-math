@@ -25,7 +25,7 @@ XOMATH_BEGIN_XO_NS();
 //!
 //! The Matrix4x4 is constructed with an array of four Vector4 rows.
 //! @sa https://en.wikipedia.org/wiki/Matrix_(mathematics)
-class _MM_ALIGN16 Matrix4x4 {
+class _XOSIMDALIGN Matrix4x4 {
 public:
     //> See
     //! @name Constructors

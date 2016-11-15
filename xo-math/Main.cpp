@@ -126,7 +126,7 @@ void TestVector2Methods() {
         test.ReportSuccessIf(x, 1.1f, TEST_MSG("Get(x, y, z) did not extract a correct x value."));
         test.ReportSuccessIf(y, 2.2f, TEST_MSG("Get(x, y, z) did not extract a correct y value."));
 
-        _MM_ALIGN16 float f[4];
+        _XOSIMDALIGN float f[4];
         temp.Get(f);
         test.ReportSuccessIf(f[0], 1.1f, TEST_MSG("Get(f) did not extract a correct x value."));
         test.ReportSuccessIf(f[1], 2.2f, TEST_MSG("Get(f) did not extract a correct y value."));
@@ -306,7 +306,7 @@ void TestVector3Methods() {
         test.ReportSuccessIf(y, 2.2f, TEST_MSG("Get(x, y, z) did not extract a correct y value."));
         test.ReportSuccessIf(z, 3.3f, TEST_MSG("Get(x, y, z) did not extract a correct z value."));
 
-        _MM_ALIGN16 float f[4];
+        _XOSIMDALIGN float f[4];
         temp.Get(f);
         test.ReportSuccessIf(f[0], 1.1f, TEST_MSG("Get(f) did not extract a correct x value."));
         test.ReportSuccessIf(f[1], 2.2f, TEST_MSG("Get(f) did not extract a correct y value."));
@@ -591,7 +591,7 @@ void TestVector4Methods() {
         test.ReportSuccessIf(z, 3.3f, TEST_MSG("Get(x, y, z, w) did not extract a correct z value."));
         test.ReportSuccessIf(w, 4.4f, TEST_MSG("Get(x, y, z, w) did not extract a correct w value."));
 
-        _MM_ALIGN16 float f[4];
+        _XOSIMDALIGN float f[4];
         temp.Get(f);
         test.ReportSuccessIf(f[0], 1.1f, TEST_MSG("Get(f) did not extract a correct x value."));
         test.ReportSuccessIf(f[1], 2.2f, TEST_MSG("Get(f) did not extract a correct y value."));

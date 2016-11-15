@@ -25,7 +25,7 @@ XOMATH_BEGIN_XO_NS();
 //!
 //! Most useful for three dimensional rotations. See Matrix4x4::Transform and Matrix4x4::operator*=.
 //! @sa https://en.wikipedia.org/wiki/Euclidean_vector
-class _MM_ALIGN16 Vector4 {
+class _XOSIMDALIGN Vector4 {
 public:
     //>See
     //! @name Constructors
