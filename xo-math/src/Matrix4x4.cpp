@@ -47,48 +47,48 @@ Matrix4x4::Matrix4x4() {
 Matrix4x4::Matrix4x4(float m)
 #if defined(XO_SSE)
 { 
-    r[0].m = r[1].m = r[2].m = r[3].m = _mm_set_ps1(m);
+    r[0].xmm = r[1].xmm = r[2].xmm = r[3].xmm = _mm_set_ps1(m);
 }
 #else
 {
-	r[0] = Vector4(m);
-	r[1] = Vector4(m);
-	r[2] = Vector4(m);
-	r[3] = Vector4(m);
+	r[0].Set(m);
+	r[1].Set(m);
+	r[2].Set(m);
+	r[3].Set(m);
 }
 #endif
 
 Matrix4x4::Matrix4x4(float a0, float b0, float c0, float d0, float a1, float b1, float c1, float d1, float a2, float b2, float c2, float d2, float a3, float b3, float c3, float d3)
 {
-    r[0] = Vector4(a0, b0, c0, d0);
-    r[1] = Vector4(a1, b1, c1, d1);
-    r[2] = Vector4(a2, b2, c2, d2);
-    r[3] = Vector4(a3, b3, c3, d3);
+    r[0].Set(a0, b0, c0, d0);
+    r[1].Set(a1, b1, c1, d1);
+    r[2].Set(a2, b2, c2, d2);
+    r[3].Set(a3, b3, c3, d3);
 }
 
 // TODO: couldn't this be faster with just a single copy?
 Matrix4x4::Matrix4x4(const Matrix4x4& m)
 {
-	r[0] = m.r[0];
-	r[1] = m.r[1];
-	r[2] = m.r[2];
-	r[3] = m.r[3];
+	r[0].Set(m.r[0]);
+	r[1].Set(m.r[1]);
+	r[2].Set(m.r[2]);
+	r[3].Set(m.r[3]);
 }
 
 Matrix4x4::Matrix4x4(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3)
 {
-	r[0] = r0;
-	r[1] = r1;
-	r[2] = r2;
-	r[3] = r3;
+	r[0].Set(r0);
+	r[1].Set(r1);
+	r[2].Set(r2);
+	r[3].Set(r3);
 }
 
 Matrix4x4::Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2)
 {
-	r[0] = Vector4(r0);
-	r[1] = Vector4(r1);
-	r[2] = Vector4(r2);
-	r[3] = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+	r[0].Set(r0);
+	r[1].Set(r1);
+	r[2].Set(r2);
+	r[3].Set(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 Matrix4x4::Matrix4x4(const class Quaternion& q) {
@@ -102,10 +102,10 @@ Matrix4x4::Matrix4x4(const class Quaternion& q) {
     float xz2 = q.x * q2.z;
     float yz2 = q.y * q2.z;
 
-    r[0] = Vector4( 1.0f - qq2.y - qq2.z,  xy2 + wq2.z,            xz2 - wq2.y,          0.0f);
-    r[1] = Vector4( xy2 - wq2.z,           1.0f - qq2.x - qq2.z,   yz2 + wq2.x,          0.0f);
-    r[2] = Vector4( xz2 + wq2.y,           yz2 - wq2.x,            1.0f - qq2.x - qq2.y, 0.0f);
-    r[3] = Vector4::UnitW;
+    r[0].Set( 1.0f - qq2.y - qq2.z,  xy2 + wq2.z,            xz2 - wq2.y,          0.0f);
+    r[1].Set( xy2 - wq2.z,           1.0f - qq2.x - qq2.z,   yz2 + wq2.x,          0.0f);
+    r[2].Set( xz2 + wq2.y,           yz2 - wq2.x,            1.0f - qq2.x - qq2.y, 0.0f);
+    r[3].Set(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 const Vector4& Matrix4x4::GetRow(int i) const {
@@ -342,7 +342,7 @@ bool Matrix4x4::TryMakeInverse()
 
 Matrix4x4& Matrix4x4::Transpose() {
 #if defined(XO_SSE)
-    _MM_TRANSPOSE4_PS(r[0].m, r[1].m, r[2].m, r[3].m);
+    _MM_TRANSPOSE4_PS(r[0].xmm, r[1].xmm, r[2].xmm, r[3].xmm);
 #else
     float t;
 #   define _XO_TRANSPOSE_SWAP(i,j) t = r[i][j]; r[i][j] = r[j][i]; r[j][i] = t;

@@ -23,7 +23,7 @@ XOMATH_BEGIN_XO_NS();
 
 #if defined(XO_SSE)
 Vector3::operator __m128() const {
-    return m;
+    return xmm;
 }
 #endif
 
@@ -37,7 +37,7 @@ const float& Vector3::operator [](int i) const {
 
 Vector3 Vector3::operator -() const {
 #if defined(XO_SSE)
-    return Vector3(_mm_mul_ps(m, sse::NegativeOne));
+    return Vector3(_mm_mul_ps(xmm, sse::NegativeOne));
 #else
     return Vector3(-x, -y, -z);
 #endif
@@ -49,7 +49,7 @@ Vector3 Vector3::operator ~() const {
 
 Vector3& Vector3::operator += (const Vector3& v) {
 #if defined(XO_SSE)
-    m = _mm_add_ps(m, v);
+    xmm = _mm_add_ps(xmm, v);
 #else
     x += v.x;
     y += v.y;
@@ -60,7 +60,7 @@ Vector3& Vector3::operator += (const Vector3& v) {
 
 Vector3& Vector3::operator += (float v) {
 #if defined(XO_SSE)
-    m = _mm_add_ps(m, _mm_set_ps1(v));
+    xmm = _mm_add_ps(xmm, _mm_set_ps1(v));
 #else
     x += v;
     y += v;
@@ -76,7 +76,7 @@ Vector3& Vector3::operator += (const class Vector4& v)    { return (*this) += Ve
 
 Vector3& Vector3::operator -= (const Vector3& v) {
 #if defined(XO_SSE)
-    m = _mm_sub_ps(m, v);
+    xmm = _mm_sub_ps(xmm, v);
 #else
     x -= v.x;
     y -= v.y;
@@ -87,7 +87,7 @@ Vector3& Vector3::operator -= (const Vector3& v) {
 
 Vector3& Vector3::operator -= (float v) {
 #if defined(XO_SSE)
-    m = _mm_sub_ps(m, _mm_set_ps1(v));
+    xmm = _mm_sub_ps(xmm, _mm_set_ps1(v));
 #else
     x -= v;
     y -= v;
@@ -103,7 +103,7 @@ Vector3& Vector3::operator -= (const class Vector4& v)    { return (*this) -= Ve
 
 Vector3& Vector3::operator *= (const Vector3& v) {
 #if defined(XO_SSE)
-    m = _mm_mul_ps(m, v);
+    xmm = _mm_mul_ps(xmm, v);
 #else
     x *= v.x;
     y *= v.y;
@@ -114,7 +114,7 @@ Vector3& Vector3::operator *= (const Vector3& v) {
 
 Vector3& Vector3::operator *= (float v) {
 #if defined(XO_SSE)
-    m = _mm_mul_ps(m, _mm_set_ps1(v));
+    xmm = _mm_mul_ps(xmm, _mm_set_ps1(v));
 #else
     x *= v;
     y *= v;
@@ -142,7 +142,7 @@ Vector3& Vector3::operator /= (const Vector3& v) {
     // Sandy Bridge    14      14
     // Westmere        14      12
     // Nehalem         14      12
-    m = _mm_div_ps(m, v);
+    xmm = _mm_div_ps(xmm, v);
 #else
     x /= v.x;
     y /= v.y;
@@ -154,7 +154,7 @@ Vector3& Vector3::operator /= (const Vector3& v) {
 
 Vector3& Vector3::operator /= (float v) {
 #   if defined(XO_SSE)
-    m = _mm_div_ps(m, _mm_set_ps1(v));
+    xmm = _mm_div_ps(xmm, _mm_set_ps1(v));
 #   else
     x /= v;
     y /= v;
@@ -186,7 +186,7 @@ Vector3& Vector3::operator /= (const Vector3& v) {
     // Sandy Bridge    5        1
     // Westmere        4        1
     // Nehalem         4        1
-    m = _mm_mul_ps(m, _mm_rcp_ps(v));
+    xmm = _mm_mul_ps(xmm, _mm_rcp_ps(v));
 #   else
     x /= v.x;
     y /= v.y;
@@ -198,7 +198,7 @@ Vector3& Vector3::operator /= (const Vector3& v) {
 
 Vector3& Vector3::operator /= (float v) { 
 #   if defined(XO_SSE)
-    m = _mm_mul_ps(m, _mm_set_ps1(1.0f/v));
+    xmm = _mm_mul_ps(xmm, _mm_set_ps1(1.0f/v));
 #   else
     v = 1.0f / v;
     x *= v;
@@ -208,10 +208,10 @@ Vector3& Vector3::operator /= (float v) {
     return *this;
 }
 #endif
-Vector3& Vector3::operator /= (double v)                  { return (*this) /= float(v); }
-Vector3& Vector3::operator /= (int v)                     { return (*this) /= float(v); }
-Vector3& Vector3::operator /= (const class Vector2& v)    { return (*this) /= Vector3(v); }
-Vector3& Vector3::operator /= (const class Vector4& v)    { return (*this) /= Vector3(v); }
+Vector3& Vector3::operator /= (double v)                    { return (*this) /= float(v); }
+Vector3& Vector3::operator /= (int v)                       { return (*this) /= float(v); }
+Vector3& Vector3::operator /= (const class Vector2& v)      { return (*this) /= Vector3(v); }
+Vector3& Vector3::operator /= (const class Vector4& v)      { return (*this) /= Vector3(v); }
 
 Vector3 Vector3::operator + (const Vector3& v) const        { return Vector3(*this) += v; }
 Vector3 Vector3::operator + (float v) const                 { return Vector3(*this) += v; }
@@ -272,7 +272,7 @@ bool Vector3::operator >= (const class Vector4& v) const    { return MagnitudeSq
 
 bool Vector3::operator == (const Vector3& v) const {
 #   if defined(XO_SSE2)
-    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v, m)), sse::Epsilon)) & 7) == 7;
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v, xmm)), sse::Epsilon)) & 7) == 7;
 #   elif XO_SSE
     // TODO: find a faster way with SSE to do a 'close enough' check.
     // I'm not sure if there's a way to do the sign bit masking like we have in sse::Abs to acomplish
@@ -287,14 +287,14 @@ bool Vector3::operator == (double v) const                  { return CloseEnough
 bool Vector3::operator == (int v) const                     { return CloseEnough(MagnitudeSquared(), (float)(v*v), Epsilon);}
 bool Vector3::operator == (const class Vector2& v) const {
 #   if defined(XO_SSE)
-    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, v.y, v.x), m)), sse::Epsilon)) & 3) == 3;
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(_mm_set_ps(0.0f, 0.0f, v.y, v.x), xmm)), sse::Epsilon)) & 3) == 3;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon);
 #   endif
 }
 bool Vector3::operator == (const class Vector4& v) const {
 #   if defined(XO_SSE)
-    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.m, m)), sse::Epsilon)) & 7) == 7;
+    return (_mm_movemask_ps(_mm_cmplt_ps(sse::Abs(_mm_sub_ps(v.xmm, xmm)), sse::Epsilon)) & 7) == 7;
 #   else
     return CloseEnough(x, v.x, Epsilon) && CloseEnough(y, v.y, Epsilon) && CloseEnough(z, v.z, Epsilon);
 #   endif
@@ -311,7 +311,7 @@ _XOINL
 Vector3 Abs(const Vector3& v)
 {
 #if defined(XO_SSE)
-    return (sse::Abs(v.m));
+    return (sse::Abs(v.xmm));
 #else
     return Vector3(Abs(v.x), Abs(v.y), Abs(v.z));
 #endif

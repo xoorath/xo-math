@@ -98,7 +98,7 @@ const Vector3 Vector3::Zero(0.0f, 0.0f, 0.0f);
 
 Vector3::Vector3(float f) :
 #if defined(XO_SSE)
-    m(_mm_set1_ps(f))
+    xmm(_mm_set1_ps(f))
 #else
     x(f), y(f), z(f)
 #endif
@@ -107,7 +107,7 @@ Vector3::Vector3(float f) :
 
 Vector3::Vector3(float x, float y, float z) :
 #if defined(XO_SSE)
-    m(_mm_set_ps(0.0f, z, y, x))
+    xmm(_mm_set_ps(0.0f, z, y, x))
 #else
     x(x), y(y), z(z)
 #endif
@@ -116,7 +116,7 @@ Vector3::Vector3(float x, float y, float z) :
 
 Vector3::Vector3(const Vector3& vec) :
 #if defined(XO_SSE)
-    m(vec) 
+    xmm(vec)
 #else
     x(vec.x), y(vec.y), z(vec.z) 
 #endif
@@ -125,14 +125,14 @@ Vector3::Vector3(const Vector3& vec) :
 
 #if defined(XO_SSE)
 Vector3::Vector3(const __m128& vec) : 
-    m(vec) 
+    xmm(vec)
 {
 }
 #endif
 
 Vector3::Vector3(const class Vector2& v) :
 #if defined(XO_SSE)
-    m(_mm_set_ps(0.0f, 0.0f, v.y, v.x))
+    xmm(_mm_set_ps(0.0f, 0.0f, v.y, v.x))
 #else
     x(v.x), y(v.y), z(0.0f)
 #endif
@@ -141,7 +141,7 @@ Vector3::Vector3(const class Vector2& v) :
 
 Vector3::Vector3(const class Vector4& v) :
 #if defined(XO_SSE)
-    m(v.m)
+    xmm(v.xmm)
 #else
     x(v.x), y(v.y), z(v.z)
 #endif
@@ -150,7 +150,7 @@ Vector3::Vector3(const class Vector4& v) :
 
 Vector3& Vector3::Set(float x, float y, float z) {
 #if defined(XO_SSE)
-    m = _mm_set_ps(0.0f, z, y, x);
+    xmm = _mm_set_ps(0.0f, z, y, x);
 #else
     this->x = x;
     this->y = y;
@@ -161,7 +161,7 @@ Vector3& Vector3::Set(float x, float y, float z) {
 
 Vector3& Vector3::Set(float f) {
 #if defined(XO_SSE)
-    m = _mm_set1_ps(f);
+    xmm = _mm_set1_ps(f);
 #else
     this->x = f;
     this->y = f;
@@ -172,7 +172,7 @@ Vector3& Vector3::Set(float f) {
 
 Vector3& Vector3::Set(const Vector3& vec) {
 #if defined(XO_SSE)
-    m = vec.m;
+    xmm = vec.xmm;
 #else
     this->x = vec.x;
     this->y = vec.y;
@@ -183,7 +183,7 @@ Vector3& Vector3::Set(const Vector3& vec) {
 
 #if defined(XO_SSE)
 Vector3& Vector3::Set(const __m128& vec) {
-    m = vec;
+    xmm = vec;
     return *this;
 }
 #endif
@@ -196,7 +196,7 @@ void Vector3::Get(float& x, float& y, float &z) const {
 
 void Vector3::Get(float* f) const {
 #if defined(XO_SSE)
-    _mm_store_ps(f, m);
+    _mm_store_ps(f, xmm);
 #else
     f[0] = this->x;
     f[1] = this->y;
@@ -206,7 +206,8 @@ void Vector3::Get(float* f) const {
 
 Vector3 Vector3::ZYX() const {
 #if defined(XO_SSE)
-    return Vector3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Y, IDX_Z)));
+    // todo: constexpr shuffle int
+    return Vector3(_mm_shuffle_ps(xmm, xmm, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Y, IDX_Z)));
 #else
     return Vector3(z, y, x);
 #endif
@@ -214,7 +215,7 @@ Vector3 Vector3::ZYX() const {
 
 float Vector3::Sum() const {
 #if defined(XO_SSE3)
-    __m128 x = _mm_and_ps(m, MASK);
+    __m128 x = _mm_and_ps(xmm, MASK);
     x = _mm_hadd_ps(x, x);
     x = _mm_hadd_ps(x, x);
     return _mm_cvtss_f32(x);
@@ -244,9 +245,10 @@ float Vector3::Dot(const Vector3& a, const Vector3& b) {
  
 void Vector3::Cross(const Vector3& a, const Vector3& b, Vector3& outVec) {
 #if defined(XO_SSE)
+    // todo: multi-compiler constexpr
     constexpr int m3021 = _MM_SHUFFLE(3, 0, 2, 1);
     __m128 result = _mm_sub_ps(_mm_mul_ps(a, _mm_shuffle_ps(b, b, m3021)), _mm_mul_ps(b, _mm_shuffle_ps(a, a, m3021)));
-    outVec.m = _mm_shuffle_ps(result, result, m3021);
+    outVec.xmm = _mm_shuffle_ps(result, result, m3021);
 #else
     outVec.x = (a.y*b.z)-(a.z*b.y);
     outVec.y = (a.z*b.x)-(a.x*b.z);

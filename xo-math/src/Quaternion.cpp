@@ -40,7 +40,7 @@ namespace xo_internal
     _XOINL float QuaternionSquareSum(const Quaternion& q)
     {
 #if defined(XO_SSE)
-        __m128 square = _mm_mul_ps(q.m, q.m);
+        __m128 square = _mm_mul_ps(q.xmm, q.xmm);
         square = _mm_hadd_ps(square, square);
         square = _mm_hadd_ps(square, square);
         return _mm_cvtss_f32(square);
@@ -63,6 +63,7 @@ Quaternion::Quaternion(const Matrix4x4& mat)
     Vector3 scale(xAxis.Magnitude(), yAxis.Magnitude(), zAxis.Magnitude());
 
     // don't use close enough, skip the abs since we're all positive value.
+    // todo: do we actually care about near-zero?
     if (scale.x <= FloatEpsilon || scale.y <= FloatEpsilon || scale.z <= FloatEpsilon)
     {
 #if defined(XO_SSE)
@@ -76,9 +77,9 @@ Quaternion::Quaternion(const Matrix4x4& mat)
 
 #if defined(XO_SSE)
 #   if defined(XO_NO_INVERSE_DIVISION)
-    Vector3 recipScale = Vector3(_mm_div_ps(Vector4::One.m, scale.m));
+    Vector3 recipScale = Vector3(_mm_div_ps(Vector4::One.xmm, scale.xmm));
 #   else
-    Vector3 recipScale = Vector3(_mm_rcp_ps(scale.m));
+    Vector3 recipScale = Vector3(_mm_rcp_ps(scale.xmm));
 #   endif
 #else
     Vector3 recipScale = Vector3(1.0f / scale.x, 1.0f / scale.y, 1.0f / scale.z);
@@ -133,7 +134,7 @@ Quaternion::Quaternion(const Matrix4x4& mat)
 
 Quaternion::Quaternion(float x, float y, float z, float w) :
 #if defined(XO_SSE)
-    m(_mm_set_ps(w, z, y, x))
+    xmm(_mm_set_ps(w, z, y, x))
 #else
     x(x), y(y), z(z), w(w)
 #endif
@@ -202,7 +203,8 @@ void Quaternion::GetAxisAngleRadians(Vector3& axis, float& radians) const
     Quaternion q = Normalized();
 
 #if defined(XO_SSE)
-    axis.m = q.m;
+    // todo: don't we need to normalize axis in sse too?
+    axis.xmm = q.xmm;
 #else
     axis.x = q.x;
     axis.y = q.y;

@@ -36,6 +36,7 @@
 //  * Noise:
 //  * Consider moving all randoms out of types themselves and into a separate file.
 //  * Make a very simple graphics demo using many features of xo-math.
+//  * Add recip methods to vectors (and use inside Matrix -> Quaternion conversion)
 
 #ifndef XO_MATH_H
 #define XO_MATH_H
@@ -83,7 +84,13 @@
 #   endif
 #else
 #   if defined(_MSC_VER)
-#       include <xmmintrin.h>
+#       if defined(_M_ARM)
+            // note: directx defines _XM_ARM_NEON_INTRINSICS_ if _M_ARM is defined, 
+            // so we're assuming under msvc that it's all that's required to determine neon support...
+#           include <arm_neon.h>
+#       else
+#           include <xmmintrin.h>
+#       endif
 #   else
 #       include <x86intrin.h>
 #   endif
@@ -94,8 +101,12 @@
 #endif 
 
 // Not available in clang, so far as I can tell.
-#ifndef _MM_ALIGN16
-#   define _MM_ALIGN16 __attribute__((aligned(16)))
+#if !defined(__arm__) && !defined(_M_ARM)
+#   ifndef _MM_ALIGN16
+#      define _MM_ALIGN16 __attribute__((aligned(16)))
+#   endif
+#else
+#      define _MM_ALIGN16
 #endif
 
 #define XOMATH_INTERNAL 1
@@ -356,8 +367,8 @@ float RandomRange(float low, float high) {
 XOMATH_END_XO_NS();
 
 #if defined(XO_SSE)
-#define _XO_ASSIGN_QUAT(W, X, Y, Z) m = _mm_set_ps(W, Z, Y, X);
-#define _XO_ASSIGN_QUAT_Q(Q, W, X, Y, Z) Q.m = _mm_set_ps(W, Z, Y, X);
+#define _XO_ASSIGN_QUAT(W, X, Y, Z) xmm = _mm_set_ps(W, Z, Y, X);
+#define _XO_ASSIGN_QUAT_Q(Q, W, X, Y, Z) Q.xmm = _mm_set_ps(W, Z, Y, X);
 #else
 #define _XO_ASSIGN_QUAT(W, X, Y, Z) this->w = W; this->x = X; this->y = Y; this->z = Z;
 #define _XO_ASSIGN_QUAT_Q(Q, W, X, Y, Z) Q.w = W; Q.x = X; Q.y = Y; Q.z = Z;

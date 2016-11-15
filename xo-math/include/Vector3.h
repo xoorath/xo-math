@@ -487,7 +487,7 @@ public:
         float f[4]; //!< ordered as \f$\begin{pmatrix}x&y&z&w\end{pmatrix}\f$
         //! Exists when SSE is in use, represents a 128 bit xmm register.
         //! @sa https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions
-        __m128 m;
+        __m128 xmm;
     };
 #else
     union {

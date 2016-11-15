@@ -106,7 +106,7 @@ public:
         };
         float f[4];
 #if defined(XO_SSE)
-        __m128 m;
+        __m128 xmm;
 #endif
     };
 

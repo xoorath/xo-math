@@ -20,7 +20,11 @@
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #if defined(_MSC_VER)
-#   if defined(_M_IX86_FP)
+#   if defined(_M_ARM)
+        // note: directx defines _XM_ARM_NEON_INTRINSICS_ if _M_ARM is defined, 
+        // so we're assuming under msvc that it's all that's required to determine neon support...
+#       define XO_NEON 1
+#   elif defined(_M_IX86_FP)
 #       if _M_IX86_FP == 1
 #           define XO_SSE 1
 #       elif _M_IX86_FP == 2
@@ -76,10 +80,10 @@
 #   if defined(__AVX512__) || defined(__AVX512F__)
 #       define XO_AVX512 1
 #   endif
-#endif
-#if defined(__arm__)
-#   if defined(__ARM_NEON__)
-#   define XO_NEON
+#   if defined(__arm__)
+#       if defined(__ARM_NEON__)
+#           define XO_NEON 1
+#       endif
 #   endif
 #endif
 
@@ -105,4 +109,10 @@
 #   define XO_MATH_HIGHEST_SIMD "neon"
 #else
 #   define XO_MATH_HIGHEST_SIMD "none"
+#endif
+
+
+#if defined(_MSC_VER) && !defined(_XO_MATH_OBJ)
+#   pragma message("xo-math simd support: " XO_MATH_HIGHEST_SIMD)
+
 #endif

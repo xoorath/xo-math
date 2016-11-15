@@ -392,7 +392,7 @@ public:
 #if defined(XO_SSE)
         //! Exists when SSE is in use, represents a 128 bit xmm register.
         //! @sa https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions
-        __m128 m;
+        __m128 xmm;
 #endif
     };
 };
