@@ -48,48 +48,48 @@ Matrix4x4::Matrix4x4() {
 Matrix4x4::Matrix4x4(float m)
 #if defined(XO_SSE)
 { 
-    r[0].m = r[1].m = r[2].m = r[3].m = _mm_set_ps1(m);
+    r[0].xmm = r[1].xmm = r[2].xmm = r[3].xmm = _mm_set_ps1(m);
 }
 #else
 {
-	r[0] = Vector4(m);
-	r[1] = Vector4(m);
-	r[2] = Vector4(m);
-	r[3] = Vector4(m);
+	r[0].Set(m);
+	r[1].Set(m);
+	r[2].Set(m);
+	r[3].Set(m);
 }
 #endif
 
 Matrix4x4::Matrix4x4(float a0, float b0, float c0, float d0, float a1, float b1, float c1, float d1, float a2, float b2, float c2, float d2, float a3, float b3, float c3, float d3)
 {
-    r[0] = Vector4(a0, b0, c0, d0);
-    r[1] = Vector4(a1, b1, c1, d1);
-    r[2] = Vector4(a2, b2, c2, d2);
-    r[3] = Vector4(a3, b3, c3, d3);
+    r[0].Set(a0, b0, c0, d0);
+    r[1].Set(a1, b1, c1, d1);
+    r[2].Set(a2, b2, c2, d2);
+    r[3].Set(a3, b3, c3, d3);
 }
 
 // TODO: couldn't this be faster with just a single copy?
 Matrix4x4::Matrix4x4(const Matrix4x4& m)
 {
-	r[0] = m.r[0];
-	r[1] = m.r[1];
-	r[2] = m.r[2];
-	r[3] = m.r[3];
+	r[0].Set(m.r[0]);
+	r[1].Set(m.r[1]);
+	r[2].Set(m.r[2]);
+	r[3].Set(m.r[3]);
 }
 
 Matrix4x4::Matrix4x4(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3)
 {
-	r[0] = r0;
-	r[1] = r1;
-	r[2] = r2;
-	r[3] = r3;
+	r[0].Set(r0);
+	r[1].Set(r1);
+	r[2].Set(r2);
+	r[3].Set(r3);
 }
 
 Matrix4x4::Matrix4x4(const Vector3& r0, const Vector3& r1, const Vector3& r2)
 {
-	r[0] = Vector4(r0);
-	r[1] = Vector4(r1);
-	r[2] = Vector4(r2);
-	r[3] = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+	r[0].Set(r0);
+	r[1].Set(r1);
+	r[2].Set(r2);
+	r[3].Set(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 Matrix4x4::Matrix4x4(const class Quaternion& q) {
@@ -103,10 +103,10 @@ Matrix4x4::Matrix4x4(const class Quaternion& q) {
     float xz2 = q.x * q2.z;
     float yz2 = q.y * q2.z;
 
-    r[0] = Vector4( 1.0f - qq2.y - qq2.z,  xy2 + wq2.z,            xz2 - wq2.y,          0.0f);
-    r[1] = Vector4( xy2 - wq2.z,           1.0f - qq2.x - qq2.z,   yz2 + wq2.x,          0.0f);
-    r[2] = Vector4( xz2 + wq2.y,           yz2 - wq2.x,            1.0f - qq2.x - qq2.y, 0.0f);
-    r[3] = Vector4::UnitW;
+    r[0].Set( 1.0f - qq2.y - qq2.z,  xy2 + wq2.z,            xz2 - wq2.y,          0.0f);
+    r[1].Set( xy2 - wq2.z,           1.0f - qq2.x - qq2.z,   yz2 + wq2.x,          0.0f);
+    r[2].Set( xz2 + wq2.y,           yz2 - wq2.x,            1.0f - qq2.x - qq2.y, 0.0f);
+    r[3].Set(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 const Vector4& Matrix4x4::GetRow(int i) const {
@@ -343,7 +343,7 @@ bool Matrix4x4::TryMakeInverse()
 
 Matrix4x4& Matrix4x4::Transpose() {
 #if defined(XO_SSE)
-    _MM_TRANSPOSE4_PS(r[0].m, r[1].m, r[2].m, r[3].m);
+    _MM_TRANSPOSE4_PS(r[0].xmm, r[1].xmm, r[2].xmm, r[3].xmm);
 #else
     float t;
 #   define _XO_TRANSPOSE_SWAP(i,j) t = r[i][j]; r[i][j] = r[j][i]; r[j][i] = t;
@@ -728,7 +728,7 @@ namespace xo_internal
     _XOINL float QuaternionSquareSum(const Quaternion& q)
     {
 #if defined(XO_SSE)
-        __m128 square = _mm_mul_ps(q.m, q.m);
+        __m128 square = _mm_mul_ps(q.xmm, q.xmm);
         square = _mm_hadd_ps(square, square);
         square = _mm_hadd_ps(square, square);
         return _mm_cvtss_f32(square);
@@ -751,6 +751,7 @@ Quaternion::Quaternion(const Matrix4x4& mat)
     Vector3 scale(xAxis.Magnitude(), yAxis.Magnitude(), zAxis.Magnitude());
 
     // don't use close enough, skip the abs since we're all positive value.
+    // todo: do we actually care about near-zero?
     if (scale.x <= FloatEpsilon || scale.y <= FloatEpsilon || scale.z <= FloatEpsilon)
     {
 #if defined(XO_SSE)
@@ -764,9 +765,9 @@ Quaternion::Quaternion(const Matrix4x4& mat)
 
 #if defined(XO_SSE)
 #   if defined(XO_NO_INVERSE_DIVISION)
-    Vector3 recipScale = Vector3(_mm_div_ps(Vector4::One.m, scale.m));
+    Vector3 recipScale = Vector3(_mm_div_ps(Vector4::One.xmm, scale.xmm));
 #   else
-    Vector3 recipScale = Vector3(_mm_rcp_ps(scale.m));
+    Vector3 recipScale = Vector3(_mm_rcp_ps(scale.xmm));
 #   endif
 #else
     Vector3 recipScale = Vector3(1.0f / scale.x, 1.0f / scale.y, 1.0f / scale.z);
@@ -821,7 +822,7 @@ Quaternion::Quaternion(const Matrix4x4& mat)
 
 Quaternion::Quaternion(float x, float y, float z, float w) :
 #if defined(XO_SSE)
-    m(_mm_set_ps(w, z, y, x))
+    xmm(_mm_set_ps(w, z, y, x))
 #else
     x(x), y(y), z(z), w(w)
 #endif
@@ -890,7 +891,8 @@ void Quaternion::GetAxisAngleRadians(Vector3& axis, float& radians) const
     Quaternion q = Normalized();
 
 #if defined(XO_SSE)
-    axis.m = q.m;
+    // todo: don't we need to normalize axis in sse too?
+    axis.xmm = q.xmm;
 #else
     axis.x = q.x;
     axis.y = q.y;
@@ -1465,7 +1467,7 @@ const Vector3 Vector3::Zero(0.0f, 0.0f, 0.0f);
 
 Vector3::Vector3(float f) :
 #if defined(XO_SSE)
-    m(_mm_set1_ps(f))
+    xmm(_mm_set1_ps(f))
 #else
     x(f), y(f), z(f)
 #endif
@@ -1474,7 +1476,7 @@ Vector3::Vector3(float f) :
 
 Vector3::Vector3(float x, float y, float z) :
 #if defined(XO_SSE)
-    m(_mm_set_ps(0.0f, z, y, x))
+    xmm(_mm_set_ps(0.0f, z, y, x))
 #else
     x(x), y(y), z(z)
 #endif
@@ -1483,7 +1485,7 @@ Vector3::Vector3(float x, float y, float z) :
 
 Vector3::Vector3(const Vector3& vec) :
 #if defined(XO_SSE)
-    m(vec) 
+    xmm(vec)
 #else
     x(vec.x), y(vec.y), z(vec.z) 
 #endif
@@ -1492,14 +1494,14 @@ Vector3::Vector3(const Vector3& vec) :
 
 #if defined(XO_SSE)
 Vector3::Vector3(const __m128& vec) : 
-    m(vec) 
+    xmm(vec)
 {
 }
 #endif
 
 Vector3::Vector3(const class Vector2& v) :
 #if defined(XO_SSE)
-    m(_mm_set_ps(0.0f, 0.0f, v.y, v.x))
+    xmm(_mm_set_ps(0.0f, 0.0f, v.y, v.x))
 #else
     x(v.x), y(v.y), z(0.0f)
 #endif
@@ -1508,7 +1510,7 @@ Vector3::Vector3(const class Vector2& v) :
 
 Vector3::Vector3(const class Vector4& v) :
 #if defined(XO_SSE)
-    m(v.m)
+    xmm(v.xmm)
 #else
     x(v.x), y(v.y), z(v.z)
 #endif
@@ -1517,7 +1519,7 @@ Vector3::Vector3(const class Vector4& v) :
 
 Vector3& Vector3::Set(float x, float y, float z) {
 #if defined(XO_SSE)
-    m = _mm_set_ps(0.0f, z, y, x);
+    xmm = _mm_set_ps(0.0f, z, y, x);
 #else
     this->x = x;
     this->y = y;
@@ -1528,7 +1530,7 @@ Vector3& Vector3::Set(float x, float y, float z) {
 
 Vector3& Vector3::Set(float f) {
 #if defined(XO_SSE)
-    m = _mm_set1_ps(f);
+    xmm = _mm_set1_ps(f);
 #else
     this->x = f;
     this->y = f;
@@ -1539,7 +1541,7 @@ Vector3& Vector3::Set(float f) {
 
 Vector3& Vector3::Set(const Vector3& vec) {
 #if defined(XO_SSE)
-    m = vec.m;
+    xmm = vec.xmm;
 #else
     this->x = vec.x;
     this->y = vec.y;
@@ -1550,7 +1552,7 @@ Vector3& Vector3::Set(const Vector3& vec) {
 
 #if defined(XO_SSE)
 Vector3& Vector3::Set(const __m128& vec) {
-    m = vec;
+    xmm = vec;
     return *this;
 }
 #endif
@@ -1563,7 +1565,7 @@ void Vector3::Get(float& x, float& y, float &z) const {
 
 void Vector3::Get(float* f) const {
 #if defined(XO_SSE)
-    _mm_store_ps(f, m);
+    _mm_store_ps(f, xmm);
 #else
     f[0] = this->x;
     f[1] = this->y;
@@ -1573,7 +1575,8 @@ void Vector3::Get(float* f) const {
 
 Vector3 Vector3::ZYX() const {
 #if defined(XO_SSE)
-    return Vector3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Y, IDX_Z)));
+    // todo: constexpr shuffle int
+    return Vector3(_mm_shuffle_ps(xmm, xmm, _MM_SHUFFLE(IDX_W, IDX_X, IDX_Y, IDX_Z)));
 #else
     return Vector3(z, y, x);
 #endif
@@ -1581,7 +1584,7 @@ Vector3 Vector3::ZYX() const {
 
 float Vector3::Sum() const {
 #if defined(XO_SSE3)
-    __m128 x = _mm_and_ps(m, MASK);
+    __m128 x = _mm_and_ps(xmm, MASK);
     x = _mm_hadd_ps(x, x);
     x = _mm_hadd_ps(x, x);
     return _mm_cvtss_f32(x);
@@ -1611,9 +1614,10 @@ float Vector3::Dot(const Vector3& a, const Vector3& b) {
  
 void Vector3::Cross(const Vector3& a, const Vector3& b, Vector3& outVec) {
 #if defined(XO_SSE)
+    // todo: multi-compiler constexpr
     constexpr int m3021 = _MM_SHUFFLE(3, 0, 2, 1);
     __m128 result = _mm_sub_ps(_mm_mul_ps(a, _mm_shuffle_ps(b, b, m3021)), _mm_mul_ps(b, _mm_shuffle_ps(a, a, m3021)));
-    outVec.m = _mm_shuffle_ps(result, result, m3021);
+    outVec.xmm = _mm_shuffle_ps(result, result, m3021);
 #else
     outVec.x = (a.y*b.z)-(a.z*b.y);
     outVec.y = (a.z*b.x)-(a.x*b.z);
@@ -1729,7 +1733,7 @@ Vector4::Vector4() {
 
 Vector4::Vector4(float f) :
 #if defined(XO_SSE)
-    m(_mm_set1_ps(f))
+    xmm(_mm_set1_ps(f))
 {
 }
 #else
@@ -1740,7 +1744,7 @@ Vector4::Vector4(float f) :
 
 Vector4::Vector4(float x, float y, float z, float w) :
 #if defined(XO_SSE)
-    m(_mm_set_ps(w, z, y, x))
+    xmm(_mm_set_ps(w, z, y, x))
 {
 }
 #else
@@ -1750,7 +1754,7 @@ Vector4::Vector4(float x, float y, float z, float w) :
 #endif
 Vector4::Vector4(const Vector4& vec) :
 #if defined(XO_SSE)
-    m(vec.m)
+    xmm(vec.xmm)
 {
 }
 #else
@@ -1762,14 +1766,14 @@ Vector4::Vector4(const Vector4& vec) :
 
 #if defined(XO_SSE)
 Vector4::Vector4(const __m128& vec) : 
-    m(vec)
+    xmm(vec)
 {
 }
 #endif
 
 Vector4::Vector4(const class Vector2& vec) :
 #if defined(XO_SSE)
-    m(_mm_set_ps(0.0f, 0.0f, vec.y, vec.x)) 
+    xmm(_mm_set_ps(0.0f, 0.0f, vec.y, vec.x)) 
 {
 }
 #else
@@ -1780,7 +1784,7 @@ Vector4::Vector4(const class Vector2& vec) :
 
 Vector4::Vector4(const class Vector2& vec, float z, float w) :
 #if defined(XO_SSE)
-    m(_mm_set_ps(w, z, vec.y, vec.x))
+    xmm(_mm_set_ps(w, z, vec.y, vec.x))
 {
 }
 #else
@@ -1791,7 +1795,7 @@ Vector4::Vector4(const class Vector2& vec, float z, float w) :
 
 Vector4::Vector4(const class Vector3& vec) :
 #if defined(XO_SSE)
-    m(vec.m)
+    xmm(vec.xmm)
 {
 }
 #else
@@ -1802,7 +1806,7 @@ Vector4::Vector4(const class Vector3& vec) :
 
 Vector4::Vector4(const class Vector3& vec, float w) :
 #if defined(XO_SSE)
-    m(vec.m)
+    xmm(vec.xmm)
 {
     //! @todo there's likely an sse way to do this.
     w = w;
@@ -1815,7 +1819,7 @@ Vector4::Vector4(const class Vector3& vec, float w) :
 
 Vector4::Vector4(const class Quaternion& q) :
 #if defined(XO_SSE)
-    m(q.m)
+    xmm(q.xmm)
 #else
     x(q.x), y(q.y), z(q.z), w(q.w)
 #endif
@@ -1824,7 +1828,7 @@ Vector4::Vector4(const class Quaternion& q) :
 
 Vector4& Vector4::Set(float x, float y, float z, float w) {
 #if defined(XO_SSE)
-    m = _mm_set_ps(w, z, y, x);
+    xmm = _mm_set_ps(w, z, y, x);
 #else
     this->x = x;
     this->y = y;
@@ -1836,7 +1840,7 @@ Vector4& Vector4::Set(float x, float y, float z, float w) {
 
 Vector4& Vector4::Set(float f) {
 #if defined(XO_SSE)
-    m = _mm_set1_ps(f);
+    xmm = _mm_set1_ps(f);
 #else
     this->x = f;
     this->y = f;
@@ -1848,7 +1852,7 @@ Vector4& Vector4::Set(float f) {
 
 Vector4& Vector4::Set(const Vector4& vec) {
 #if defined(XO_SSE)
-    m = vec.m;
+    xmm = vec.xmm;
 #else
     this->x = vec.x;
     this->y = vec.y;
@@ -1860,7 +1864,7 @@ Vector4& Vector4::Set(const Vector4& vec) {
 
 Vector4& Vector4::Set(const Vector2& vec) {
 #if defined(XO_SSE)
-    m = _mm_set_ps(0.0f, 0.0f, vec.y, vec.x);
+    xmm = _mm_set_ps(0.0f, 0.0f, vec.y, vec.x);
 #else
     this->x = vec.x;
     this->y = vec.y;
@@ -1872,7 +1876,7 @@ Vector4& Vector4::Set(const Vector2& vec) {
 
 Vector4& Vector4::Set(const Vector2& vec, float z, float w) {
 #if defined(XO_SSE)
-    m = _mm_set_ps(w, z, vec.y, vec.x);
+    xmm = _mm_set_ps(w, z, vec.y, vec.x);
 #else
     this->x = vec.x;
     this->y = vec.y;
@@ -1884,7 +1888,8 @@ Vector4& Vector4::Set(const Vector2& vec, float z, float w) {
 
 Vector4& Vector4::Set(const Vector3& vec) {
 #if defined(XO_SSE)
-    this->m = vec.m;
+    // TODO: mask with xmm, don't just break out w
+    this->xmm = vec.xmm;
     this->w = 0.0f;
 #else
     this->x = vec.x;
@@ -1897,7 +1902,8 @@ Vector4& Vector4::Set(const Vector3& vec) {
 
 Vector4& Vector4::Set(const Vector3& vec, float w) {
 #if defined(XO_SSE)
-    this->m = vec.m;
+    // todo: consider masking here.
+    this->xmm = vec.xmm;
     this->w = w;
 #else
     this->x = vec.x;
@@ -1910,7 +1916,7 @@ Vector4& Vector4::Set(const Vector3& vec, float w) {
 
 #if defined(XO_SSE)
 Vector4& Vector4::Set(const __m128& vec) {
-    m = vec;
+    xmm = vec;
     return *this;
 }
 #endif
@@ -1924,7 +1930,7 @@ void Vector4::Get(float& x, float& y, float& z, float& w) const {
 
 void Vector4::Get(float* f) const {
 #if defined(XO_SSE)
-    _mm_store_ps(f, m);
+    _mm_store_ps(f, xmm);
 #else
     f[0] = this->x;
     f[1] = this->y;
@@ -1935,7 +1941,7 @@ void Vector4::Get(float* f) const {
  
 float Vector4::Sum() const {
 #if defined(XO_SSE)
-    __m128 s = _mm_hadd_ps(m, m);
+    __m128 s = _mm_hadd_ps(xmm, xmm);
     return _mm_cvtss_f32(_mm_hadd_ps(s, s));
 #else
     return x+y+z+w;
@@ -1951,7 +1957,7 @@ Vector4& Vector4::NormalizeSafe() {
 
 float Vector4::Dot(const Vector4& a, const Vector4& b) {
 #if defined(XO_SSE4)
-    return _mm_cvtss_f32(_mm_dp_ps(a.m, b.m, 0xff));
+    return _mm_cvtss_f32(_mm_dp_ps(a.xmm, b.xmm, 0xff));
 #else
     return (a * b).Sum();
 #endif
