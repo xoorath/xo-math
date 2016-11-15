@@ -441,8 +441,8 @@ void Matrix4x4::RotationZRadians(float radians, Matrix4x4& m) {
 }
 
 void Matrix4x4::RotationRadians(float x, float y, float z, Matrix4x4& m) {
-    _MM_ALIGN16 float c[4];
-    _MM_ALIGN16 float s[4];
+    _XOSIMDALIGN float c[4];
+    _XOSIMDALIGN float s[4];
     Vector4 v(x, y, z, 0.0f);
     SinCos_x4(v.f, s, c);
 
@@ -453,8 +453,8 @@ void Matrix4x4::RotationRadians(float x, float y, float z, Matrix4x4& m) {
 }
 
 void Matrix4x4::RotationRadians(const Vector3& v, Matrix4x4& m) {
-    _MM_ALIGN16 float c[4];
-    _MM_ALIGN16 float s[4];
+    _XOSIMDALIGN float c[4];
+    _XOSIMDALIGN float s[4];
     SinCos_x4(v.f, s, c);
 
     m[0].Set(c[1]*c[2],                     -c[1]*s[2],                 s[1],           0.0f);
@@ -910,8 +910,8 @@ void Quaternion::RotationRadians(float x, float y, float z, Quaternion& outQuat)
 void Quaternion::RotationRadians(const Vector3& v, Quaternion& outQuat)
 {
     Vector3 hv = v * 0.5f;
-    _MM_ALIGN16 float s[3];
-    _MM_ALIGN16 float c[3];
+    _XOSIMDALIGN float s[3];
+    _XOSIMDALIGN float c[3];
     SinCos_x3(hv.f, s, c);
 
     _XO_ASSIGN_QUAT_Q(outQuat,
@@ -1468,6 +1468,8 @@ const Vector3 Vector3::Zero(0.0f, 0.0f, 0.0f);
 Vector3::Vector3(float f) :
 #if defined(XO_SSE)
     xmm(_mm_set1_ps(f))
+#elif defined(XO_NEON)
+    n(vdupq_n_f32(f))
 #else
     x(f), y(f), z(f)
 #endif
@@ -1566,6 +1568,8 @@ void Vector3::Get(float& x, float& y, float &z) const {
 void Vector3::Get(float* f) const {
 #if defined(XO_SSE)
     _mm_store_ps(f, xmm);
+#elif defined(XO_NEON)
+    vst1q_f32(f, n);
 #else
     f[0] = this->x;
     f[1] = this->y;

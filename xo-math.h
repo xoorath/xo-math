@@ -100,13 +100,19 @@
 #pragma warning(pop) 
 #endif 
 
-// Not available in clang, so far as I can tell.
-#if !defined(__arm__) && !defined(_M_ARM)
-#   ifndef _MM_ALIGN16
-#      define _MM_ALIGN16 __attribute__((aligned(16)))
+
+#if defined(_MSC_VER)
+#   if defined(_M_ARM)
+#       define _XOSIMDALIGN __declspec(align(8))
+#   else
+#       define _XOSIMDALIGN __declspec(align(16))
 #   endif
 #else
-#      define _MM_ALIGN16
+#   if defined(__arm__)
+#       define _XOSIMDALIGN __attribute__((aligned(8)))
+#   else
+#       define _XOSIMDALIGN __attribute__((aligned(16)))
+#   endif
 #endif
 
 #define XOMATH_INTERNAL 1
@@ -377,7 +383,7 @@ XOMATH_END_XO_NS();
 ////////////////////////////////////////////////////////////////////////// Module Includes
 XOMATH_BEGIN_XO_NS();
 
-class _MM_ALIGN16 Vector2 {
+class _XOSIMDALIGN Vector2 {
 public:
 
     ////////////////////////////////////////////////////////////////////////// Constructors
@@ -639,7 +645,7 @@ XOMATH_END_XO_NS();
 
 XOMATH_BEGIN_XO_NS();
 
-class _MM_ALIGN16 Vector3 {
+class _XOSIMDALIGN Vector3 {
 public:
     ////////////////////////////////////////////////////////////////////////// Constructors
     // See: http://xo-math.rtfd.io/en/latest/classes/vector3.html#constructors
@@ -984,6 +990,14 @@ public:
         float f[4]; 
         __m128 xmm;
     };
+#elif defined(XO_NEON)
+    union {
+        struct {
+            float x, y, z, w;
+        };
+        float f[4];
+        float32x4_t n;
+    };
 #else
     union {
         struct {
@@ -1003,7 +1017,7 @@ XOMATH_END_XO_NS();
 
 XOMATH_BEGIN_XO_NS();
 
-class _MM_ALIGN16 Vector4 {
+class _XOSIMDALIGN Vector4 {
 public:
     ////////////////////////////////////////////////////////////////////////// Constructors
     // See: http://xo-math.rtfd.io/en/latest/classes/vector4.html#constructors
@@ -1268,7 +1282,7 @@ XOMATH_END_XO_NS();
 
 XOMATH_BEGIN_XO_NS();
 
-class _MM_ALIGN16 Matrix4x4 {
+class _XOSIMDALIGN Matrix4x4 {
 public:
     //> See
     Matrix4x4(); 
@@ -1417,7 +1431,7 @@ XOMATH_END_XO_NS();
 
 XOMATH_BEGIN_XO_NS();
 
-class _MM_ALIGN16 Quaternion {
+class _XOSIMDALIGN Quaternion {
 public:
     Quaternion();
     Quaternion(const Matrix4x4& m);
@@ -2552,6 +2566,8 @@ XOMATH_END_XO_NS();
 #endif
 
 #if !defined(XO_EXPORT_ALL)
+#   undef _XOSIMDALIGN
+
 #   undef _XOCONSTEXPR
 #   undef _XOINL
 #   undef _XOTLS
