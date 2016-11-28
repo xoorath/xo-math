@@ -72,7 +72,7 @@
 #endif 
 
 #include <math.h>
-#ifndef XO_NO_OSTREAM
+#if !defined(XO_NO_OSTREAM)
 #   include <ostream>
 #endif
 #include <random>
@@ -131,7 +131,7 @@
 
 
 // todo: remove constexpr in visual studio 2013 and re-test for support
-#if defined(_MSC_VER) && _MSC_VER < 1800
+#if defined(_MSC_VER) && _MSC_VER <= 1800
 #    define _XOCONSTEXPR
 #    if !defined(_XONOCONSTEXPR)
 #        define _XONOCONSTEXPR
@@ -149,13 +149,17 @@
 
 #if (defined(__clang__) && defined(__APPLE__))
 #   define _XOTLS __thread
-#elif (defined(_MSC_VER) && _MSC_VER < 1800)
+#elif (defined(_MSC_VER) && _MSC_VER <= 1800)
 #   define _XOTLS __declspec(thread)
 #else
 #   define _XOTLS thread_local
 #endif
 
-# define _XO_NO_TLS (defined(__clang__) && defined(__APPLE__)) || (defined(_MSC_VER) && _MSC_VER < 1800)
+#if (defined(__clang__) && defined(__APPLE__)) || (defined(_MSC_VER) && _MSC_VER <= 1800)
+#    define _XO_NO_TLS 1
+#else 
+#    define _XO_NO_TLS 0
+#endif
 
 // apple clang doesn't give us thread_local until xcode 8.
 #if _XO_NO_TLS
@@ -655,6 +659,8 @@ public:
     Vector3(const Vector3& vec); 
 #if defined(XO_SSE)
     Vector3(const __m128& vec); 
+#elif defined(XO_NEON)
+    Vector3(const float32x4_t& vec); 
 #endif
     Vector3(const class Vector2& v); 
     Vector3(const class Vector4& v); 
@@ -666,6 +672,8 @@ public:
     Vector3& Set(const Vector3& vec);
 #if defined(XO_SSE)
     Vector3& Set(const __m128& vec);
+#elif defined(XO_NEON)
+    Vector3& Set(const float32x4_t& vec);
 #endif
     void Get(float& x, float& y, float &z) const;
     void Get(float* f) const;
@@ -675,6 +683,8 @@ public:
     _XO_OVERLOAD_NEW_DELETE();
 #if defined(XO_SSE)
     _XOINL operator __m128() const;
+#elif defined(XO_NEON)
+    _XOINL operator float32x4_t() const;
 #endif
     _XOINL float& operator [](int i);
     _XOINL const float& operator [](int i) const;
@@ -1410,7 +1420,9 @@ public:
 #endif
 
     union {
-        Vector4 r[4];
+        struct {
+            Vector4 r[4];
+        };
         float m[16];
         struct {
             float   m00, m01, m02, m03,
@@ -1703,6 +1715,10 @@ XOMATH_BEGIN_XO_NS();
 Vector3::operator __m128() const {
     return xmm;
 }
+#elif defined(XO_NEON)
+Vector3::operator float32x4_t() const {
+    return n;
+}
 #endif
 
 float& Vector3::operator [](int i) {
@@ -1716,6 +1732,8 @@ const float& Vector3::operator [](int i) const {
 Vector3 Vector3::operator -() const {
 #if defined(XO_SSE)
     return Vector3(_mm_mul_ps(xmm, sse::NegativeOne));
+#elif defined(XO_NEON)
+    return Vector3(vnegq_f32(n));
 #else
     return Vector3(-x, -y, -z);
 #endif
@@ -1728,6 +1746,8 @@ Vector3 Vector3::operator ~() const {
 Vector3& Vector3::operator += (const Vector3& v) {
 #if defined(XO_SSE)
     xmm = _mm_add_ps(xmm, v);
+#elif defined(XO_NEON)
+    n = vaddq_f32(n, v);
 #else
     x += v.x;
     y += v.y;
@@ -1739,6 +1759,8 @@ Vector3& Vector3::operator += (const Vector3& v) {
 Vector3& Vector3::operator += (float v) {
 #if defined(XO_SSE)
     xmm = _mm_add_ps(xmm, _mm_set_ps1(v));
+#elif defined(XO_NEON)
+    n = vaddq_f32(n, vdupq_n_f32(v));
 #else
     x += v;
     y += v;
@@ -1755,6 +1777,8 @@ Vector3& Vector3::operator += (const class Vector4& v)    { return (*this) += Ve
 Vector3& Vector3::operator -= (const Vector3& v) {
 #if defined(XO_SSE)
     xmm = _mm_sub_ps(xmm, v);
+#elif defined(XO_NEON)
+    n = vsubq_f32(n, v);
 #else
     x -= v.x;
     y -= v.y;
@@ -1766,6 +1790,8 @@ Vector3& Vector3::operator -= (const Vector3& v) {
 Vector3& Vector3::operator -= (float v) {
 #if defined(XO_SSE)
     xmm = _mm_sub_ps(xmm, _mm_set_ps1(v));
+#elif defined(XO_NEON)
+    n = vsubq_f32(n, vdupq_n_f32(v));
 #else
     x -= v;
     y -= v;
@@ -1782,6 +1808,8 @@ Vector3& Vector3::operator -= (const class Vector4& v)    { return (*this) -= Ve
 Vector3& Vector3::operator *= (const Vector3& v) {
 #if defined(XO_SSE)
     xmm = _mm_mul_ps(xmm, v);
+#elif defined(XO_NEON)
+    n = vmulq_f32(n, v);
 #else
     x *= v.x;
     y *= v.y;
@@ -1793,6 +1821,8 @@ Vector3& Vector3::operator *= (const Vector3& v) {
 Vector3& Vector3::operator *= (float v) {
 #if defined(XO_SSE)
     xmm = _mm_mul_ps(xmm, _mm_set_ps1(v));
+#elif defined(XO_NEON)
+    n = vmulq_f32(n, vdupq_n_f32(v));
 #else
     x *= v;
     y *= v;
@@ -1806,7 +1836,7 @@ Vector3& Vector3::operator *= (int v)                     { return (*this) *= fl
 Vector3& Vector3::operator *= (const class Vector2& v)    { return (*this) *= Vector3(v); }
 Vector3& Vector3::operator *= (const class Vector4& v)    { return (*this) *= Vector3(v); }
 
-#if defined(XO_NO_INVERSE_DIVISION)
+#if defined(XO_NO_INVERSE_DIVISION) || 1
 Vector3& Vector3::operator /= (const Vector3& v) {
 #if defined(XO_SSE)
     // see: https://software.intel.com/sites/landingpage/IntrinsicsGuide
@@ -1821,6 +1851,13 @@ Vector3& Vector3::operator /= (const Vector3& v) {
     // Westmere        14      12
     // Nehalem         14      12
     xmm = _mm_div_ps(xmm, v);
+#elif defined(XO_NEON)
+    // note: there is no divide instruction.
+    // so we still approximate division with a recip value when XO_NO_INVERSE_DIVISION is defined,
+    // but we also add a newton-rapson iteration to slightly improve the estimation.
+    float32x4_t r = vrecpeq_f32(v);
+    r = vmulq_f32(vrecpsq_f32(v, r), r);
+    n = vmulq_f32(n, r);
 #else
     x /= v.x;
     y /= v.y;
@@ -2595,10 +2632,10 @@ XOMATH_END_XO_NS();
 // r: release, all features broadly tested in various applications.
 // p: patch release, contains fixes for a release version.
 
-#define XO_MATH_VERSION_DATE "Fall 2016"
+#define XO_MATH_VERSION_DATE "winter 2016"
 #define XO_MATH_VERSION_MAJOR 0
-#define XO_MATH_VERSION_KIND "x"
-#define XO_MATH_VERSION_MINOR 4
+#define XO_MATH_VERSION_KIND "a"
+#define XO_MATH_VERSION_MINOR 5
 #define XO_MATH_VERSION_SUB 0
 #define XO_MATH_VERSION_STR _XO_MATH_STRINGIFY(XO_MATH_VERSION_MAJOR) "." _XO_MATH_STRINGIFY(XO_MATH_VERSION_MINOR) "." XO_MATH_VERSION_KIND _XO_MATH_STRINGIFY(XO_MATH_VERSION_SUB)
 #define XO_MATH_VERSION (XO_MATH_VERSION_MAJOR*10000) + (XO_MATH_VERSION_MINOR*1000) + (XO_MATH_VERSION_SUB*100)
@@ -2617,6 +2654,14 @@ XOMATH_END_XO_NS();
 #   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with gcc " _XO_MATH_STRINGIFY(__GNUC__) "." _XO_MATH_STRINGIFY(__GNUC_MINOR__) "." _XO_MATH_STRINGIFY(__GNUC_PATCHLEVEL__) ", supporting simd: " XO_MATH_HIGHEST_SIMD "."
 #else
 #   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with an unknown compiler, supporting simd: " XO_MATH_HIGHEST_SIMD "."
+#endif
+
+// little build output message for visual studio.
+#if defined(_MSC_VER) && !defined(_XO_MATH_OBJ)
+#   pragma message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+#   pragma message(XO_MATH_VERSION_TXT)
+#   pragma message(XO_MATH_COMPILER_INFO)
+#   pragma message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 #endif
 
 #endif // XO_MATH_H

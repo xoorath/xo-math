@@ -1488,6 +1488,8 @@ Vector3::Vector3(float x, float y, float z) :
 Vector3::Vector3(const Vector3& vec) :
 #if defined(XO_SSE)
     xmm(vec)
+#elif defined(XO_NEON)
+    n(vec.n)
 #else
     x(vec.x), y(vec.y), z(vec.z) 
 #endif
@@ -1497,6 +1499,12 @@ Vector3::Vector3(const Vector3& vec) :
 #if defined(XO_SSE)
 Vector3::Vector3(const __m128& vec) : 
     xmm(vec)
+{
+}
+
+#elif defined(XO_NEON)
+Vector3::Vector3(const float32x4_t& vec) :
+    n(vec)
 {
 }
 #endif
@@ -1513,6 +1521,8 @@ Vector3::Vector3(const class Vector2& v) :
 Vector3::Vector3(const class Vector4& v) :
 #if defined(XO_SSE)
     xmm(v.xmm)
+//#elif defined(XO_NEON)
+//    n(v.n)
 #else
     x(v.x), y(v.y), z(v.z)
 #endif
@@ -1533,6 +1543,8 @@ Vector3& Vector3::Set(float x, float y, float z) {
 Vector3& Vector3::Set(float f) {
 #if defined(XO_SSE)
     xmm = _mm_set1_ps(f);
+#elif defined(XO_NEON)
+    n = vdupq_n_f32(f);
 #else
     this->x = f;
     this->y = f;
@@ -1544,6 +1556,8 @@ Vector3& Vector3::Set(float f) {
 Vector3& Vector3::Set(const Vector3& vec) {
 #if defined(XO_SSE)
     xmm = vec.xmm;
+#elif defined(XO_NEON)
+    n = vec.n;
 #else
     this->x = vec.x;
     this->y = vec.y;
@@ -1555,6 +1569,11 @@ Vector3& Vector3::Set(const Vector3& vec) {
 #if defined(XO_SSE)
 Vector3& Vector3::Set(const __m128& vec) {
     xmm = vec;
+    return *this;
+}
+#elif defined(XO_NEON)
+Vector3& Vector3::Set(const float32x4_t& vec) {
+    n = vec;
     return *this;
 }
 #endif
