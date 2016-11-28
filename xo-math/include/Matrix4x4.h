@@ -489,7 +489,9 @@ public:
 
     //! Matrix rows
     union {
-        Vector4 r[4];
+        struct {
+            Vector4 r[4];
+        };
         float m[16];
         struct {
             float   m00, m01, m02, m03,

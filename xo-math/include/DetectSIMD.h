@@ -110,9 +110,3 @@
 #else
 #   define XO_MATH_HIGHEST_SIMD "none"
 #endif
-
-
-#if defined(_MSC_VER) && !defined(_XO_MATH_OBJ)
-#   pragma message("xo-math simd support: " XO_MATH_HIGHEST_SIMD)
-
-#endif

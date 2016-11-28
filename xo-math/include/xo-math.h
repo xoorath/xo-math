@@ -72,7 +72,7 @@
 #endif 
 
 #include <math.h>
-#ifndef XO_NO_OSTREAM
+#if !defined(XO_NO_OSTREAM)
 #   include <ostream>
 #endif
 #include <random>
@@ -131,7 +131,7 @@
 
 
 // todo: remove constexpr in visual studio 2013 and re-test for support
-#if defined(_MSC_VER) && _MSC_VER < 1800
+#if defined(_MSC_VER) && _MSC_VER <= 1800
 #    define _XOCONSTEXPR
 #    if !defined(_XONOCONSTEXPR)
 #        define _XONOCONSTEXPR
@@ -149,13 +149,17 @@
 
 #if (defined(__clang__) && defined(__APPLE__))
 #   define _XOTLS __thread
-#elif (defined(_MSC_VER) && _MSC_VER < 1800)
+#elif (defined(_MSC_VER) && _MSC_VER <= 1800)
 #   define _XOTLS __declspec(thread)
 #else
 #   define _XOTLS thread_local
 #endif
 
-# define _XO_NO_TLS (defined(__clang__) && defined(__APPLE__)) || (defined(_MSC_VER) && _MSC_VER < 1800)
+#if (defined(__clang__) && defined(__APPLE__)) || (defined(_MSC_VER) && _MSC_VER <= 1800)
+#    define _XO_NO_TLS 1
+#else 
+#    define _XO_NO_TLS 0
+#endif
 
 // apple clang doesn't give us thread_local until xcode 8.
 #if _XO_NO_TLS
@@ -438,7 +442,7 @@ XOMATH_END_XO_NS();
 // r: release, all features broadly tested in various applications.
 // p: patch release, contains fixes for a release version.
 
-#define XO_MATH_VERSION_DATE "Winter 2016"
+#define XO_MATH_VERSION_DATE "winter 2016"
 #define XO_MATH_VERSION_MAJOR 0
 #define XO_MATH_VERSION_KIND "a"
 #define XO_MATH_VERSION_MINOR 5
@@ -460,6 +464,14 @@ XOMATH_END_XO_NS();
 #   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with gcc " _XO_MATH_STRINGIFY(__GNUC__) "." _XO_MATH_STRINGIFY(__GNUC_MINOR__) "." _XO_MATH_STRINGIFY(__GNUC_PATCHLEVEL__) ", supporting simd: " XO_MATH_HIGHEST_SIMD "."
 #else
 #   define XO_MATH_COMPILER_INFO "xo-math v" XO_MATH_VERSION_STR " is compiled with an unknown compiler, supporting simd: " XO_MATH_HIGHEST_SIMD "."
+#endif
+
+// little build output message for visual studio.
+#if defined(_MSC_VER) && !defined(_XO_MATH_OBJ)
+#   pragma message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+#   pragma message(XO_MATH_VERSION_TXT)
+#   pragma message(XO_MATH_COMPILER_INFO)
+#   pragma message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 #endif
 
 #endif // XO_MATH_H

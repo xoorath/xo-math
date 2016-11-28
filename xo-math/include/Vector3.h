@@ -33,7 +33,9 @@ public:
     Vector3(float x, float y, float z); //!< Assigns each named value accordingly.
     Vector3(const Vector3& vec); //!< Copy constructor, trivial.
 #if defined(XO_SSE)
-    Vector3(const __m128& vec); //!< Assigns m to vec, sets all elements.
+    Vector3(const __m128& vec); //!< Assigns xmm to vec, sets all elements.
+#elif defined(XO_NEON)
+    Vector3(const float32x4_t& vec); //!< Assigns n to vec, sets all elements.
 #endif
     Vector3(const class Vector2& v); //!< Assigns same-name values from v, zero to z. \f$\begin{pmatrix}v.x&v.y&0\end{pmatrix}\f$
     Vector3(const class Vector4& v); //!< Assigns same-name values from v. \f$\begin{pmatrix}v.x&v.y&v.z\end{pmatrix}\f$
@@ -50,8 +52,11 @@ public:
     //! Set each. Copies vec into this.
     Vector3& Set(const Vector3& vec);
 #if defined(XO_SSE)
-    //! Set each. Copies vec int m.
+    //! Set each. Copies vec int xmm.
     Vector3& Set(const __m128& vec);
+#elif defined(XO_NEON)
+    //! Set each. Copies vec int n.
+    Vector3& Set(const float32x4_t& vec);
 #endif
     //! Extract all getter. x, y, and z will be assigned to those values of this vector.
     void Get(float& x, float& y, float &z) const;
@@ -70,6 +75,9 @@ public:
 #if defined(XO_SSE)
     //! Type cast operator. Allows Vector3 to be used implicitly where ever __m128 can be.
     _XOINL operator __m128() const;
+#elif defined(XO_NEON)
+    //! Type cast operator. Allows Vector3 to be used implicitly where ever float32x4_t can be.
+    _XOINL operator float32x4_t() const;
 #endif
     //! Extract reference operator, useful for setting values by index.
     //! \f[i\begin{cases}0 & return\ x;\\1 & return\ y;\\2 & return\ z;\\? & undefined\end{cases}\f]
