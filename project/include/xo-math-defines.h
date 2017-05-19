@@ -15,6 +15,7 @@
             // so we're assuming under msvc that it's all that's required to determine neon support...
 #           include <arm_neon.h>
 #       else
+#           include <pmmintrin.h>
 #           include <xmmintrin.h>
 #       endif
 #   else
@@ -35,6 +36,8 @@
 
 // 1 if left handed, 0 if right handed. There is no XO_MATH_RIGHTHAND.
 #define XO_MATH_LEFTHAND 1
+// 1 if y is up, 0 if z is up. There is no XO_MATH_Z_IS_UP
+#define XO_MATH_Y_IS_UP 1
 
 //////////////////////////////////////////////////////////////////////
 // Detect SIMD
@@ -43,24 +46,7 @@
         // note: directx defines _XM_ARM_NEON_INTRINSICS_ if _M_ARM is defined, 
         // so we're assuming under msvc that it's all that's required to determine neon support...
 #       define XO_NEON 1
-#   elif defined(_M_IX86_FP)
-#       if _M_IX86_FP == 1
-#           define XO_SSE 1
-#       elif _M_IX86_FP == 2
-#           define XO_SSE 1
-#           define XO_SSE2 1
-#       endif
-#   endif
-#   if defined(__AVX__)
-#       define XO_SSE 1
-#       define XO_SSE2 1
-#       define XO_SSE3 1
-#       define XO_SSSE3 1
-#       define XO_SSE4_1 1
-#       define XO_SSE4_2 1
-#       define XO_AVX 1
-#   endif
-#   if defined(__AVX2__)
+#   elif defined(__AVX2__)
 #       define XO_SSE 1
 #       define XO_SSE2 1
 #       define XO_SSE3 1
@@ -69,6 +55,21 @@
 #       define XO_SSE4_2 1
 #       define XO_AVX 1
 #       define XO_AVX2 1
+#   elif defined(__AVX__)
+#       define XO_SSE 1
+#       define XO_SSE2 1
+#       define XO_SSE3 1
+#       define XO_SSSE3 1
+#       define XO_SSE4_1 1
+#       define XO_SSE4_2 1
+#       define XO_AVX 1
+#   elif defined(_M_IX86_FP)
+#       if _M_IX86_FP == 1
+#           define XO_SSE 1
+#       elif _M_IX86_FP == 2
+#           define XO_SSE 1
+#           define XO_SSE2 1
+#       endif
 #   endif
 // TODO: add AVX512 for msvc when it exists.
 #elif defined(__clang__) || defined (__GNUC__)

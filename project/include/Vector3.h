@@ -12,40 +12,43 @@ public:
   inline Vector3(const Vector3& other);
 
   inline void Set(float x, float y, float z);
+  inline void SetXY(float x, float y);
+  inline void SetXZ(float x, float z);
+  inline void SetYZ(float y, float z);
 
-  inline float& operator [](int i);
+  inline float&       operator [](int i);
   inline const float& operator [](int i) const;
 
   inline Vector3 operator -() const;
   inline Vector3 operator ~() const;
 
   inline Vector3& operator += (const Vector3& other);
-  inline Vector3 operator + (const Vector3& other) const;
+  inline Vector3  operator +  (const Vector3& other) const;
   inline Vector3& operator -= (const Vector3& other);
-  inline Vector3 operator - (const Vector3& other) const;
+  inline Vector3  operator -  (const Vector3& other) const;
   inline Vector3& operator *= (const Vector3& other);
-  inline Vector3 operator * (const Vector3& other) const;
+  inline Vector3  operator *  (const Vector3& other) const;
   inline Vector3& operator /= (const Vector3& other);
-  inline Vector3 operator / (const Vector3& other) const;
+  inline Vector3  operator /  (const Vector3& other) const;
 
-  inline bool operator < (const Vector3& v) const;
+  inline bool operator <  (const Vector3& v) const;
   inline bool operator <= (const Vector3& v) const;
-  inline bool operator > (const Vector3& v) const;
+  inline bool operator >  (const Vector3& v) const;
   inline bool operator >= (const Vector3& v) const;
   inline bool operator == (const Vector3& v) const;
   inline bool operator != (const Vector3& v) const;
 
-  inline float Sum() const;
-  inline Vector3 ZYX() const;
-  inline float Magnitude() const;
-  inline float MagnitudeSquared() const;
-  inline void Normalize();
+  inline float   Magnitude() const;
+  inline float   MagnitudeSquared() const;
+  inline void    Normalize();
   inline Vector3 Normalized() const;
+  inline float   Sum() const;
+  inline Vector3 ZYX() const;
 
   inline static Vector3 Cross(const Vector3& a, const Vector3& b);
-  inline static float Dot(const Vector3& a, const Vector3& b);
+  inline static float   Distance(const Vector3& a, const Vector3& b);
+  inline static float   Dot(const Vector3& a, const Vector3& b);
   inline static Vector3 Lerp(const Vector3& a, const Vector3& b, float t);
-  inline static float Distance(const Vector3& a, const Vector3& b);
 
 #ifdef XO_SIMD
   inline Vector3(VectorRegister_t reg);
@@ -110,6 +113,21 @@ void Vector3::Set(float _x, float _y, float _z) {
   this->y = _y;
   this->z = _z;
 #endif
+}
+
+//inline
+void Vector3::SetXY(float _x, float _y) {
+  Set(_x, _y, z);
+}
+
+//inline
+void Vector3::SetXZ(float _x, float _z) {
+  Set(_x, y, _z);
+}
+
+//inline
+void Vector3::SetYZ(float _y, float _z) {
+  Set(x, _y, _z);
 }
 
 // inline
@@ -239,10 +257,10 @@ bool Vector3::operator != (const Vector3&) const {
 // inline
 float Vector3::Sum() const {
 #if defined(XO_SSE3)
-    VectorRegister_t x = _mm_and_ps(reg, MASK);
-    x = _mm_hadd_ps(x, x);
-    x = _mm_hadd_ps(x, x);
-    return _mm_cvtss_f32(x);
+    VectorRegister_t _x = _mm_and_ps(reg, MASK);
+    _x = _mm_hadd_ps(_x, _x);
+    _x = _mm_hadd_ps(_x, _x);
+    return _mm_cvtss_f32(_x);
 #else
     return x + y + z;
 #endif

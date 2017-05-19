@@ -17,9 +17,6 @@ int main() {
   (void)f;
   
   cout << "xo-math compiling with simd: " << XO_MATH_HIGHEST_SIMD << endl;
-  char* test = (char*)xo::internal::alligned_malloc(20);
-
-  xo::internal::alligned_free(test);
   
   return 0;
 }
