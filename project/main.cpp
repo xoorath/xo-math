@@ -14,6 +14,7 @@ int main() {
   a *= b;
   b += a;
   float f = a.Sum();
+  (void)f;
   
   cout << "xo-math compiling with simd: " << XO_MATH_HIGHEST_SIMD << endl;
   char* test = (char*)xo::internal::alligned_malloc(20);

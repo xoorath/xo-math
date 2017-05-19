@@ -1,1 +1,7 @@
+project/.vs
+project/obj
+project/*.vcxproj*
+project/*.sln
+project/*.VC.*
+project/*.exe
 xo-math.exe

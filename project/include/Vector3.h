@@ -53,6 +53,9 @@ public:
   inline operator const VectorRegister_t&() const;
 #endif
 
+#pragma warning( push )
+// C4201: nonstandard extension used: nameless struct/union
+#pragma warning( disable : 4201)
   union {
 #ifdef XO_SIMD
     struct { 
@@ -67,6 +70,7 @@ public:
     float v[3];
 #endif
   };
+#pragma warning( pop ) 
 
   static const Vector3
     UnitX, UnitY, UnitZ,
@@ -80,7 +84,7 @@ public:
 
 Vector3::Vector3(float x, float y, float z) 
 #if defined XO_SSE
-  : reg(_mm_set_ps(0.0f, x, y, x))
+  : reg(_mm_set_ps(0.0f, z, y, x))
 #else
   : x(x), y(y), z(z)
 #endif
@@ -98,13 +102,13 @@ Vector3::Vector3(const Vector3& other)
 }
 
 // inline
-void Vector3::Set(float x, float y, float z) {
+void Vector3::Set(float _x, float _y, float _z) {
 #if defined XO_SSE
-  reg = _mm_set_ps(0.0f, z, y, x);
+  reg = _mm_set_ps(0.0f, _z, _y, _x);
 #else
-  this->x = x;
-  this->y = y;
-  this->z = z;
+  this->x = _x;
+  this->y = _y;
+  this->z = _z;
 #endif
 }
 
@@ -203,32 +207,32 @@ Vector3 Vector3::operator / (const Vector3& other) const {
 }
 
 // inline
-bool Vector3::operator < (const Vector3& v) const {
-  return MagnitudeSquared() < v.MagnitudeSquared();
+bool Vector3::operator < (const Vector3& other) const {
+  return MagnitudeSquared() < other.MagnitudeSquared();
 }
 
 // inline
-bool Vector3::operator <= (const Vector3& v) const {
-  return MagnitudeSquared() <= v.MagnitudeSquared();
+bool Vector3::operator <= (const Vector3& other) const {
+  return MagnitudeSquared() <= other.MagnitudeSquared();
 }
 
 // inline
-bool Vector3::operator > (const Vector3& v) const {
-  return MagnitudeSquared() > v.MagnitudeSquared();
+bool Vector3::operator > (const Vector3& other) const {
+  return MagnitudeSquared() > other.MagnitudeSquared();
 }
 
 // inline
-bool Vector3::operator >= (const Vector3& v) const {
-  return MagnitudeSquared() >= v.MagnitudeSquared();
+bool Vector3::operator >= (const Vector3& other) const {
+  return MagnitudeSquared() >= other.MagnitudeSquared();
 }
 
 // inline
-bool Vector3::operator == (const Vector3& v) const {
+bool Vector3::operator == (const Vector3&) const {
   return false; // todo
 }
 
 // inline
-bool Vector3::operator != (const Vector3& v) const {
+bool Vector3::operator != (const Vector3&) const {
   return false; // todo
 }
 
@@ -275,29 +279,29 @@ Vector3 Vector3::Normalized() const {
 }
 
 // inline static 
-Vector3 Vector3::Cross(const Vector3& a, const Vector3& b) {
+Vector3 Vector3::Cross(const Vector3&, const Vector3&) {
 
 }
 
 // inline static 
-float Vector3::Dot(const Vector3& a, const Vector3& b) {
+float Vector3::Dot(const Vector3&, const Vector3&) {
 
 }
 
 // inline static 
-Vector3 Vector3::Lerp(const Vector3& a, const Vector3& b, float t) {
+Vector3 Vector3::Lerp(const Vector3&, const Vector3&, float) {
 
 }
 
 // inline static 
-float Vector3::Distance(const Vector3& a, const Vector3& b) {
+float Vector3::Distance(const Vector3&, const Vector3&) {
 
 }
 
 #ifdef XO_SIMD
 // inline
-Vector3::Vector3(VectorRegister_t reg) 
-: reg(reg) 
+Vector3::Vector3(VectorRegister_t _reg) 
+: reg(_reg) 
 {
 }
 
