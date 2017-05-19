@@ -8,11 +8,17 @@ using std::endl;
 constexpr int hi = 6;
 
 int main() {
-  auto hello = []() {
-    cout << "hello world!!" << endl;
-  };
-  hello();
-  //cout << "xo-math version " << XO_MATH_VERSION_MAJOR << "." << XO_MATH_VERSION_MINOR << endl;
+  xo::Vector3 a(1.0f, 2.0f, 3.0f);
+  xo::Vector3 b(xo::Vector3::Up);
+  a.Normalize();
+  a *= b;
+  b += a;
+  float f = a.Sum();
+  
+  cout << "xo-math compiling with simd: " << XO_MATH_HIGHEST_SIMD << endl;
+  char* test = (char*)xo::internal::alligned_malloc(20);
+
+  xo::internal::alligned_free(test);
   
   return 0;
 }

@@ -1,4 +1,12 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-    "editor.tabSize": 2
+    "editor.tabSize": 2,
+    "files.associations": {
+        "initializer_list": "cpp",
+        "type_traits": "cpp",
+        "xstring": "cpp",
+        "xutility": "cpp",
+        "xmemory0": "cpp",
+        "iostream": "cpp"
+    }
 }
