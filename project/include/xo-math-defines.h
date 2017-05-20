@@ -256,10 +256,11 @@ namespace simd {
     // Westmere        4        1
     // Nehalem         4        1
 
-    // If accuracy is a concern, switch to using _mm_div_ps
 #   if 0
-    xmm = _mm_div_ps(xmm, v);
+    // If speed is a concern, switch to using _mm_mul_ps/_mm_rcp_ps
+    out = _mm_div_ps(a, b);
 #   else
+    // If accuracy is a concern, switch to using _mm_div_ps
     out = _mm_mul_ps(a, _mm_rcp_ps(b));
 #   endif
 
@@ -277,25 +278,29 @@ XO_NAMESPACE_END
 // Standard extensions and replacements
 XO_NAMESPACE_BEGIN
 
-static const float PI = 3.141592653589793238462643383279502884197169399375105820f;
-static const float PIx2 = 2.0f * PI;
-static const float TAU = PIx2;
-static const float Rad2Deg = 360.0f / TAU;
-static const float Deg2Rad = TAU / 360.0f;
-static const float Epsilon = 0.0000001192092896f;
+static constexpr float PI = 3.141592653589793238462643383279502884197169399375105820f;
+static constexpr float PIx2 = 2.0f * PI;
+static constexpr float TAU = PIx2;
+static constexpr float Rad2Deg = 360.0f / TAU;
+static constexpr float Deg2Rad = TAU / 360.0f;
+static constexpr float Epsilon = 0.0000001192092896f;
 
-static inline float Sqrt(float x) { return sqrtf(x); }
-static inline float Abs(float x) { return abs(x); }
-static inline float Max(float a, float b) { return a > b ? a : b; }
-static inline float Min(float a, float b) { return a < b ? a : b; }
-
+static inline float Abs(float f)                  { return f > 0.0f ? f : -f; }
+static inline float ACos(float f)                 { return acosf(f); }
+static inline float ASin(float f)                 { return asinf(f); }
+static inline float ATan(float f)                 { return atanf(f); } 
+static inline float ATan2(float y, float x)       { return atan2f(y, x); } 
+static inline float Cbrt(float f)                 { return cbrtf(f); }
+static inline float Cos(float f)                  { return cosf(f); } 
+static inline float Difference(float x, float y)  { return Abs(x-y); }
+static inline float Max(float x, float y)         { return x > y ? x : y; }
+static inline float Min(float x, float y)         { return x < y ? x : y; }
+static inline float Sin(float f)                  { return sinf(f); } 
+static inline float Sqrt(float f)                 { return sqrtf(f); } 
+static inline float Tan(float f)                  { return tanf(f); }
 
 static inline bool CloseEnough(float a, float b, float tolerance = Epsilon) {
-  a = Abs(a);
-  b = Abs(b);
-  float d = Max(a, b);
-
-  return (d == 0.0f ? 0.0f : Abs(b-a) / d) <= tolerance; 
+  return Difference(a, b) * (1.0f/tolerance) <= Min(Abs(a), Abs(b));
 }
 
 XO_NAMESPACE_END

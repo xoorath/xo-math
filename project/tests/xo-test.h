@@ -61,10 +61,14 @@ class Test {
   typedef std::function<void()> TTestFunc;
   typedef std::chrono::time_point<std::chrono::system_clock> TTime;
   typedef std::chrono::duration<double> TDuration;
+  typedef std::function<bool(float, float)> TFloatEq;
 
 public:
+  Test();
 
   void ReportSuccessIf(bool condition, const char* reason);
+
+  void ReportSuccessIf(float got, float expected, const char* reason);
 
   template<typename T>
   void ReportSuccessIf(T got, T expected, const char* reason);
@@ -75,15 +79,24 @@ public:
   void operator ()(const char* testName, TTestFunc func);
   int GetTotalFailures() const;
 
+  void SetFloatCompare(TFloatEq func);
+
 private:
   int m_CurrentSuccess  = 0;
   int m_CurrentFailure  = 0;
   int m_TotalFailure    = 0;
+  TFloatEq m_FloatEq;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Test
 //////////////////////////////////////////////////////////////////////////////////////////
+Test::Test() {
+  m_FloatEq = [](float a, float b) {
+    return a == b;
+  };
+}
+
 void Test::ReportSuccessIf(bool condition, const char* reason) {
   if(condition) ReportSuccess(); else ReportFailure(reason);
 }
@@ -91,6 +104,15 @@ void Test::ReportSuccessIf(bool condition, const char* reason) {
 template<typename T>
 void Test::ReportSuccessIf(T got, T expected, const char* reason) {
   if(got == expected)
+    ReportSuccess();
+  else {
+    ReportFailure(reason);
+    std::cout << "expected: " << expected << " got: " << got << std::endl;
+  }
+}
+
+void Test::ReportSuccessIf(float got, float expected, const char* reason) {
+  if(m_FloatEq(got, expected))
     ReportSuccess();
   else {
     ReportFailure(reason);
@@ -124,4 +146,8 @@ void Test::operator ()(const char* testName, TTestFunc func) {
 
 int Test::GetTotalFailures() const {
   return m_TotalFailure;
+}
+
+void Test::SetFloatCompare(TFloatEq func) {
+  m_FloatEq = func;
 }
