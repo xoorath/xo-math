@@ -8,6 +8,7 @@ class XO_ALIGN Vector3 {
 public:
   XO_OVERLOAD_NEW_DELETE(); // for alignment
 
+  inline Vector3() {};
   inline Vector3(float x, float y, float z);
   inline Vector3(const Vector3& other);
 
@@ -56,9 +57,12 @@ public:
   inline operator const VectorRegister_t&() const;
 #endif
 
-#pragma warning( push )
+#ifdef _MSC_VER
+#   pragma warning( push )
 // C4201: nonstandard extension used: nameless struct/union
-#pragma warning( disable : 4201)
+#   pragma warning( disable : 4201)
+#endif
+
   union {
 #ifdef XO_SIMD
     struct { 
@@ -73,7 +77,10 @@ public:
     float v[3];
 #endif
   };
-#pragma warning( pop ) 
+
+#ifdef _MSC_VER
+#   pragma warning( pop ) 
+#endif
 
   static const Vector3
     UnitX, UnitY, UnitZ,
@@ -245,13 +252,23 @@ bool Vector3::operator >= (const Vector3& other) const {
 }
 
 // inline
-bool Vector3::operator == (const Vector3&) const {
-  return false; // todo
+bool Vector3::operator == (const Vector3& other) const {
+#   if defined(XO_SSE2)
+    return (_mm_movemask_ps(_mm_cmplt_ps(simd::Abs(_mm_sub_ps(other, reg)), simd::VectorEpsilon)) & 7) == 7;
+#   elif XO_SSE
+    return CloseEnough(x, other.x, simd::Epsilon) 
+      && CloseEnough(y, other.y, simd::Epsilon) 
+      && CloseEnough(z, other.z, simd::Epsilon);
+#   else
+    return CloseEnough(x, v.x, Epsilon) 
+      && CloseEnough(y, v.y, Epsilon) 
+      && CloseEnough(z, v.z, Epsilon);
+#   endif
 }
 
 // inline
-bool Vector3::operator != (const Vector3&) const {
-  return false; // todo
+bool Vector3::operator != (const Vector3& other) const {
+  return !(*this == other); // todo
 }
 
 // inline
@@ -288,32 +305,32 @@ float Vector3::MagnitudeSquared() const {
 
 // inline
 void Vector3::Normalize() {
-
+  
 }
 
 // inline
 Vector3 Vector3::Normalized() const {
-
+  return Vector3::Zero; // TODO
 }
 
 // inline static 
 Vector3 Vector3::Cross(const Vector3&, const Vector3&) {
-
+  return Vector3::Zero; // TODO
 }
 
 // inline static 
 float Vector3::Dot(const Vector3&, const Vector3&) {
-
+  return 0.0f; // TODO
 }
 
 // inline static 
 Vector3 Vector3::Lerp(const Vector3&, const Vector3&, float) {
-
+  return Vector3::Zero; // TODO
 }
 
 // inline static 
 float Vector3::Distance(const Vector3&, const Vector3&) {
-
+  return 0.0f; // TODO
 }
 
 #ifdef XO_SIMD

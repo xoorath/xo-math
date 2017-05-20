@@ -9,6 +9,7 @@ project "demo"
 	kind "ConsoleApp"
 	flags { "EnableAVX2", "FloatFast", "OptimizeSpeed", "NoExceptions", "ExtraWarnings" }
 	defines { "_HAS_EXCEPTIONS=0" }
+	buildoptions "-std=c++11"
 	configuration "Debug"
 		defines { "DEBUG" }
 	configuration "Release"
@@ -21,6 +22,7 @@ project "tests"
 	kind "ConsoleApp"
 	flags { "EnableAVX2", "FloatFast", "OptimizeSpeed", "NoExceptions", "ExtraWarnings" }
 	defines { "_HAS_EXCEPTIONS=0" }
+	buildoptions "-std=c++11"
 	configuration "Debug"
 		defines { "DEBUG" }
 	configuration "Release"

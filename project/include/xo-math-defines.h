@@ -193,10 +193,27 @@ XO_NAMESPACE_END
 #if defined(XO_SIMD)
 XO_NAMESPACE_BEGIN
 namespace simd {
-  static const VectorRegister_t Zero = XO_SSE_OR_NEON(_mm_setzero_ps, neon_todo)();
-  static const VectorRegister_t One = XO_SSE_OR_NEON(_mm_set1_ps, neon_todo)(1.0f);
+  inline float HexFloat(uint32_t u) {
+      union {
+          uint32_t u;
+          float f;
+      } Converter;
+      Converter.u = u;
+      return Converter.f;
+  }
+
+  static const VectorRegister_t AbsMask = _mm_set1_ps(HexFloat(0x7fffffff));
+  //static const VectorRegister_t SignMask = _mm_set1_ps(HexFloat(0x80000000));
+
+  inline VectorRegister_t Abs(VectorRegister_t v) {
+      return _mm_and_ps(AbsMask, v);
+  }
+
+  //static const VectorRegister_t Zero = XO_SSE_OR_NEON(_mm_setzero_ps, neon_todo)();
+  //static const VectorRegister_t One = XO_SSE_OR_NEON(_mm_set1_ps, neon_todo)(1.0f);
   static const VectorRegister_t NegativeOne = XO_SSE_OR_NEON(_mm_set1_ps, neon_todo)(-1.0f);
-  static const float Epsilon = 0.000366210938f;
+  static const float Epsilon = 0.000366210938f; // the quoted error on _mm_rcp_ps documentation
+  static const VectorRegister_t VectorEpsilon = _mm_set_ps1(Epsilon);
 
   static inline void Add(const VectorRegister_t& a, const VectorRegister_t& b, VectorRegister_t& out) {
     out = XO_SSE_OR_NEON(_mm_add_ps, vaddq_f32)(a, b);
@@ -268,6 +285,17 @@ static const float Deg2Rad = TAU / 360.0f;
 static const float Epsilon = 0.0000001192092896f;
 
 static inline float Sqrt(float x) { return sqrtf(x); }
+static inline float Abs(float x) { return abs(x); }
+static inline float Max(float a, float b) { return a > b ? a : b; }
+static inline float Min(float a, float b) { return a < b ? a : b; }
 
+
+static inline bool CloseEnough(float a, float b, float tolerance = Epsilon) {
+  a = Abs(a);
+  b = Abs(b);
+  float d = Max(a, b);
+
+  return (d == 0.0f ? 0.0f : Abs(b-a) / d) <= tolerance; 
+}
 
 XO_NAMESPACE_END

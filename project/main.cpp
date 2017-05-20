@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <xo-math.h>
+#include "include/xo-math.h"
 
 using std::cout;
 using std::endl;
@@ -17,6 +17,6 @@ int main() {
   (void)f;
   
   cout << "xo-math compiling with simd: " << XO_MATH_HIGHEST_SIMD << endl;
-  
+
   return 0;
 }

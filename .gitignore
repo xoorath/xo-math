@@ -4,4 +4,6 @@ project/*.vcxproj*
 project/*.sln
 project/*.VC.*
 project/*.exe
+project/Makefile
+project/*.make
 xo-math.exe
