@@ -193,20 +193,20 @@ XO_NAMESPACE_END
 #if defined(XO_SIMD)
 XO_NAMESPACE_BEGIN
 namespace simd {
-  inline float HexFloat(uint32_t u) {
-      union {
-          uint32_t u;
-          float f;
-      } Converter;
-      Converter.u = u;
-      return Converter.f;
+  static inline float HexFloat(uint32_t u) {
+    union {
+      uint32_t u;
+      float f;
+    } Converter;
+    Converter.u = u;
+    return Converter.f;
   }
 
   static const VectorRegister_t AbsMask = _mm_set1_ps(HexFloat(0x7fffffff));
   //static const VectorRegister_t SignMask = _mm_set1_ps(HexFloat(0x80000000));
 
   inline VectorRegister_t Abs(VectorRegister_t v) {
-      return _mm_and_ps(AbsMask, v);
+    return _mm_and_ps(AbsMask, v);
   }
 
   //static const VectorRegister_t Zero = XO_SSE_OR_NEON(_mm_setzero_ps, neon_todo)();
@@ -280,6 +280,8 @@ XO_NAMESPACE_BEGIN
 
 static constexpr float PI = 3.141592653589793238462643383279502884197169399375105820f;
 static constexpr float PIx2 = 2.0f * PI;
+static constexpr float HALFPI = PI/2.0f;
+static constexpr float QUARTERPI = PI/4.0f;
 static constexpr float TAU = PIx2;
 static constexpr float Rad2Deg = 360.0f / TAU;
 static constexpr float Deg2Rad = TAU / 360.0f;
@@ -289,21 +291,23 @@ static inline float Abs(float f)                  { return f > 0.0f ? f : -f; }
 static inline float ACos(float f)                 { return acosf(f); }
 static inline float ASin(float f)                 { return asinf(f); }
 static inline float ATan(float f)                 { return atanf(f); } 
-static inline float ATan2(float y, float x)       { return atan2f(y, x); } 
+static inline float ATan2(float y, float x)       { return atan2f(y, x); }
 static inline float Cbrt(float f)                 { return cbrtf(f); }
-static inline float Cos(float f)                  { return cosf(f); } 
+static inline float Cos(float f)                  { return cosf(f); }
 static inline float Difference(float x, float y)  { return Abs(x-y); }
 static inline float Max(float x, float y)         { return x > y ? x : y; }
 static inline float Min(float x, float y)         { return x < y ? x : y; }
-static inline float Sin(float f)                  { return sinf(f); } 
-static inline float Sqrt(float f)                 { return sqrtf(f); } 
+static inline float Sin(float f)                  { return sinf(f); }
+static inline float Sqrt(float f)                 { return sqrtf(f); }
 static inline float Tan(float f)                  { return tanf(f); }
 
+// TODO: implement with simd
 static inline void SinCos(float r, float& outSin, float& outCos) {
   outSin = Sin(r);
   outCos = Cos(r);
 }
 
+// TODO: implement with simd
 static inline void SinCos4(float* r, float* outSin, float* outCos) {
   SinCos(*(r++), *(outSin++), *(outCos++));
   SinCos(*(r++), *(outSin++), *(outCos++));
@@ -316,7 +320,5 @@ static inline bool CloseEnough(float a, float b, float tolerance = Epsilon) {
 }
 
 //////////////////////////////////////////////////////////////////////
-
-
 
 XO_NAMESPACE_END

@@ -5,6 +5,11 @@
 
 void TestVector3(Test& test);
 void TestVector4(Test& test);
+void TestMathFuncs(Test& test);
+
+
+#define STRINGIFY_HELPER(x) #x
+#define STRINGIFY(x) STRINGIFY_HELPER(x)
 
 int main() {
   Test test;
@@ -12,6 +17,7 @@ int main() {
 
   TestVector3(test);
   TestVector4(test);
+  TestMathFuncs(test);
   
   return 0;
 }
@@ -335,5 +341,132 @@ void TestVector4(Test& test) {
     // TODO: test Lerp
     // TODO: test Distance
     // TODO: test DistanceSquared
+  });
+}
+
+void TestMathFuncs(Test& test) {
+  test("Math funcs", [&test] {
+    using xo::PI;
+    using xo::HALFPI;
+    using xo::QUARTERPI;
+#define XO_TEST_MATH_FUNC(func, in, out) test.ReportSuccessIf(xo:: func (in), out, STRINGIFY(func) " of " STRINGIFY(in) " should be " STRINGIFY(out));
+#define XO_TEST_MATH_FUNC2(func, in1, in2, out) test.ReportSuccessIf(xo:: func (in1, in2), out, STRINGIFY(func) " of (" STRINGIFY(in1) ", " STRINGIFY(in2) ") should be " STRINGIFY(out));
+    XO_TEST_MATH_FUNC(Abs, 1.0f, 1.0f);
+    XO_TEST_MATH_FUNC(Abs, -1.0f, 1.0f);
+    XO_TEST_MATH_FUNC(Abs, 0.0f, 0.0f);
+
+    XO_TEST_MATH_FUNC(ACos, -1.0f, PI);
+    XO_TEST_MATH_FUNC(ACos, 1.0f, 0.0f);
+    XO_TEST_MATH_FUNC(ACos, 0.0f, HALFPI);
+
+    XO_TEST_MATH_FUNC(ASin, -1.0f, -HALFPI);
+    XO_TEST_MATH_FUNC(ASin, 1.0f, HALFPI);
+    XO_TEST_MATH_FUNC(ASin, 0.0f, 0.0f);
+
+    XO_TEST_MATH_FUNC(ATan, 0.0f, 0.0f);
+    XO_TEST_MATH_FUNC(ATan, 1.0f, QUARTERPI);
+
+    XO_TEST_MATH_FUNC2(ATan2, 0.0f, 0.0f, 0.0f);
+    XO_TEST_MATH_FUNC2(ATan2, 1.0f, 0.0f, HALFPI);
+    XO_TEST_MATH_FUNC2(ATan2, 0.0f, 1.0f, 0.0f);
+
+    // TODO: more tests for cbrt
+    XO_TEST_MATH_FUNC(Cbrt, 0.0f, 0.0f);
+    XO_TEST_MATH_FUNC(Cbrt, 1.0f, 1.0f);
+    XO_TEST_MATH_FUNC(Cbrt, -1.0f, -1.0f);
+
+    XO_TEST_MATH_FUNC(Cos, 0.0f, 1.0f);
+    XO_TEST_MATH_FUNC(Cos, PI, -1.0f);
+
+    XO_TEST_MATH_FUNC2(Difference, 0.0f, 1.0f, 1.0f);
+    XO_TEST_MATH_FUNC2(Difference, -1.0f, 1.0f, 2.0f);
+    XO_TEST_MATH_FUNC2(Difference, -1.0f, 0.0f, 1.0f);
+    XO_TEST_MATH_FUNC2(Difference, 5.0f, 5.0f, 0.0f);
+
+    XO_TEST_MATH_FUNC2(Max, 1.0f, 0.0f, 1.0f);
+    XO_TEST_MATH_FUNC2(Max, 0.0f, 1.0f, 1.0f);
+    XO_TEST_MATH_FUNC2(Max, -1.0f, 1.0f, 1.0f);
+    XO_TEST_MATH_FUNC2(Max, -2.0f, -1.0f, -1.0f);
+
+    XO_TEST_MATH_FUNC2(Min, 1.0f, 0.0f, 0.0f);
+    XO_TEST_MATH_FUNC2(Min, 0.0f, 1.0f, 0.0f);
+    XO_TEST_MATH_FUNC2(Min, -1.0f, 1.0f, -1.0f);
+    XO_TEST_MATH_FUNC2(Min, -2.0f, -1.0f, -2.0f);
+
+    XO_TEST_MATH_FUNC(Sin, 0.0f, 0.0f);
+    XO_TEST_MATH_FUNC(Sin, HALFPI, 1.0f);
+
+    XO_TEST_MATH_FUNC(Sqrt, 1.0f, 1.0f);
+    XO_TEST_MATH_FUNC(Sqrt, 4.0f, 2.0f);
+    XO_TEST_MATH_FUNC(Sqrt, 16.0f, 4.0f);
+    XO_TEST_MATH_FUNC(Sqrt, 64.0f, 8.0f);
+
+    XO_TEST_MATH_FUNC(Tan, 0.0f, 0.0f);
+
+    {
+      float s, c;
+      xo::SinCos(0.0f, s, c);
+      test.ReportSuccessIf(s, 0.0f, "sincos(0) should have a sin of 0");
+      test.ReportSuccessIf(c, 1.0f, "sincos(0) should have a cos of 1");
+      
+      xo::SinCos(HALFPI, s, c);
+      test.ReportSuccessIf(s, 1.0f, "sincos(HALFPI) should have a sin of 1");
+
+      xo::SinCos(PI, s, c);
+      test.ReportSuccessIf(c, -1.0f, "sincos(PI) should have a sin of 1");
+    }
+
+    {
+      float s[4], c[4];
+      {
+        float in[] = {0, 0, 0, 0};
+        xo::SinCos4(in, s, c);
+        for(int i = 0; i < 4; ++i) {
+          test.ReportSuccessIf(s[i], 0.0f, "sincos(0) should have a sin of 0");
+          test.ReportSuccessIf(c[i], 1.0f, "sincos(0) should have a cos of 1");
+        }
+      }
+      {
+        float in[] = {HALFPI, HALFPI, HALFPI, HALFPI};
+        xo::SinCos4(in, s, c);
+        for(int i = 0; i < 4; ++i) {
+          test.ReportSuccessIf(s[i], 1.0f, "sincos(HALFPI) should have a sin of 1");
+        }
+      }
+      {
+        float in[] = {PI, PI, PI, PI};
+        xo::SinCos4(in, s, c);
+        for(int i = 0; i < 4; ++i) {
+          test.ReportSuccessIf(c[i], -1.0f, "sincos(PI) should have a sin of 1");
+        }
+      }
+    }
+
+  XO_TEST_MATH_FUNC2(CloseEnough, 1.0f, 1.0f, true);
+  XO_TEST_MATH_FUNC2(CloseEnough, 1.0f, 1.01f, false);
+  XO_TEST_MATH_FUNC2(CloseEnough, 1.0f, 1.001f, false);
+  XO_TEST_MATH_FUNC2(CloseEnough, 1.0f, 1.0001f, false);
+  XO_TEST_MATH_FUNC2(CloseEnough, 1.0f, 1.00001f, false);
+  XO_TEST_MATH_FUNC2(CloseEnough, 1.0f, 1.000001f, false);
+  XO_TEST_MATH_FUNC2(CloseEnough, 1.0f, 1.0000001f, true);
+
+  XO_TEST_MATH_FUNC2(CloseEnough, 10.0f, 10.0f, true);
+  XO_TEST_MATH_FUNC2(CloseEnough, 10.0f, 10.01f, false);
+  XO_TEST_MATH_FUNC2(CloseEnough, 10.0f, 10.001f, false);
+  XO_TEST_MATH_FUNC2(CloseEnough, 10.0f, 10.0001f, false);
+  XO_TEST_MATH_FUNC2(CloseEnough, 10.0f, 10.00001f, false);
+  XO_TEST_MATH_FUNC2(CloseEnough, 10.0f, 10.000001f, true);
+  XO_TEST_MATH_FUNC2(CloseEnough, 10.0f, 10.0000001f, true);
+
+  XO_TEST_MATH_FUNC2(CloseEnough, 100.0f, 100.0f, true);
+  XO_TEST_MATH_FUNC2(CloseEnough, 100.0f, 100.01f, false);
+  XO_TEST_MATH_FUNC2(CloseEnough, 100.0f, 100.001f, false);
+  XO_TEST_MATH_FUNC2(CloseEnough, 100.0f, 100.0001f, false);
+  XO_TEST_MATH_FUNC2(CloseEnough, 100.0f, 100.00001f, true);
+  XO_TEST_MATH_FUNC2(CloseEnough, 100.0f, 100.000001f, true);
+  XO_TEST_MATH_FUNC2(CloseEnough, 100.0f, 100.0000001f, true);
+
+#undef XO_TEST_MATH_FUNC
+#undef XO_TEST_MATH_FUNC2
   });
 }

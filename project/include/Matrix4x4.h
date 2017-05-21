@@ -11,6 +11,7 @@
 #pragma once
 
 #include "xo-math-defines.h"
+#include "Vector3.h"
 #include "Vector4.h"
 
 XO_NAMESPACE_BEGIN
@@ -49,6 +50,11 @@ public:
   static inline Matrix4x4 RotationZ(float roation);
   static inline Matrix4x4 Rotation(float x, float y, float z);
   static inline Matrix4x4 Translation(float x, float y, float z);
+
+  static inline Matrix4x4 LookAt(const Vector3& eye, const Vector3& target, const Vector3& up = Vector3::Up);
+
+  static inline Matrix4x4 Orthographic(float width, float height, float near = 0.01f, float far = 1000.0f);
+  static inline Matrix4x4 Perspective(float fov, float near = 0.01f, float far = 1000.0f);
 
 #ifdef _MSC_VER
 #   pragma warning( push )
@@ -405,40 +411,44 @@ bool Matrix4x4::TryGetInverse(Matrix4x4& outMatrix) {
 
 // static inline
 Matrix4x4 Matrix4x4::Scale(float x, float y, float z) {
-  return Matrix4x4(x,    0.0f, 0.0f, 0.0f,
-                   0.0f, y,    0.0f, 0.0f,
-                   0.0f, 0.0f, z,    0.0f,
-                   0.0f, 0.0f, 0.0f, 1.0f);
+  return Matrix4x4(
+    x,    0.0f, 0.0f, 0.0f,
+    0.0f, y,    0.0f, 0.0f,
+    0.0f, 0.0f, z,    0.0f,
+    0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 // static inline
 Matrix4x4 Matrix4x4::RotationX(float rotation) {
   float s, c;
   SinCos(rotation, s, c);
-  return Matrix4x4(1.0f, 0.0f, 0.0f, 0.0f,
-                   0.0f, c,    -s,   0.0f,
-                   0.0f, s,    c,    0.0f,
-                   0.0f, 0.0f, 0.0f, 1.0f);
+  return Matrix4x4(
+    1.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, c,    -s,   0.0f,
+    0.0f, s,    c,    0.0f,
+    0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 // static inline
 Matrix4x4 Matrix4x4::RotationY(float rotation) {
   float s, c;
   SinCos(rotation, s, c);
-  return Matrix4x4(c,    0.0f, -s,   0.0f,
-                   0.0f, 1.0f, 0.0f, 0.0f,
-                   s,    0.0f, c,    0.0f,
-                   0.0f, 0.0f, 0.0f, 1.0f);
+  return Matrix4x4(
+    c,    0.0f, -s,   0.0f,
+    0.0f, 1.0f, 0.0f, 0.0f,
+    s,    0.0f, c,    0.0f,
+    0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 // static inline
 Matrix4x4 Matrix4x4::RotationZ(float rotation) {
   float s, c;
   SinCos(rotation, s, c);
-  return Matrix4x4(c,    -s,   0.0f, 0.0f,
-                   s,    c,    0.0f, 0.0f,
-                   0.0f, 0.0f, 1.0f, 0.0f,
-                   0.0f, 0.0f, 0.0f, 1.0f);
+  return Matrix4x4(
+    c,    -s,   0.0f, 0.0f,
+    s,    c,    0.0f, 0.0f,
+    0.0f, 0.0f, 1.0f, 0.0f,
+    0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 // static inline
@@ -446,18 +456,57 @@ Matrix4x4 Matrix4x4::Rotation(float x, float y, float z) {
   Vector4 r(x, y, z, 0.0f);
   Vector4 s, c;
   SinCos4(r, s, c);
-  return Matrix4x4(c.y*c.z,              -c.y*s.z,            s.y,      0.0f,
-                   c.z*s.x*s.y+c.x*s.z,  c.x*c.z-s.x*s.y*s.z, -c.y*s.x, 0.0f,
-                   -c.x*c.z*s.y+s.x*s.z, c.z*s.x+c.x*s.y*s.z, c.x*c.y,  0.0f,
-                   0.0f,                 0.0f,                0.0f,     1.0f);
+  return Matrix4x4(
+    c.y*c.z,              -c.y*s.z,            s.y,      0.0f,
+    c.z*s.x*s.y+c.x*s.z,  c.x*c.z-s.x*s.y*s.z, -c.y*s.x, 0.0f,
+    -c.x*c.z*s.y+s.x*s.z, c.z*s.x+c.x*s.y*s.z, c.x*c.y,  0.0f,
+    0.0f,                 0.0f,                0.0f,     1.0f);
 }
 
 // static inline
 Matrix4x4 Matrix4x4::Translation(float x, float y, float z) {
-  return Matrix4x4(1.0f, 0.0f, 0.0f, 0.0f,
-                   0.0f, 1.0f, 0.0f, 0.0f,
-                   0.0f, 0.0f, 1.0f, 0.0f,
-                   x,    y,    z,    1.0f);
+  return Matrix4x4(
+    1.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 1.0f, 0.0f,
+    x,    y,    z,    1.0f);
+}
+
+// static inline
+Matrix4x4 Matrix4x4::LookAt(const Vector3& eye, const Vector3& target, const Vector3& up/*=Vector3::Up*/) {
+  Vector3 zAxis = (target - eye).Normalized();
+  Vector3 xAxis = Vector3::Cross(up, zAxis).Normalized();
+  Vector3 yAxis = Vector3::Cross(zAxis, xAxis);
+  Vector3 wAxis = Vector3(
+    -Vector3::Dot(xAxis, eye),
+    -Vector3::Dot(yAxis, eye),
+    -Vector3::Dot(zAxis, eye));
+  return Matrix4x4(
+    xAxis.x, yAxis.x, zAxis.x, 0.0f,
+    xAxis.y, yAxis.y, zAxis.y, 0.0f,
+    xAxis.z, yAxis.z, zAxis.z, 0.0f,
+    wAxis.x, wAxis.y, wAxis.z, 1.0f);
+}
+
+// static inline
+Matrix4x4 Matrix4x4::Orthographic(float width, float height, float near/*=0.01f*/, float far/*=1000.0f*/) {
+  const float fmn = far-near;
+  return Matrix4x4(
+    1.0f/width, 0.0f,         0.0f,     0.0f,
+    0.0f,       1.0f/height,  0.0f,     0.0f,
+    0.0f,       0.0f,         fmn,      0.0f,
+    0.0f,       0.0f,         near*fmn, 1.0f);
+}
+
+// static inline
+Matrix4x4 Matrix4x4::Perspective(float fov, float near/*=0.01f*/, float far/*=1000.0f*/) {
+  const float fmn = far-near;
+  const float atfov2 = ATan(fov/2.0f);
+  return Matrix4x4(
+    atfov2, 0.0f,   0.0f,       0.0f,
+    0.0f,   atfov2, 0.0f,       0.0f,
+    0.0f,   0.0f,   far/fmn,    0.0f,
+    0.0f,   0.0f,   -near*fmn,  1.0f);
 }
 
 XO_NAMESPACE_END
