@@ -331,40 +331,9 @@ void TestVector4(Test& test) {
     c.Normalize();
     test.ReportSuccessIf(c.Magnitude(), 1.0f, "a normalized (Normalize()) vector should have a magnitude of 1");
 
-    // c = xo::Vector3::Cross(xo::Vector3::Forward, xo::Vector3::Right);
-    // test.ReportSuccessIf(c == xo::Vector3::Up, "forward cross right is up");
-
-    // d = xo::Vector3::Dot(xo::Vector3::Up, xo::Vector3::Up);
-    // test.ReportSuccessIf(d, 1.0f, "up dot up should equal 1");
-
-    // d = xo::Vector3::Dot(xo::Vector3::Up, xo::Vector3::Right);
-    // test.ReportSuccessIf(d, 0.0f, "up dot up should equal 0");
-
-    // d = xo::Vector3::Dot(xo::Vector3::Up, xo::Vector3::Forward);
-    // test.ReportSuccessIf(d, 0.0f, "up dot up should equal 0");
-
-    // d = xo::Vector3::Dot(xo::Vector3::Up, xo::Vector3::Down);
-    // test.ReportSuccessIf(d, -1.0f, "up dot up should equal -1");
-
-    // c = xo::Vector3::Lerp(xo::Vector3::Left, xo::Vector3::Right, 0.5f);
-    // test.ReportSuccessIf(c == xo::Vector3::Zero, "lerp(left, right, 0.5) should be zero");
-
-    // c = xo::Vector3::Lerp(xo::Vector3::Left, xo::Vector3::Right, 0.0f);
-    // test.ReportSuccessIf(c == xo::Vector3::Left, "lerp(left, right, 0) should be left");
-
-    // c = xo::Vector3::Lerp(xo::Vector3::Left, xo::Vector3::Right, 1.0f);
-    // test.ReportSuccessIf(c == xo::Vector3::Right, "lerp(left, right, 1) should be right");
-
-    // d = xo::Vector3::Distance(xo::Vector3::Left, xo::Vector3::Right);
-    // test.ReportSuccessIf(d, 2.0f ,"distance from left to right should be 2.");
-
-    // d = xo::Vector3::Distance(xo::Vector3::Left, xo::Vector3::Zero);
-    // test.ReportSuccessIf(d, 1.0f ,"distance from left to zero should be 1.");
-
-    // d = xo::Vector3::DistanceSquared(xo::Vector3::Left, xo::Vector3::Right);
-    // test.ReportSuccessIf(d, 4.0f ,"distance squared from left to right should be 4.");
-
-    // d = xo::Vector3::Distance(xo::Vector3::Left, xo::Vector3::Zero);
-    // test.ReportSuccessIf(d, 1.0f ,"distance squared from left to zero should be 1.");
+    // TODO: test Dot
+    // TODO: test Lerp
+    // TODO: test Distance
+    // TODO: test DistanceSquared
   });
 }

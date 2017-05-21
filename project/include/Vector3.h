@@ -23,6 +23,8 @@ public:
   explicit inline Vector3(float xyz);
   inline Vector3(const Vector3& other);
 
+  inline operator float*();
+
   inline void Set(float x, float y, float z);
   inline void SetXY(float x, float y);
   inline void SetXZ(float x, float z);
@@ -141,6 +143,11 @@ Vector3::Vector3(const Vector3& other)
   : x(other.x), y(other.y), z(other.z)
 #endif
 {
+}
+
+// inline
+Vector3::operator float*() {
+  return v;
 }
 
 // inline

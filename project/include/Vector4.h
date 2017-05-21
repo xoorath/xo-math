@@ -23,6 +23,8 @@ public:
   explicit inline Vector4(float wxyz);
   inline Vector4(const Vector4& other);
 
+  inline operator float*();
+
   inline void Set(float x, float y, float z, float w);
 
   inline float&       operator [](int i);
@@ -61,6 +63,11 @@ public:
   inline Vector4 Normalized() const;
   inline float   Sum() const;
   inline Vector4 WZYX() const;
+
+  inline static float   Distance(const Vector4& a, const Vector4& b);
+  inline static float   DistanceSquared(const Vector4& a, const Vector4& b);
+  inline static float   Dot(const Vector4& a, const Vector4& b);
+  inline static Vector4 Lerp(const Vector4& a, const Vector4& b, float t);
 
 #ifdef XO_SIMD
   inline Vector4(VectorRegister_t reg);
@@ -125,6 +132,10 @@ Vector4::Vector4(const Vector4& other)
 {
 }
 
+// inline
+Vector4::operator float*() {
+  return v;
+}
 
 // inline 
 void Vector4::Set(float _x, float _y, float _z, float _w) {
@@ -373,11 +384,34 @@ Vector4 Vector4::WZYX() const {
 #endif
 }
 
+// inline static
+float Vector4::Distance(const Vector4& a, const Vector4& b) {
+  return (b - a).Magnitude();
+}
+
+// inline static
+float Vector4::DistanceSquared(const Vector4& a, const Vector4& b) {
+  return (b - a).MagnitudeSquared();
+}
+
+// inline static
+float Vector4::Dot(const Vector4& a, const Vector4& b) {
+#if defined(XO_SSE4_1)
+  return _mm_cvtss_f32(_mm_dp_ps(a, b, 0xff));
+#else
+  return (a * b).Sum();
+#endif
+}
+
+// inline static
+Vector4 Vector4::Lerp(const Vector4& a, const Vector4& b, float t) {
+  return a + ((b - a) * t);
+}
+
 #ifdef XO_SIMD
 // inline 
 Vector4::Vector4(VectorRegister_t _reg)
 : reg(_reg) {
-
 }
 
 // inline 

@@ -299,8 +299,24 @@ static inline float Sin(float f)                  { return sinf(f); }
 static inline float Sqrt(float f)                 { return sqrtf(f); } 
 static inline float Tan(float f)                  { return tanf(f); }
 
+static inline void SinCos(float r, float& outSin, float& outCos) {
+  outSin = Sin(r);
+  outCos = Cos(r);
+}
+
+static inline void SinCos4(float* r, float* outSin, float* outCos) {
+  SinCos(*(r++), *(outSin++), *(outCos++));
+  SinCos(*(r++), *(outSin++), *(outCos++));
+  SinCos(*(r++), *(outSin++), *(outCos++));
+  SinCos(*(r++), *(outSin++), *(outCos++));
+}
+
 static inline bool CloseEnough(float a, float b, float tolerance = Epsilon) {
   return Difference(a, b) * (1.0f/tolerance) <= Min(Abs(a), Abs(b));
 }
+
+//////////////////////////////////////////////////////////////////////
+
+
 
 XO_NAMESPACE_END
