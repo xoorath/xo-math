@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "../include/xo-math.h"
+#include "../include/Units.h"
 #include "xo-test.h"
 
 void TestVector3(Test& test);
@@ -18,7 +19,7 @@ int main() {
   TestVector3(test);
   TestVector4(test);
   TestMathFuncs(test);
-  
+
   return 0;
 }
 

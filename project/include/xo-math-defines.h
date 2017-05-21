@@ -225,11 +225,11 @@ namespace simd {
 
   // TODO: implement for neon
   static inline float SumXYZ(const VectorRegister_t& v) {
-#if defined(XO_SSE2)
+#   if defined(XO_SSE2)
     static const VectorRegister_t MaskXYZ = _mm_castsi128_ps(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff)); 
-#elif defined(XO_SSE)
+#   elif defined(XO_SSE)
     static const VectorRegister_t MaskXYZ = {-1, -1, -1, 0};
-#endif
+#   endif
     return SumXYZW(_mm_and_ps(v, MaskXYZ));
   }
 
@@ -243,7 +243,7 @@ namespace simd {
     out = XO_SSE_OR_NEON(_mm_mul_ps, vmulq_f32)(a, b);
   }
   static inline void Divide(const VectorRegister_t& a, const VectorRegister_t& b, VectorRegister_t& out) {
-#if defined(XO_SSE)
+#   if defined(XO_SSE)
     // see: https://software.intel.com/sites/landingpage/IntrinsicsGuide
     // see: https://software.intel.com/en-us/articles/measuring-instruction-latency-and-throughput
     
@@ -274,19 +274,19 @@ namespace simd {
     // Westmere        4        1
     // Nehalem         4        1
 
-#   if 0
+#       if 0
     // If speed is a concern, switch to using _mm_mul_ps/_mm_rcp_ps
     out = _mm_div_ps(a, b);
-#   else
+#       else
     // If accuracy is a concern, switch to using _mm_div_ps
     out = _mm_mul_ps(a, _mm_rcp_ps(b));
-#   endif
+#       endif
 
-#elif defined(XO_NEON)
+#   elif defined(XO_NEON)
     VectorRegister_t r = vrecpeq_f32(b);
     r = vmulq_f32(vrecpsq_f32(a, r), r);
     out = vmulq_f32(a, r);
-#endif
+#   endif
   }
 
   static inline void Square(const VectorRegister_t& a, VectorRegister_t& out) {

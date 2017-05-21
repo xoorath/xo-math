@@ -13,6 +13,7 @@
 #include "xo-math-defines.h"
 #include "Vector3.h"
 #include "Vector4.h"
+#include "Quaternion.h"
 
 XO_NAMESPACE_BEGIN
 
@@ -26,6 +27,7 @@ public:
                    float m20, float m21, float m22, float m23,
                    float m30, float m31, float m32, float m33);
   inline Matrix4x4(const Matrix4x4& other);
+  inline Matrix4x4(const Quaternion& quat);
 
   inline const Vector4& operator [](size_t i) const;
   inline Vector4 operator [](size_t i);
@@ -44,11 +46,14 @@ public:
   inline bool TryMakeInverse();
   inline bool TryGetInverse(Matrix4x4& outMatrix);
 
+  static inline Matrix4x4 Scale(const Vector3& scale);
   static inline Matrix4x4 Scale(float x, float y, float z);
   static inline Matrix4x4 RotationX(float roation);
   static inline Matrix4x4 RotationY(float roation);
   static inline Matrix4x4 RotationZ(float roation);
+  static inline Matrix4x4 Rotation(const Vector3& rotation);
   static inline Matrix4x4 Rotation(float x, float y, float z);
+  static inline Matrix4x4 Translation(const Vector3& translation);
   static inline Matrix4x4 Translation(float x, float y, float z);
 
   static inline Matrix4x4 LookAt(const Vector3& eye, const Vector3& target, const Vector3& up = Vector3::Up);
@@ -95,6 +100,24 @@ Matrix4x4::Matrix4x4(const Matrix4x4& other) {
   r[1] = other[1];
   r[2] = other[2];
   r[3] = other[3];
+}
+
+// inline
+Matrix4x4::Matrix4x4(const Quaternion& quat) {
+  Vector4& v4 = *(Vector4*)&quat;
+  Vector4 q2 = v4 + v4;
+
+  Vector4 qq2 = v4 * q2;
+  Vector4 wq2 = q2 * quat.r;
+
+  float xy2 = quat.i * q2.x;
+  float xz2 = quat.i * q2.y;
+  float yz2 = quat.j * q2.z;
+
+  r[0].Set(1.0f-qq2.y-qq2.z,  xy2+wq2.z,        xz2-wq2.y,        0.0f);
+  r[1].Set(xy2-wq2.z,         1.0f-qq2.x-qq2.z, yz2+wq2.x,        0.0f);
+  r[2].Set(xz2+wq2.y,         yz2-wq2.x,        1.0f-qq2.x-qq2.y, 0.0f);
+  r[3].Set(0.0f,              0.0f,             0.0f,             1.0f);
 }
 
 // inline
@@ -410,12 +433,17 @@ bool Matrix4x4::TryGetInverse(Matrix4x4& outMatrix) {
 }
 
 // static inline
-Matrix4x4 Matrix4x4::Scale(float x, float y, float z) {
+Matrix4x4 Matrix4x4::Scale(const Vector3& scale) {
   return Matrix4x4(
-    x,    0.0f, 0.0f, 0.0f,
-    0.0f, y,    0.0f, 0.0f,
-    0.0f, 0.0f, z,    0.0f,
-    0.0f, 0.0f, 0.0f, 1.0f);
+    scale.x, 0.0f,    0.0f,     0.0f,
+    0.0f,    scale.y, 0.0f,     0.0f,
+    0.0f,    0.0f,    scale.z,  0.0f,
+    0.0f,    0.0f,    0.0f,     1.0f);  
+}
+
+// static inline
+Matrix4x4 Matrix4x4::Scale(float x, float y, float z) {
+  return Scale(Vector3(x, y, z));
 }
 
 // static inline
@@ -452,24 +480,34 @@ Matrix4x4 Matrix4x4::RotationZ(float rotation) {
 }
 
 // static inline
-Matrix4x4 Matrix4x4::Rotation(float x, float y, float z) {
-  Vector4 r(x, y, z, 0.0f);
-  Vector4 s, c;
-  SinCos4(r, s, c);
+Matrix4x4 Matrix4x4::Rotation(const Vector3& rotation) {
+  Vector3 s, c;
+  Vector3 r = rotation;
+  SinCos3(r, s, c);
   return Matrix4x4(
     c.y*c.z,              -c.y*s.z,            s.y,      0.0f,
     c.z*s.x*s.y+c.x*s.z,  c.x*c.z-s.x*s.y*s.z, -c.y*s.x, 0.0f,
     -c.x*c.z*s.y+s.x*s.z, c.z*s.x+c.x*s.y*s.z, c.x*c.y,  0.0f,
-    0.0f,                 0.0f,                0.0f,     1.0f);
+    0.0f,                 0.0f,                0.0f,     1.0f);  
+}
+
+// static inline
+Matrix4x4 Matrix4x4::Rotation(float x, float y, float z) {
+  return Rotation(Vector3(x, y, z));
+}
+
+// static inline
+Matrix4x4 Matrix4x4::Translation(const Vector3& translation) {
+  return Matrix4x4(
+    1.0f,           0.0f,           0.0f,           0.0f,
+    0.0f,           1.0f,           0.0f,           0.0f,
+    0.0f,           0.0f,           1.0f,           0.0f,
+    translation.x,  translation.y,  translation.z,  1.0f);  
 }
 
 // static inline
 Matrix4x4 Matrix4x4::Translation(float x, float y, float z) {
-  return Matrix4x4(
-    1.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 1.0f, 0.0f,
-    x,    y,    z,    1.0f);
+  return Translation(Vector3(x, y, z));
 }
 
 // static inline

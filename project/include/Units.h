@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////
-// Transform.cpp
+// Units.h 
 //
 // AUTHOR
 //   Jared Thomson <twitter: @xoorath> <email:jared@xoorath.com>
@@ -8,105 +8,82 @@
 //   See end of file for license information.
 //
 //////////////////////////////////////////////////////////////////////
-#include "../include/Transform.h"
+#pragma once
+
+#include "xo-math-defines.h"
 
 XO_NAMESPACE_BEGIN
 
-Transform::Transform()
-  : LocalMatrix(Matrix4x4::Identity)
-  , GlobalMatrix(Matrix4x4::Identity)
-  , ScaleMatrix(Matrix4x4::Identity)
-  , RotationQuat(Quaternion::Identity)
-  , RotationMatrix(Matrix4x4::Identity)
-  , TranslationMatrix(Matrix4x4::Identity)
-  , Scale(Vector3::One)
-  , Rotation(Vector3::Zero)
-  , Translation(Vector3::Zero)
-  , Parent(nullptr)
-  , ScaleDirty(false)
-  , RotationDirty(false)
-  , TranslationDirty(false)
-{
+struct Radians {
+  inline Radians(float val);
+  inline Radians(const Radians& rad);
+  inline Radians(const struct Degrees& deg);
+
+  inline operator float&();
+  inline operator const float&() const;
+
+  float Value;
+};
+
+struct Degrees {
+  inline Degrees(float val);
+  inline Degrees(const Degrees& deg);
+  inline Degrees(const Radians& rad);
+
+  inline operator float&();
+  inline operator const float&() const;
+
+  float Value;
+};
+
+// inline
+Radians::Radians(float val)
+: Value(val) {
 }
 
-void Transform::CalculateLocal() {
-  bool anyDirty = false;
-  if(ScaleDirty) {
-    ScaleMatrix = Matrix4x4::Scale(Scale);
-    ScaleDirty = false;
-    anyDirty = true;
-  }
-  if(RotationDirty) {
-    RotationQuat = Quaternion::RotationEuler(Rotation);
-    RotationMatrix = RotationQuat;
-    RotationDirty = false;
-    anyDirty = true;
-  }
-  if(TranslationDirty) {
-    TranslationMatrix = Matrix4x4::Translation(Translation);
-    TranslationDirty = false;
-    anyDirty = true;
-  }
-  if(anyDirty) {
-    LocalMatrix = ScaleMatrix * RotationMatrix * TranslationMatrix;
-  }
+// inline
+Radians::Radians(const Radians& rad)
+: Value(rad.Value) {
 }
 
-void Transform::CalculateGlobal() {
-  if(!Parent) {
-    GlobalMatrix = LocalMatrix;
-  } 
-  else {
-    GlobalMatrix = Parent->GetGlobalWorldMatrix();
-    GlobalMatrix *= LocalMatrix;
-  }
+// inline
+Radians::Radians(const struct Degrees& deg)
+: Value(deg.Value * Deg2Rad) {
 }
 
-const Matrix4x4& Transform::GetGlobalWorldMatrix() {
-  return GlobalMatrix;
+// inline
+Radians::operator float&() {
+  return Value;
 }
 
-const Vector3& Transform::GetScale() const {
-  return Scale;
+// inline
+Radians::operator const float&() const {
+  return Value;
 }
 
-const Vector3& Transform::GetRotation() const {
-  return Rotation;
+// inline
+Degrees::Degrees(float val)
+: Value(val) {
 }
 
-const Vector3& Transform::GetTranslation() const {
-  return Translation;
+// inline
+Degrees::Degrees(const Degrees& deg)
+: Value(deg.Value) {
 }
 
-void Transform::SetScale(const Vector3& scale) {
-  ScaleDirty = true;
-  Scale = scale;
+// inline
+Degrees::Degrees(const Radians& rad)
+: Value(rad.Value * Rad2Deg) {
 }
 
-void Transform::SetRotation(const Vector3& rotation) {
-  RotationDirty = true;
-  Rotation = rotation;
+// inline
+Degrees::operator float&() {
+  return Value;
 }
 
-void Transform::SetTranslation(const Vector3& translation) {
-  TranslationDirty = true;
-  Translation = Translation;
-}
-
-Transform* Transform::GetParent() const {
-  return Parent;
-}
-
-void Transform::SetParent(Transform* parent) {
-  Parent = parent;
-  while(parent) {
-    // Detect circular parenting, and detatch
-    if(parent == this) {
-      Parent = nullptr;
-      return;
-    }
-    parent = parent->Parent;
-  }
+// inline
+Degrees::operator const float&() const {
+  return Value;
 }
 
 XO_NAMESPACE_END
