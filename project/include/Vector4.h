@@ -366,10 +366,8 @@ Vector4 Vector4::Normalized() const {
 
 // inline 
 float Vector4::Sum() const {
-#if defined(XO_SSE3)
-  VectorRegister_t _x = _mm_hadd_ps(reg, reg);
-  _x = _mm_hadd_ps(_x, _x);
-  return _mm_cvtss_f32(_x);
+#if defined(XO_SSE)
+  return simd::SumXYZW(*this);
 #else
   return x + y + z + w;
 #endif

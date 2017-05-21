@@ -7,7 +7,7 @@ project "demo"
 	userincludedirs { "./include" }
 	files { "main.cpp", "source/*.cpp", "include/*.h" }
 	kind "ConsoleApp"
-	flags { "EnableAVX2", "FloatFast", "OptimizeSpeed", "NoExceptions", "ExtraWarnings" }
+	flags { "EnableAVX2", "FloatFast", "OptimizeSpeed", "NoExceptions" }
 	defines { "_HAS_EXCEPTIONS=0" }
 	buildoptions "-std=c++11"
 	configuration "Debug"
@@ -20,7 +20,7 @@ project "tests"
 	userincludedirs { "./include" }
 	files { "tests/*.cpp", "tests/*.h", "source/*.cpp", "include/*.h" }
 	kind "ConsoleApp"
-	flags { "EnableAVX2", "FloatFast", "OptimizeSpeed", "NoExceptions", "ExtraWarnings" }
+	flags { "EnableAVX2", "FloatFast", "OptimizeSpeed", "NoExceptions" }
 	defines { "_HAS_EXCEPTIONS=0" }
 	buildoptions "-std=c++11"
 	configuration "Debug"

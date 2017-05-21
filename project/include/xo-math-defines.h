@@ -209,11 +209,29 @@ namespace simd {
     return _mm_and_ps(AbsMask, v);
   }
 
-  //static const VectorRegister_t Zero = XO_SSE_OR_NEON(_mm_setzero_ps, neon_todo)();
-  //static const VectorRegister_t One = XO_SSE_OR_NEON(_mm_set1_ps, neon_todo)(1.0f);
+  static const VectorRegister_t Zero = XO_SSE_OR_NEON(_mm_setzero_ps, neon_todo)();
+  static const VectorRegister_t One = XO_SSE_OR_NEON(_mm_set1_ps, neon_todo)(1.0f);
   static const VectorRegister_t NegativeOne = XO_SSE_OR_NEON(_mm_set1_ps, neon_todo)(-1.0f);
-  static const float Epsilon = 0.000366210938f; // the quoted error on _mm_rcp_ps documentation
+  // the quoted error on _mm_rcp_ps documentation
+  static const float Epsilon = 0.000366210938f;
   static const VectorRegister_t VectorEpsilon = _mm_set_ps1(Epsilon);
+
+  // TODO: implement for neon
+  static inline float SumXYZW(const VectorRegister_t& v) {
+    VectorRegister_t _x = _mm_hadd_ps(v, v);
+    _x = _mm_hadd_ps(_x, _x);
+    return _mm_cvtss_f32(_x);
+  }
+
+  // TODO: implement for neon
+  static inline float SumXYZ(const VectorRegister_t& v) {
+#if defined(XO_SSE2)
+    static const VectorRegister_t MaskXYZ = _mm_castsi128_ps(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff)); 
+#elif defined(XO_SSE)
+    static const VectorRegister_t MaskXYZ = {-1, -1, -1, 0};
+#endif
+    return SumXYZW(_mm_and_ps(v, MaskXYZ));
+  }
 
   static inline void Add(const VectorRegister_t& a, const VectorRegister_t& b, VectorRegister_t& out) {
     out = XO_SSE_OR_NEON(_mm_add_ps, vaddq_f32)(a, b);
@@ -270,6 +288,10 @@ namespace simd {
     out = vmulq_f32(a, r);
 #endif
   }
+
+  static inline void Square(const VectorRegister_t& a, VectorRegister_t& out) {
+    Multiply(a, a, out);
+  }
 }
 XO_NAMESPACE_END
 #endif
@@ -305,6 +327,13 @@ static inline float Tan(float f)                  { return tanf(f); }
 static inline void SinCos(float r, float& outSin, float& outCos) {
   outSin = Sin(r);
   outCos = Cos(r);
+}
+
+// TODO: implement with simd
+static inline void SinCos3(float* r, float* outSin, float* outCos) {
+  SinCos(*(r++), *(outSin++), *(outCos++));
+  SinCos(*(r++), *(outSin++), *(outCos++));
+  SinCos(*(r++), *(outSin++), *(outCos++));
 }
 
 // TODO: implement with simd

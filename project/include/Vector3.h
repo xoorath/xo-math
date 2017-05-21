@@ -108,10 +108,6 @@ public:
     UnitX, UnitY, UnitZ,
     Up, Down, Left, Right, Forward, Backward,
     One, Zero;
-
-#if defined(XO_SSE)
-  static const VectorRegister_t MASK;
-#endif
 };
 
 Vector3::Vector3(float x, float y, float z) 
@@ -385,11 +381,8 @@ Vector3 Vector3::Normalized() const {
 
 // inline
 float Vector3::Sum() const {
-#if defined(XO_SSE3)
-  VectorRegister_t _x = _mm_and_ps(reg, MASK);
-  _x = _mm_hadd_ps(_x, _x);
-  _x = _mm_hadd_ps(_x, _x);
-  return _mm_cvtss_f32(_x);
+#if defined(XO_SIMD)
+  return simd::SumXYZ(*this);
 #else
   return x + y + z;
 #endif
