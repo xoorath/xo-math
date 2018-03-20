@@ -248,6 +248,7 @@ namespace xo {
 #   define XO_CONFIG_DEFAULT_FAR_PLANE 1000.f
 #endif
 namespace xo {
+//////////////////////////////////////////////////////////////////////////////////////////
 struct Vector3 {
     float x, y, z;
     constexpr Vector3(float x, float y, float z) 
@@ -306,6 +307,7 @@ struct Vector3 {
     static const Vector3 Backward;
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 struct Vector4 {
     union {
         struct { float x, y, z, w; };
@@ -362,9 +364,10 @@ struct Vector4 {
     static const Vector4 One;
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 struct Matrix4x4 {
     Vector4 rows[4];
-    Matrix4x4(Vector4 rows[4]) 
+    constexpr Matrix4x4(Vector4 rows[4])
         : rows {
             rows[0],
             rows[1],
@@ -372,10 +375,10 @@ struct Matrix4x4 {
             rows[3] }
     { }
 
-    Matrix4x4(Vector4 const& row0, 
-              Vector4 const& row1,
-              Vector4 const& row2,
-              Vector4 const& row3)
+    constexpr Matrix4x4(Vector4 const& row0, 
+                        Vector4 const& row1,
+                        Vector4 const& row2,
+                        Vector4 const& row3)
         : rows{
             row0,
             row1,
@@ -383,7 +386,7 @@ struct Matrix4x4 {
             row3 }
     { }
 
-    explicit Matrix4x4(float all)
+    constexpr explicit Matrix4x4(float all)
         : rows{
             Vector4(all),
             Vector4(all),
@@ -444,6 +447,7 @@ struct Matrix4x4 {
     static const Matrix4x4 Identity;
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 struct Quaternion {
     float i, j, k, r;
     Quaternion(float i, float j, float k, float r) 
@@ -461,6 +465,7 @@ struct Quaternion {
     { }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // vector 3, aligned for cpu specific optimizations (where applicable) 
 struct AVector3 {
     float x, y, z;
@@ -489,6 +494,7 @@ struct AVector3 {
     { }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // vector 4, aligned for cpu specific optimizations (where applicable)
 struct AVector4 {
     float x, y, z, w;
@@ -521,6 +527,7 @@ struct AVector4 {
     { }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // matrix4x4, aligned for cpu specific optimizations (where applicable)
 struct AMatrix4x4 {
     AVector4 rows[4];
@@ -549,6 +556,7 @@ struct AMatrix4x4 {
     { }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // quaternion, aligned for cpu specific optimizations (where applicable)
 struct AQuaternion {
     float i, j, k, r;
