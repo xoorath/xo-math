@@ -63,6 +63,13 @@
 #include "xo-math-macros.h"
 #include "xo-math-detect-simd.h"
 
+#define XO_CONFIG_LEFT_HANDED 1
+#define XO_CONFIG_RIGHT_HANDED 0
+#define XO_CONFIG_Y_UP 1
+#define XO_CONFIG_Z_UP 0
+#define XO_CONFIG_DEFAULT_NEAR_PLANE 0.1f
+#define XO_CONFIG_DEFAULT_FAR_PLANE 1000.f
+
 #if XO_SSE_CURRENT >= XO_SSE4_1
 #include "xo-math-sse4.h"
 #else
