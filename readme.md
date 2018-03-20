@@ -9,7 +9,7 @@ _Fast math for game developers. No headaches, no cruft._
 - Source code is untested.
 
 ## Download
-Download [*xo-math.h*](xo-math/xo-math.h).
+Download [*xo-math.h*](https://raw.githubusercontent.com/xoorath/xo-math/master/xo-math/xo-math.h).
 
 In one cpp file, and one cpp file *only* define `XO_MATH_IMPL` before including xo-math.h. 
 
