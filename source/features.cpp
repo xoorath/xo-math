@@ -8,6 +8,10 @@
 #include "xo-math.h"
 #define XO_UNUSED(code) (void)code
 
+// anonymous namespace forces these functions to be unique between features.cpp and 
+// features2.cpp
+namespace {
+
 void AllHelperFeatures()
 {
     {float a = xo::Abs(1.f); XO_UNUSED(a); }
@@ -143,5 +147,7 @@ void AllAMatrix4x4Features()
 
 void AllAQuaternionFeatures()
 {
+
+}
 
 }
