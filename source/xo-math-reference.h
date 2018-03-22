@@ -155,7 +155,7 @@ struct Matrix4x4 {
         Vector4 rows[4];
         float v[16];
     };
-    constexpr Matrix4x4(Vector4 rows[4])
+    constexpr Matrix4x4(Vector4 const rows[4])
         : rows {
             rows[0],
             rows[1],
