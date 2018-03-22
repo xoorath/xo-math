@@ -33,9 +33,9 @@ constexpr XO_INL bool CloseEnough(float left, float right) {
 
 float Sqrt(float val);
 float Pow(float val, int power);
-template<int power> float Pow(float val) { return Pow(val, power); }
-template<> float Pow<2>(float val) { return val*val; }
-template<> float Pow<3>(float val) { return val * val * val; }
+template<int power> XO_INL float Pow(float val) { return Pow(val, power); }
+template<> float XO_INL Pow<2>(float val) { return val*val; }
+template<> float XO_INL Pow<3>(float val) { return val * val * val; }
 
 float Sin(float val);
 float Cos(float val);
