@@ -31,7 +31,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
     xo-math is being developed by Jared Thomson (better known as Xoorath) in an effort to
     make games a little faster and a little easier to make. Twitter: @xoorath
-    
+
     xo-math is pronounced non-phonetically "ex oh math", and spelled without 
     capitalization where fonts permit.
 
@@ -63,12 +63,15 @@
 #include "xo-math-macros.h"
 #include "xo-math-detect-simd.h"
 
+// As an end user you can configure these values
 #define XO_CONFIG_LEFT_HANDED 1
-#define XO_CONFIG_RIGHT_HANDED 0
 #define XO_CONFIG_Y_UP 1
-#define XO_CONFIG_Z_UP 0
 #define XO_CONFIG_DEFAULT_NEAR_PLANE 0.1f
 #define XO_CONFIG_DEFAULT_FAR_PLANE 1000.f
+
+// These configs can set themselves up based on the other configs above...
+#define XO_CONFIG_RIGHT_HANDED (XO_CONFIG_LEFT_HANDED == 0 ? 1 : 0)
+#define XO_CONFIG_Z_UP (XO_CONFIG_Y_UP == 0 ? 1 : 0)
 
 #if XO_SSE_CURRENT >= XO_SSE4_1
 #include "xo-math-sse4.h"

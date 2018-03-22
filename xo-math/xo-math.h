@@ -31,7 +31,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
     xo-math is being developed by Jared Thomson (better known as Xoorath) in an effort to
     make games a little faster and a little easier to make. Twitter: @xoorath
-    
+
     xo-math is pronounced non-phonetically "ex oh math", and spelled without 
     capitalization where fonts permit.
 
@@ -234,12 +234,15 @@ constexpr char const* NEONVersionName = NEONGetName();
 } } // ::xo::simd
 ////////////////////////////////////////////////////////////////////////////////////////// end xo-math-detect-simd.h inline
 
+// As an end user you can configure these values
 #define XO_CONFIG_LEFT_HANDED 1
-#define XO_CONFIG_RIGHT_HANDED 0
 #define XO_CONFIG_Y_UP 1
-#define XO_CONFIG_Z_UP 0
 #define XO_CONFIG_DEFAULT_NEAR_PLANE 0.1f
 #define XO_CONFIG_DEFAULT_FAR_PLANE 1000.f
+
+// These configs can set themselves up based on the other configs above...
+#define XO_CONFIG_RIGHT_HANDED (XO_CONFIG_LEFT_HANDED == 0 ? 1 : 0)
+#define XO_CONFIG_Z_UP (XO_CONFIG_Y_UP == 0 ? 1 : 0)
 
 #if XO_SSE_CURRENT >= XO_SSE4_1
 ////////////////////////////////////////////////////////////////////////////////////////// xo-math-sse4.h inlined
@@ -368,12 +371,15 @@ struct Vector4 {
 
     float Magnitude() const;
     float MagnitudeSquared() const;
+    Vector4 Normalized() const;
+    Vector4& Normalize();
 
     static bool XO_CC RoughlyEqual(Vector4 const& left, Vector4 const& right);
     static bool XO_CC ExactlyEqual(Vector4 const& left, Vector4 const& right);
     static bool XO_CC RoughlyEqual(Vector4 const& left, float magnitude);
     static bool XO_CC ExactlyEqual(Vector4 const& left, float magnitude);
 
+    static float XO_CC DotProduct(Vector4 const& left, Vector4 const& right);
     static Vector4 XO_CC Lerp(Vector4 const& left, Vector4 const& right, float t);
 
     static const Vector4 Zero;
@@ -470,7 +476,10 @@ struct Matrix4x4 {
 
 //////////////////////////////////////////////////////////////////////////////////////////
 struct Quaternion {
-    float i, j, k, r;
+    union {
+        struct { float i, j, k, r; };
+        Vector4 vec4;
+    };
 
     constexpr Quaternion(float i, float j, float k, float r)
         : i(i)
@@ -486,6 +495,10 @@ struct Quaternion {
         , r(all)
     { }
 
+    constexpr explicit Quaternion(Vector4 const& v4)
+        : vec4(v4)
+    { }
+
     Quaternion() = default;
     ~Quaternion() = default;
     Quaternion(Quaternion const& other) = default;
@@ -493,12 +506,25 @@ struct Quaternion {
     Quaternion& operator = (Quaternion const& other) = default;
     Quaternion& operator = (Quaternion&& ref) = default;
 
+    Quaternion operator + (Quaternion other) const;
+    Quaternion operator * (float scalar) const;
+    Quaternion operator -() const;
+
+    float Magnitude() const;
+    float MagnitudeSquared() const;
+    Quaternion Normalized() const;
+    Quaternion& Normalize();
+
     Matrix4x4 ToMatrix() const;
 
     static Quaternion XO_CC Invert(Quaternion const& quat);
     static Quaternion XO_CC RotationAxisAngle(Vector3 const& axis, float angle);
     static Quaternion XO_CC RotationYawPitchRoll(float yaw, float pitch, float roll);
-    static Quaternion XO_CC Slerp(Quaternion const& start, Quaternion const& end, float t);
+    static float XO_CC DotProduct(Quaternion const& left, Quaternion const& right);
+    static Quaternion XO_CC Lerp(Quaternion const& start, Quaternion const& end, float t);
+    static Quaternion XO_CC Slerp(Quaternion const& start, 
+                                  Quaternion const& end, 
+                                  float t);
 
     static bool XO_CC RoughlyEqual(Quaternion const& left, Quaternion const& right);
     static bool XO_CC ExactlyEqual(Quaternion const& left, Quaternion const& right);
@@ -664,12 +690,12 @@ bool XO_CC Vector3::ExactlyEqual(Vector3 const& left, Vector3 const& right) {
 }
 /*static*/ XO_INL
 bool XO_CC Vector3::RoughlyEqual(Vector3 const& left, float magnitude) {
-    return CloseEnough(left.MagnitudeSquared(), Pow(magnitude, 2));
+    return CloseEnough(left.MagnitudeSquared(), Pow<2>(magnitude));
 }
 
 /*static*/ XO_INL
 bool XO_CC Vector3::ExactlyEqual(Vector3 const& left, float magnitude) {
-    return left.MagnitudeSquared() == Pow(magnitude, 2);
+    return left.MagnitudeSquared() == Pow<2>(magnitude);
 }
 
 /*static*/ XO_INL
@@ -766,6 +792,8 @@ XO_INL float Vector4::Sum() const { return x + y + z + w; }
 
 XO_INL float Vector4::MagnitudeSquared() const { return x * x + y * y + z * z + w * w; }
 XO_INL float Vector4::Magnitude() const { return Sqrt(MagnitudeSquared()); }
+XO_INL Vector4 Vector4::Normalized() const { return Vector4(*this).Normalize(); }
+XO_INL Vector4& Vector4::Normalize() { return (*this) /= Vector4(Magnitude()); };
 
 /*static*/ XO_INL 
 bool XO_CC Vector4::RoughlyEqual(Vector4 const& left, Vector4 const& right) {
@@ -785,12 +813,17 @@ bool XO_CC Vector4::ExactlyEqual(Vector4 const& left, Vector4 const& right) {
 
 /*static*/ XO_INL 
 bool XO_CC Vector4::RoughlyEqual(Vector4 const& left, float magnitude) {
-    return CloseEnough(left.MagnitudeSquared(), Pow(magnitude, 2));
+    return CloseEnough(left.MagnitudeSquared(), Pow<2>(magnitude));
 }
 
 /*static*/ XO_INL
 bool XO_CC Vector4::ExactlyEqual(Vector4 const& left, float magnitude) {
-    return left.MagnitudeSquared() == Pow(magnitude, 2);
+    return left.MagnitudeSquared() == Pow<2>(magnitude);
+}
+
+/*static*/ XO_INL
+float XO_CC Vector4::DotProduct(Vector4 const& left, Vector4 const& right) {
+    return (left * right).Sum();
 }
 
 /*static*/ XO_INL 
@@ -1142,7 +1175,7 @@ Matrix4x4 XO_CC Matrix4x4::Perspective(float width,
                                        float aspect, 
                                        float nearPlane, 
                                        float farPlane) {
-    float n2 = Pow(nearPlane, 2);
+    float n2 = Pow<2>(nearPlane);
     float r = farPlane / (nearPlane - farPlane);
     float w = n2 / width;
     float h = n2 / height;
@@ -1212,30 +1245,121 @@ bool XO_CC Matrix4x4::ExactlyEqual(Matrix4x4 const& left, Matrix4x4 const& right
 /*static*/ const Quaternion Quaternion::Identity(0.f, 0.f, 0.f, 1.f);
 #endif
 
+XO_INL
+Quaternion Quaternion::operator + (Quaternion other) const {
+    return Quaternion(i + other.i, j + other.j, k + other.k, r + other.r);
+}
+
+XO_INL
+Quaternion Quaternion::operator *(float s) const { 
+    return Quaternion(i*s, j*s, k*s, r*s); 
+}
+
+XO_INL
+Quaternion Quaternion::operator -() const {
+    return Quaternion(-i, -j, -k, -r);
+}
+
+XO_INL
+float Quaternion::Magnitude() const {
+    return vec4.Magnitude();
+}
+
+XO_INL 
+float Quaternion::MagnitudeSquared() const {
+    return vec4.MagnitudeSquared();
+};
+
+XO_INL
+Quaternion Quaternion::Normalized() const {
+    return Quaternion(vec4.Normalized());
+};
+
+XO_INL
+Quaternion& Quaternion::Normalize() {
+    vec4.Normalize(); return *this;
+};
+
+XO_INL
 Matrix4x4 Quaternion::ToMatrix() const {
-    return Matrix4x4();
+    // See: https://www.flipcode.com/documents/matrfaq.html#Q54
+    float ii = i * i;
+    float ij = i * j;
+    float ik = i * k;
+    float ir = i * r;
+    float jj = j * j;
+    float jk = j * k;
+    float jr = j * r;
+    float kk = k * k;
+    float kr = k * r;
+    return Matrix4x4(
+        Vector4(1.f - 2.f * (jj + kk), 2.f * (ij - kr), 2.f * (ik + jr), 0.f),
+        Vector4(2.f * (ij + kr), 1.f - 2.f * (ii + kk), 2.f * (jk - ir), 0.f),
+        Vector4(2.f * (ik - jr), 2.f * (jk + ir), 1.f - 2.f * (ii + jj), 0.f),
+        Vector4(0.f, 0.f, 0.f, 1.f));
 }
 
 /*static*/ XO_INL
 Quaternion XO_CC Quaternion::Invert(Quaternion const& quat) {
-    return Identity;
+    return Quaternion(-quat.i, -quat.j, -quat.k, quat.r);
 }
 
 /*static*/ XO_INL
 Quaternion XO_CC Quaternion::RotationAxisAngle(Vector3 const& axis, float angle) {
-    return Identity;
+    float s, c;
+    SinCos(angle*0.5f, s, c);
+    return Quaternion(axis.x*s, axis.y*s, axis.z*s, c);
 }
 
 /*static*/ XO_INL
 Quaternion XO_CC Quaternion::RotationYawPitchRoll(float yaw, float pitch, float roll) {
-    return Identity;
+    float sr, cp, sp, cy, sy, cr;
+    SinCos(yaw * 0.5f, sy, cy);
+    SinCos(pitch * 0.5f, sp, cp);
+    SinCos(roll * 0.5f, sr, cr);
+    return Quaternion(cy * cr * cp + sy * sr * sp,
+                      cy * sr * cp - sy * cr * sp,
+                      cy * cr * sp + sy * sr * cp,
+                      sy * cr * cp - cy * sr * sp);
+}
+
+/*static*/ XO_INL
+float XO_CC Quaternion::DotProduct(Quaternion const& left, Quaternion const& right) {
+    return Vector4::DotProduct(left.vec4, right.vec4);
+}
+
+/*static*/ XO_INL
+Quaternion XO_CC Quaternion::Lerp(Quaternion const& start,
+                                  Quaternion const& end,
+                                  float t) {
+    return Quaternion(Vector4::Lerp(start.vec4, end.vec4, t));
 }
 
 /*static*/ XO_INL
 Quaternion XO_CC Quaternion::Slerp(Quaternion const& start, 
                                    Quaternion const& end, 
                                    float t) {
-    return Identity;
+    Quaternion s = start.Normalized();
+    Quaternion e = end.Normalized();
+    float d = Quaternion::DotProduct(s, e);
+    if (d < 0.f) {
+        e = -e;
+        d = -d;
+    }
+
+    if (CloseEnough(d, 1.f)) {
+        return Lerp(s, e, t).Normalize();
+    }
+
+    float th0 = ACos(d);
+    float th = th0 * t;
+
+    float st, ct, sth0;
+    SinCos(th, st, ct);
+    sth0 = Sin(th0);
+    float s0 = ct - d * st / sth0;
+    float s1 = st / sth0;
+    return (s * s0) + (e * s1);
 }
 
 /*static*/ XO_INL 
