@@ -68,6 +68,9 @@ namespace xo{
 // see: http://realtimecollisiondetection.net/blog/?p=89
 constexpr float MachineEpsilon = std::numeric_limits<float>::epsilon();
 
+constexpr float Deg2Rad = 0.0174532925f;
+constexpr float Rad2Deg = 57.2957795f;
+
 } // ::xo
 
 ////////////////////////////////////////////////////////////////////////////////////////// end xo-math-constants.h inline
@@ -168,6 +171,10 @@ void ASinACos(float val, float& asinOut, float& acosOut) {
     acosOut = ACos(val);
 }
 #endif
+
+XO_INL constexpr float operator "" _deg2rad(long double num) {
+    return static_cast<float>(num) * xo::Deg2Rad;
+}
 
 } // ::xo
 

@@ -63,4 +63,8 @@ void ASinACos(float val, float& asinOut, float& acosOut) {
 }
 #endif
 
+XO_INL constexpr float operator "" _deg2rad(long double num) {
+    return static_cast<float>(num) * xo::Deg2Rad;
+}
+
 } // ::xo

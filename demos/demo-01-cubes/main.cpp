@@ -1,125 +1,138 @@
-#include <windows.h>
-#define XO_MATH_IMPL
-#include <xo-math.h>
-#define GL3_PROTOTYPES 1
-#include <GL/glew.h>
-#include <SDL.h>
-#include <imgui/imgui.h>
-#include <imgui/imgui_impl_sdl_gl3.h>
-#include <iostream>
+#include "../demo-00-common/demo-application.h"
 
-void TickDemo() {
-    static struct DemoData {
-        DemoData() {
-            m_Projection = xo::Matrix4x4::Identity;
+using namespace xo;
+
+#define LimitedLog(fmt, ...) { static int limiter = 100; if(limiter > 0) { Log(fmt __VA_ARGS__); limiter--;} }
+
+class CubesApplication : public Application {
+    AMatrix4x4 m_Proj = AMatrix4x4::Identity;
+    AMatrix4x4 m_View = AMatrix4x4::Identity;
+public:
+    CubesApplication()
+    : Application()
+    , m_Proj(xo::AMatrix4x4::Perspective(static_cast<float>(m_Width),
+                                         static_cast<float>(m_Height),
+                                         60.0_deg2rad))
+    , m_View(AMatrix4x4::LookAt({ 0.f, 0.f, -10.f }, AVector3::Zero))
+    {
+    }
+
+    ~CubesApplication() {
+        if (m_VAO != GL_INVALID_INDEX) {
+            glDeleteBuffers(1, &m_VAO);
         }
-        xo::Matrix4x4 m_Projection;
-    } demo;
-}
+    }
 
-struct Application {
-    /*
-    IMGUI_API bool        ImGui_ImplSdlGL3_Init(SDL_Window* window, const char* glsl_version = NULL);
-IMGUI_API void        ImGui_ImplSdlGL3_Shutdown();
-IMGUI_API void        ImGui_ImplSdlGL3_NewFrame(SDL_Window* window);
-IMGUI_API void        ImGui_ImplSdlGL3_RenderDrawData(ImDrawData* draw_data);
-IMGUI_API bool        ImGui_ImplSdlGL3_ProcessEvent(SDL_Event* event);
-    */
-    int run() {
-        if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-            std::cerr << "could not initialize sdl2:" << SDL_GetError() << std::endl;
-            return 1;
+protected:
+    void BuildCube() {
+        /*
+               _________
+              /1      3/|
+             /        / |
+            /0______2/  |
+            |   5----|-7/
+            |  /     | /
+            |4______6|/
+        */
+        Vertex Verts[8] = {
+            { { -0.5f,  0.5f, -0.5f },{ 0.f, 1.f, 0.f },{ 0.f, 0.f } },
+            { { -0.5f,  0.5f,  0.5f },{ 0.f, 1.f, 0.f },{ 0.f, 1.f } },
+            { { 0.5f,  0.5f, -0.5f },{ 0.f, 1.f, 0.f },{ 1.f, 0.f } },
+            { { 0.5f,  0.5f,  0.5f },{ 0.f, 1.f, 0.f },{ 1.f, 1.f } },
+            { { -0.5f, -0.5f, -0.5f },{ 0.f, 1.f, 0.f },{ 0.f, 0.f } },
+            { { -0.5f, -0.5f,  0.5f },{ 0.f, 1.f, 0.f },{ 0.f, 1.f } },
+            { { 0.5f, -0.5f, -0.5f },{ 0.f, 1.f, 0.f },{ 1.f, 0.f } },
+            { { 0.5f, -0.5f,  0.5f },{ 0.f, 1.f, 0.f },{ 1.f, 1.f } },
+        };
+        GLuint Indices[36] = {
+            // top
+            0, 1, 2,
+            2, 1, 3,
+            //front
+            4, 0, 6,
+            6, 0, 2,
+            // bottom
+            6, 4, 5,
+            5, 7, 6,
+            // right
+            6, 2, 7,
+            7, 2, 3,
+            // left
+            4, 5, 0,
+            5, 1, 0
+        };
+        // referencing: https://github.com/Polytonic/Glitter/blob/master/Samples/mesh.cpp
+        glGenVertexArrays(1, &m_VAO);
+        glBindVertexArray(m_VAO);
+        GLuint tempBuffers[2];
+        glGenBuffers(2, tempBuffers);
+        glBindBuffer(GL_ARRAY_BUFFER, tempBuffers[0]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(Verts), Verts, GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tempBuffers[1]);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, Position));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, Normal));
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, UV));
+
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
+
+        glBindVertexArray(0);
+
+        glDeleteBuffers(2, tempBuffers);
+    }
+
+    void BuildShader() {
+    }
+
+    virtual void Init() override {
+        Application::Init();
+        BuildCube();
+    }
+
+    virtual void Tick() override {
+        Application::Tick();
+        if (m_ShaderProgram != GL_INVALID_INDEX && m_VAO != GL_INVALID_INDEX) {
+            glUseProgram(m_ShaderProgram);
+            glBindVertexArray(m_VAO);
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+            LimitedLog("Draw");
         }
-        m_Window = SDL_CreateWindow("demo-01-cubes", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_Width, m_Height, SDL_WINDOW_OPENGL);
-        if (m_Window == NULL) {
-            std::cerr << "could not create window:" << SDL_GetError() << std::endl;
-            return 1;
-        }
-
-        if (!ImGui_ImplSdlGL3_Init(m_Window)) {
-            std::cerr << "could not init imgui:" << SDL_GetError() << std::endl;
-            return 1;
-        }
-
-        m_Context = SDL_GL_CreateContext(m_Window);
-        SetAttribs();
-        SDL_GL_SetSwapInterval(1);
-
-#if !defined(__APPLE__)
-        glewExperimental = GL_TRUE;
-        glewInit();
-#endif
-
-        glClearColor(0.0, 0.0, 0.0, 1.0);
-        SDL_GL_SwapWindow(m_Window);
-
-        SDL_Event frameEvent;
-        
-        SDL_PumpEvents();
-        m_Keys = static_cast<uint8_t const*>(SDL_GetKeyboardState(nullptr));
-
-        while (!m_Quitting) {
-            glViewport(0, 0, (int)ImGui::GetIO().DisplaySize.x, (int)ImGui::GetIO().DisplaySize.y);
-            glClear(GL_COLOR_BUFFER_BIT);
-            Tick();
-            ImGui::Render();
-            ImGui_ImplSdlGL3_RenderDrawData(ImGui::GetDrawData());
-            SDL_GL_SwapWindow(m_Window);
-            // process all pending events
-            while (SDL_PollEvent(&frameEvent)) {
-                switch (frameEvent.type)
-                {
-                case SDL_QUIT:
-                    m_Quitting = true;
-                    break;
-                case SDL_KEYDOWN:
-                case SDL_KEYUP:
-                    m_Keys = static_cast<uint8_t const*>(SDL_GetKeyboardState(nullptr));
-                    break;
-                }
-                ImGui_ImplSdlGL3_ProcessEvent(&frameEvent);
+        else {
+            if (m_ShaderProgram == GL_INVALID_INDEX) {
+                LimitedLog("Shader program is invalid.");
+            }
+            if (m_VAO != GL_INVALID_INDEX) {
+                LimitedLog("Vertex array object is invalid.");
             }
         }
-        return 0;
     }
-    
-    Application() = default;
-    ~Application() {
-        if(m_Window) SDL_DestroyWindow(m_Window);
-        SDL_Quit();
-        ImGui_ImplSdlGL3_Shutdown();
+
+    virtual void GUI() override {
+        Application::GUI();
+
     }
-    Application(Application const&) = delete;
-    Application(Application &&) = delete;
-    Application& operator = (Application const&) = delete;
-    Application& operator = (Application &&) = delete;
+
+    virtual void GUIPanel() override {
+        Application::GUIPanel();
+
+    }
 
 private:
-    SDL_GLContext m_Context = SDL_GLContext();
-    SDL_Window* m_Window    = nullptr;
-    int m_Width             = 1224;
-    int m_Height            = 720;
-    bool m_Quitting         = false;
-    uint8_t const*m_Keys    = nullptr;
+    struct Vertex {
+        Vector3 Position;
+        Vector3 Normal;
+        float UV[2];
+    };
 
-    void Tick() {
-        if (m_Keys[SDL_SCANCODE_ESCAPE]) {
-            m_Quitting = true;
-            return;
-        }
-        TickDemo();
-    }
-
-    void SetAttribs() {
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    }
-
+    GLuint m_VAO = GL_INVALID_INDEX; // vertex array object
+    GLuint m_ShaderProgram = GL_INVALID_INDEX;
 };
 
 extern C_LINKAGE SDLMAIN_DECLSPEC int SDL_main(int argc, char *argv[]) {
-    Application app;
+    CubesApplication app;
     return app.run();
 }

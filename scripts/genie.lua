@@ -46,10 +46,12 @@ function setupDemos(...)
             kind "WindowedApp"
             language "C++"
             files { 
+                "../demos/demo-00-common/**.cpp",
+                "../demos/demo-00-common/**.h",
                 "../demos/" .. name .."/**.cpp", 
                 "../demos/" .. name .. "/**.h",
-                "../demos/imgui/**.cpp" ,
-                "../demos/imgui/**.h" 
+                "../demos/imgui/**.cpp",
+                "../demos/imgui/**.h"
             }
             demoDefaults()
             projectDefaults()
