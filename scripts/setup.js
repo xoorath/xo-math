@@ -24,24 +24,6 @@ let dyLibs32 = [
     '../demos/SDL2-2.0.8/lib/x86/sdl2.dll'
 ];
 
-for(var i = 0; i < dyLibs64.length; ++i) {
-    dyLibs64[i] =  path.resolve(__dirname, dyLibs64[i]).replace(/\\/g, '/');
-    if(fs.existsSync(dyLibs64[i]) === false) {
-        console.error(`library doesn't exist: ${dyLibs64[i]}`);
-        dyLibs64 = dyLibs64.splice(i, 1);
-        --i;
-    }
-}
-
-for(var i = 0; i < dyLibs32.length; ++i) {
-    dyLibs32[i] =  path.resolve(__dirname, dyLibs32[i]).replace(/\\/g, '/');
-    if(fs.existsSync(dyLibs32[i]) === false) {
-        console.error(`library doesn't exist: ${dyLibs32[i]}`);
-        dyLibs32 = dyLibs32.splice(i, 1);
-        --i;
-    }
-}
-
 function mkdirRecursive(dirName) {
     var split = dirName.split('/');
     var combined = split[0] + '/';
@@ -56,6 +38,14 @@ function mkdirRecursive(dirName) {
 
 function CopyLibs(destination, libs) {
     mkdirRecursive(destination);
+    for(var i = 0; i < libs.length; ++i) {
+        libs[i] =  path.resolve(__dirname, libs[i]).replace(/\\/g, '/');
+        if(fs.existsSync(libs[i]) === false) {
+            console.error(`library doesn't exist: ${libs[i]}`);
+            libs = libs.splice(i, 1);
+            --i;
+        }
+    }
     for (let i = 0; i < libs.length; ++i) {
         var nameIdx = libs[i].lastIndexOf('/');
         var name = libs[i].substr(nameIdx);
