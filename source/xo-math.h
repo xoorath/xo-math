@@ -60,7 +60,10 @@
 */
 #pragma once
 #include <inttypes.h>
+#include <limits>
+#include "xo-math-constants.h"
 #include "xo-math-macros.h"
+#include "xo-math-utilities.h"
 #include "xo-math-detect-simd.h"
 
 // As an end user you can configure these values

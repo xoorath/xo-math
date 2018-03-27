@@ -60,12 +60,23 @@
 */
 #pragma once
 #include <inttypes.h>
+#include <limits>
+////////////////////////////////////////////////////////////////////////////////////////// xo-math-constants.h inlined
+namespace xo{
+
+// please read about epsilon before using it
+// see: http://realtimecollisiondetection.net/blog/?p=89
+constexpr float MachineEpsilon = std::numeric_limits<float>::epsilon();
+
+} // ::xo
+
+////////////////////////////////////////////////////////////////////////////////////////// end xo-math-constants.h inline
 ////////////////////////////////////////////////////////////////////////////////////////// xo-math-macros.h inlined
+#include <new.h>
+#include <cstdlib>
 // xo-math calling convention.
 // See License in third-party-licenses.h for https://github.com/Microsoft/DirectXMath
 // applies to the exact version checking for __vectorcall
-#include <new.h>
-
 #if defined(_MSC_VER) && !defined(_M_ARM) && \
 (((_MSC_FULL_VER >= 170065501) && (_MSC_VER < 1800)) || (_MSC_FULL_VER >= 180020418))
 #   define XO_CC __vectorcall
@@ -73,14 +84,94 @@
 #   define XO_CC
 #endif
 
-#define XO_INL inline
-
 #if defined(_MSC_VER)
-#define XO_ALN_16               __declspec(align(16))
-#define XO_ALN_16_MALLOC(size)  _aligned_malloc(size, 16)
-#define XO_ALN_16_FREE(mem)     _aligned_free(mem)
+#   define XO_INL __forceinline
+#elif defined(__clang__) || defined (__GNUC__)
+#   define XO_INL __attribute__((always_inline)) inline
+#else
+#   define XO_INL inline
 #endif
+
+#define XO_ALN_16               alignas(16)
+#define XO_ALN_16_MALLOC(size)  _aligned_malloc(size, 16)
+#define XO_ALN_16_FREE(mem)     free(mem)
+
+// will never call a constructor, as it's intended for our math types...
+#define XO_NEW_DEL_16(typeName) \
+    void* operator new(size_t count) { \
+        void* m = XO_ALN_16_MALLOC(count); \
+        return static_cast<typeName*>(m); \
+    } \
+    void* operator new[](size_t count) { \
+        void* m = XO_ALN_16_MALLOC(count*sizeof(typeName)); \
+        return static_cast<typeName*>(m); \
+    } 
+
+#define XO_UNUSED(code) (void)code
 ////////////////////////////////////////////////////////////////////////////////////////// end xo-math-macros.h inline
+////////////////////////////////////////////////////////////////////////////////////////// xo-math-utilities.h inlined
+namespace xo
+{
+constexpr XO_INL float Abs(float num)                    { return num >= 0 ? num : -num; }
+constexpr XO_INL float Max(float a, float b)             { return a > b ? a : b; }
+constexpr XO_INL float Max(float a, float b, float c)    { return Max(Max(a, b), c); }
+constexpr XO_INL float Min(float a, float b)             { return a < b ? a : b; }
+constexpr XO_INL float Min(float a, float b, float c)    { return Min(Min(a, b), c); }
+
+constexpr XO_INL float Clamp(float val, float minVal, float maxVal) {
+    return Max(Min(val, maxVal), minVal);
+}
+
+constexpr XO_INL float Lerp(float start, float end, float t) {
+    return start + t * (end-start);
+}
+
+constexpr XO_INL float RelativeEpsilon(float a)          { return MachineEpsilon * Max(1.f, Abs(a)); }
+constexpr XO_INL float RelativeEpsilon(float a, float b) { return MachineEpsilon * Max(1.f, Abs(a), Abs(b)); }
+
+// See: http://realtimecollisiondetection.net/blog/?p=89
+// Example accuracy:
+// CloseEnough(0.00000001f, 0.00000009f) == true
+// CloseEnough(0.0000001f,  0.0000009f) == false
+constexpr XO_INL bool CloseEnough(float left, float right) {
+    return Abs(left - right) <= RelativeEpsilon(left, right);
+}
+
+float Sqrt(float val);
+float Pow(float val, int power);
+template<int power> XO_INL float Pow(float val) { return Pow(val, power); }
+template<> float XO_INL Pow<2>(float val) { return val*val; }
+template<> float XO_INL Pow<3>(float val) { return val * val * val; }
+
+float Sin(float val);
+float Cos(float val);
+float ASin(float val);
+float ACos(float val);
+void SinCos(float val, float& sinOut, float& cosOut);
+void ASinACos(float val, float& asinOut, float& acosOut);
+
+#if defined(XO_MATH_IMPL)
+float Sqrt(float val) { return std::sqrt(val); }
+float Pow(float val, int power) { return std::pow(val, power); }
+float Sin(float val) { return std::sin(val); }
+float Cos(float val) { return std::cos(val); }
+float ASin(float val) { return std::asin(val); }
+float ACos(float val) { return std::acos(val); }
+
+void SinCos(float val, float& sinOut, float& cosOut) {
+    sinOut = Sin(val);
+    cosOut = Cos(val);
+}
+
+void ASinACos(float val, float& asinOut, float& acosOut) {
+    asinOut = ASin(val);
+    acosOut = ACos(val);
+}
+#endif
+
+} // ::xo
+
+////////////////////////////////////////////////////////////////////////////////////////// end xo-math-utilities.h inline
 ////////////////////////////////////////////////////////////////////////////////////////// xo-math-detect-simd.h inlined
 namespace xo { namespace simd {
 
@@ -259,9 +350,8 @@ namespace xo {
 #   define XO_CONFIG_DEFAULT_FAR_PLANE 1000.f
 #endif
 
-#define XO_REF_ALN               XO_ALN_16
-#define XO_REF_ALN_MALLOC(size)  XO_ALN_16_MALLOC(size)
-#define XO_REF_ALN_FREE(mem)     XO_ALN_16_FREE(mem)
+#define XO_REF_ALN                  XO_ALN_16
+#define XO_REF_NEW_DEL(typeName)    XO_NEW_DEL_16(typeName)
 
 namespace xo {
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -535,19 +625,280 @@ struct Quaternion {
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // vector 3, aligned for cpu specific optimizations (where applicable) 
-using AVector3 = XO_REF_ALN Vector3;
+struct XO_REF_ALN AVector3 {
+    XO_REF_NEW_DEL(AVector3);
+    float x, y, z;
+    constexpr AVector3(float x, float y, float z)
+        : x(x)
+        , y(y)
+        , z(z)
+    { }
+
+    constexpr explicit AVector3(float all)
+        : x(all)
+        , y(all)
+        , z(all)
+    { }
+
+    AVector3() = default;
+    ~AVector3() = default;
+    AVector3(AVector3 const& other) = default;
+    AVector3(AVector3&& ref) = default;
+    AVector3& operator = (AVector3 const& other) = default;
+    AVector3& operator = (AVector3&& ref) = default;
+
+    AVector3 XO_CC operator + (AVector3 const& other) const;
+    AVector3 XO_CC operator - (AVector3 const& other) const;
+    AVector3 XO_CC operator * (AVector3 const& other) const;
+    AVector3 XO_CC operator / (AVector3 const& other) const;
+    AVector3& XO_CC operator += (AVector3 const& other);
+    AVector3& XO_CC operator -= (AVector3 const& other);
+    AVector3& XO_CC operator *= (AVector3 const& other);
+    AVector3& XO_CC operator /= (AVector3 const& other);
+
+    AVector3 operator -() const;
+
+    float Sum() const;
+
+    float Magnitude() const;
+    float MagnitudeSquared() const;
+
+    AVector3& Normalize();
+    AVector3 Normalized() const;
+
+    static bool XO_CC RoughlyEqual(AVector3 const& left, AVector3 const& right);
+    static bool XO_CC ExactlyEqual(AVector3 const& left, AVector3 const& right);
+    static bool XO_CC RoughlyEqual(AVector3 const& left, float magnitude);
+    static bool XO_CC ExactlyEqual(AVector3 const& left, float magnitude);
+
+    static float XO_CC DotProduct(AVector3 const& left, AVector3 const& right);
+    static AVector3 XO_CC CrossProduct(AVector3 const& left, AVector3 const& right);
+    static AVector3 XO_CC Lerp(AVector3 const& left, AVector3 const& right, float t);
+    static float XO_CC DistanceSquared(AVector3 const& left, AVector3 const& right);
+    static float XO_CC Distance(AVector3 const& left, AVector3 const& right);
+
+    static const AVector3 Zero;
+    static const AVector3 One;
+    static const AVector3 Up;
+    static const AVector3 Down;
+    static const AVector3 Left;
+    static const AVector3 Right;
+    static const AVector3 Forward;
+    static const AVector3 Backward;
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // vector 4, aligned for cpu specific optimizations (where applicable)
-using AVector4 = XO_REF_ALN Vector4;
+struct XO_REF_ALN AVector4 {
+    XO_REF_NEW_DEL(AVector4);
+    union {
+        struct { float x, y, z, w; };
+        float v[4];
+    };
+    constexpr AVector4(float x, float y, float z, float w)
+        : x(x)
+        , y(y)
+        , z(z)
+        , w(w)
+    { }
+
+    constexpr explicit AVector4(float all)
+        : x(all)
+        , y(all)
+        , z(all)
+        , w(all)
+    { }
+
+    AVector4() = default;
+    ~AVector4() = default;
+    AVector4(AVector4 const& other) = default;
+    AVector4(AVector4&& ref) = default;
+    AVector4& operator = (AVector4 const& other) = default;
+    AVector4& operator = (AVector4&& ref) = default;
+
+    AVector4 XO_CC operator + (AVector4 const& other) const;
+    AVector4 XO_CC operator - (AVector4 const& other) const;
+    AVector4 XO_CC operator * (AVector4 const& other) const;
+    AVector4 XO_CC operator / (AVector4 const& other) const;
+    AVector4& XO_CC operator += (AVector4 const& other);
+    AVector4& XO_CC operator -= (AVector4 const& other);
+    AVector4& XO_CC operator *= (AVector4 const& other);
+    AVector4& XO_CC operator /= (AVector4 const& other);
+
+    AVector4 operator -() const;
+
+    float operator[] (int index) const;
+    float& operator[] (int index);
+
+    float Sum() const;
+
+    float Magnitude() const;
+    float MagnitudeSquared() const;
+    AVector4 Normalized() const;
+    AVector4& Normalize();
+
+    static bool XO_CC RoughlyEqual(AVector4 const& left, AVector4 const& right);
+    static bool XO_CC ExactlyEqual(AVector4 const& left, AVector4 const& right);
+    static bool XO_CC RoughlyEqual(AVector4 const& left, float magnitude);
+    static bool XO_CC ExactlyEqual(AVector4 const& left, float magnitude);
+
+    static float XO_CC DotProduct(AVector4 const& left, AVector4 const& right);
+    static AVector4 XO_CC Lerp(AVector4 const& left, AVector4 const& right, float t);
+
+    static const AVector4 Zero;
+    static const AVector4 One;
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // matrix4x4, aligned for cpu specific optimizations (where applicable)
-using AMatrix4x4 = XO_REF_ALN Matrix4x4;
+struct XO_REF_ALN AMatrix4x4 {
+    XO_REF_NEW_DEL(AMatrix4x4);
+    union {
+        AVector4 rows[4];
+        float v[16];
+    };
+    constexpr AMatrix4x4(AVector4 const rows[4])
+        : rows{
+        rows[0],
+        rows[1],
+        rows[2],
+        rows[3] }
+    { }
+
+    constexpr AMatrix4x4(AVector4 const& row0,
+        AVector4 const& row1,
+        AVector4 const& row2,
+        AVector4 const& row3)
+        : rows{
+        row0,
+        row1,
+        row2,
+        row3 }
+    { }
+
+    constexpr explicit AMatrix4x4(float all)
+        : rows{
+        AVector4(all),
+        AVector4(all),
+        AVector4(all),
+        AVector4(all) }
+    { }
+
+    AMatrix4x4() = default;
+    ~AMatrix4x4() = default;
+    AMatrix4x4(AMatrix4x4 const& other) = default;
+    AMatrix4x4(AMatrix4x4&& ref) = default;
+    AMatrix4x4& operator = (AMatrix4x4 const& other) = default;
+    AMatrix4x4& operator = (AMatrix4x4&& ref) = default;
+
+    AMatrix4x4 XO_CC operator * (AMatrix4x4 const& other) const;
+    AMatrix4x4& XO_CC operator *= (AMatrix4x4 const& other);
+
+    AVector4 operator[] (int index) const;
+    AVector4& operator[] (int index);
+
+    AVector3 Up() const;
+    AVector3 Down() const;
+    AVector3 Left() const;
+    AVector3 Right() const;
+    AVector3 Forward() const;
+    AVector3 Backward() const;
+
+    static AMatrix4x4 XO_CC Transpose(AMatrix4x4 const& matrixIn);
+    static AMatrix4x4 XO_CC Invert(AMatrix4x4 const& matrixIn);
+    static bool XO_CC InvertSafe(AMatrix4x4 const& matrixIn, AMatrix4x4& matrixOut);
+    static AMatrix4x4 XO_CC Translation(AVector3 const& pos);
+    static AMatrix4x4 XO_CC Scale(AVector3 const& scale);
+    static AMatrix4x4 XO_CC RotationYaw(float yaw);
+    static AMatrix4x4 XO_CC RotationPitch(float pitch);
+    static AMatrix4x4 XO_CC RotationRoll(float roll);
+    static AMatrix4x4 XO_CC RotationYawPitchRoll(float yaw, float pitch, float roll);
+    static AMatrix4x4 XO_CC RotationAxisAngle(AVector3 const& axis, float angle);
+    static AMatrix4x4 XO_CC PerspectiveFOV(float fov,
+                                           float aspect,
+                                           float nearPlane = XO_CONFIG_DEFAULT_NEAR_PLANE,
+                                           float farPlane = XO_CONFIG_DEFAULT_FAR_PLANE);
+    static AMatrix4x4 XO_CC Perspective(float width,
+                                        float height,
+                                        float aspect,
+                                        float nearPlane = XO_CONFIG_DEFAULT_NEAR_PLANE,
+                                        float farPlane = XO_CONFIG_DEFAULT_FAR_PLANE);
+    static AMatrix4x4 XO_CC Orthographic(float width,
+                                         float height,
+                                         float nearPlane,
+                                         float farPlane);
+    static AMatrix4x4 XO_CC LookAt(AVector3 const& from,
+                                   AVector3 const& to,
+                                   AVector3 const& up = AVector3::Up);
+
+    static bool XO_CC RoughlyEqual(AMatrix4x4 const& left, AMatrix4x4 const& right);
+    static bool XO_CC ExactlyEqual(AMatrix4x4 const& left, AMatrix4x4 const& right);
+
+    static const AMatrix4x4 One;
+    static const AMatrix4x4 Zero;
+    static const AMatrix4x4 Identity;
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // quaternion, aligned for cpu specific optimizations (where applicable)
-using AQuaternion = XO_REF_ALN Quaternion;
+struct XO_REF_ALN AQuaternion {
+    XO_REF_NEW_DEL(AQuaternion);
+    union {
+        struct { float i, j, k, r; };
+        AVector4 vec4;
+    };
+
+    constexpr AQuaternion(float i, float j, float k, float r)
+        : i(i)
+        , j(j)
+        , k(k)
+        , r(r)
+    { }
+
+    constexpr explicit AQuaternion(float all)
+        : i(all)
+        , j(all)
+        , k(all)
+        , r(all)
+    { }
+
+    constexpr explicit AQuaternion(AVector4 const& v4)
+        : vec4(v4)
+    { }
+
+    AQuaternion() = default;
+    ~AQuaternion() = default;
+    AQuaternion(AQuaternion const& other) = default;
+    AQuaternion(AQuaternion&& ref) = default;
+    AQuaternion& operator = (AQuaternion const& other) = default;
+    AQuaternion& operator = (AQuaternion&& ref) = default;
+
+    AQuaternion operator + (AQuaternion other) const;
+    AQuaternion operator * (float scalar) const;
+    AQuaternion operator -() const;
+
+    float Magnitude() const;
+    float MagnitudeSquared() const;
+    AQuaternion Normalized() const;
+    AQuaternion& Normalize();
+
+    AMatrix4x4 ToMatrix() const;
+
+    static AQuaternion XO_CC Invert(AQuaternion const& quat);
+    static AQuaternion XO_CC RotationAxisAngle(AVector3 const& axis, float angle);
+    static AQuaternion XO_CC RotationYawPitchRoll(float yaw, float pitch, float roll);
+    static float XO_CC DotProduct(AQuaternion const& left, AQuaternion const& right);
+    static AQuaternion XO_CC Lerp(AQuaternion const& start, AQuaternion const& end, float t);
+    static AQuaternion XO_CC Slerp(AQuaternion const& start, 
+                                  AQuaternion const& end, 
+                                  float t);
+
+    static bool XO_CC RoughlyEqual(AQuaternion const& left, AQuaternion const& right);
+    static bool XO_CC ExactlyEqual(AQuaternion const& left, AQuaternion const& right);
+
+    static const AQuaternion Zero;
+    static const AQuaternion Identity;
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////// Vector 3
 #if defined(XO_MATH_IMPL)
@@ -670,7 +1021,7 @@ XO_INL Vector3 Vector3::operator -() const { return Vector3(-x, -y, -z); };
 XO_INL float Vector3::Sum() const { return x + y + z; }
 
 XO_INL float Vector3::MagnitudeSquared() const { return ((*this) * (*this)).Sum(); }
-XO_INL float Vector3::Magnitude() const { return Sqrt(MagnitudeSquared()); }
+XO_INL float Vector3::Magnitude() const { return xo::Sqrt(MagnitudeSquared()); }
 
 XO_INL Vector3& Vector3::Normalize() { return (*this) /= Vector3(Magnitude()); }
 XO_INL Vector3 Vector3::Normalized() const { return Vector3(*this).Normalize(); }
@@ -1372,6 +1723,749 @@ bool XO_CC Quaternion::RoughlyEqual(Quaternion const& left, Quaternion const& ri
 
 /*static*/ XO_INL 
 bool XO_CC Quaternion::ExactlyEqual(Quaternion const& left, Quaternion const& right) {
+    return left.i == right.i
+        && left.j == right.j
+        && left.k == right.k
+        && left.r == right.r;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////// AVector 3
+#if defined(XO_MATH_IMPL)
+/*static*/ const AVector3 AVector3::Zero(0.f);
+/*static*/ const AVector3 AVector3::One(1.f);
+/*static*/ const AVector3 AVector3::Left(-1.f, 0.f, 0.f);
+/*static*/ const AVector3 AVector3::Right(1.f, 0.f, 0.f);
+
+#   if !defined(XO_CONFIG_Y_UP) || !defined(XO_CONFIG_Z_UP)
+    static_assert(false, 
+        "define both XO_CONFIG_Y_UP and XO_CONFIG_Z_UP. One should have a value of 1, and\
+ the other should have a value of 0");
+#   endif
+
+#   if !defined(XO_CONFIG_LEFT_HANDED) || !defined(XO_CONFIG_RIGHT_HANDED)
+    static_assert(false, 
+        "define both XO_CONFIG_LEFT_HANDED and XO_CONFIG_RIGHT_HANDED. One should have a \
+value of 1, and the other should have a value of 0");
+#   endif
+
+#   if XO_CONFIG_Y_UP
+    static_assert(XO_CONFIG_Z_UP == 0, 
+        "XO_CONFIG_Z_UP should be 0 if XO_CONFIG_Y_UP is 1");
+/*static*/ const AVector3 AVector3::Up(0.f, 1.f, 0.f);
+/*static*/ const AVector3 AVector3::Down(0.f, -1.f, 0.f);
+#       if XO_CONFIG_LEFT_HANDED
+        static_assert(XO_CONFIG_RIGHT_HANDED == 0, 
+            "XO_CONFIG_RIGHT_HANDED should be 0 if XO_CONFIG_LEFT_HANDED is 1");
+/*static*/ const AVector3 AVector3::Forward(0.f, 0.f, 1.f);
+/*static*/ const AVector3 AVector3::Backward(0.f, 0.f, -1.f);
+#       elif XO_CONFIG_RIGHT_HANDED
+        static_assert(XO_CONFIG_LEFT_HANDED == 0, 
+            "XO_CONFIG_LEFT_HANDED should be 0 if XO_CONFIG_RIGHT_HANDED is 1");
+/*static*/ const AVector3 AVector3::Forward(0.f, 0.f, -1.f);
+/*static*/ const AVector3 AVector3::Backward(0.f, 0.f, 1.f);
+#       else
+        static_assert(false, 
+            "XO_CONFIG_LEFT_HANDED or XO_CONFIG_RIGHT_HANDED should have a non zero \
+value...");
+#       endif
+#   elif XO_CONFIG_Z_UP
+// no static assert here about XO_CONFIG_Y_UP, because it's been checked.
+/*static*/ const AVector3 AVector3::Up(0.f, 0.f, 1.f);
+/*static*/ const AVector3 AVector3::Down(0.f, 0.f, -1.f);
+#       if XO_CONFIG_LEFT_HANDED
+        static_assert(XO_CONFIG_RIGHT_HANDED == 0, 
+            "XO_CONFIG_RIGHT_HANDED should be 0 if XO_CONFIG_LEFT_HANDED is 1");
+/*static*/ const AVector3 AVector3::Forward(0.f, -1.f, 0.f);
+/*static*/ const AVector3 AVector3::Backward(0.f, 1.f, 0.f);
+#       elif XO_CONFIG_RIGHT_HANDED
+        static_assert(XO_CONFIG_LEFT_HANDED == 0, 
+            "XO_CONFIG_LEFT_HANDED should be 0 if XO_CONFIG_RIGHT_HANDED is 1");
+/*static*/ const AVector3 AVector3::Forward(0.f, 1.f, 0.f);
+/*static*/ const AVector3 AVector3::Backward(0.f, -1.f, 0.f);
+#       else
+        static_assert(false,
+            "XO_CONFIG_LEFT_HANDED or XO_CONFIG_RIGHT_HANDED should have a non zero \
+value...");
+#       endif
+#   else
+    static_assert(false,
+        "XO_CONFIG_Y_UP or XO_CONFIG_Z_UP should have a non zero value...");
+#   endif
+#endif
+
+XO_INL 
+AVector3 XO_CC AVector3::operator + (AVector3 const& other) const { 
+    return AVector3(x + other.x, y + other.y, z + other.z);
+}
+
+XO_INL
+AVector3 XO_CC AVector3::operator - (AVector3 const& other) const {
+    return AVector3(x - other.x, y - other.y, z - other.z);
+}
+
+XO_INL
+AVector3 XO_CC AVector3::operator * (AVector3 const& other) const {
+    return AVector3(x * other.x, y * other.y, z * other.z);
+}
+
+XO_INL
+AVector3 XO_CC AVector3::operator / (AVector3 const& other) const {
+    return AVector3(x / other.x, y / other.y, z / other.z);
+}
+
+XO_INL
+AVector3& XO_CC AVector3::operator += (AVector3 const& other) {
+    x += other.x;
+    y += other.y;
+    z *= other.z;
+    return *this;
+}
+
+XO_INL
+AVector3& XO_CC AVector3::operator -= (AVector3 const& other) {
+    x -= other.x;
+    y -= other.y;
+    z -= other.z;
+    return *this;
+}
+
+XO_INL
+AVector3& XO_CC AVector3::operator *= (AVector3 const& other) {
+    x *= other.x;
+    y *= other.y;
+    z *= other.z;
+    return *this;
+}
+
+XO_INL
+AVector3& XO_CC AVector3::operator /= (AVector3 const& other) {
+    x /= other.x;
+    y /= other.y;
+    z /= other.z;
+    return *this;
+}
+
+XO_INL AVector3 AVector3::operator -() const { return AVector3(-x, -y, -z); };
+
+XO_INL float AVector3::Sum() const { return x + y + z; }
+
+XO_INL float AVector3::MagnitudeSquared() const { return ((*this) * (*this)).Sum(); }
+XO_INL float AVector3::Magnitude() const { return xo::Sqrt(MagnitudeSquared()); }
+
+XO_INL AVector3& AVector3::Normalize() { return (*this) /= AVector3(Magnitude()); }
+XO_INL AVector3 AVector3::Normalized() const { return AVector3(*this).Normalize(); }
+
+/*static*/ XO_INL
+bool XO_CC AVector3::RoughlyEqual(AVector3 const& left, AVector3 const& right) {
+    return CloseEnough(left.x, right.x)
+        && CloseEnough(left.y, right.y)
+        && CloseEnough(left.z, right.z);
+}
+
+/*static*/ XO_INL
+bool XO_CC AVector3::ExactlyEqual(AVector3 const& left, AVector3 const& right) {
+    return left.x == right.x
+        && left.y == right.y
+        && left.z == right.z;
+}
+/*static*/ XO_INL
+bool XO_CC AVector3::RoughlyEqual(AVector3 const& left, float magnitude) {
+    return CloseEnough(left.MagnitudeSquared(), Pow<2>(magnitude));
+}
+
+/*static*/ XO_INL
+bool XO_CC AVector3::ExactlyEqual(AVector3 const& left, float magnitude) {
+    return left.MagnitudeSquared() == Pow<2>(magnitude);
+}
+
+/*static*/ XO_INL
+float XO_CC AVector3::DotProduct(AVector3 const& left, AVector3 const& right) {
+    return (left * right).Sum();
+}
+
+/*static*/ XO_INL
+AVector3 XO_CC AVector3::CrossProduct(AVector3 const& left, AVector3 const& right) {
+    return AVector3(
+        left.y * right.z - left.z * right.y,
+        left.z * right.x - left.x * right.z,
+        left.x * right.y - left.y * right.x);
+}
+
+/*static*/ XO_INL
+AVector3 XO_CC AVector3::Lerp(AVector3 const& left, AVector3 const& right, float t) {
+    return left + AVector3(t) * (right - left);
+}
+
+/*static*/ XO_INL
+float XO_CC AVector3::DistanceSquared(AVector3 const& left, AVector3 const& right) {
+    return (right - left).MagnitudeSquared();
+}
+
+/*static*/ XO_INL
+float XO_CC AVector3::Distance(AVector3 const& left, AVector3 const& right) {
+    return (right - left).Magnitude();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////// AVector 4
+
+XO_INL
+AVector4 XO_CC AVector4::operator + (AVector4 const& other) const {
+    return AVector4(x + other.x, y + other.y, z + other.z, w + other.w);
+}
+
+XO_INL
+AVector4 XO_CC AVector4::operator - (AVector4 const& other) const {
+    return AVector4(x - other.x, y - other.y, z - other.z, w - other.w);
+}
+
+XO_INL
+AVector4 XO_CC AVector4::operator * (AVector4 const& other) const {
+    return AVector4(x*other.x, y*other.y, z*other.z, w*other.w);
+}
+
+XO_INL
+AVector4 XO_CC AVector4::operator / (AVector4 const& other) const {
+    return AVector4(x / other.x, y / other.y, z / other.z, w / other.w);
+}
+
+XO_INL 
+AVector4& XO_CC AVector4::operator += (AVector4 const& other) {
+    x += other.x; 
+    y += other.y; 
+    z += other.z; 
+    w += other.w; 
+    return *this;
+};
+
+XO_INL 
+AVector4& XO_CC AVector4::operator -= (AVector4 const& other) {
+    x -=other.x;
+    y -=other.y;
+    z -= other.z;
+    w -= other.w;
+    return *this; };
+
+XO_INL 
+AVector4& XO_CC AVector4::operator *= (AVector4 const& other) {
+    x *= other.x;
+    y *= other.y;
+    z *= other.z;
+    w *= other.w;
+    return *this;
+};
+
+XO_INL 
+AVector4& XO_CC AVector4::operator /= (AVector4 const& other) {
+    x /= other.x;
+    y /= other.y;
+    z /= other.z;
+    w /= other.w;
+    return *this;
+};
+
+XO_INL AVector4 AVector4::operator -() const { return AVector4(-x, -y, -z, -w); }
+
+XO_INL float AVector4::operator[] (int index) const { return v[index]; }
+XO_INL float& AVector4::operator[] (int index) { return v[index]; }
+
+XO_INL float AVector4::Sum() const { return x + y + z + w; }
+
+XO_INL float AVector4::MagnitudeSquared() const { return x * x + y * y + z * z + w * w; }
+XO_INL float AVector4::Magnitude() const { return Sqrt(MagnitudeSquared()); }
+XO_INL AVector4 AVector4::Normalized() const { return AVector4(*this).Normalize(); }
+XO_INL AVector4& AVector4::Normalize() { return (*this) /= AVector4(Magnitude()); };
+
+/*static*/ XO_INL 
+bool XO_CC AVector4::RoughlyEqual(AVector4 const& left, AVector4 const& right) {
+    return CloseEnough(left.x, right.x)
+        && CloseEnough(left.y, right.y)
+        && CloseEnough(left.z, right.z)
+        && CloseEnough(left.w, right.w);
+}
+
+/*static*/ XO_INL 
+bool XO_CC AVector4::ExactlyEqual(AVector4 const& left, AVector4 const& right) {
+    return left.x == right.x
+        && left.y == right.y
+        && left.z == right.z
+        && left.w == right.w;
+}
+
+/*static*/ XO_INL 
+bool XO_CC AVector4::RoughlyEqual(AVector4 const& left, float magnitude) {
+    return CloseEnough(left.MagnitudeSquared(), Pow<2>(magnitude));
+}
+
+/*static*/ XO_INL
+bool XO_CC AVector4::ExactlyEqual(AVector4 const& left, float magnitude) {
+    return left.MagnitudeSquared() == Pow<2>(magnitude);
+}
+
+/*static*/ XO_INL
+float XO_CC AVector4::DotProduct(AVector4 const& left, AVector4 const& right) {
+    return (left * right).Sum();
+}
+
+/*static*/ XO_INL 
+AVector4 XO_CC AVector4::Lerp(AVector4 const& left, AVector4 const& right, float t) {
+    return left + AVector4(t) * (right - left);
+}
+
+#if defined(XO_MATH_IMPL)
+/*static*/ const AVector4 AVector4::Zero(0.f);
+/*static*/ const AVector4 AVector4::One(1.f);
+#endif
+
+////////////////////////////////////////////////////////////////////////////////////////// AMatrix4x4
+
+#if defined(XO_MATH_IMPL)
+/*static*/ const AMatrix4x4 AMatrix4x4::One(1.f);
+/*static*/ const AMatrix4x4 AMatrix4x4::Zero(0.f);
+/*static*/ const AMatrix4x4 AMatrix4x4::Identity(
+    AVector4(1.f, 0.f, 0.f, 0.f),
+    AVector4(0.f, 1.f, 0.f, 0.f),
+    AVector4(0.f, 0.f, 1.f, 0.f),
+    AVector4(0.f, 0.f, 0.f, 1.f));
+#endif
+
+XO_INL 
+AMatrix4x4 XO_CC AMatrix4x4::operator * (AMatrix4x4 const& other) const {
+    return AMatrix4x4(*this) *= other;
+}
+
+XO_INL
+AMatrix4x4& XO_CC AMatrix4x4::operator *= (AMatrix4x4 const& other) {
+    AMatrix4x4 transposed = Transpose(*this);
+    return (*this) = AMatrix4x4(
+        AVector4((rows[0] * transposed[0]).Sum(),
+                (rows[0] * transposed[1]).Sum(),
+                (rows[0] * transposed[2]).Sum(),
+                (rows[0] * transposed[3]).Sum()),
+        AVector4((rows[1] * transposed[0]).Sum(),
+                (rows[1] * transposed[1]).Sum(),
+                (rows[1] * transposed[2]).Sum(),
+                (rows[1] * transposed[3]).Sum()),
+        AVector4((rows[2] * transposed[0]).Sum(),
+                (rows[2] * transposed[1]).Sum(),
+                (rows[2] * transposed[2]).Sum(),
+                (rows[2] * transposed[3]).Sum()),
+        AVector4((rows[3] * transposed[0]).Sum(),
+                (rows[3] * transposed[1]).Sum(),
+                (rows[3] * transposed[2]).Sum(),
+                (rows[3] * transposed[3]).Sum()));
+}
+
+XO_INL AVector4 AMatrix4x4::operator[] (int index) const { return rows[index]; }
+XO_INL AVector4& AMatrix4x4::operator[] (int index) { return rows[index]; }
+
+XO_INL
+AVector3 AMatrix4x4::Up() const {
+#if defined(XO_CONFIG_Y_UP) && XO_CONFIG_Y_UP
+    return AVector3(rows[1][0], rows[1][1], rows[1][2]);
+#elif defined(XO_CONFIG_Z_UP) && XO_CONFIG_Z_UP
+    return AVector3(rows[2][0], rows[2][1], rows[2][2]);
+#else
+    static_assert(false, "Define XO_CONFIG_Y_UP and XO_CONFIG_Z_UP. One should have a \
+value of 1, the other should have a value of 0.");
+#endif
+}
+
+XO_INL
+AVector3 AMatrix4x4::Down() const {
+    return -Up();
+}
+
+XO_INL
+AVector3 AMatrix4x4::Left() const {
+    return -Right();
+}
+XO_INL
+AVector3 AMatrix4x4::Right() const {
+    return AVector3(rows[0][0], rows[0][1], rows[0][2]);
+}
+
+XO_INL
+AVector3 AMatrix4x4::Forward() const {
+#if defined(XO_CONFIG_Y_UP) && XO_CONFIG_Y_UP
+#   if defined(XO_CONFIG_LEFT_HANDED) && XO_CONFIG_LEFT_HANDED
+    return AVector3(rows[2][0], rows[2][1], rows[2][2]);
+#   elif defined(XO_CONFIG_RIGHT_HANDED) && XO_CONFIG_RIGHT_HANDED
+    return AVector3(-rows[2][0], -rows[2][1], -rows[2][2]);
+#   else
+    static_assert(false, "Define XO_CONFIG_LEFT_HANDED and XO_CONFIG_RIGHT_HANDED. One \
+should have a value of 1, the other should have a value of 0.");
+#   endif
+#elif defined(XO_CONFIG_Z_UP) && XO_CONFIG_Z_UP
+#   if defined(XO_CONFIG_LEFT_HANDED) && XO_CONFIG_LEFT_HANDED
+    return AVector3(-rows[1][0], -rows[1][1], -rows[1][2]);
+#   elif defined(XO_CONFIG_RIGHT_HANDED) && XO_CONFIG_RIGHT_HANDED
+    return AVector3(rows[1][0], rows[1][1], rows[1][2]);
+#   else
+    static_assert(false, "Define XO_CONFIG_LEFT_HANDED and XO_CONFIG_RIGHT_HANDED. One \
+should have a value of 1, the other should have a value of 0.");
+#   endif
+#else
+    static_assert(false, "Define XO_CONFIG_Y_UP and XO_CONFIG_Z_UP. One should have a \
+value of 1, the other should have a value of 0.");
+#endif
+}
+
+XO_INL
+AVector3 AMatrix4x4::Backward() const {
+    return -Forward();
+}
+
+/*static*/ XO_INL 
+AMatrix4x4 XO_CC AMatrix4x4::Transpose(AMatrix4x4 const& AMatrixIn) {
+    AMatrix4x4 transposed = AMatrix4x4(AMatrixIn);
+    float t;
+#define XO_TRANSPOSE_SWAP(i,j) \
+    t = transposed.rows[i][j];\
+    transposed.rows[i][j] = transposed.rows[j][i]; \
+    transposed.rows[j][i] = t;
+
+    XO_TRANSPOSE_SWAP(0, 1);
+    XO_TRANSPOSE_SWAP(0, 2);
+    XO_TRANSPOSE_SWAP(0, 3);
+    XO_TRANSPOSE_SWAP(1, 2);
+    XO_TRANSPOSE_SWAP(1, 3);
+    XO_TRANSPOSE_SWAP(2, 3);
+#undef XO_TRANSPOSE_SWAP
+    return transposed;
+}
+
+/*static*/ XO_INL 
+AMatrix4x4 XO_CC AMatrix4x4::Invert(AMatrix4x4 const& AMatrixIn) {
+    float tmp[12]; // temp array for pairs
+    float src[16]; // array of transpose source AMatrix
+    float det; // determinant
+    AMatrix4x4 inverted(AMatrixIn);
+    EarlyInverse(tmp, src, det, inverted.v);
+    LateInverse(det, inverted.v);
+    return inverted;
+}
+
+/*static*/ XO_INL
+bool XO_CC AMatrix4x4::InvertSafe(AMatrix4x4 const& AMatrixIn, AMatrix4x4& AMatrixOut) {
+    float tmp[12]; // temp array for pairs
+    float src[16]; // array of transpose source AMatrix
+    float det; // determinant
+    AMatrix4x4 inverted(AMatrixIn);
+    EarlyInverse(tmp, src, det, inverted.v);
+    if (CloseEnough(det, 0.f))
+        return false;
+    LateInverse(det, inverted.v);
+    AMatrixOut = inverted;
+    return true;
+}
+
+/*static*/ XO_INL 
+AMatrix4x4 XO_CC AMatrix4x4::Translation(AVector3 const& pos) {
+    return AMatrix4x4(
+        AVector4(1.f,   0.f,   0.f,   0.f),
+        AVector4(0.f,   1.f,   0.f,   0.f),
+        AVector4(0.f,   0.f,   1.f,   0.f),
+        AVector4(pos.x, pos.y, pos.z, 1.f));
+}
+
+/*static*/ XO_INL 
+AMatrix4x4 XO_CC AMatrix4x4::Scale(AVector3 const& scale) {
+    return AMatrix4x4(
+        AVector4(scale.x, 0.f,     0.f,     0.f),
+        AVector4(0.f,     scale.y, 0.f,     0.f),
+        AVector4(0.f,     0.f,     scale.z, 0.f),
+        AVector4(0.f,     0.f,     0.f,     1.f));
+}
+
+/*static*/ XO_INL 
+AMatrix4x4 XO_CC AMatrix4x4::RotationYaw(float yaw) {
+    float s, c;
+    SinCos(yaw, s, c);
+    return AMatrix4x4(
+        AVector4(c,   0.f, -s,  0.f),
+        AVector4(0.f, 1.f, 0.f, 0.f),
+        AVector4(s,   0.f, c,   0.f),
+        AVector4(0.f, 0.f, 0.f, 1.f));
+}
+
+/*static*/ XO_INL
+AMatrix4x4 XO_CC AMatrix4x4::RotationPitch(float pitch) {
+    float s, c;
+    SinCos(pitch, s, c);
+    return AMatrix4x4(
+        AVector4(1.f, 0.f, 0.f, 0.f),
+        AVector4(0.f, c,   -s,  0.f),
+        AVector4(0.f, s,   c,   0.f),
+        AVector4(0.f, 0.f, 0.f, 1.f));
+}
+
+/*static*/ XO_INL 
+AMatrix4x4 XO_CC AMatrix4x4::RotationRoll(float roll) {
+    float s, c;
+    SinCos(roll, s, c);
+    return AMatrix4x4(
+        AVector4(c,   -s,  0.f, 0.f),
+        AVector4(s,   c,   0.f, 0.f),
+        AVector4(0.f, 0.f, 1.f, 0.f),
+        AVector4(0.f, 0.f, 0.f, 1.f));
+}
+
+/*static*/ XO_INL 
+AMatrix4x4 XO_CC AMatrix4x4::RotationYawPitchRoll(float yaw, float pitch, float roll) {
+    return RotationYaw(yaw) * RotationPitch(pitch) * RotationRoll(roll);
+}
+
+/*static*/ XO_INL
+AMatrix4x4 XO_CC AMatrix4x4::RotationAxisAngle(AVector3 const& axis, float angle) {
+    float s, c;
+    SinCos(angle, s, c);
+    float t = 1.f - c;
+    AVector3 a = axis.Normalized();
+    AMatrix4x4 rotation(AMatrix4x4::Identity);
+
+    rotation[0][0] = c + a.x*a.x*t;
+    rotation[1][1] = c + a.y*a.y*t;
+    rotation[2][2] = c + a.z*a.z*t;
+
+
+    float tmp1 = a.x*a.y*t;
+    float tmp2 = a.z*s;
+    rotation[1][0] = tmp1 + tmp2;
+    rotation[0][1] = tmp1 - tmp2;
+    
+    tmp1 = a.x*a.z*t;
+    tmp2 = a.y*s;
+    rotation[2][0] = tmp1 - tmp2;
+    rotation[0][2] = tmp1 + tmp2;    tmp1 = a.y*a.z*t;
+
+    tmp2 = a.x*s;
+    rotation[2][1] = tmp1 + tmp2;
+    rotation[1][2] = tmp1 - tmp2;
+
+    return rotation;
+}
+
+/*static*/ XO_INL 
+AMatrix4x4 XO_CC AMatrix4x4::PerspectiveFOV(float fov, 
+                                          float aspect, 
+                                          float nearPlane, 
+                                          float farPlane) {
+    float s, c;
+    SinCos(fov*0.5f, s, c);
+    float h = c / s;                             // height
+    float w = h / aspect;                        // width
+    float r = farPlane / (nearPlane - farPlane); // range
+    float rn = r * nearPlane;                    // range*near
+    return AMatrix4x4(
+        AVector4(w,   0.f, 0.f, 0.f),
+        AVector4(0.f, h,   0.f, 0.f),
+        AVector4(0.f, 0.f, r,   0.f),
+        AVector4(0.f, 0.f, rn,  0.f));
+}
+
+/*static*/ XO_INL 
+AMatrix4x4 XO_CC AMatrix4x4::Perspective(float width,
+                                       float height, 
+                                       float aspect, 
+                                       float nearPlane, 
+                                       float farPlane) {
+    float n2 = Pow<2>(nearPlane);
+    float r = farPlane / (nearPlane - farPlane);
+    float w = n2 / width;
+    float h = n2 / height;
+    float rn = r * nearPlane;
+    return AMatrix4x4(
+        AVector4(w,   0.f, 0.f, 0.f),
+        AVector4(0.f, h,   0.f, 0.f),
+        AVector4(0.f, 0.f, r,   0.f),
+        AVector4(0.f, 0.f, rn,  0.f));
+}
+
+/*static*/ XO_INL
+AMatrix4x4 XO_CC AMatrix4x4::Orthographic(float width,
+                                        float height,
+                                        float nearPlane,
+                                        float farPlane) {
+    float r = 1.f / (nearPlane - farPlane);
+    float w = 2.f / width;
+    float h = 2.f / height;
+    float rn = r * nearPlane;
+    return AMatrix4x4(
+        AVector4(w, 0.f, 0.f, 0.f),
+        AVector4(0.f, h, 0.f, 0.f),
+        AVector4(0.f, 0.f, r, 0.f),
+        AVector4(0.f, 0.f, rn, 0.f));
+}
+
+/*static*/ XO_INL
+AMatrix4x4 XO_CC AMatrix4x4::LookAt(AVector3 const& from,
+                                  AVector3 const& to, 
+                                  AVector3 const& up) {
+    AVector3 dir = from - to;
+    AVector3 r2 = dir.Normalized();
+    AVector3 r0 = AVector3::CrossProduct(up, r2).Normalized();
+    AVector3 r1 = AVector3::CrossProduct(r2, r0);
+    AVector3 nfrom = -from;
+
+    float d0 = AVector3::DotProduct(r0, nfrom);
+    float d1 = AVector3::DotProduct(r1, nfrom);
+    float d2 = AVector3::DotProduct(r2, nfrom);
+    return AMatrix4x4(
+        AVector4(r0.x, r0.y, r0.z, 0.f),
+        AVector4(r0.x, r0.y, r0.z, 0.f),
+        AVector4(r0.x, r0.y, r0.z, 0.f),
+        AVector4(d0,   d1,   d2,   1.f));
+}
+
+/*static*/ XO_INL 
+bool XO_CC AMatrix4x4::RoughlyEqual(AMatrix4x4 const& left, AMatrix4x4 const& right) {
+    return AVector4::RoughlyEqual(left[0], right[0])
+        && AVector4::RoughlyEqual(left[1], right[1])
+        && AVector4::RoughlyEqual(left[2], right[2])
+        && AVector4::RoughlyEqual(left[3], right[3]);
+}
+
+/*static*/ XO_INL 
+bool XO_CC AMatrix4x4::ExactlyEqual(AMatrix4x4 const& left, AMatrix4x4 const& right) {
+    return AVector4::ExactlyEqual(left[0], right[0])
+        && AVector4::ExactlyEqual(left[1], right[1])
+        && AVector4::ExactlyEqual(left[2], right[2])
+        && AVector4::ExactlyEqual(left[3], right[3]);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////// AQuaternion
+#if defined(XO_MATH_IMPL)
+/*static*/ const AQuaternion AQuaternion::Zero(0.f);
+/*static*/ const AQuaternion AQuaternion::Identity(0.f, 0.f, 0.f, 1.f);
+#endif
+
+XO_INL
+AQuaternion AQuaternion::operator + (AQuaternion other) const {
+    return AQuaternion(i + other.i, j + other.j, k + other.k, r + other.r);
+}
+
+XO_INL
+AQuaternion AQuaternion::operator *(float s) const { 
+    return AQuaternion(i*s, j*s, k*s, r*s); 
+}
+
+XO_INL
+AQuaternion AQuaternion::operator -() const {
+    return AQuaternion(-i, -j, -k, -r);
+}
+
+XO_INL
+float AQuaternion::Magnitude() const {
+    return vec4.Magnitude();
+}
+
+XO_INL 
+float AQuaternion::MagnitudeSquared() const {
+    return vec4.MagnitudeSquared();
+};
+
+XO_INL
+AQuaternion AQuaternion::Normalized() const {
+    return AQuaternion(vec4.Normalized());
+};
+
+XO_INL
+AQuaternion& AQuaternion::Normalize() {
+    vec4.Normalize(); return *this;
+};
+
+XO_INL
+AMatrix4x4 AQuaternion::ToMatrix() const {
+    // See: https://www.flipcode.com/documents/matrfaq.html#Q54
+    float ii = i * i;
+    float ij = i * j;
+    float ik = i * k;
+    float ir = i * r;
+    float jj = j * j;
+    float jk = j * k;
+    float jr = j * r;
+    float kk = k * k;
+    float kr = k * r;
+    return AMatrix4x4(
+        AVector4(1.f - 2.f * (jj + kk), 2.f * (ij - kr), 2.f * (ik + jr), 0.f),
+        AVector4(2.f * (ij + kr), 1.f - 2.f * (ii + kk), 2.f * (jk - ir), 0.f),
+        AVector4(2.f * (ik - jr), 2.f * (jk + ir), 1.f - 2.f * (ii + jj), 0.f),
+        AVector4(0.f, 0.f, 0.f, 1.f));
+}
+
+/*static*/ XO_INL
+AQuaternion XO_CC AQuaternion::Invert(AQuaternion const& quat) {
+    return AQuaternion(-quat.i, -quat.j, -quat.k, quat.r);
+}
+
+/*static*/ XO_INL
+AQuaternion XO_CC AQuaternion::RotationAxisAngle(AVector3 const& axis, float angle) {
+    float s, c;
+    SinCos(angle*0.5f, s, c);
+    return AQuaternion(axis.x*s, axis.y*s, axis.z*s, c);
+}
+
+/*static*/ XO_INL
+AQuaternion XO_CC AQuaternion::RotationYawPitchRoll(float yaw, float pitch, float roll) {
+    float sr, cp, sp, cy, sy, cr;
+    SinCos(yaw * 0.5f, sy, cy);
+    SinCos(pitch * 0.5f, sp, cp);
+    SinCos(roll * 0.5f, sr, cr);
+    return AQuaternion(cy * cr * cp + sy * sr * sp,
+                      cy * sr * cp - sy * cr * sp,
+                      cy * cr * sp + sy * sr * cp,
+                      sy * cr * cp - cy * sr * sp);
+}
+
+/*static*/ XO_INL
+float XO_CC AQuaternion::DotProduct(AQuaternion const& left, AQuaternion const& right) {
+    return AVector4::DotProduct(left.vec4, right.vec4);
+}
+
+/*static*/ XO_INL
+AQuaternion XO_CC AQuaternion::Lerp(AQuaternion const& start,
+                                  AQuaternion const& end,
+                                  float t) {
+    return AQuaternion(AVector4::Lerp(start.vec4, end.vec4, t));
+}
+
+/*static*/ XO_INL
+AQuaternion XO_CC AQuaternion::Slerp(AQuaternion const& start, 
+                                   AQuaternion const& end, 
+                                   float t) {
+    AQuaternion s = start.Normalized();
+    AQuaternion e = end.Normalized();
+    float d = AQuaternion::DotProduct(s, e);
+    if (d < 0.f) {
+        e = -e;
+        d = -d;
+    }
+
+    if (CloseEnough(d, 1.f)) {
+        return Lerp(s, e, t).Normalize();
+    }
+
+    float th0 = ACos(d);
+    float th = th0 * t;
+
+    float st, ct, sth0;
+    SinCos(th, st, ct);
+    sth0 = Sin(th0);
+    float s0 = ct - d * st / sth0;
+    float s1 = st / sth0;
+    return (s * s0) + (e * s1);
+}
+
+/*static*/ XO_INL 
+bool XO_CC AQuaternion::RoughlyEqual(AQuaternion const& left, AQuaternion const& right) {
+    return CloseEnough(left.i, right.i)
+        && CloseEnough(left.j, right.j)
+        && CloseEnough(left.k, right.k)
+        && CloseEnough(left.r, right.r);
+}
+
+/*static*/ XO_INL 
+bool XO_CC AQuaternion::ExactlyEqual(AQuaternion const& left, AQuaternion const& right) {
     return left.i == right.i
         && left.j == right.j
         && left.k == right.k

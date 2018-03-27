@@ -6,7 +6,6 @@
     meaningful code. The purpose is simply for compilation testing.
 */
 #include "xo-math.h"
-#define XO_UNUSED(code) (void)code
 
 // anonymous namespace forces these functions to be unique between features.cpp and 
 // features2.cpp
@@ -349,7 +348,7 @@ void AllAQuaternionFeatures() {
     { xo::AQuaternion a = _a; a.Normalize(); XO_UNUSED(a); }
     { xo::AMatrix4x4 a = _a.ToMatrix(); XO_UNUSED(a); }
     { xo::AQuaternion a = xo::AQuaternion::Invert(_a); XO_UNUSED(a); }
-    { xo::AQuaternion a = xo::AQuaternion::RotationAxisAngle(xo::Vector3::Up, 0.f); XO_UNUSED(a); }
+    { xo::AQuaternion a = xo::AQuaternion::RotationAxisAngle(xo::AVector3::Up, 0.f); XO_UNUSED(a); }
     { xo::AQuaternion a = xo::AQuaternion::RotationYawPitchRoll(0.f, 0.f, 0.f); XO_UNUSED(a); }
     { float a = xo::AQuaternion::DotProduct(_a, _b); XO_UNUSED(a); }
     { xo::AQuaternion a = xo::AQuaternion::Lerp(_a, _b, 0.f); XO_UNUSED(a); }
