@@ -4,6 +4,8 @@
 #define GL3_PROTOTYPES 1
 #include <GL/glew.h>
 #include <SDL.h>
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_sdl_gl3.h>
 #include <iostream>
 
 void TickDemo() {
@@ -13,10 +15,16 @@ void TickDemo() {
         }
         xo::Matrix4x4 m_Projection;
     } demo;
-
 }
 
 struct Application {
+    /*
+    IMGUI_API bool        ImGui_ImplSdlGL3_Init(SDL_Window* window, const char* glsl_version = NULL);
+IMGUI_API void        ImGui_ImplSdlGL3_Shutdown();
+IMGUI_API void        ImGui_ImplSdlGL3_NewFrame(SDL_Window* window);
+IMGUI_API void        ImGui_ImplSdlGL3_RenderDrawData(ImDrawData* draw_data);
+IMGUI_API bool        ImGui_ImplSdlGL3_ProcessEvent(SDL_Event* event);
+    */
     int run() {
         if (SDL_Init(SDL_INIT_VIDEO) < 0) {
             std::cerr << "could not initialize sdl2:" << SDL_GetError() << std::endl;
@@ -25,6 +33,11 @@ struct Application {
         m_Window = SDL_CreateWindow("demo-01-cubes", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_Width, m_Height, SDL_WINDOW_OPENGL);
         if (m_Window == NULL) {
             std::cerr << "could not create window:" << SDL_GetError() << std::endl;
+            return 1;
+        }
+
+        if (!ImGui_ImplSdlGL3_Init(m_Window)) {
+            std::cerr << "could not init imgui:" << SDL_GetError() << std::endl;
             return 1;
         }
 
@@ -38,7 +51,6 @@ struct Application {
 #endif
 
         glClearColor(0.0, 0.0, 0.0, 1.0);
-        glClear(GL_COLOR_BUFFER_BIT);
         SDL_GL_SwapWindow(m_Window);
 
         SDL_Event frameEvent;
@@ -47,7 +59,11 @@ struct Application {
         m_Keys = static_cast<uint8_t const*>(SDL_GetKeyboardState(nullptr));
 
         while (!m_Quitting) {
+            glViewport(0, 0, (int)ImGui::GetIO().DisplaySize.x, (int)ImGui::GetIO().DisplaySize.y);
+            glClear(GL_COLOR_BUFFER_BIT);
             Tick();
+            ImGui::Render();
+            ImGui_ImplSdlGL3_RenderDrawData(ImGui::GetDrawData());
             SDL_GL_SwapWindow(m_Window);
             // process all pending events
             while (SDL_PollEvent(&frameEvent)) {
@@ -61,6 +77,7 @@ struct Application {
                     m_Keys = static_cast<uint8_t const*>(SDL_GetKeyboardState(nullptr));
                     break;
                 }
+                ImGui_ImplSdlGL3_ProcessEvent(&frameEvent);
             }
         }
         return 0;
@@ -70,6 +87,7 @@ struct Application {
     ~Application() {
         if(m_Window) SDL_DestroyWindow(m_Window);
         SDL_Quit();
+        ImGui_ImplSdlGL3_Shutdown();
     }
     Application(Application const&) = delete;
     Application(Application &&) = delete;

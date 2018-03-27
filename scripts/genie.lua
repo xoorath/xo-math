@@ -18,6 +18,7 @@ function demoDefaults()
     includedirs {
         "../demos/SDL2-2.0.8/include",
         "../demos/glew-2.1.0/include",
+        "../demos/imgui",
         "../xo-math"}
     links {
         "SDL2",
@@ -44,7 +45,12 @@ function setupDemos(...)
         project(name)
             kind "WindowedApp"
             language "C++"
-            files { "../demos/" .. name .."/**.cpp", "../demos/" .. name .. "/**.h" }
+            files { 
+                "../demos/" .. name .."/**.cpp", 
+                "../demos/" .. name .. "/**.h",
+                "../demos/imgui/**.cpp" ,
+                "../demos/imgui/**.h" 
+            }
             demoDefaults()
             projectDefaults()
     end

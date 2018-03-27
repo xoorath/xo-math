@@ -24,43 +24,49 @@ let dyLibs32 = [
     '../demos/SDL2-2.0.8/lib/x86/sdl2.dll'
 ];
 
+for(var i = 0; i < dyLibs64.length; ++i) {
+    dyLibs64[i] =  path.resolve(__dirname, dyLibs64[i]).replace(/\\/g, '/');
+    if(fs.existsSync(dyLibs64[i]) === false) {
+        console.error(`library doesn't exist: ${dyLibs64[i]}`);
+        dyLibs64 = dyLibs64.splice(i, 1);
+        --i;
+    }
+}
+
+for(var i = 0; i < dyLibs32.length; ++i) {
+    dyLibs32[i] =  path.resolve(__dirname, dyLibs32[i]).replace(/\\/g, '/');
+    if(fs.existsSync(dyLibs32[i]) === false) {
+        console.error(`library doesn't exist: ${dyLibs32[i]}`);
+        dyLibs32 = dyLibs32.splice(i, 1);
+        --i;
+    }
+}
+
 function mkdirRecursive(dirName) {
     var split = dirName.split('/');
     var combined = split[0] + '/';
 
     for (var i = 1; i < split.length; ++i) {
         combined += split[i] + '/';
-        console.log('making dir: ' + combined);
         if (!fs.existsSync(combined)) {
-            console.log('done');
             fs.mkdirSync(combined);
-        } else {
-            console.log('it exists');
         }
     }
 }
 
-var libDestination = path.resolve(__dirname, `../${genieParams[0]}/x32`);
-console.log(`libDestination ${libDestination}`);
-libDestination = libDestination.replace(/\\/g, '/');
-console.log(`libDestination ${libDestination}`);
-mkdirRecursive(libDestination);
-for (let i = 0; i < dyLibs32.length; ++i) {
-    var name = dyLibs32[i].substr(0, dyLibs32[i].lastIndexOf('/'));
-    var filePath = path.resolve(__dirname, dyLibs32[i]);
-    fs.copyFile(filePath, libDestination + '/' + name, (err) => { console.error(err); });
+function CopyLibs(destination, libs) {
+    mkdirRecursive(destination);
+    for (let i = 0; i < libs.length; ++i) {
+        var nameIdx = libs[i].lastIndexOf('/');
+        var name = libs[i].substr(nameIdx);
+        var filePath = libs[i];
+        var dest =  destination + '/' + name;
+        fs.copyFile(filePath, dest, (err) => { if(err) console.error(err); });
+    }
 }
 
-libDestination = path.resolve(__dirname, `../${genieParams[0]}/x64`);
-console.log(`libDestination ${libDestination}`);
-libDestination = libDestination.replace(/\\/g, '/');
-console.log(`libDestination ${libDestination}`);
-mkdirRecursive(libDestination);
-for (let i = 0; i < dyLibs64.length; ++i) {
-    var name = dyLibs64[i].substr(0, dyLibs64[i].lastIndexOf('\\'));
-    var filePath = path.resolve(__dirname, dyLibs64[i]);
-    fs.copyFile(filePath, libDestination + '/' + name, (err) => { console.error(err); });
-}
+CopyLibs(path.resolve(__dirname, `../${genieParams[0]}/x32`).replace(/\\/g, '/'), dyLibs32);
+CopyLibs(path.resolve(__dirname, `../${genieParams[0]}/x64`).replace(/\\/g, '/'), dyLibs64);
 
 const genie = spawn(
     path.resolve(__dirname, '../bin/genie.exe'),
