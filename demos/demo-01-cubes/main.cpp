@@ -31,6 +31,9 @@ public:
         if (m_VAO != GL_INVALID_INDEX) {
             glDeleteBuffers(1, &m_VAO);
         }
+        if (m_IBO != GL_INVALID_INDEX) {
+            glDeleteBuffers(1, &m_IBO);
+        }
         if (m_ShaderProgram != GL_INVALID_INDEX) {
             glDeleteProgram(m_ShaderProgram);
         }
@@ -84,9 +87,9 @@ protected:
             { { 0.5f, -0.5f, -0.5f }, Vector3::Right, { uvMax, uvMin } },
             { { 0.5f, -0.5f,  0.5f }, Vector3::Right, { uvMax, uvMax } },
             // front
-            { { -0.5f,  0.5f, -0.5f }, Vector3::Forward, { uvMin, uvMin } },
-            { {  0.5f,  0.5f, -0.5f }, Vector3::Forward, { uvMin, uvMax } },
-            { { -0.5f, -0.5f, -0.5f }, Vector3::Forward, { uvMax, uvMin } },
+            { { -0.5f, -0.5f, -0.5f }, Vector3::Forward, { uvMin, uvMin } },
+            { { -0.5f,  0.5f, -0.5f }, Vector3::Forward, { uvMin, uvMax } },
+            { {  0.5f,  0.5f, -0.5f }, Vector3::Forward, { uvMax, uvMin } },
             { {  0.5f, -0.5f, -0.5f }, Vector3::Forward, { uvMax, uvMax } },
             // back
             { { -0.5f, -0.5f,  0.5f }, Vector3::Backward,{ uvMin, uvMin } },
@@ -103,17 +106,17 @@ protected:
         GLuint Indices[IndexCount] = {
             // top
             TRIANGLE_WINDING(0, 1, 2),
-            TRIANGLE_WINDING(2, 1, 3),
+            TRIANGLE_WINDING(1, 3, 2),
             // bottom
-            TRIANGLE_WINDING(6, 4, 5),
-            TRIANGLE_WINDING(5, 7, 6),
+            TRIANGLE_WINDING(4, 6, 5),
+            TRIANGLE_WINDING(5, 6, 7),
 
             //front
             TRIANGLE_WINDING(16, 17, 18),
             TRIANGLE_WINDING(18, 19, 16),
             // back
-            TRIANGLE_WINDING(21, 20, 23),
-            TRIANGLE_WINDING(23, 22, 21),
+            TRIANGLE_WINDING(20, 23, 21),
+            TRIANGLE_WINDING(22, 21, 23),
 
             // left
             TRIANGLE_WINDING(8, 10, 11),
@@ -126,25 +129,32 @@ protected:
         // referencing: https://github.com/Polytonic/Glitter/blob/master/Samples/mesh.cpp
         glGenVertexArrays(1, &m_VAO);
         glBindVertexArray(m_VAO);
-        GLuint tempBuffers[2];
-        glGenBuffers(2, tempBuffers);
-        glBindBuffer(GL_ARRAY_BUFFER, tempBuffers[0]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(Verts), Verts, GL_STATIC_DRAW);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tempBuffers[1]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
+        GLuint vbo;
+
+        glGenBuffers(1, &vbo);
+        glGenBuffers(1, &m_IBO);
+        
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(Verts), Verts, GL_STATIC_DRAW);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, Position));
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, Normal));
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, UV));
 
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
+
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
 
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glVertexPointer(3, GL_FLOAT, 0, 0);
+
         glBindVertexArray(0);
 
-        glDeleteBuffers(2, tempBuffers);
+        glDeleteBuffers(1, &vbo);
     }
 
     bool BuildShaderInternal(GLuint kind, char const* source) {
@@ -171,7 +181,7 @@ protected:
     void BuildShader() {
 #define GLSL(code) code "\n"
         const char* vertSource =
-            GLSL("#version 330 core")
+            GLSL("#version 440 core")
             GLSL("layout(location = 0) in vec3 vertPosition;")
             GLSL("layout(location = 1) in vec3 vertNormal;")
             GLSL("layout(location = 2) in vec2 vertUV;")
@@ -187,9 +197,8 @@ protected:
             GLSL("	UV = vertUV;")
             GLSL("}");
 
-
         const char* fragSource =
-            GLSL("#version 330 core")
+            GLSL("#version 440 core")
             GLSL("")
             GLSL("in vec3 Normal;")
             GLSL("in vec2 UV;")
@@ -200,7 +209,7 @@ protected:
             GLSL("uniform vec4 Tint;")
             GLSL("")
             GLSL("void main() {")
-            GLSL("	color = vec4(Normal, 1.0);")
+            GLSL("	color = vec4(((Normal.xyz + vec3(0.5, 0.5, 0.5)) * vec3(0.5, 0.5, 0.5)) * vec3(1.5, 1.5, 1.5), 1.0);")
             GLSL("}");
 #undef GLSL
 
@@ -252,8 +261,8 @@ protected:
 
             // draw mesh
             glBindVertexArray(m_VAO);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
             glDrawElements(GL_TRIANGLES, IndexCount, GL_UNSIGNED_INT, 0);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
         }
         else {
             if (m_ShaderProgram == GL_INVALID_INDEX) {
@@ -300,6 +309,7 @@ private:
     AMatrix4x4 m_MatrixMVP;
 
     GLuint m_VAO = GL_INVALID_INDEX; // vertex array object
+    GLuint m_IBO = GL_INVALID_INDEX;
     GLuint m_ShaderProgram = GL_INVALID_INDEX;
     GLuint m_UniformMVP = GL_INVALID_INDEX;
 };
