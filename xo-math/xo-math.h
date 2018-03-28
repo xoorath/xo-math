@@ -616,7 +616,7 @@ struct Quaternion {
 
     static Quaternion XO_CC Invert(Quaternion const& quat);
     static Quaternion XO_CC RotationAxisAngle(Vector3 const& axis, float angle);
-    static Quaternion XO_CC RotationYawPitchRoll(float yaw, float pitch, float roll);
+    static Quaternion XO_CC RotationEuler(Vector3 const& angles);
     static float XO_CC DotProduct(Quaternion const& left, Quaternion const& right);
     static Quaternion XO_CC Lerp(Quaternion const& start, Quaternion const& end, float t);
     static Quaternion XO_CC Slerp(Quaternion const& start, 
@@ -893,7 +893,7 @@ struct XO_REF_ALN AQuaternion {
 
     static AQuaternion XO_CC Invert(AQuaternion const& quat);
     static AQuaternion XO_CC RotationAxisAngle(AVector3 const& axis, float angle);
-    static AQuaternion XO_CC RotationYawPitchRoll(float yaw, float pitch, float roll);
+    static AQuaternion XO_CC RotationEuler(AVector3 const& angles);
     static float XO_CC DotProduct(AQuaternion const& left, AQuaternion const& right);
     static AQuaternion XO_CC Lerp(AQuaternion const& start, AQuaternion const& end, float t);
     static AQuaternion XO_CC Slerp(AQuaternion const& start, 
@@ -1213,24 +1213,27 @@ Matrix4x4 XO_CC Matrix4x4::operator * (Matrix4x4 const& other) const {
 
 XO_INL
 Matrix4x4& XO_CC Matrix4x4::operator *= (Matrix4x4 const& other) {
-    Matrix4x4 transposed = Transpose(*this);
+    Matrix4x4 transposed = Transpose(other);
     return (*this) = Matrix4x4(
-        Vector4((rows[0] * transposed[0]).Sum(),
-                (rows[0] * transposed[1]).Sum(),
-                (rows[0] * transposed[2]).Sum(),
-                (rows[0] * transposed[3]).Sum()),
-        Vector4((rows[1] * transposed[0]).Sum(),
-                (rows[1] * transposed[1]).Sum(),
-                (rows[1] * transposed[2]).Sum(),
-                (rows[1] * transposed[3]).Sum()),
-        Vector4((rows[2] * transposed[0]).Sum(),
-                (rows[2] * transposed[1]).Sum(),
-                (rows[2] * transposed[2]).Sum(),
-                (rows[2] * transposed[3]).Sum()),
-        Vector4((rows[3] * transposed[0]).Sum(),
-                (rows[3] * transposed[1]).Sum(),
-                (rows[3] * transposed[2]).Sum(),
-                (rows[3] * transposed[3]).Sum()));
+        Vector4(Vector4::DotProduct(rows[0], transposed[0]),
+                Vector4::DotProduct(rows[0], transposed[1]),
+                Vector4::DotProduct(rows[0], transposed[2]),
+                Vector4::DotProduct(rows[0], transposed[3])),
+
+        Vector4(Vector4::DotProduct(rows[1], transposed[0]),
+                Vector4::DotProduct(rows[1], transposed[1]),
+                Vector4::DotProduct(rows[1], transposed[2]),
+                Vector4::DotProduct(rows[1], transposed[3])),
+
+        Vector4(Vector4::DotProduct(rows[2], transposed[0]),
+                Vector4::DotProduct(rows[2], transposed[1]),
+                Vector4::DotProduct(rows[2], transposed[2]),
+                Vector4::DotProduct(rows[2], transposed[3])),
+
+        Vector4(Vector4::DotProduct(rows[3], transposed[0]),
+                Vector4::DotProduct(rows[3], transposed[1]),
+                Vector4::DotProduct(rows[3], transposed[2]),
+                Vector4::DotProduct(rows[3], transposed[3])));
 }
 
 XO_INL Vector4 Matrix4x4::operator[] (int index) const { return rows[index]; }
@@ -1523,7 +1526,7 @@ Matrix4x4 XO_CC Matrix4x4::PerspectiveFOV(float fov,
     return Matrix4x4(
         Vector4(w,   0.f, 0.f, 0.f),
         Vector4(0.f, h,   0.f, 0.f),
-        Vector4(0.f, 0.f, r,   0.f),
+        Vector4(0.f, 0.f, r,  -1.f),
         Vector4(0.f, 0.f, rn,  0.f));
 }
 
@@ -1541,7 +1544,7 @@ Matrix4x4 XO_CC Matrix4x4::Perspective(float width,
     return Matrix4x4(
         Vector4(w,   0.f, 0.f, 0.f),
         Vector4(0.f, h,   0.f, 0.f),
-        Vector4(0.f, 0.f, r,   0.f),
+        Vector4(0.f, 0.f, r,  -1.f),
         Vector4(0.f, 0.f, rn,  0.f));
 }
 
@@ -1576,8 +1579,8 @@ Matrix4x4 XO_CC Matrix4x4::LookAt(Vector3 const& from,
     float d2 = Vector3::DotProduct(r2, nfrom);
     return Matrix4x4(
         Vector4(r0.x, r0.y, r0.z, 0.f),
-        Vector4(r0.x, r0.y, r0.z, 0.f),
-        Vector4(r0.x, r0.y, r0.z, 0.f),
+        Vector4(r1.x, r1.y, r1.z, 0.f),
+        Vector4(r2.x, r2.y, r2.z, 0.f),
         Vector4(d0,   d1,   d2,   1.f));
 }
 
@@ -1670,11 +1673,11 @@ Quaternion XO_CC Quaternion::RotationAxisAngle(Vector3 const& axis, float angle)
 }
 
 /*static*/ XO_INL
-Quaternion XO_CC Quaternion::RotationYawPitchRoll(float yaw, float pitch, float roll) {
+Quaternion XO_CC Quaternion::RotationEuler(Vector3 const& angles) {
     float sr, cp, sp, cy, sy, cr;
-    SinCos(yaw * 0.5f, sy, cy);
-    SinCos(pitch * 0.5f, sp, cp);
-    SinCos(roll * 0.5f, sr, cr);
+    SinCos(angles.x * 0.5f, sy, cy);
+    SinCos(angles.y * 0.5f, sp, cp);
+    SinCos(angles.z * 0.5f, sr, cr);
     return Quaternion(cy * cr * cp + sy * sr * sp,
                       cy * sr * cp - sy * cr * sp,
                       cy * cr * sp + sy * sr * cp,
@@ -2042,24 +2045,27 @@ AMatrix4x4 XO_CC AMatrix4x4::operator * (AMatrix4x4 const& other) const {
 
 XO_INL
 AMatrix4x4& XO_CC AMatrix4x4::operator *= (AMatrix4x4 const& other) {
-    AMatrix4x4 transposed = Transpose(*this);
+    AMatrix4x4 transposed = Transpose(other);
     return (*this) = AMatrix4x4(
-        AVector4((rows[0] * transposed[0]).Sum(),
-                (rows[0] * transposed[1]).Sum(),
-                (rows[0] * transposed[2]).Sum(),
-                (rows[0] * transposed[3]).Sum()),
-        AVector4((rows[1] * transposed[0]).Sum(),
-                (rows[1] * transposed[1]).Sum(),
-                (rows[1] * transposed[2]).Sum(),
-                (rows[1] * transposed[3]).Sum()),
-        AVector4((rows[2] * transposed[0]).Sum(),
-                (rows[2] * transposed[1]).Sum(),
-                (rows[2] * transposed[2]).Sum(),
-                (rows[2] * transposed[3]).Sum()),
-        AVector4((rows[3] * transposed[0]).Sum(),
-                (rows[3] * transposed[1]).Sum(),
-                (rows[3] * transposed[2]).Sum(),
-                (rows[3] * transposed[3]).Sum()));
+        AVector4(AVector4::DotProduct(rows[0], transposed[0]),
+                 AVector4::DotProduct(rows[0], transposed[1]),
+                 AVector4::DotProduct(rows[0], transposed[2]),
+                 AVector4::DotProduct(rows[0], transposed[3])),
+
+        AVector4(AVector4::DotProduct(rows[1], transposed[0]),
+                 AVector4::DotProduct(rows[1], transposed[1]),
+                 AVector4::DotProduct(rows[1], transposed[2]),
+                 AVector4::DotProduct(rows[1], transposed[3])),
+
+        AVector4(AVector4::DotProduct(rows[2], transposed[0]),
+                 AVector4::DotProduct(rows[2], transposed[1]),
+                 AVector4::DotProduct(rows[2], transposed[2]),
+                 AVector4::DotProduct(rows[2], transposed[3])),
+
+        AVector4(AVector4::DotProduct(rows[3], transposed[0]),
+                 AVector4::DotProduct(rows[3], transposed[1]),
+                 AVector4::DotProduct(rows[3], transposed[2]),
+                 AVector4::DotProduct(rows[3], transposed[3])));
 }
 
 XO_INL AVector4 AMatrix4x4::operator[] (int index) const { return rows[index]; }
@@ -2266,7 +2272,7 @@ AMatrix4x4 XO_CC AMatrix4x4::PerspectiveFOV(float fov,
     return AMatrix4x4(
         AVector4(w,   0.f, 0.f, 0.f),
         AVector4(0.f, h,   0.f, 0.f),
-        AVector4(0.f, 0.f, r,   0.f),
+        AVector4(0.f, 0.f, r,  -1.f),
         AVector4(0.f, 0.f, rn,  0.f));
 }
 
@@ -2284,7 +2290,7 @@ AMatrix4x4 XO_CC AMatrix4x4::Perspective(float width,
     return AMatrix4x4(
         AVector4(w,   0.f, 0.f, 0.f),
         AVector4(0.f, h,   0.f, 0.f),
-        AVector4(0.f, 0.f, r,   0.f),
+        AVector4(0.f, 0.f, r,  -1.f),
         AVector4(0.f, 0.f, rn,  0.f));
 }
 
@@ -2319,8 +2325,8 @@ AMatrix4x4 XO_CC AMatrix4x4::LookAt(AVector3 const& from,
     float d2 = AVector3::DotProduct(r2, nfrom);
     return AMatrix4x4(
         AVector4(r0.x, r0.y, r0.z, 0.f),
-        AVector4(r0.x, r0.y, r0.z, 0.f),
-        AVector4(r0.x, r0.y, r0.z, 0.f),
+        AVector4(r1.x, r1.y, r1.z, 0.f),
+        AVector4(r2.x, r2.y, r2.z, 0.f),
         AVector4(d0,   d1,   d2,   1.f));
 }
 
@@ -2413,11 +2419,12 @@ AQuaternion XO_CC AQuaternion::RotationAxisAngle(AVector3 const& axis, float ang
 }
 
 /*static*/ XO_INL
-AQuaternion XO_CC AQuaternion::RotationYawPitchRoll(float yaw, float pitch, float roll) {
+AQuaternion XO_CC AQuaternion::RotationEuler(AVector3 const& angles) {
     float sr, cp, sp, cy, sy, cr;
-    SinCos(yaw * 0.5f, sy, cy);
-    SinCos(pitch * 0.5f, sp, cp);
-    SinCos(roll * 0.5f, sr, cr);
+    // todo: rename. yaw, pitch, roll are misnomers here. switch yaw and pitch.
+    SinCos(angles.x * 0.5f, sy, cy);
+    SinCos(angles.y * 0.5f, sp, cp);
+    SinCos(angles.z * 0.5f, sr, cr);
     return AQuaternion(cy * cr * cp + sy * sr * sp,
                       cy * sr * cp - sy * cr * sp,
                       cy * cr * sp + sy * sr * cp,
@@ -2485,28 +2492,51 @@ bool XO_CC AQuaternion::ExactlyEqual(AQuaternion const& left, AQuaternion const&
 
 ////////////////////////////////////////////////////////////////////////////////////////// third-party-licenses.h inlined
 /*****************************************************************************************
-Licence for: https://github.com/Microsoft/DirectXMath
-This licence only applies to parts of xo-math where explicitly indicated
+License for: https://github.com/Microsoft/DirectXMath
+This license only applies to parts of xo-math where explicitly indicated
 
                                The MIT License (MIT)
 
 Copyright (c) 2018 Microsoft Corp
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this 
-software and associated documentation files (the "Software"), to deal in the Software 
-without restriction, including without limitation the rights to use, copy, modify, 
-merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
-permit persons to whom the Software is furnished to do so, subject to the following 
-conditions: 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this
+software and associated documentation files (the "Software"), to deal in the Software
+without restriction, including without limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies 
-or substantial portions of the Software.  
+The above copyright notice and this permission notice shall be included in all copies or
+substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
-PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
-OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+*****************************************************************************************/
+/*****************************************************************************************
+License for: https://github.com/Polytonic/Glitter
+This license only applies to parts of xo-math where explicitly indicated
+
+                               The MIT License (MIT)
+
+Copyright (c) 2015 Kevin Fung
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this
+software and associated documentation files (the "Software"), to deal in the Software
+without restriction, including without limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or
+substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
 *****************************************************************************************/
 ////////////////////////////////////////////////////////////////////////////////////////// end third-party-licenses.h inline

@@ -32,12 +32,15 @@ int Application::run() {
     glewInit();
 #endif
     SDL_GL_SwapWindow(m_Window);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_CULL_FACE);
     Init();
     while (!m_Quitting) {
 
-        glViewport(0, 0, (int)ImGui::GetIO().DisplaySize.x, (int)ImGui::GetIO().DisplaySize.y);
+        //glViewport(0, 0, (int)ImGui::GetIO().DisplaySize.x, (int)ImGui::GetIO().DisplaySize.y);
         glClearColor(m_ClearColor.x, m_ClearColor.y, m_ClearColor.z, m_ClearColor.w);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         ImGui_ImplSdlGL3_NewFrame(m_Window);
 
@@ -105,6 +108,7 @@ void Application::GUI() {
                 m_ShowLogPanel = !m_ShowLogPanel;
                 m_ScrollLogPanel = true;
             }
+            ImGui::Separator();
             if (ImGui::MenuItem("Quit")) {
                 m_Quitting = true;
             }
@@ -114,7 +118,7 @@ void Application::GUI() {
     }
     if (m_ShowDebugPanel) {
         ImGui::Begin("Debug", &m_ShowDebugPanel);
-        ImGui::ColorEdit4("Clear Color", (float*)&m_ClearColor);
+        ImGui::ColorEdit3("Clear Color", (float*)&m_ClearColor);
         GUIPanel();
         ImGui::End();
     }

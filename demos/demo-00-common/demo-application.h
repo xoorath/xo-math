@@ -1,4 +1,7 @@
 #pragma once
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+
 #include <windows.h>
 #include <xo-math.h>
 #define GL3_PROTOTYPES 1
@@ -35,7 +38,7 @@ private:
     ImGuiTextBuffer m_LogBuffer;
     bool m_Quitting = false;
     bool m_ShowDebugPanel = true;
-    bool m_ShowLogPanel = false;
+    bool m_ShowLogPanel = true;
     bool m_ScrollLogPanel = false;
 
     void SetAttribs();

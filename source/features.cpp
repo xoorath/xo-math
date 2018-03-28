@@ -187,7 +187,7 @@ void AllQuaternionFeatures() {
     { xo::Matrix4x4 a = _a.ToMatrix(); XO_UNUSED(a); }
     { xo::Quaternion a = xo::Quaternion::Invert(_a); XO_UNUSED(a); }
     { xo::Quaternion a = xo::Quaternion::RotationAxisAngle(xo::Vector3::Up, 0.f); XO_UNUSED(a); }
-    { xo::Quaternion a = xo::Quaternion::RotationYawPitchRoll(0.f, 0.f, 0.f); XO_UNUSED(a); }
+    { xo::Quaternion a = xo::Quaternion::RotationEuler({ 0.f, 0.f, 0.f }); XO_UNUSED(a); }
     { float a = xo::Quaternion::DotProduct(_a, _b); XO_UNUSED(a); }
     { xo::Quaternion a = xo::Quaternion::Lerp(_a, _b, 0.f); XO_UNUSED(a); }
     { xo::Quaternion a = xo::Quaternion::Slerp(_a, _b, 0.f); XO_UNUSED(a); }
@@ -349,7 +349,7 @@ void AllAQuaternionFeatures() {
     { xo::AMatrix4x4 a = _a.ToMatrix(); XO_UNUSED(a); }
     { xo::AQuaternion a = xo::AQuaternion::Invert(_a); XO_UNUSED(a); }
     { xo::AQuaternion a = xo::AQuaternion::RotationAxisAngle(xo::AVector3::Up, 0.f); XO_UNUSED(a); }
-    { xo::AQuaternion a = xo::AQuaternion::RotationYawPitchRoll(0.f, 0.f, 0.f); XO_UNUSED(a); }
+    { xo::AQuaternion a = xo::AQuaternion::RotationEuler({ 0.f, 0.f, 0.f }); XO_UNUSED(a); }
     { float a = xo::AQuaternion::DotProduct(_a, _b); XO_UNUSED(a); }
     { xo::AQuaternion a = xo::AQuaternion::Lerp(_a, _b, 0.f); XO_UNUSED(a); }
     { xo::AQuaternion a = xo::AQuaternion::Slerp(_a, _b, 0.f); XO_UNUSED(a); }
