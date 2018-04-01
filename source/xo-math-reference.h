@@ -660,7 +660,7 @@ XO_INL
 Vector3& XO_CC Vector3::operator += (Vector3 const& other) {
     x += other.x;
     y += other.y;
-    z *= other.z;
+    z += other.z;
     return *this;
 }
 
@@ -1237,15 +1237,14 @@ Matrix4x4 XO_CC Matrix4x4::LookAt(Vector3 const& from,
     Vector3 r2 = dir.Normalized();
     Vector3 r0 = Vector3::CrossProduct(up, r2).Normalized();
     Vector3 r1 = Vector3::CrossProduct(r2, r0);
-    Vector3 nfrom = -from;
 
-    float d0 = Vector3::DotProduct(r0, nfrom);
-    float d1 = Vector3::DotProduct(r1, nfrom);
-    float d2 = Vector3::DotProduct(r2, nfrom);
+    float d0 = -Vector3::DotProduct(r0, from);
+    float d1 = -Vector3::DotProduct(r1, from);
+    float d2 = -Vector3::DotProduct(r2, from);
     return Matrix4x4(
-        Vector4(r0.x, r0.y, r0.z, 0.f),
-        Vector4(r1.x, r1.y, r1.z, 0.f),
-        Vector4(r2.x, r2.y, r2.z, 0.f),
+        Vector4(r0.x, r1.x, r2.x, 0.f),
+        Vector4(r0.y, r1.y, r2.y, 0.f),
+        Vector4(r0.z, r1.z, r2.z, 0.f),
         Vector4(d0,   d1,   d2,   1.f));
 }
 
@@ -1492,7 +1491,7 @@ XO_INL
 AVector3& XO_CC AVector3::operator += (AVector3 const& other) {
     x += other.x;
     y += other.y;
-    z *= other.z;
+    z += other.z;
     return *this;
 }
 
@@ -1983,15 +1982,14 @@ AMatrix4x4 XO_CC AMatrix4x4::LookAt(AVector3 const& from,
     AVector3 r2 = dir.Normalized();
     AVector3 r0 = AVector3::CrossProduct(up, r2).Normalized();
     AVector3 r1 = AVector3::CrossProduct(r2, r0);
-    AVector3 nfrom = -from;
 
-    float d0 = AVector3::DotProduct(r0, nfrom);
-    float d1 = AVector3::DotProduct(r1, nfrom);
-    float d2 = AVector3::DotProduct(r2, nfrom);
+    float d0 = -AVector3::DotProduct(r0, from);
+    float d1 = -AVector3::DotProduct(r1, from);
+    float d2 = -AVector3::DotProduct(r2, from);
     return AMatrix4x4(
-        AVector4(r0.x, r0.y, r0.z, 0.f),
-        AVector4(r1.x, r1.y, r1.z, 0.f),
-        AVector4(r2.x, r2.y, r2.z, 0.f),
+        AVector4(r0.x, r1.x, r2.x, 0.f),
+        AVector4(r0.y, r1.y, r2.y, 0.f),
+        AVector4(r0.z, r1.z, r2.z, 0.f),
         AVector4(d0,   d1,   d2,   1.f));
 }
 

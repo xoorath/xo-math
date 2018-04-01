@@ -6,15 +6,17 @@
 // $inline_begin
 namespace xo
 {
-constexpr XO_INL float Abs(float num)                    { return num >= 0 ? num : -num; }
-constexpr XO_INL float Max(float a, float b)             { return a > b ? a : b; }
-constexpr XO_INL float Max(float a, float b, float c)    { return Max(Max(a, b), c); }
-constexpr XO_INL float Min(float a, float b)             { return a < b ? a : b; }
-constexpr XO_INL float Min(float a, float b, float c)    { return Min(Min(a, b), c); }
+template<typename T> constexpr XO_INL T Abs(T num)          { return num >= 0 ? num : -num; }
+template<typename T> constexpr XO_INL T Max(T a, T b)       { return a > b ? a : b; }
+template<typename T> constexpr XO_INL T Max(T a, T b, T c)  { return Max(Max(a, b), c); }
+template<typename T> constexpr XO_INL T Min(T a, T b)       { return a < b ? a : b; }
+template<typename T> constexpr XO_INL T Min(T a, T b, T c)  { return Min(Min(a, b), c); }
 
 constexpr XO_INL float Clamp(float val, float minVal, float maxVal) {
     return Max(Min(val, maxVal), minVal);
 }
+
+float WrapMinMax(float val, float minVal, float maxVal);
 
 constexpr XO_INL float Lerp(float start, float end, float t) {
     return start + t * (end-start);
@@ -45,6 +47,18 @@ void SinCos(float val, float& sinOut, float& cosOut);
 void ASinACos(float val, float& asinOut, float& acosOut);
 
 #if defined(XO_MATH_IMPL)
+float WrapMinMax(float val, float minVal, float maxVal) {
+    if (CloseEnough(val, minVal) || CloseEnough(val, maxVal)) {
+        return val;
+    }
+    else if (val > 0.f) {
+        return fmod(val, maxVal) + minVal;
+    }
+    else {
+        return maxVal - fmod(Abs(val), maxVal) + minVal;
+    }
+}
+
 float Sqrt(float val) { return std::sqrt(val); }
 float Pow(float val, int power) { return std::pow(val, power); }
 float Sin(float val) { return std::sin(val); }

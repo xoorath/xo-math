@@ -115,15 +115,17 @@ constexpr float Rad2Deg = 57.2957795f;
 ////////////////////////////////////////////////////////////////////////////////////////// xo-math-utilities.h inlined
 namespace xo
 {
-constexpr XO_INL float Abs(float num)                    { return num >= 0 ? num : -num; }
-constexpr XO_INL float Max(float a, float b)             { return a > b ? a : b; }
-constexpr XO_INL float Max(float a, float b, float c)    { return Max(Max(a, b), c); }
-constexpr XO_INL float Min(float a, float b)             { return a < b ? a : b; }
-constexpr XO_INL float Min(float a, float b, float c)    { return Min(Min(a, b), c); }
+template<typename T> constexpr XO_INL T Abs(T num)          { return num >= 0 ? num : -num; }
+template<typename T> constexpr XO_INL T Max(T a, T b)       { return a > b ? a : b; }
+template<typename T> constexpr XO_INL T Max(T a, T b, T c)  { return Max(Max(a, b), c); }
+template<typename T> constexpr XO_INL T Min(T a, T b)       { return a < b ? a : b; }
+template<typename T> constexpr XO_INL T Min(T a, T b, T c)  { return Min(Min(a, b), c); }
 
 constexpr XO_INL float Clamp(float val, float minVal, float maxVal) {
     return Max(Min(val, maxVal), minVal);
 }
+
+float WrapMinMax(float val, float minVal, float maxVal);
 
 constexpr XO_INL float Lerp(float start, float end, float t) {
     return start + t * (end-start);
@@ -154,6 +156,18 @@ void SinCos(float val, float& sinOut, float& cosOut);
 void ASinACos(float val, float& asinOut, float& acosOut);
 
 #if defined(XO_MATH_IMPL)
+float WrapMinMax(float val, float minVal, float maxVal) {
+    if (CloseEnough(val, minVal) || CloseEnough(val, maxVal)) {
+        return val;
+    }
+    else if (val > 0.f) {
+        return fmod(val, maxVal) + minVal;
+    }
+    else {
+        return maxVal - fmod(Abs(val), maxVal) + minVal;
+    }
+}
+
 float Sqrt(float val) { return std::sqrt(val); }
 float Pow(float val, int power) { return std::pow(val, power); }
 float Sin(float val) { return std::sin(val); }
@@ -995,7 +1009,7 @@ XO_INL
 Vector3& XO_CC Vector3::operator += (Vector3 const& other) {
     x += other.x;
     y += other.y;
-    z *= other.z;
+    z += other.z;
     return *this;
 }
 
@@ -1572,15 +1586,14 @@ Matrix4x4 XO_CC Matrix4x4::LookAt(Vector3 const& from,
     Vector3 r2 = dir.Normalized();
     Vector3 r0 = Vector3::CrossProduct(up, r2).Normalized();
     Vector3 r1 = Vector3::CrossProduct(r2, r0);
-    Vector3 nfrom = -from;
 
-    float d0 = Vector3::DotProduct(r0, nfrom);
-    float d1 = Vector3::DotProduct(r1, nfrom);
-    float d2 = Vector3::DotProduct(r2, nfrom);
+    float d0 = -Vector3::DotProduct(r0, from);
+    float d1 = -Vector3::DotProduct(r1, from);
+    float d2 = -Vector3::DotProduct(r2, from);
     return Matrix4x4(
-        Vector4(r0.x, r0.y, r0.z, 0.f),
-        Vector4(r1.x, r1.y, r1.z, 0.f),
-        Vector4(r2.x, r2.y, r2.z, 0.f),
+        Vector4(r0.x, r1.x, r2.x, 0.f),
+        Vector4(r0.y, r1.y, r2.y, 0.f),
+        Vector4(r0.z, r1.z, r2.z, 0.f),
         Vector4(d0,   d1,   d2,   1.f));
 }
 
@@ -1827,7 +1840,7 @@ XO_INL
 AVector3& XO_CC AVector3::operator += (AVector3 const& other) {
     x += other.x;
     y += other.y;
-    z *= other.z;
+    z += other.z;
     return *this;
 }
 
@@ -2318,15 +2331,14 @@ AMatrix4x4 XO_CC AMatrix4x4::LookAt(AVector3 const& from,
     AVector3 r2 = dir.Normalized();
     AVector3 r0 = AVector3::CrossProduct(up, r2).Normalized();
     AVector3 r1 = AVector3::CrossProduct(r2, r0);
-    AVector3 nfrom = -from;
 
-    float d0 = AVector3::DotProduct(r0, nfrom);
-    float d1 = AVector3::DotProduct(r1, nfrom);
-    float d2 = AVector3::DotProduct(r2, nfrom);
+    float d0 = -AVector3::DotProduct(r0, from);
+    float d1 = -AVector3::DotProduct(r1, from);
+    float d2 = -AVector3::DotProduct(r2, from);
     return AMatrix4x4(
-        AVector4(r0.x, r0.y, r0.z, 0.f),
-        AVector4(r1.x, r1.y, r1.z, 0.f),
-        AVector4(r2.x, r2.y, r2.z, 0.f),
+        AVector4(r0.x, r1.x, r2.x, 0.f),
+        AVector4(r0.y, r1.y, r2.y, 0.f),
+        AVector4(r0.z, r1.z, r2.z, 0.f),
         AVector4(d0,   d1,   d2,   1.f));
 }
 
