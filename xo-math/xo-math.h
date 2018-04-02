@@ -62,6 +62,7 @@
 #include <inttypes.h>
 #include <limits>
 ////////////////////////////////////////////////////////////////////////////////////////// xo-math-constants.h inlined
+#line 5 "xo-math-constants.h"
 namespace xo{
 
 // please read about epsilon before using it
@@ -75,6 +76,7 @@ constexpr float Rad2Deg = 57.2957795f;
 
 ////////////////////////////////////////////////////////////////////////////////////////// end xo-math-constants.h inline
 ////////////////////////////////////////////////////////////////////////////////////////// xo-math-macros.h inlined
+#line 4 "xo-math-macros.h"
 #include <new.h>
 #include <cstdlib>
 // xo-math calling convention.
@@ -113,6 +115,7 @@ constexpr float Rad2Deg = 57.2957795f;
 #define XO_UNUSED(code) (void)code
 ////////////////////////////////////////////////////////////////////////////////////////// end xo-math-macros.h inline
 ////////////////////////////////////////////////////////////////////////////////////////// xo-math-utilities.h inlined
+#line 7 "xo-math-utilities.h"
 namespace xo
 {
 template<typename T> constexpr XO_INL T Abs(T num)          { return num >= 0 ? num : -num; }
@@ -194,6 +197,7 @@ XO_INL constexpr float operator "" _deg2rad(long double num) {
 
 ////////////////////////////////////////////////////////////////////////////////////////// end xo-math-utilities.h inline
 ////////////////////////////////////////////////////////////////////////////////////////// xo-math-detect-simd.h inlined
+#line 4 "xo-math-detect-simd.h"
 namespace xo { namespace simd {
 
 #define XO_SSE_NONE 0x00
@@ -358,12 +362,14 @@ constexpr char const* NEONVersionName = NEONGetName();
 
 #if XO_SSE_CURRENT >= XO_SSE4_1
 ////////////////////////////////////////////////////////////////////////////////////////// xo-math-sse4.h inlined
+#line 5 "xo-math-sse4.h"
 namespace xo {
 
 } // ::xo
 ////////////////////////////////////////////////////////////////////////////////////////// end xo-math-sse4.h inline
 #else
 ////////////////////////////////////////////////////////////////////////////////////////// xo-math-reference.h inlined
+#line 18 "xo-math-reference.h"
 #if !defined(XO_CONFIG_DEFAULT_NEAR_PLANE)
 #   define XO_CONFIG_DEFAULT_NEAR_PLANE 0.1f
 #endif
@@ -2503,6 +2509,7 @@ bool XO_CC AQuaternion::ExactlyEqual(AQuaternion const& left, AQuaternion const&
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////// third-party-licenses.h inlined
+#line 3 "third-party-licenses.h"
 /*****************************************************************************************
 License for: https://github.com/Microsoft/DirectXMath
 This license only applies to parts of xo-math where explicitly indicated

@@ -129,14 +129,17 @@ function BuildSourceMap(directory) { return new Promise((resolve, reject) => {
                     if(substrIdx < 0) substrIdx = 0;
                 }
                 const inlineBeginKeyword = '$inline_begin';
+                var startingLineNumber = 0;
                 var inlineBeginIdx = contents.indexOf(inlineBeginKeyword);
                 if(inlineBeginIdx > 0)
                 {
+                    startingLineNumber = (contents.substr(0, inlineBeginIdx).match(/\r?\n/g) || '').length + 1;
                     contents = contents.substr(contents.indexOf('\n', inlineBeginIdx)+1); // +1 to get rid of the newline after the keyword.
                 }
                 var simpleKey = key.substring(substrIdx);
                 contents = 
 `////////////////////////////////////////////////////////////////////////////////////////// ${simpleKey} inlined
+#line ${startingLineNumber+1} "${simpleKey}"
 ${contents}
 ////////////////////////////////////////////////////////////////////////////////////////// end ${simpleKey} inline`;
                 result[simpleKey] = contents;
