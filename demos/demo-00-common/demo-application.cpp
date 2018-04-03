@@ -1,3 +1,6 @@
+// warning C4530: C++ exception handler used, but unwind semantics are not enabled.
+// warning C4577: 'noexcept' used with no exception handling mode specified; termination on exception is not guaranteed.
+#pragma warning(disable : 4530 4577)
 #define XO_MATH_IMPL
 #include <xo-math.h>
 #include <iostream>

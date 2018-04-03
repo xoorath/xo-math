@@ -1,3 +1,6 @@
+// warning C4530: C++ exception handler used, but unwind semantics are not enabled.
+// warning C4577: 'noexcept' used with no exception handling mode specified; termination on exception is not guaranteed.
+#pragma warning(disable : 4530 4577)
 #include "../demo-00-common/demo-application.h"
 #include <limits>
 #include <functional>

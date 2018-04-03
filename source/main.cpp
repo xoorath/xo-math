@@ -1,3 +1,6 @@
+// warning C4530: C++ exception handler used, but unwind semantics are not enabled.
+// warning C4577: 'noexcept' used with no exception handling mode specified; termination on exception is not guaranteed.
+#pragma warning(disable : 4530 4577)
 #include <iostream>
 
 #define XO_MATH_IMPL
@@ -8,11 +11,11 @@
 
 int main()
 {
-	using namespace std;
-	using namespace xo;
+    using namespace std;
+    using namespace xo;
     using namespace xo::simd;
-	cout << "Compiling with sse: " << SSEVersionName << endl;
-	cout << "Compiling with neon: " << NEONVersionName << endl;
+    cout << "Compiling with sse: " << SSEVersionName << endl;
+    cout << "Compiling with neon: " << NEONVersionName << endl;
     int passed = 0, failed = 0;
     auto Fail = [&failed](char const* statement, int line) {
         cout << "main.cpp(" << line << ") failed: " << statement << endl;
@@ -66,5 +69,5 @@ int main()
     //{float a, b; xo::ASinACos(1.f, a, b); XO_UNUSED(a); XO_UNUSED(b); }
 
     cout << passed << " passed " << failed << " failed." << endl;
-	return 0;
+    return 0;
 }

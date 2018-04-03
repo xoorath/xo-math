@@ -27,6 +27,9 @@ function demoDefaults()
         "opengl32"
     }
     flags { "WinMain" }
+    prebuildcommands {
+        "$(SolutionDir)..\\Distribute.cmd"
+    }
     configuration "x32"
         libdirs { 
             "../demos/SDL2-2.0.8/lib/x86",
