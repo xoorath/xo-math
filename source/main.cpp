@@ -6,14 +6,15 @@
 #define XO_MATH_IMPL
 #include "xo-math.h"
 
+using namespace std;
+using namespace xo;
+using namespace xo::simd;
+
 #define TestScalar(exec, expect) \
     { float res = exec; if(xo::CloseEnough(res, expect) == false) { Fail(#exec " != " #expect, __LINE__); cout << "\tgot:" << res << endl; } else { Pass(#exec " == " #expect, __LINE__); } }
 
 int main()
 {
-    using namespace std;
-    using namespace xo;
-    using namespace xo::simd;
     cout << "Compiling with sse: " << SSEVersionName << endl;
     cout << "Compiling with neon: " << NEONVersionName << endl;
     int passed = 0, failed = 0;

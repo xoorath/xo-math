@@ -1,138 +1,111 @@
 #pragma once
-
 #include <xo-math.h>
 #include <vector>
-#include <stdint.h>
 
-using EntityID_t = uint32_t;
-using EntityIdx_t = uint32_t;
+namespace xo {
 
-struct S_EntityIdentity {
-	EntityID_t id;
-	EntityIdx_t idx;
+struct Transformation {
+    void SetParent(Transformation* transformation) {
+        if (m_Parent != nullptr) {
+            m_Parent->m_Children.erase(std::find(m_Parent->m_Children.begin(), m_Parent->m_Children.end(), this));
+        }
+        m_Parent = transformation;
+        transformation->m_Children.push_back(this);
+        SetParentDirty();
+    }
 
-	bool operator == (S_EntityIdentity const& other) { return id == other.id && idx == other.idx; }
+#define ENCAPSULATE_TRANSFORM(namedType) \
+    AVector3 const& GetLocal##namedType () { return m_Values.m_ ## namedType; } \
+    void SetLocal##namedType (AVector3 const& v) { m_Values.m_ ## namedType = v; Set##namedType##Dirty(); } \
+    AVector3 const& GetWorld##namedType () { if (namedType ## Dirty()) Update(); return m_Matricies.m_Model.Transform(m_Values.m_ ## namedType); } \
+    void SetWorld##namedType (AVector3 const& v) { if (namedType ## Dirty()) Update(); m_Values.m_ ## namedType = m_Matricies.m_Model.InverseTransform(v); Set##namedType##Dirty(); }
 
-	static const S_EntityIdentity Invalid;
-};
+    ENCAPSULATE_TRANSFORM(Scale);
+    ENCAPSULATE_TRANSFORM(Translation);
+    ENCAPSULATE_TRANSFORM(Rotation);
 
-template<typename T>
-void RemoveLastSwap(std::vector<T> &vec, EntityIdx_t i)
-{
-	std::swap(vec[vec.size() - 1], vec[i]);
-	vec.pop_back();
-}
+#undef ENCAPSULATE_TRANSFORM
 
-class C_Scene {
+private:
+    enum {
+        SCALE_DIRTY = 1,
+        TRANSLATION_DIRTY = 2,
+        ROTATION_DIRTY = 4,
+        PARENT_DIRTY = 8
+    };
+
+    Transformation* m_Parent = nullptr;
+    std::vector<Transformation*> m_Children;
+    uintptr_t m_Flags = 0xffffFFFF;
+    struct {
+        AMatrix4x4 m_Model = AMatrix4x4::Identity;
+        AMatrix4x4 m_Scale = AMatrix4x4::Identity;
+        AMatrix4x4 m_Translation = AMatrix4x4::Identity;
+        AMatrix4x4 m_Rotation = AMatrix4x4::Identity;
+    } m_Matricies;
+
+    struct {
+        AVector3 m_Scale = AVector3::One;
+        AVector3 m_Translation = AVector3::Zero;
+        AVector3 m_Rotation = AVector3::Zero;
+    } m_Values;
+
+
+    bool ScaleDirty(bool parentKnownDirty = false) const         { return (m_Flags & SCALE_DIRTY)        || parentKnownDirty ? true : ParentDirty(); }
+    bool TranslationDirty(bool parentKnownDirty = false) const   { return (m_Flags & TRANSLATION_DIRTY)  || parentKnownDirty ? true : ParentDirty(); }
+    bool RotationDirty(bool parentKnownDirty = false) const      { return (m_Flags & ROTATION_DIRTY)     || parentKnownDirty ? true : ParentDirty(); }
+
+    bool ParentDirty() const        { return (m_Flags & PARENT_DIRTY)       || (m_Parent && m_Parent->AnyDirty()); }
+    bool AnyDirty() const           { return (m_Flags != 0)                 || (m_Parent && m_Parent->AnyDirty()); }
+
+    void SetAllChildrenDirty()      { for (auto* child : m_Children) child->SetParentDirty(); }
+    void SetParentDirty()           { m_Flags |= PARENT_DIRTY;      SetAllChildrenDirty(); }
+    void SetScaleDirty()            { m_Flags |= SCALE_DIRTY;       SetAllChildrenDirty(); }
+    void SetTranslationDirty()      { m_Flags |= TRANSLATION_DIRTY; SetAllChildrenDirty(); }
+    void SetRotationDirty()         { m_Flags |= ROTATION_DIRTY;    SetAllChildrenDirty(); }
+
 public:
-	std::vector<xo::AVector3>    m_Pos; // our position
-	std::vector<xo::AQuaternion> m_Rot; // our rotation
-	std::vector<xo::AVector3>    m_Sca; // our scale
-	std::vector<xo::AMatrix4x4>  m_Loc; // local matrix
-	std::vector<xo::AMatrix4x4>  m_Mod; // model matrix
-	std::vector<std::string>     m_Nam; // object name
-	std::vector<EntityID_t>      m_Id;  // our id
-	std::vector<EntityID_t>      m_Par; // parent id
+    AMatrix4x4 const& GetModelNoUpdate() const
+    {
+        return m_Matricies.m_Model;
+    }
 
-	void DestroyIndex(EntityIdx_t idx)
-	{
-		RemoveLastSwap(m_Id, idx);
-		RemoveLastSwap(m_Pos, idx);
-		RemoveLastSwap(m_Rot, idx);
-		RemoveLastSwap(m_Sca, idx);
-		RemoveLastSwap(m_Loc, idx);
-		RemoveLastSwap(m_Mod, idx);
-		RemoveLastSwap(m_Nam, idx);
-		RemoveLastSwap(m_Par, idx);
-		// todo: remove children of that entity
-	}
+    AMatrix4x4 const& GetModel()
+    {
+        Update();
+        return m_Matricies.m_Model;
+    }
 
-	void DestroyId(EntityID_t id)
-	{
-		EntityID_t count = m_Id.size();
-		for (EntityID_t i = 0; i < count; ++i)
-		{
-			if (m_Id[i] == id)
-			{
-				DestroyIndex(i);
-				break;
-			}
-		}
-	}
-
-	xo::AVector3 m_CameraPosition;
-	xo::AVector3 m_CameraTarget;
-	xo::AMatrix4x4 m_CameraMatrix;
+    void Update() {
+        if (AnyDirty()) {
+            bool parentDirty = ParentDirty();
+            if (ScaleDirty(parentDirty)) {
+                m_Matricies.m_Scale = AMatrix4x4::Scale(m_Values.m_Scale);
+            }
+            if (TranslationDirty(parentDirty)) {
+                m_Matricies.m_Translation = AMatrix4x4::Translation(m_Values.m_Translation);
+            }
+            if (RotationDirty(parentDirty)) {
+                m_Matricies.m_Rotation = AQuaternion::RotationEuler(m_Values.m_Rotation).ToMatrix();
+            }
+            m_Matricies.m_Model = m_Matricies.m_Scale * m_Matricies.m_Rotation * m_Matricies.m_Translation;
+            if (m_Parent) {
+                if (parentDirty) {
+                    m_Parent->Update();
+                }
+                m_Matricies.m_Model *= m_Parent->m_Matricies.m_Model;
+            }
+            m_Flags = 0;
+        }
+    }
 };
 
-class C_EntityHandle {
-public:
-	C_Scene *m_Scene = nullptr;
-	S_EntityIdentity m_Identity = S_EntityIdentity::Invalid;
+struct Scene {
+    std::vector<Transformation*> m_Transformations;
 
-	C_EntityHandle() = default;
-	C_EntityHandle(C_Scene* scene, S_EntityIdentity identity)
-		: m_Scene(scene)
-		, m_Identity(identity)
-	{
-	}
+    void Update() {
 
-	inline xo::AVector3& Position() { return m_Scene->m_Pos[m_Identity.idx]; }
-	inline xo::AQuaternion& Rotation() { return m_Scene->m_Rot[m_Identity.idx]; }
-	inline xo::AVector3& Scale() { return m_Scene->m_Sca[m_Identity.idx]; }
-
-	C_EntityHandle GetParent() const {
-		auto parentId = m_Scene->m_Par[m_Identity.idx];
-		if (parentId == -1) {
-			return C_EntityHandle();
-		}
-		auto const& ids = m_Scene->m_Id;
-		EntityIdx_t count = static_cast<EntityIdx_t>(ids.size());
-		for (EntityIdx_t i = 0; i < count; ++i)
-		{
-			if (ids[i] == parentId)
-			{
-				return C_EntityHandle{ m_Scene, S_EntityIdentity{ parentId, i } };
-			}
-		}
-	}
-
-	void GetChildren(std::vector<C_EntityHandle>& outChildren)
-	{
-		auto const& ids = m_Scene->m_Par;
-		EntityIdx_t count = static_cast<EntityIdx_t>(ids.size());
-		for (EntityIdx_t i = 0; i < count; ++i)
-		{
-			if (ids[i] == m_Identity.id)
-			{
-				outChildren.emplace_back(m_Scene, S_EntityIdentity{ids[i], i});
-			}
-		}
-	}
-
-	bool IsValid() {
-		if (m_Identity == S_EntityIdentity::Invalid)
-		{
-			// we already know this scene object is invalid
-			return false;
-		}
-		auto const& ids = m_Scene->m_Id;
-		EntityIdx_t count = static_cast<EntityIdx_t>(ids.size());
-
-		if (m_Identity.idx < count && ids[m_Identity.idx] == m_Identity.id) {
-			// nothing's changed, this scene object is valid.
-			return true;
-		}
-
-		for (EntityIdx_t i = 0; i < count; ++i)
-		{
-			if (ids[i] == m_Identity.id) {
-				// something caused our handle to move, update it and remember where it is for the future.
-				m_Identity.idx = i;
-				return true;
-			}
-		}
-		m_Identity = S_EntityIdentity::Invalid;
-	}
-
+    }
 };
+
+} // xo

@@ -463,6 +463,13 @@ struct Vector4 {
         , w(all)
     { }
 
+    constexpr explicit Vector4(Vector3 v3, float w = 0.f)
+        : x(v3.x)
+        , y(v3.x)
+        , z(v3.x)
+        , w(w)
+    { }
+
     Vector4() = default;
     ~Vector4() = default;
     Vector4(Vector4 const& other) = default;
@@ -543,6 +550,10 @@ struct Matrix4x4 {
     Matrix4x4& operator = (Matrix4x4 const& other) = default;
     Matrix4x4& operator = (Matrix4x4&& ref) = default;
 
+    Vector3 XO_CC Transform(Vector3 const& v3) const;
+    Vector4 XO_CC Transform(Vector4 const& v4) const;
+    Vector3 XO_CC InverseTransform(Vector3 const& v3) const;
+    Vector4 XO_CC InverseTransform(Vector4 const& v4) const;
     Matrix4x4 XO_CC operator * (Matrix4x4 const& other) const;
     Matrix4x4& XO_CC operator *= (Matrix4x4 const& other);
 
@@ -736,6 +747,13 @@ struct XO_REF_ALN AVector4 {
         , w(all)
     { }
 
+    constexpr explicit AVector4(AVector3 v3, float w = 0.f)
+        : x(v3.x)
+        , y(v3.x)
+        , z(v3.x)
+        , w(w)
+    { }
+
     AVector4() = default;
     ~AVector4() = default;
     AVector4(AVector4 const& other) = default;
@@ -817,6 +835,11 @@ struct XO_REF_ALN AMatrix4x4 {
     AMatrix4x4(AMatrix4x4&& ref) = default;
     AMatrix4x4& operator = (AMatrix4x4 const& other) = default;
     AMatrix4x4& operator = (AMatrix4x4&& ref) = default;
+
+    AVector3 XO_CC Transform(AVector3 const& v3) const;
+    AVector4 XO_CC Transform(AVector4 const& v4) const;
+    AVector3 XO_CC InverseTransform(AVector3 const& v3) const;
+    AVector4 XO_CC InverseTransform(AVector4 const& v4) const;
 
     AMatrix4x4 XO_CC operator * (AMatrix4x4 const& other) const;
     AMatrix4x4& XO_CC operator *= (AMatrix4x4 const& other);
@@ -1225,6 +1248,36 @@ Vector4 XO_CC Vector4::Lerp(Vector4 const& left, Vector4 const& right, float t) 
     Vector4(0.f, 0.f, 1.f, 0.f),
     Vector4(0.f, 0.f, 0.f, 1.f));
 #endif
+
+XO_INL
+Vector3 XO_CC Matrix4x4::Transform(Vector3 const& v3) const {
+    return Vector3(Vector4::DotProduct(rows[0], Vector4(v3)),
+                   Vector4::DotProduct(rows[1], Vector4(v3)),
+                   Vector4::DotProduct(rows[2], Vector4(v3)));
+}
+
+XO_INL
+Vector4 XO_CC Matrix4x4::Transform(Vector4 const& v4) const {
+    return Vector4(Vector4::DotProduct(rows[0], v4),
+                   Vector4::DotProduct(rows[1], v4),
+                   Vector4::DotProduct(rows[2], v4),
+                   Vector4::DotProduct(rows[3], v4));
+}
+
+XO_INL
+Vector3 XO_CC Matrix4x4::InverseTransform(Vector3 const& v3) const {
+    return Vector3(((rows[0][0]) * v3.x) + ((rows[1][0]) * v3.y) + ((rows[2][0]) * v3.z),
+                   ((rows[0][1]) * v3.x) + ((rows[1][1]) * v3.y) + ((rows[2][1]) * v3.z),
+                   ((rows[0][2]) * v3.x) + ((rows[1][2]) * v3.y) + ((rows[2][2]) * v3.z));
+}
+
+XO_INL
+Vector4 XO_CC Matrix4x4::InverseTransform(Vector4 const& v4) const {
+    return Vector4(((rows[0][0]) * v4.x) + ((rows[1][0]) * v4.y) + ((rows[2][0]) * v4.z) + ((rows[3][0]) * v4.w),
+                   ((rows[0][1]) * v4.x) + ((rows[1][1]) * v4.y) + ((rows[2][1]) * v4.z) + ((rows[3][1]) * v4.w),
+                   ((rows[0][2]) * v4.x) + ((rows[1][2]) * v4.y) + ((rows[2][2]) * v4.z) + ((rows[3][2]) * v4.w),
+                   ((rows[0][3]) * v4.x) + ((rows[1][3]) * v4.y) + ((rows[2][3]) * v4.z) + ((rows[3][3]) * v4.w));
+}
 
 XO_INL 
 Matrix4x4 XO_CC Matrix4x4::operator * (Matrix4x4 const& other) const {
@@ -2056,6 +2109,36 @@ AVector4 XO_CC AVector4::Lerp(AVector4 const& left, AVector4 const& right, float
     AVector4(0.f, 0.f, 1.f, 0.f),
     AVector4(0.f, 0.f, 0.f, 1.f));
 #endif
+
+XO_INL
+AVector3 XO_CC AMatrix4x4::Transform(AVector3 const& v3) const {
+    return AVector3(AVector4::DotProduct(rows[0], AVector4(v3)),
+                    AVector4::DotProduct(rows[1], AVector4(v3)),
+                    AVector4::DotProduct(rows[2], AVector4(v3)));
+}
+
+XO_INL
+AVector4 XO_CC AMatrix4x4::Transform(AVector4 const& v4) const {
+    return AVector4(AVector4::DotProduct(rows[0], v4),
+                    AVector4::DotProduct(rows[1], v4),
+                    AVector4::DotProduct(rows[2], v4),
+                    AVector4::DotProduct(rows[3], v4));
+}
+
+XO_INL
+AVector3 XO_CC AMatrix4x4::InverseTransform(AVector3 const& v3) const {
+    return AVector3(((rows[0][0]) * v3.x) + ((rows[1][0]) * v3.y) + ((rows[2][0]) * v3.z),
+                    ((rows[0][1]) * v3.x) + ((rows[1][1]) * v3.y) + ((rows[2][1]) * v3.z),
+                    ((rows[0][2]) * v3.x) + ((rows[1][2]) * v3.y) + ((rows[2][2]) * v3.z));
+}
+
+XO_INL
+AVector4 XO_CC AMatrix4x4::InverseTransform(AVector4 const& v4) const {
+    return AVector4(((rows[0][0]) * v4.x) + ((rows[1][0]) * v4.y) + ((rows[2][0]) * v4.z) + ((rows[3][0]) * v4.w),
+                    ((rows[0][1]) * v4.x) + ((rows[1][1]) * v4.y) + ((rows[2][1]) * v4.z) + ((rows[3][1]) * v4.w),
+                    ((rows[0][2]) * v4.x) + ((rows[1][2]) * v4.y) + ((rows[2][2]) * v4.z) + ((rows[3][2]) * v4.w),
+                    ((rows[0][3]) * v4.x) + ((rows[1][3]) * v4.y) + ((rows[2][3]) * v4.z) + ((rows[3][3]) * v4.w));
+}
 
 XO_INL 
 AMatrix4x4 XO_CC AMatrix4x4::operator * (AMatrix4x4 const& other) const {

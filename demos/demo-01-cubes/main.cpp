@@ -2,8 +2,10 @@
 // warning C4577: 'noexcept' used with no exception handling mode specified; termination on exception is not guaranteed.
 #pragma warning(disable : 4530 4577)
 #include "../demo-00-common/demo-application.h"
+#include "../demo-00-common/demo-scene.h"
 #include <limits>
 #include <functional>
+
 using namespace xo;
 
 #define LimitedLog(fmt, ...) { static int limiter = 16; if(limiter > 0) { Log(fmt __VA_ARGS__); limiter--;} }
@@ -12,6 +14,7 @@ class CubesApplication : public Application {
     AMatrix4x4 m_Proj = AMatrix4x4::Identity;
     AMatrix4x4 m_View = AMatrix4x4::Identity;
     AMatrix4x4 m_Model = AMatrix4x4::Identity;
+    AMatrix4x4 m_Model2 = AMatrix4x4::Identity;
     AMatrix4x4 m_MatrixMVP = AMatrix4x4::Identity;
     bool m_MVPDirty = false;
 
@@ -19,9 +22,7 @@ class CubesApplication : public Application {
     AVector3 m_CamTarget = AVector3::Zero;
     AVector3 m_CamUp = AVector3::Up;
 
-    AVector3 m_CubePosition = { 3.f, 0.f, 0.f };
-    AVector3 m_CubeScale = AVector3(0.5f);
-    AVector3 m_CubeRotation = AVector3::Zero;
+    Transformation m_Cube1, m_Cube2;
 
     float m_CameraFOV = 45.f;
 
@@ -31,7 +32,7 @@ public:
     CubesApplication()
     : Application()
     , m_CameraFOV(45.f) {
-
+        m_Cube2.SetParent(&m_Cube1);
     }
 
 protected:
@@ -40,9 +41,13 @@ protected:
         m_CamTarget = AVector3::Zero;
         m_CamUp = AVector3::Up;
 
-        m_CubePosition = { 3.f, 0.f, 0.f };
-        m_CubeScale = AVector3::One * AVector3(0.5f);
-        m_CubeRotation = AVector3::Zero;
+        m_Cube1.SetLocalTranslation({ 3.f, 0.f, 0.f });
+        m_Cube1.SetLocalScale(AVector3(0.5f));
+        m_Cube1.SetLocalRotation(AVector3::Zero);
+
+        m_Cube2.SetLocalTranslation({ 0.f, 1.0f, 0.f });
+        m_Cube2.SetLocalScale(AVector3(0.3f));
+        m_Cube2.SetLocalRotation(AVector3::Zero);
 
         m_CameraFOV = 45.f;
 
@@ -59,27 +64,30 @@ protected:
         Application::Tick(deltaTime);
 
         constexpr float tau = 6.28318530718;
-        AVector3 r = m_CubeRotation;
+        AVector3 r = m_Cube1.GetLocalRotation();
         r.x = WrapMinMax(r.x, 0.f, tau);
         r.y = WrapMinMax(r.y, 0.f, tau);
         r.z = WrapMinMax(r.z, 0.f, tau);
-        m_CubeRotation = r;
+        m_Cube1.SetLocalRotation(r);
 
         if (m_SpinCube) {
-            m_CubeRotation += AVector3(deltaTime * m_CubeRotationSpeed);
+            m_Cube1.SetLocalRotation(m_Cube1.GetLocalRotation() + AVector3(deltaTime * m_CubeRotationSpeed));
         }
 
-        m_CamTarget = m_CubePosition;
+        m_CamTarget = m_Cube1.GetLocalTranslation();
 
         m_Proj = AMatrix4x4::PerspectiveFOV(m_CameraFOV * Deg2Rad, (float)m_Width / (float)m_Height);
         m_View = AMatrix4x4::LookAt(m_CamPosition, m_CamTarget, m_CamUp);
         AMatrix4x4::Invert(m_View);
 
-        m_Model = AMatrix4x4::Scale(m_CubeScale);
-        m_Model *= AQuaternion::RotationEuler(m_CubeRotation).ToMatrix();
-        m_Model *= AMatrix4x4::Translation(m_CubePosition);
+        m_Cube1.Update();
+        m_Cube2.Update();
 
-        m_MatrixMVP = m_Model * (m_View *  m_Proj);
+        m_MatrixMVP = m_Cube1.GetModelNoUpdate() * (m_View *  m_Proj);
+        SetMVP(m_MatrixMVP.v);
+        RenderCube();
+
+        m_MatrixMVP = m_Cube2.GetModelNoUpdate() * (m_View *  m_Proj);
         SetMVP(m_MatrixMVP.v);
         RenderCube();
     }
@@ -98,13 +106,17 @@ protected:
         // model
         ImGui::Separator();
         ImGui::Separator();
-        ImGui::DragFloat3("Cube Pos",   (float*)&m_CubePosition,    0.05f);
+        AVector3 pos = m_Cube1.GetLocalTranslation();
+        ImGui::DragFloat3("Cube Pos",   (float*)&pos,    0.05f);
+        m_Cube1.SetLocalTranslation(pos);
 
-        AVector3 rot = m_CubeRotation * AVector3(Rad2Deg);
+        AVector3 rot = m_Cube1.GetLocalRotation() * AVector3(Rad2Deg);
         ImGui::DragFloat3("Cube Rot",   (float*)&rot,               0.05f);
-        m_CubeRotation = rot * AVector3(Deg2Rad);
+        m_Cube1.SetLocalRotation(rot * AVector3(Deg2Rad));
 
-        ImGui::DragFloat3("Cube Scale", (float*)&m_CubeScale,       0.05f);
+        AVector3 sca = m_Cube1.GetLocalScale();
+        ImGui::DragFloat3("Cube Scale", (float*)&sca,       0.05f);
+        m_Cube1.SetLocalScale(sca);
 
         ImGui::Checkbox("Spin Cube",    &m_SpinCube);
         ImGui::DragFloat("Spin Speed",  &m_CubeRotationSpeed,       0.001f);

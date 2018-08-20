@@ -85,12 +85,15 @@ void AllVector3Features() {
 void AllVector4Features() {
     xo::Vector4 const _a(xo::Vector4::One);
     xo::Vector4 const _b(-xo::Vector4::One);
+    xo::Vector3 const v3(1.f, 1.f, 1.f);
 
     { xo::Vector4 a(1.f, 2.f, 3.f, 4.f); XO_UNUSED(a); }
     { xo::Vector4 a(1.f); XO_UNUSED(a); }
     { xo::Vector4 a; XO_UNUSED(a); }
     { xo::Vector4 a(_a); XO_UNUSED(a); }
     { xo::Vector4 a(xo::Vector4(1.f)); XO_UNUSED(a); }
+    { xo::Vector4 a(v3); XO_UNUSED(a); }
+    { xo::Vector4 a(v3, 1.f); XO_UNUSED(a); }
     { xo::Vector4 a = _a; XO_UNUSED(a); }
     { xo::Vector4 a = xo::Vector4(_a); XO_UNUSED(a); }
     { xo::Vector4 a = _a + _b; XO_UNUSED(a); }
@@ -247,6 +250,7 @@ void AllAVector3Features() {
 void AllAVector4Features() {
     xo::AVector4 const _a(xo::AVector4::One);
     xo::AVector4 const _b(-xo::AVector4::One);
+    xo::AVector3 const v3(1.f, 1.f, 1.f);
 
     { xo::AVector4 a(1.f, 2.f, 3.f, 4.f); XO_UNUSED(a); }
     { xo::AVector4 a(1.f); XO_UNUSED(a); }
@@ -255,6 +259,8 @@ void AllAVector4Features() {
     { xo::AVector4 a(xo::AVector4(1.f)); XO_UNUSED(a); }
     { xo::AVector4 a = _a; XO_UNUSED(a); }
     { xo::AVector4 a = xo::AVector4(_a); XO_UNUSED(a); }
+    { xo::AVector4 a(v3); XO_UNUSED(a); }
+    { xo::AVector4 a(v3, 1.f); XO_UNUSED(a); }
     { xo::AVector4 a = _a + _b; XO_UNUSED(a); }
     { xo::AVector4 a = _a - _b; XO_UNUSED(a); }
     { xo::AVector4 a = _a * _b; XO_UNUSED(a); }
