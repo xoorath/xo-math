@@ -119,8 +119,8 @@ struct Vector4 {
 
     constexpr explicit Vector4(Vector3 v3, float w = 0.f)
         : x(v3.x)
-        , y(v3.x)
-        , z(v3.x)
+        , y(v3.y)
+        , z(v3.z)
         , w(w)
     { }
 
@@ -421,8 +421,8 @@ struct XO_REF_ALN AVector4 {
 
     constexpr explicit AVector4(AVector3 v3, float w = 0.f)
         : x(v3.x)
-        , y(v3.x)
-        , z(v3.x)
+        , y(v3.y)
+        , z(v3.z)
         , w(w)
     { }
 
