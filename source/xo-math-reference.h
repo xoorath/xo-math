@@ -57,6 +57,15 @@ struct Vector3 {
     Vector3& XO_CC operator *= (Vector3 const& other);
     Vector3& XO_CC operator /= (Vector3 const& other);
 
+    Vector3 XO_CC operator + (float value) const { return *this + Vector3(value); }
+    Vector3 XO_CC operator - (float value) const { return *this - Vector3(value); }
+    Vector3 XO_CC operator * (float value) const { return *this * Vector3(value); }
+    Vector3 XO_CC operator / (float value) const { return *this / Vector3(value); }
+    Vector3& XO_CC operator += (float value) { return *this += Vector3(value); }
+    Vector3& XO_CC operator -= (float value) { return *this -= Vector3(value); }
+    Vector3& XO_CC operator *= (float value) { return *this *= Vector3(value); }
+    Vector3& XO_CC operator /= (float value) { return *this /= Vector3(value); }
+
     Vector3 operator -() const;
 
     float Sum() const;
@@ -130,6 +139,15 @@ struct Vector4 {
     Vector4& XO_CC operator -= (Vector4 const& other);
     Vector4& XO_CC operator *= (Vector4 const& other);
     Vector4& XO_CC operator /= (Vector4 const& other);
+
+    Vector4 XO_CC operator + (float value) const { return *this + Vector4(value); }
+    Vector4 XO_CC operator - (float value) const { return *this - Vector4(value); }
+    Vector4 XO_CC operator * (float value) const { return *this * Vector4(value); }
+    Vector4 XO_CC operator / (float value) const { return *this / Vector4(value); }
+    Vector4& XO_CC operator += (float value) { return *this += Vector4(value); }
+    Vector4& XO_CC operator -= (float value) { return *this -= Vector4(value); }
+    Vector4& XO_CC operator *= (float value) { return *this *= Vector4(value); }
+    Vector4& XO_CC operator /= (float value) { return *this /= Vector4(value); }
 
     Vector4 operator -() const;
 
@@ -339,6 +357,15 @@ struct XO_REF_ALN AVector3 {
     AVector3& XO_CC operator *= (AVector3 const& other);
     AVector3& XO_CC operator /= (AVector3 const& other);
 
+    AVector3 XO_CC operator + (float value) const { return *this + AVector3(value); }
+    AVector3 XO_CC operator - (float value) const { return *this - AVector3(value); }
+    AVector3 XO_CC operator * (float value) const { return *this * AVector3(value); }
+    AVector3 XO_CC operator / (float value) const { return *this / AVector3(value); }
+    AVector3& XO_CC operator += (float value) { return *this += AVector3(value); }
+    AVector3& XO_CC operator -= (float value) { return *this -= AVector3(value); }
+    AVector3& XO_CC operator *= (float value) { return *this *= AVector3(value); }
+    AVector3& XO_CC operator /= (float value) { return *this /= AVector3(value); }
+
     AVector3 operator -() const;
 
     float Sum() const;
@@ -414,6 +441,15 @@ struct XO_REF_ALN AVector4 {
     AVector4& XO_CC operator -= (AVector4 const& other);
     AVector4& XO_CC operator *= (AVector4 const& other);
     AVector4& XO_CC operator /= (AVector4 const& other);
+
+    AVector4 XO_CC operator + (float value) const { return *this + AVector4(value); }
+    AVector4 XO_CC operator - (float value) const { return *this - AVector4(value); }
+    AVector4 XO_CC operator * (float value) const { return *this * AVector4(value); }
+    AVector4 XO_CC operator / (float value) const { return *this / AVector4(value); }
+    AVector4& XO_CC operator += (float value) { return *this += AVector4(value); }
+    AVector4& XO_CC operator -= (float value) { return *this -= AVector4(value); }
+    AVector4& XO_CC operator *= (float value) { return *this *= AVector4(value); }
+    AVector4& XO_CC operator /= (float value) { return *this /= AVector4(value); }
 
     AVector4 operator -() const;
 
