@@ -3,7 +3,7 @@
 const path = require('path');
 const fs = require('fs');
 
-const xomathRelativeFilePath = '../xo-math/xo-math.h';
+const xomathRelativeFilePath = '../include/xo-math/xo-math.h';
 const xomathFilePath = path.resolve(__dirname, xomathRelativeFilePath);
 const xomathSourceDirectory = path.resolve(__dirname, '../source/');
 const xomathSourceFilePath = path.resolve(xomathSourceDirectory, 'xo-math.h');
