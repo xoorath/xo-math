@@ -1,7 +1,9 @@
 # xo-math
 _v. alpha_
 
-_Fast math for game developers. No headaches, no cruft._
+The idea of this project is to provide fast math types for game developers with very little integration headaches.
+
+In this alpha state the project is really just a rough sketch of an API. It isn't fast and is likey buggy. 
 
 ## Warnings
 - xo-math is in alpha. Contribute, test, but don't integrate yet.
